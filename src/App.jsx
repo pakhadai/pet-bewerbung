@@ -64,6 +64,12 @@ export default function App() {
 
   const [donateOpen, setDonateOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [toast, setToast] = useState(null); // { type: 'success'|'error'|'info', msg }
+
+  const showToast = (msg, type = 'info') => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 5000);
+  };
 
   const handleDonateMethod = async (method) => {
     const parsed = parseFloat(donationAmount || '0');
@@ -76,10 +82,14 @@ export default function App() {
         body: JSON.stringify({ amount: cents, currency: 'eur', successUrl: window.location.href, cancelUrl: window.location.href, payment_method: method }),
       });
       const json = await res.json();
-      if (json.url) window.open(json.url, '_blank');
-      else alert(json.error || 'Failed to create checkout session');
+      if (json.url) {
+        window.open(json.url, '_blank');
+        showToast('Opening Checkout...', 'info');
+      } else {
+        showToast(json.error || 'Failed to create checkout session', 'error');
+      }
     } catch (err) {
-      alert('Payment error: ' + (err.message || err));
+      showToast('Payment error: ' + (err.message || err), 'error');
     } finally {
       setDonateOpen(false);
     }
@@ -304,7 +314,13 @@ export default function App() {
       </main>
 
       <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} amount={donationAmount} onDonate={handleDonateMethod} onOpenPayment={() => { setPaymentOpen(true); setDonateOpen(false); }} />
-      <PaymentModal open={paymentOpen} onClose={() => setPaymentOpen(false)} amount={donationAmount} />
+      <PaymentModal open={paymentOpen} onClose={() => setPaymentOpen(false)} amount={donationAmount} onSuccess={(id) => showToast('Thank you — payment succeeded', 'success')} onFailure={(msg) => showToast(`Payment failed: ${msg}`, 'error')} />
+
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-50 rounded-lg px-4 py-3 ${toast.type === 'success' ? 'bg-green-600 text-white' : toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
+          {toast.msg}
+        </div>
+      )}
 
       {step > 0 && step < 6 && (
         <div className="nav-panel print:hidden">

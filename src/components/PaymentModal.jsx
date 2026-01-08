@@ -2,10 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-function CheckoutForm({ clientSecret, onClose }) {
+function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFailure }) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
+
+  const pollStatus = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:4242/payment-status/${id}`);
+      const json = await res.json();
+      return json.status;
+    } catch (err) {
+      return null;
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,8 +29,32 @@ function CheckoutForm({ clientSecret, onClose }) {
 
     setLoading(false);
     if (error) {
-      alert(error.message || 'Payment error');
+      onFailure && onFailure(error.message || 'Payment error');
+      onClose();
+      return;
+    }
+
+    if (paymentIntentId) {
+      // poll for final status
+      let attempts = 0;
+      while (attempts < 15) {
+        const status = await pollStatus(paymentIntentId);
+        if (status === 'succeeded') {
+          onSuccess && onSuccess(paymentIntentId);
+          onClose();
+          return;
+        }
+        if (status === 'failed') {
+          onFailure && onFailure('Payment failed');
+          onClose();
+          return;
+        }
+        attempts += 1;
+        await new Promise(r => setTimeout(r, 1000));
+      }
+      onFailure && onFailure('Payment pending or timed out');
     } else {
+      onSuccess && onSuccess(null);
       onClose();
     }
   };
@@ -36,9 +70,10 @@ function CheckoutForm({ clientSecret, onClose }) {
   );
 }
 
-export default function PaymentModal({ open, onClose, amount }) {
+export default function PaymentModal({ open, onClose, amount, onSuccess, onFailure }) {
   const [clientSecret, setClientSecret] = useState(null);
   const [stripePromise, setStripePromise] = useState(null);
+  const [paymentIntentId, setPaymentIntentId] = useState(null);
 
   useEffect(() => {
     if (!open) return;
@@ -55,6 +90,7 @@ export default function PaymentModal({ open, onClose, amount }) {
         if (json.clientSecret) {
           setClientSecret(json.clientSecret);
           if (json.publishableKey) setStripePromise(loadStripe(json.publishableKey));
+          if (json.paymentIntentId) setPaymentIntentId(json.paymentIntentId);
           else {
             const cfg = await fetch('http://localhost:4242/stripe-config').then(r => r.json());
             if (cfg.publishableKey) setStripePromise(loadStripe(cfg.publishableKey));
@@ -81,7 +117,7 @@ export default function PaymentModal({ open, onClose, amount }) {
         <div>
           {clientSecret && stripePromise ? (
             <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm clientSecret={clientSecret} onClose={onClose} />
+              <CheckoutForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} onClose={onClose} onSuccess={onSuccess} onFailure={onFailure} />
             </Elements>
           ) : (
             <div className="p-8 text-center">Preparing payment…</div>
