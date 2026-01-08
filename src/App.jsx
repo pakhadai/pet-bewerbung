@@ -279,35 +279,39 @@ export default function App() {
           </select>
 
           <div className="flex items-center justify-center gap-4">
-            <Button onClick={() => window.print()} className="py-4 px-6 text-sm shadow-sm">
+            <Button onClick={() => window.print()} className="py-2 px-4 text-sm shadow-sm">
               <Download className="mr-2" size={14} /> {t.labels.download}
             </Button>
-            <div className="flex items-center gap-2">
-              <input placeholder="Donation EUR" value={donationAmount} onChange={e => setDonationAmount(e.target.value)} className="px-3 py-2 border rounded-lg text-sm" />
-              <Button onClick={() => setDonateOpen(true)}>Donate</Button>
-            </div>
+            <Button variant="ghost" onClick={() => setDonateOpen(true)} className="py-2 px-3 text-sm">Support</Button>
           </div>
         </div>
       </header>
 
-          <div className="mb-4 flex items-center justify-between">
-            <div className="text-left"><span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Preview</span></div>
-            <div className="text-right">
-              <span className="text-xs text-slate-500 mr-3">Template:</span>
-              <select value={templateType} onChange={e => setTemplateType(e.target.value)} className="px-2 py-1 border rounded">
-                {TEMPLATE_OPTIONS.map(opt => <option key={opt.id} value={opt.id}>{opt.label}</option>)}
-              </select>
-              <Button variant="ghost" className="ml-3" onClick={() => goToStep(5)}>Back to Edit</Button>
+          {/* Show preview controls only on preview step */}
+          {step === 6 && (
+            <div className="mb-4 flex items-center justify-between">
+              <div className="text-left"><span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Preview</span></div>
+              <div className="text-right">
+                <span className="text-xs text-slate-500 mr-3">Template:</span>
+                <select value={templateType} onChange={e => setTemplateType(e.target.value)} className="px-2 py-1 border rounded">
+                  {TEMPLATE_OPTIONS.map(opt => <option key={opt.id} value={opt.id}>{opt.label}</option>)}
+                </select>
+                <Button variant="ghost" className="ml-3" onClick={() => goToStep(5)}>Back to Edit</Button>
+              </div>
             </div>
-          </div>
+          )}
       <main className="w-full max-w-7xl mx-auto print:w-full print:max-w-none print:p-0">
         <div className="p-4 md:p-8 print:border-none print:shadow-none print:p-0">
-                <SwissDocument data={data} t={t} templateType={templateType} />
-            <div className="flex gap-2 mb-8 max-w-lg mx-auto">
-              {t.steps.map((_, i) => (
-                <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${i <= step ? 'bg-indigo-600' : 'bg-slate-100'}`} />
-              ))}
-            </div>
+          {/* Preview document and progress only on preview step */}
+          {step === 6 && (
+            <>
+              <SwissDocument data={data} t={t} templateType={templateType} />
+              <div className="flex gap-2 mb-8 max-w-lg mx-auto">
+                {t.steps.map((_, i) => (
+                  <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${i <= step ? 'bg-indigo-600' : 'bg-slate-100'}`} />
+                ))}
+              </div>
+            </>
           )}
           {renderStep()}
         </div>
