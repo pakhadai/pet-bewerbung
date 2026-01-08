@@ -44,6 +44,10 @@ const GlobalStyles = () => (
     .reveal { opacity:0; transform: translateY(12px); transition: opacity 520ms ease, transform 520ms ease }
     .reveal.visible { opacity:1; transform: translateY(0) }
 
+    /* Parallax layers smoothing */
+    [data-speed] { will-change: transform; transition: transform 220ms cubic-bezier(.2,.9,.3,1); }
+    [data-scroll] { will-change: transform; }
+
     @media print { @page { size: A4; margin: 0; } body { -webkit-print-color-adjust: exact; background: white; } .print\\:hidden { display: none !important; } }
   `}</style>
 );

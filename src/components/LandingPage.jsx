@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from './Button';
 import { Flag, ArrowRight, ShieldCheck, Sparkles, Globe, CheckCircle2 } from 'lucide-react';
+import Parallax from './Parallax';
 
 const LandingPage = ({ t, setStep }) => (
   <div className="flex flex-col animate-in fade-in duration-700">
@@ -33,9 +34,12 @@ const LandingPage = ({ t, setStep }) => (
         </div>
       </div>
 
-      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 opacity-20 pointer-events-none">
-        <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
-      </div>
+      <Parallax>
+        <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 opacity-20 pointer-events-none">
+          <div data-speed="0.12" className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
+          <div data-speed="0.06" data-scroll="0.06" className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[20rem] -translate-x-1/2 rotate-[10deg] bg-gradient-to-tr from-[#a78bfa] to-[#60a5fa] opacity-40"></div>
+        </div>
+      </Parallax>
     </div>
 
     <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-12 fade-enter stagger-2">
