@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function DonateModal({ open, onClose, amount, onDonate }) {
+export default function DonateModal({ open, onClose, amount, onDonate, onOpenPayment }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -14,7 +14,7 @@ export default function DonateModal({ open, onClose, amount, onDonate }) {
         <div className="grid gap-3">
           <button className="py-3 px-4 rounded-lg border hover:bg-slate-50 text-left" onClick={() => onDonate('card')}>Pay with Card / Checkout — €{amount}</button>
           <button className="py-3 px-4 rounded-lg border hover:bg-slate-50 text-left" onClick={() => onDonate('twint')}>Pay with TWINT — €{amount}</button>
-          <button className="py-3 px-4 rounded-lg border hover:bg-slate-50 text-left" onClick={() => onDonate('card')}>Apple Pay / Google Pay (via Checkout)</button>
+          <button className="py-3 px-4 rounded-lg border hover:bg-slate-50 text-left" onClick={() => onOpenPayment()}>Pay in-app (Card / Apple/Google Pay)</button>
         </div>
 
         <div className="mt-4 text-xs text-slate-500">Note: For Apple Pay you may need domain verification; on localhost the experience may vary.</div>

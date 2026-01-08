@@ -51,4 +51,27 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
+app.post('/create-payment-intent', async (req, res) => {
+  const { amount, currency = 'eur' } = req.body || {};
+  if (!stripeKey) return res.status(400).json({ error: 'STRIPE_SECRET_KEY not configured on server.' });
+  if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
+
+  try {
+    const intent = await stripe.paymentIntents.create({
+      amount,
+      currency,
+      automatic_payment_methods: { enabled: true },
+    });
+
+    res.json({ clientSecret: intent.client_secret, publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null });
+  } catch (err) {
+    console.error('PaymentIntent error:', err);
+    res.status(500).json({ error: err.message || 'Server error' });
+  }
+});
+
+app.get('/stripe-config', (req, res) => {
+  res.json({ publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null });
+});
+
 app.listen(port, () => console.log(`Stripe helper server listening on http://localhost:${port}`));

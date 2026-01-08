@@ -9,6 +9,7 @@ import LandingPage from './components/LandingPage';
 import SwissDocument from './components/SwissDocument';
 import { Dog, Cat, Bird, Camera, ArrowRight, ShieldCheck, Sparkles, CheckCircle2, Flag, PawPrint, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import DonateModal from './components/DonateModal';
+import PaymentModal from './components/PaymentModal';
 
 export default function App() {
   const [step, setStep] = useState(0);
@@ -62,6 +63,7 @@ export default function App() {
   };
 
   const [donateOpen, setDonateOpen] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
 
   const handleDonateMethod = async (method) => {
     const parsed = parseFloat(donationAmount || '0');
@@ -301,7 +303,8 @@ export default function App() {
         </div>
       </main>
 
-      <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} amount={donationAmount} onDonate={handleDonateMethod} />
+      <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} amount={donationAmount} onDonate={handleDonateMethod} onOpenPayment={() => { setPaymentOpen(true); setDonateOpen(false); }} />
+      <PaymentModal open={paymentOpen} onClose={() => setPaymentOpen(false)} amount={donationAmount} />
 
       {step > 0 && step < 6 && (
         <div className="nav-panel print:hidden">
