@@ -2,7 +2,7 @@ import React from 'react';
 import { PawPrint, Camera, Dog, Cat, Bird, Phone, Mail } from 'lucide-react';
 import StatusItem from './StatusItem';
 
-const SwissDocument = ({ data, t }) => {
+const SwissDocument = ({ data, t, templateType = 'classic' }) => {
   const getLocale = (lang) => {
     switch(lang) {
       case 'de': return 'de-CH';
@@ -15,8 +15,14 @@ const SwissDocument = ({ data, t }) => {
   };
   const today = new Date().toLocaleDateString(getLocale(data.lang));
 
+  const variantClasses = {
+    classic: 'p-[20mm] text-sm',
+    modern: 'p-[16mm] text-sm leading-relaxed',
+    compact: 'p-[12mm] text-xs'
+  };
+
   return (
-    <div className="w-[210mm] h-[297mm] bg-white text-[#111] p-[20mm] font-sans text-sm relative box-border flex flex-col shadow-none mx-auto">
+    <div className={`w-[210mm] h-[297mm] bg-white text-[#111] ${variantClasses[templateType]} font-sans relative box-border flex flex-col shadow-none mx-auto`}>
       <div className="mb-12">
         <div className="flex items-center gap-3 mb-6">
            <div className="bg-black text-white p-2 rounded"><PawPrint size={24} /></div>
@@ -31,7 +37,7 @@ const SwissDocument = ({ data, t }) => {
 
       <div className="flex gap-12 grow">
         <div className="w-[35%] flex flex-col gap-10">
-           <div className="aspect-[3/4] w-full bg-gray-100 flex items-center justify-center overflow-hidden relative rounded-sm">
+             <div className="aspect-[3/4] w-full bg-gray-100 flex items-center justify-center overflow-hidden relative rounded-sm">
              {data.photo ? (
                <img src={data.photo} className="w-full h-full object-cover grayscale" alt="Pet" />
              ) : (
@@ -84,7 +90,9 @@ const SwissDocument = ({ data, t }) => {
           <div className="grow">
             <h3 className="font-bold uppercase tracking-wider text-xs mb-4 border-b border-gray-200 pb-1">{t.doc.sectionAbout}</h3>
             <div className="text-base leading-relaxed text-gray-800 text-justify">
-              {data.generatedText || (
+              {data.generatedText ? (
+                <div className={templateType === 'compact' ? 'text-sm' : 'text-base'}>{data.generatedText}</div>
+              ) : (
                 <span className="text-gray-300 italic">Keine Beschreibung verfügbar...</span>
               )}
             </div>

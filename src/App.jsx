@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS } from './constants';
 import { TRANSLATIONS, INITIAL_DATA } from './constants';
 import GlobalStyles from './components/GlobalStyles';
 import Label from './components/Label';
@@ -13,10 +14,21 @@ export default function App() {
   const [data, setData] = useState(INITIAL_DATA);
   const [isGenerating, setIsGenerating] = useState(false);
   const [donationTier, setDonationTier] = useState(null);
+  const [animDir, setAnimDir] = useState('left');
+  const prevStepRef = useRef(0);
+  const [butterVisible, setButterVisible] = useState(false);
+  const [templateType, setTemplateType] = useState(TEMPLATE_OPTIONS[0].id);
+  const [stripeLink, setStripeLink] = useState('');
 
   const t = TRANSLATIONS[data.lang] || TRANSLATIONS.de;
 
   const updateData = (field, value) => setData(prev => ({ ...prev, [field]: value }));
+
+  const goToStep = (newStep) => {
+    setAnimDir(newStep > prevStepRef.current ? 'left' : 'right');
+    prevStepRef.current = newStep;
+    setStep(newStep);
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -38,16 +50,16 @@ export default function App() {
         middleSection = `${tmpl.keywords}${formattedKeywords}. `;
       }
       const fullText = `${tmpl.intro} ${middleSection}${tmpl.outro}`;
-      updateData('generatedText', fullText);
+      updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
       setIsGenerating(false);
     }, 1000);
   };
 
   const renderStep = () => {
     switch(step) {
-      case 0: return <LandingPage t={t} setStep={setStep} />;
+      case 0: return <div className={`page page-enter-${animDir} reveal fade-enter`}><LandingPage t={t} setStep={goToStep} /></div>;
       case 1: return (
-        <div className="space-y-6 fade-enter max-w-lg mx-auto">
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 max-w-lg mx-auto`}>
           <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm">{step}</span>
              {t.steps[1]}
@@ -61,7 +73,7 @@ export default function App() {
         </div>
       );
       case 2: return (
-        <div className="space-y-6 fade-enter max-w-lg mx-auto">
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 max-w-lg mx-auto`}>
           <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm">{step}</span>
              {t.steps[2]}
@@ -93,7 +105,7 @@ export default function App() {
         </div>
       );
       case 3: return (
-        <div className="space-y-6 fade-enter max-w-lg mx-auto">
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 max-w-lg mx-auto`}>
           <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm">{step}</span>
              {t.steps[3]}
@@ -123,16 +135,17 @@ export default function App() {
         </div>
       );
       case 4: return (
-        <div className="space-y-6 fade-enter max-w-lg mx-auto">
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 max-w-lg mx-auto`}>
           <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm">{step}</span>
              {t.steps[4]}
           </h2>
           <div>
             <Label>{t.labels.aiPrompt}</Label>
-            <textarea className="w-full p-4 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none h-32 resize-none bg-slate-50 transition-all hover:bg-white"
-              placeholder={data.lang === 'ua' ? "тихий, охайний, любить спати" : "ruhig, sauber, schläft viel"}
-              value={data.keywords} onChange={e => updateData('keywords', e.target.value)} />
+              <textarea maxLength={MAX_DESCRIPTION_LENGTH} className="w-full p-4 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none h-40 resize-none bg-slate-50 transition-all hover:bg-white"
+                placeholder={data.lang === 'ua' ? "тихий, охайний, любить спати" : "ruhig, sauber, schläft viel"}
+                value={data.generatedText || data.keywords} onChange={e => updateData('generatedText', e.target.value.slice(0, MAX_DESCRIPTION_LENGTH))} />
+              <div className="text-xs text-slate-500 mt-2">{(data.generatedText || data.keywords).length} / {MAX_DESCRIPTION_LENGTH} chars</div>
           </div>
           <Button variant="magic" className="w-full" onClick={generateText} disabled={!data.keywords || isGenerating}>
             {isGenerating ? <Sparkles className="animate-spin mr-2" size={16} /> : <Sparkles className="mr-2" size={16} />}
@@ -149,7 +162,7 @@ export default function App() {
         </div>
       );
       case 5: return (
-        <div className="space-y-6 fade-enter text-center max-w-lg mx-auto">
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 text-center max-w-lg mx-auto`}>
           <h2 className="text-2xl font-bold text-slate-900 mb-6">{t.steps[5]}</h2>
           <div className="relative group cursor-pointer inline-block w-full">
             <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
@@ -167,7 +180,7 @@ export default function App() {
         </div>
       );
       case 6: return (
-        <div className="space-y-8 fade-enter text-center max-w-4xl mx-auto">
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 text-center max-w-4xl mx-auto`}>
           <h2 className="text-3xl font-bold tracking-tight">{t.monetization.title}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
             {['free', 'coffee', 'bone'].map(tier => (
@@ -198,11 +211,21 @@ export default function App() {
     }
   };
 
+  useEffect(() => {
+    const onScroll = () => {
+      const nearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 120);
+      setButterVisible(nearBottom);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900 pb-20 print:bg-white print:p-0">
+    <div className="min-h-screen bg-white font-sans text-slate-900 pb-32 print:bg-white print:p-0">
       <GlobalStyles />
-      <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-30 h-16 px-4 flex items-center justify-between print:hidden max-w-7xl mx-auto w-full transition-all">
-        <div className="flex items-center gap-2 font-bold text-lg cursor-pointer" onClick={() => setStep(0)}>
+      <header className="app-header bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
+        <div className="flex items-center gap-2 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
           <div className="bg-indigo-600 text-white p-1.5 rounded-lg shadow-md shadow-indigo-200"><PawPrint size={18} /></div>
           <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
         </div>
@@ -212,14 +235,32 @@ export default function App() {
           <option value="fr">🇫🇷 FR</option>
           <option value="it">🇮🇹 IT</option>
           <option value="rm">🇨🇭 RM</option>
-          <option value="en">🇬🇧 EN</option>
-          <option value="ua">🇺🇦 UA</option>
-        </select>
+              <div className="flex items-center justify-center gap-4">
+                <Button onClick={() => window.print()} className="py-4 px-12 text-lg shadow-xl shadow-slate-200">
+                  <Download className="mr-2" /> {t.labels.download}
+                </Button>
+                <div className="flex items-center gap-2">
+                  <input placeholder="Stripe Payment Link (optional)" value={stripeLink} onChange={e => setStripeLink(e.target.value)} className="px-3 py-2 border rounded-lg text-sm" />
+                  <Button onClick={() => {
+                    if (stripeLink) window.open(stripeLink, '_blank'); else alert('Simulated donation — provide a Stripe payment link to test real flow.');
+                  }}>Donate</Button>
+                </div>
+              </div>
       </header>
 
+          <div className="mb-4 flex items-center justify-between">
+            <div className="text-left"><span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Preview</span></div>
+            <div className="text-right">
+              <span className="text-xs text-slate-500 mr-3">Template:</span>
+              <select value={templateType} onChange={e => setTemplateType(e.target.value)} className="px-2 py-1 border rounded">
+                {TEMPLATE_OPTIONS.map(opt => <option key={opt.id} value={opt.id}>{opt.label}</option>)}
+              </select>
+              <Button variant="ghost" className="ml-3" onClick={() => goToStep(5)}>Back to Edit</Button>
+            </div>
+          </div>
       <main className="w-full max-w-7xl mx-auto print:w-full print:max-w-none print:p-0">
         <div className="p-4 md:p-8 print:border-none print:shadow-none print:p-0">
-          {step > 0 && step < 6 && (
+                <SwissDocument data={data} t={t} templateType={templateType} />
             <div className="flex gap-2 mb-8 max-w-lg mx-auto">
               {t.steps.map((_, i) => (
                 <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${i <= step ? 'bg-indigo-600' : 'bg-slate-100'}`} />
@@ -231,11 +272,18 @@ export default function App() {
       </main>
 
       {step > 0 && step < 6 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur border-t border-slate-200 p-4 z-20 flex justify-between max-w-7xl mx-auto print:hidden">
-          <Button variant="ghost" onClick={() => setStep(step - 1)} className="px-4"><ChevronLeft size={18} /> Back</Button>
-          <Button onClick={() => setStep(step + 1)} className="px-8 shadow-lg shadow-indigo-100">Next <ChevronRight size={18} /></Button>
+        <div className="nav-panel print:hidden">
+          <Button variant="ghost" className="btn" onClick={() => goToStep(step - 1)}><ChevronLeft size={16} /></Button>
+          <div className="px-4 text-sm text-slate-600">{t.steps[step]}</div>
+          <Button className="btn" onClick={() => goToStep(step + 1)}>Next <ChevronRight size={16} /></Button>
         </div>
       )}
+
+      <div className="butter-footer">
+        <div className={`butter-inner ${butterVisible ? 'visible' : ''}`}>
+          Developed in Switzerland • Zürich • Lausanne • Lugano
+        </div>
+      </div>
 
       <div className="hidden print:block absolute top-0 left-0 w-full bg-white z-[9999]">
          <SwissDocument data={data} t={t} />

@@ -432,4 +432,13 @@ const INITIAL_DATA = {
   generatedText: '',
 };
 
+const MAX_DESCRIPTION_LENGTH = 1600; // limit for generated / manual descriptions
+
+const TEMPLATE_OPTIONS = [
+  { id: 'classic', label: 'Classic' },
+  { id: 'modern', label: 'Modern' },
+  { id: 'compact', label: 'Compact' }
+];
+
 export { TRANSLATIONS, INITIAL_DATA };
+
