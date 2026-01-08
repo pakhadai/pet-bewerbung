@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import html2pdf from 'html2pdf.js';
 import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS, TRANSLATIONS, INITIAL_DATA } from './constants';
 import GlobalStyles from './components/GlobalStyles';
+import ThemeToggle from './components/ThemeToggle';
+import PageTitle from './components/PageTitle';
 import Label from './components/Label';
 import Input from './components/Input';
 import Button from './components/Button';
@@ -13,6 +16,7 @@ import PaymentModal from './components/PaymentModal';
 
 export default function App() {
   const [step, setStep] = useState(0);
+  const [theme, setTheme] = useState('light');
   
   const detectLang = () => {
     try {
@@ -96,6 +100,28 @@ export default function App() {
   const showToast = (msg, type = 'info') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 5000);
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      const element = document.getElementById('pdf-document');
+      if (!element) {
+        showToast('Document not found', 'error');
+        return;
+      }
+      const filename = `${data.name || 'Pet-CV'}-${new Date().getTime()}.pdf`;
+      const options = {
+        margin: 0,
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+      };
+      html2pdf().set(options).from(element).save();
+      showToast('PDF downloaded successfully!', 'success');
+    } catch (err) {
+      showToast('Failed to download PDF: ' + err.message, 'error');
+    }
   };
 
   const handleDonateMethod = async (method) => {
@@ -314,7 +340,7 @@ export default function App() {
 
           {/* Показуємо повний документ */}
           <div className="w-full flex justify-center overflow-auto py-4 mb-8 border rounded-xl bg-slate-50 p-4">
-            <div className="overflow-hidden border rounded shadow-lg bg-white" style={{ width: '210mm' }}>
+            <div id="pdf-document" className="overflow-hidden border rounded shadow-lg bg-white" style={{ width: '210mm' }}>
               <SwissDocument data={data} t={t} templateType={selectedTemplate} />
             </div>
           </div>
@@ -326,7 +352,7 @@ export default function App() {
              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                {/* Завантажити */}
                <Button 
-                 onClick={() => window.print()} 
+                 onClick={handleDownloadPDF} 
                  className="px-6 py-4 shadow-lg shadow-indigo-200 text-lg font-semibold flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700">
                  <Printer size={20}/> 
                  <span>{t.labels.download} (PDF)</span>
@@ -440,13 +466,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 pb-6 print:bg-white print:p-0">
-      <GlobalStyles />
+      <GlobalStyles theme={theme} />
       <header className="app-header bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
         <div className="flex items-center gap-2 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
           <div className="bg-indigo-600 text-white p-1.5 rounded-lg shadow-md shadow-indigo-200"><PawPrint size={18} /></div>
           <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
         </div>
         <div className="flex items-center gap-4">
+          <ThemeToggle theme={theme} onThemeChange={setTheme} />
           <LanguageSelector value={data.lang} onChange={(v) => updateData('lang', v)} />
         </div>
       </header>
@@ -495,12 +522,14 @@ export default function App() {
         </div>
       )}
 
-      <div className="butter-footer print:hidden">
-        <div className={`butter-inner ${butterVisible ? 'visible' : ''}`}>
-            <img src="https://flagcdn.com/20x15/ch.png" alt="CH" width="20" height="15" style={{ display: 'inline-block', marginRight: 8 }} />
-            St. Gallen — Developed in Switzerland
-          </div>
-      </div>
+      {(step === 0 || step === 8) && (
+        <div className="butter-footer print:hidden">
+          <div className={`butter-inner ${butterVisible ? 'visible' : ''}`}>
+              <img src="https://flagcdn.com/20x15/ch.png" alt="CH" width="20" height="15" style={{ display: 'inline-block', marginRight: 8 }} />
+              St. Gallen — Developed in Switzerland
+            </div>
+        </div>
+      )}
     </div>
   );
 }

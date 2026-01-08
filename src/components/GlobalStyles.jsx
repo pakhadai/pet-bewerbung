@@ -1,11 +1,22 @@
 import React from 'react';
 
-const GlobalStyles = () => (
+const GlobalStyles = ({ theme = 'light' }) => {
+  const getThemeVars = () => {
+    switch(theme) {
+      case 'dark':
+        return `--primary: #6366f1; --bg: #0f172a; --text: #f1f5f9; --text-muted: #94a3b8; --border: #334155; --card-bg: #1e293b; --hover: #1e293b;`;
+      case 'sepia': // warm/beige theme
+        return `--primary: #b45309; --bg: #fef3c7; --text: #78350f; --text-muted: #92400e; --border: #dda15e; --card-bg: #fef5e7; --hover: #fce4a6;`;
+      default: // light
+        return `--primary: #4f46e5; --bg: #ffffff; --text: #1f2937; --text-muted: #6b7280; --border: #e5e7eb; --card-bg: #f9fafb; --hover: #f3f4f6;`;
+    }
+  };
+  return (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-    :root { --primary: #4f46e5; --bg: #ffffff; --muted:#6b7280 }
+    :root { ${getThemeVars()} }
     /* Prefer system UI fonts so emoji (flags) use color emoji fonts when available */
-    body, select, button, input, textarea { font-family: Inter, system-ui, -apple-system, "Segoe UI", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif; }
+    body, select, button, input, textarea { font-family: Inter, system-ui, -apple-system, "Segoe UI", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif; color: var(--text); background: var(--bg); transition: background 300ms, color 300ms; }
 
     /* Basic entrance */
     .fade-enter { opacity: 0; transform: translateY(10px); animation: fadeIn 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -58,6 +69,7 @@ const GlobalStyles = () => (
 
     @media print { @page { size: A4; margin: 0; } body { -webkit-print-color-adjust: exact; background: white; } .print\\:hidden { display: none !important; } }
   `}</style>
-);
+  );
+};
 
 export default GlobalStyles;
