@@ -440,5 +440,5 @@ const TEMPLATE_OPTIONS = [
   { id: 'compact', label: 'Compact' }
 ];
 
-export { TRANSLATIONS, INITIAL_DATA };
+export { TRANSLATIONS, INITIAL_DATA, MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS };
 

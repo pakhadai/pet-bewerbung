@@ -18,7 +18,7 @@ export default function App() {
   const prevStepRef = useRef(0);
   const [butterVisible, setButterVisible] = useState(false);
   const [templateType, setTemplateType] = useState(TEMPLATE_OPTIONS[0].id);
-  const [stripeLink, setStripeLink] = useState('');
+  const [donationAmount, setDonationAmount] = useState('5');
 
   const t = TRANSLATIONS[data.lang] || TRANSLATIONS.de;
 
@@ -53,6 +53,24 @@ export default function App() {
       updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
       setIsGenerating(false);
     }, 1000);
+  };
+
+  const handleDonate = async () => {
+    const parsed = parseFloat(donationAmount || '0');
+    const amount = Math.max(1, Math.round(parsed));
+    const cents = amount * 100;
+    try {
+      const res = await fetch('http://localhost:4242/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: cents, currency: 'eur', successUrl: window.location.href, cancelUrl: window.location.href }),
+      });
+      const json = await res.json();
+      if (json.url) window.open(json.url, '_blank');
+      else alert(json.error || 'Failed to create checkout session');
+    } catch (err) {
+      alert('Payment error: ' + (err.message || err));
+    }
   };
 
   const renderStep = () => {
@@ -229,23 +247,25 @@ export default function App() {
           <div className="bg-indigo-600 text-white p-1.5 rounded-lg shadow-md shadow-indigo-200"><PawPrint size={18} /></div>
           <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
         </div>
-        <select value={data.lang} onChange={(e) => updateData('lang', e.target.value)}
-          className="bg-slate-50 border border-slate-200 text-sm font-medium outline-none cursor-pointer hover:bg-slate-100 py-1.5 px-3 rounded-lg transition-colors">
-          <option value="de">🇩🇪 DE</option>
-          <option value="fr">🇫🇷 FR</option>
-          <option value="it">🇮🇹 IT</option>
-          <option value="rm">🇨🇭 RM</option>
-              <div className="flex items-center justify-center gap-4">
-                <Button onClick={() => window.print()} className="py-4 px-12 text-lg shadow-xl shadow-slate-200">
-                  <Download className="mr-2" /> {t.labels.download}
-                </Button>
-                <div className="flex items-center gap-2">
-                  <input placeholder="Stripe Payment Link (optional)" value={stripeLink} onChange={e => setStripeLink(e.target.value)} className="px-3 py-2 border rounded-lg text-sm" />
-                  <Button onClick={() => {
-                    if (stripeLink) window.open(stripeLink, '_blank'); else alert('Simulated donation — provide a Stripe payment link to test real flow.');
-                  }}>Donate</Button>
-                </div>
-              </div>
+        <div className="flex items-center gap-4">
+          <select value={data.lang} onChange={(e) => updateData('lang', e.target.value)}
+            className="bg-slate-50 border border-slate-200 text-sm font-medium outline-none cursor-pointer hover:bg-slate-100 py-1.5 px-3 rounded-lg transition-colors">
+            <option value="de">🇩🇪 DE</option>
+            <option value="fr">🇫🇷 FR</option>
+            <option value="it">🇮🇹 IT</option>
+            <option value="rm">🇨🇭 RM</option>
+          </select>
+
+          <div className="flex items-center justify-center gap-4">
+            <Button onClick={() => window.print()} className="py-4 px-6 text-sm shadow-sm">
+              <Download className="mr-2" size={14} /> {t.labels.download}
+            </Button>
+            <div className="flex items-center gap-2">
+              <input placeholder="Donation EUR" value={donationAmount} onChange={e => setDonationAmount(e.target.value)} className="px-3 py-2 border rounded-lg text-sm" />
+              <Button onClick={handleDonate}>Donate</Button>
+            </div>
+          </div>
+        </div>
       </header>
 
           <div className="mb-4 flex items-center justify-between">
