@@ -14,13 +14,21 @@ app.use(cors({ origin: true }));
 app.use(express.json());
 
 app.post('/create-checkout-session', async (req, res) => {
-  const { amount, currency = 'eur', successUrl, cancelUrl } = req.body || {};
+  const { amount, currency = 'eur', successUrl, cancelUrl, payment_method = 'card' } = req.body || {};
   if (!stripeKey) return res.status(400).json({ error: 'STRIPE_SECRET_KEY not configured on server.' });
   if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
 
+  // Map requested payment method to Stripe Checkout supported payment_method_types
+  const supported = {
+    card: ['card'],
+    twint: ['twint'],
+  };
+
+  const payment_method_types = supported[payment_method] || ['card'];
+
   try {
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+      payment_method_types,
       mode: 'payment',
       line_items: [
         {

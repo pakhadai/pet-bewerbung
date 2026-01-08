@@ -8,6 +8,7 @@ import Button from './components/Button';
 import LandingPage from './components/LandingPage';
 import SwissDocument from './components/SwissDocument';
 import { Dog, Cat, Bird, Camera, ArrowRight, ShieldCheck, Sparkles, CheckCircle2, Flag, PawPrint, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import DonateModal from './components/DonateModal';
 
 export default function App() {
   const [step, setStep] = useState(0);
@@ -56,6 +57,13 @@ export default function App() {
   };
 
   const handleDonate = async () => {
+    // legacy single-method donate kept for compatibility
+    return handleDonateMethod('card');
+  };
+
+  const [donateOpen, setDonateOpen] = useState(false);
+
+  const handleDonateMethod = async (method) => {
     const parsed = parseFloat(donationAmount || '0');
     const amount = Math.max(1, Math.round(parsed));
     const cents = amount * 100;
@@ -63,13 +71,15 @@ export default function App() {
       const res = await fetch('http://localhost:4242/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: cents, currency: 'eur', successUrl: window.location.href, cancelUrl: window.location.href }),
+        body: JSON.stringify({ amount: cents, currency: 'eur', successUrl: window.location.href, cancelUrl: window.location.href, payment_method: method }),
       });
       const json = await res.json();
       if (json.url) window.open(json.url, '_blank');
       else alert(json.error || 'Failed to create checkout session');
     } catch (err) {
       alert('Payment error: ' + (err.message || err));
+    } finally {
+      setDonateOpen(false);
     }
   };
 
@@ -262,7 +272,7 @@ export default function App() {
             </Button>
             <div className="flex items-center gap-2">
               <input placeholder="Donation EUR" value={donationAmount} onChange={e => setDonationAmount(e.target.value)} className="px-3 py-2 border rounded-lg text-sm" />
-              <Button onClick={handleDonate}>Donate</Button>
+              <Button onClick={() => setDonateOpen(true)}>Donate</Button>
             </div>
           </div>
         </div>
@@ -290,6 +300,8 @@ export default function App() {
           {renderStep()}
         </div>
       </main>
+
+      <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} amount={donationAmount} onDonate={handleDonateMethod} />
 
       {step > 0 && step < 6 && (
         <div className="nav-panel print:hidden">
