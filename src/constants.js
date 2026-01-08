@@ -17,7 +17,7 @@ const TRANSLATIONS = {
         { title: "Daten werden nicht gespeichert", desc: "Daten werden nach dem Erstellen nicht aufbewahrt — maximaler Datenschutz." }
       ]
     },
-    steps: ["Start", "Halter", "Tier", "Gesundheit", "Wesen", "Foto", "Export", "Danke"],
+    steps: ["Start", "Halter", "Tier", "Gesundheit", "Wesen", "Foto", "Export", "Datei", "Danke"],
     labels: {
       type: "Tierart",
       dog: "Hund",
@@ -96,7 +96,7 @@ const TRANSLATIONS = {
         { title: "Données non conservées", desc: "Les données ne sont pas conservées après création — confidentialité maximale." }
       ]
     },
-    steps: ["Début", "Détenteur", "Animal", "Santé", "Caractère", "Photo", "Export", "Merci"],
+    steps: ["Début", "Détenteur", "Animal", "Santé", "Caractère", "Photo", "Export", "Fichier", "Merci"],
     labels: {
       type: "Type d'animal",
       dog: "Chien",
@@ -171,7 +171,7 @@ const TRANSLATIONS = {
         { title: "Dati non salvati", desc: "I dati non vengono conservati dopo la creazione — privacy massima." }
       ]
     },
-    steps: ["Inizio", "Proprietario", "Animale", "Salute", "Carattere", "Foto", "Export", "Grazie"],
+    steps: ["Inizio", "Proprietario", "Animale", "Salute", "Carattere", "Foto", "Export", "File", "Grazie"],
     labels: {
       type: "Tipo di animale",
       dog: "Cane",
@@ -246,7 +246,7 @@ const TRANSLATIONS = {
         { title: "Datas betg tgiradas", desc: "Las datas vegnan betg tgiradas suenter creaziun — maxima privacy." }
       ]
     },
-    steps: ["Start", "Possessur", "Animal", "Sanadad", "Wesen", "Foto", "Export", "Grazia"],
+    steps: ["Start", "Possessur", "Animal", "Sanadad", "Wesen", "Foto", "Export", "Datoteca", "Grazia"],
     labels: {
       type: "Tip d'animal",
       dog: "Chaun",
@@ -321,7 +321,7 @@ const TRANSLATIONS = {
         { title: "Data Not Stored", desc: "Data is not kept after creation — privacy first." }
       ]
     },
-    steps: ["Start", "Owner", "Pet", "Health", "Nature", "Photo", "Export", "Thank you"],
+    steps: ["Start", "Owner", "Pet", "Health", "Nature", "Photo", "Export", "File", "Thank you"],
     labels: {
       type: "Animal Type",
       dog: "Dog",
@@ -396,7 +396,7 @@ const TRANSLATIONS = {
         { title: "Дані не зберігаються", desc: "Дані не зберігаються після створення — конфіденційність перш за все." }
       ]
     },
-    steps: ["Старт", "Власник", "Тварина", "Здоров'я", "Характер", "Фото", "Експорт", "Дякуємо"],
+    steps: ["Старт", "Власник", "Тварина", "Здоров'я", "Характер", "Фото", "Експорт", "Файл", "Дякуємо"],
     labels: {
       type: "Вид тварини",
       dog: "Собака",

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS } from './constants';
-import { TRANSLATIONS, INITIAL_DATA } from './constants';
+import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS, TRANSLATIONS, INITIAL_DATA } from './constants';
 import GlobalStyles from './components/GlobalStyles';
 import Label from './components/Label';
 import Input from './components/Input';
@@ -8,12 +7,13 @@ import Button from './components/Button';
 import LanguageSelector from './components/LanguageSelector';
 import LandingPage from './components/LandingPage';
 import SwissDocument from './components/SwissDocument';
-import { Dog, Cat, Bird, Camera, ArrowRight, ShieldCheck, Sparkles, CheckCircle2, Flag, PawPrint, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Dog, Cat, Bird, Camera, ArrowRight, ShieldCheck, Sparkles, CheckCircle2, PawPrint, ChevronLeft, ChevronRight, X, Printer, Mail, LayoutTemplate, Heart } from 'lucide-react';
 import DonateModal from './components/DonateModal';
 import PaymentModal from './components/PaymentModal';
 
 export default function App() {
   const [step, setStep] = useState(0);
+  
   const detectLang = () => {
     try {
       const nav = (navigator && (navigator.language || navigator.userLanguage) || '').slice(0,2).toLowerCase();
@@ -24,17 +24,41 @@ export default function App() {
     }
     return INITIAL_DATA.lang || 'de';
   };
+
   const [data, setData] = useState(() => ({ ...INITIAL_DATA, lang: detectLang() }));
   const [isGenerating, setIsGenerating] = useState(false);
-  const [donationTier, setDonationTier] = useState(null);
   const [animDir, setAnimDir] = useState('left');
   const prevStepRef = useRef(0);
   const [butterVisible, setButterVisible] = useState(false);
+  
+  // Template State
   const [templateType, setTemplateType] = useState(TEMPLATE_OPTIONS[0].id);
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [selectedTemplate, setSelectedTemplate] = useState(null); 
+  
+  // Donation State
   const [donationAmount, setDonationAmount] = useState('5');
+  const [donateOpen, setDonateOpen] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  
+  const [toast, setToast] = useState(null); // { type: 'success'|'error'|'info', msg }
+  
+  // Preview State (Modal)
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewTemplate, setPreviewTemplate] = useState(templateType);
 
   const t = TRANSLATIONS[data.lang] || TRANSLATIONS.de;
+
+  // --- ВИПРАВЛЕННЯ ERROR #300: Хуки повинні бути тут, на самому верху ---
+  useEffect(() => {
+    const onScroll = () => {
+      // Показуємо футер "Made in Switzerland" тільки внизу сторінки
+      const nearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 120);
+      setButterVisible(nearBottom);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const updateData = (field, value) => setData(prev => ({ ...prev, [field]: value }));
 
@@ -69,22 +93,10 @@ export default function App() {
     }, 1000);
   };
 
-  const handleDonate = async () => {
-    // legacy single-method donate kept for compatibility
-    return handleDonateMethod('card');
-  };
-
-  const [donateOpen, setDonateOpen] = useState(false);
-  const [paymentOpen, setPaymentOpen] = useState(false);
-  const [toast, setToast] = useState(null); // { type: 'success'|'error'|'info', msg }
-
   const showToast = (msg, type = 'info') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 5000);
   };
-
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewTemplate, setPreviewTemplate] = useState(templateType);
 
   const handleDonateMethod = async (method) => {
     const parsed = parseFloat(donationAmount || '0');
@@ -243,62 +255,106 @@ export default function App() {
           </div>
         </div>
       );
+
+      // --- КРОК 6: ВИБІР ШАБЛОНУ (ТІЛЬКИ СІТКА, БЕЗ ДОКУМЕНТУ) ---
       case 6: return (
         <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 text-center max-w-4xl mx-auto`}>
-          <h2 className="text-3xl font-bold tracking-tight">{t.monetization.title}</h2>
-          <div className="mb-6">
-            {selectedTemplate ? (
-              <div className="mb-6 flex flex-col items-center gap-4">
-                <div className="w-full max-w-3xl flex justify-between items-center">
-                  <div className="text-left"><span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Options</span></div>
-                  <div className="flex items-center gap-2">
-                    <Button onClick={() => { window.print(); }} className="px-4">{t.labels.download}</Button>
-                    <Button variant="ghost" onClick={() => { const mailTo = `mailto:?subject=${encodeURIComponent('Pet CV')}&body=${encodeURIComponent('Please find my pet CV attached (save as PDF first).')}`; window.location.href = mailTo; }}>Send</Button>
-                    <Button onClick={() => { setDonationAmount('5'); setDonateOpen(true); }}>Donate</Button>
-                  </div>
-                </div>
-                <div className="w-full flex justify-center">
-                  <div className="overflow-hidden border rounded shadow-sm" style={{ width: '210mm' }}>
-                    <SwissDocument data={data} t={t} templateType={selectedTemplate} />
-                  </div>
-                </div>
-              </div>
-            ) : null}
-          </div>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+            {t.landing.heroTitle || 'Оберіть стиль'}
+          </h2>
+          <p className="text-slate-600 mb-8">{t.landing.heroSub || 'Виберіть професійний дизайн'}</p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {/* СІТКА ВИБОРУ ШАБЛОНУ */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl mx-auto px-4">
             {['classic', 'modern', 'compact'].map((tpl) => (
-              <div key={tpl} className="p-4 border rounded-2xl bg-white hover-glass flex flex-col items-center">
-                <div className="mb-4 text-sm font-semibold">{tpl.charAt(0).toUpperCase() + tpl.slice(1)}</div>
-                <div className="w-full h-80 overflow-hidden rounded-md border border-slate-100 mb-3 flex items-center justify-center">
-                  <div style={{ width: '210mm', transform: 'scale(0.26)', transformOrigin: 'top center' }}>
-                    <SwissDocument data={data} t={t} templateType={tpl} />
+              <div key={tpl} 
+                   className="group relative p-4 border-2 border-slate-100 rounded-3xl bg-white hover:border-indigo-400 hover:shadow-xl hover:shadow-indigo-100 transition-all duration-300 flex flex-col items-center cursor-pointer"
+                   onClick={() => { setTemplateType(tpl); setSelectedTemplate(tpl); showToast('Template selected', 'info'); goToStep(step + 1); }}>
+                
+                <div className="absolute top-4 left-0 right-0 text-center">
+                  <span className="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-widest group-hover:bg-indigo-100 group-hover:text-indigo-700 transition-colors">
+                    {tpl}
+                  </span>
+                </div>
+
+                <div className="mt-10 w-full aspect-[1/1.4] overflow-hidden rounded-xl border border-slate-100 bg-slate-50 group-hover:bg-white transition-colors relative">
+                  {/* Мініатюра */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                     <div style={{ width: '210mm', transform: 'scale(0.25)', transformOrigin: 'center' }} className="shadow-lg">
+                       <SwissDocument data={data} t={t} templateType={tpl} />
+                     </div>
+                  </div>
+                  
+                  {/* Overlay при наведенні */}
+                  <div className="absolute inset-0 bg-indigo-900/0 group-hover:bg-indigo-900/10 transition-colors flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 bg-white px-4 py-2 rounded-lg shadow-lg font-medium text-indigo-600">
+                      Select
+                    </div>
                   </div>
                 </div>
-                <div className="flex gap-2 justify-center">
-                  <Button variant="ghost" onClick={() => { setPreviewTemplate(tpl); setPreviewOpen(true); }}>Preview</Button>
-                  <Button onClick={() => { setTemplateType(tpl); setSelectedTemplate(tpl); showToast('Template selected', 'info'); }}>Select</Button>
+
+                <div className="mt-4 flex gap-3 w-full">
+                  <Button variant="ghost" className="flex-1 text-xs" onClick={(e) => { e.stopPropagation(); setPreviewTemplate(tpl); setPreviewOpen(true); }}>
+                    <Camera size={14} className="mr-1"/> Preview
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
-          <div className="w-full h-px bg-slate-100 my-8"></div>
-          <div className="text-left mb-2"><span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Options</span></div>
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-            <Button onClick={() => { window.print(); }} className="px-6">{t.labels.download}</Button>
-            <Button variant="ghost" onClick={() => { const mailTo = `mailto:?subject=${encodeURIComponent('Pet CV')}&body=${encodeURIComponent('Please find my pet CV attached (save as PDF first).')}`; window.location.href = mailTo; }}>Send via Email</Button>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500 mr-2">Support:</span>
-              {[0,5,10,15].map(a => (
-                <Button key={a} variant={a===0? 'ghost' : undefined} onClick={() => {
-                  if (a===0) { showToast('Selected free download', 'info'); window.print(); return; }
-                  // use checkout for twint or PaymentModal for card
-                  // open donate modal and prefill amount
-                  setDonationAmount(String(a));
-                  setDonateOpen(true);
-                }}>{a===0? 'Free' : `${a} CHF`}</Button>
-              ))}
+        </div>
+      );
+
+      // --- КРОК 7: ФАЙЛ / ЗАВАНТАЖИТИ / ВІДПРАВИТИ ---
+      case 7: return (
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 max-w-3xl mx-auto`}>
+          <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm">{step}</span>
+             {t.steps[7]}
+          </h2>
+
+          {/* Показуємо повний документ */}
+          <div className="w-full flex justify-center overflow-auto py-4 mb-8 border rounded-xl bg-slate-50 p-4">
+            <div className="overflow-hidden border rounded shadow-lg bg-white" style={{ width: '210mm' }}>
+              <SwissDocument data={data} t={t} templateType={selectedTemplate} />
             </div>
+          </div>
+
+          {/* ОПЦІЇ: Завантажити або Відправити */}
+          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 border border-indigo-100">
+             <h3 className="text-xl font-bold mb-6 text-slate-900">Оберіть спосіб:</h3>
+             
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+               {/* Завантажити */}
+               <Button 
+                 onClick={() => window.print()} 
+                 className="px-6 py-4 shadow-lg shadow-indigo-200 text-lg font-semibold flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700">
+                 <Printer size={20}/> 
+                 <span>{t.labels.download} (PDF)</span>
+               </Button>
+
+               {/* Відправити на пошту */}
+               <Button 
+                 variant="secondary"
+                 onClick={() => { 
+                   const mailTo = `mailto:?subject=${encodeURIComponent('Pet CV - Pet-Bewerbung.ch')}&body=${encodeURIComponent('Please find my pet CV attached (save as PDF first).')}`; 
+                   window.location.href = mailTo; 
+                 }}
+                 className="px-6 py-4 shadow-lg shadow-slate-200 text-lg font-semibold flex items-center justify-center gap-3">
+                 <Mail size={20}/> 
+                 <span>Відправити на пошту</span>
+               </Button>
+             </div>
+
+             <p className="text-sm text-slate-600 mt-6 text-center">
+               Документ не зберігається на сервері — тільки локально у вашому комп'ютері
+             </p>
+          </div>
+
+          {/* Кнопка далі */}
+          <div className="flex justify-center">
+            <Button className="text-lg px-8 py-4 shadow-xl shadow-indigo-200" onClick={() => goToStep(step + 1)}>
+              Далі на подяку <ArrowRight className="ml-2" size={20}/>
+            </Button>
           </div>
         </div>
       );
@@ -306,8 +362,8 @@ export default function App() {
     }
   };
 
-  // Thank you / final page rendering
-  if (step === (t.steps.length - 1)) {
+  // --- КРОК 8: ФІНАЛЬНА СТОРІНКА (ПОДЯКА + ДОНАТИ) ---
+  if (step === 8) {
     return (
       <div className="min-h-screen bg-white font-sans text-slate-900 pb-6 print:bg-white print:p-0">
         <GlobalStyles />
@@ -320,27 +376,67 @@ export default function App() {
             <LanguageSelector value={data.lang} onChange={(v) => updateData('lang', v)} />
           </div>
         </header>
-        <main className="w-full max-w-3xl mx-auto py-20 text-center">
+
+        <main className="w-full max-w-2xl mx-auto py-20 text-center px-4">
+          <div className="mb-8 flex justify-center">
+            <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center animate-in zoom-in duration-500">
+              <CheckCircle2 size={40} />
+            </div>
+          </div>
+          
           <h2 className="text-3xl font-bold mb-4">{t.thankYou.title}</h2>
-          <p className="text-lg text-slate-600 mb-8">{t.thankYou.msg}</p>
-          <div className="flex justify-center gap-3">
-            <Button onClick={() => { setStep(0); showToast('Restarting'); }}>Start again</Button>
+          <p className="text-lg text-slate-600 mb-12">{t.thankYou.msg}</p>
+
+          <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100 mb-12">
+             <h3 className="text-xl font-bold mb-2 flex items-center justify-center gap-2">
+               <Heart className="text-red-500 fill-red-500" size={20} />
+               {t.monetization.title}
+             </h3>
+             <p className="text-slate-500 mb-8 max-w-md mx-auto">{t.monetization.desc}</p>
+             
+             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[0, 5, 10, 20].map(amount => (
+                  <button 
+                    key={amount}
+                    onClick={() => {
+                      if (amount === 0) { 
+                        showToast('Дякуємо! Успіхів у пошуку.', 'success'); 
+                      } else {
+                        setDonationAmount(String(amount));
+                        setDonateOpen(true);
+                      }
+                    }}
+                    className={`py-3 px-4 rounded-xl font-semibold transition-all ${
+                      amount === 0 
+                      ? 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-100' 
+                      : 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:scale-105'
+                    }`}
+                  >
+                    {amount === 0 ? t.monetization.free : `${amount} CHF`}
+                  </button>
+                ))}
+             </div>
+          </div>
+
+          <div className="flex justify-center gap-4">
+            <Button onClick={() => { setStep(0); setSelectedTemplate(null); showToast('Restarting'); }}>
+              Створити нове
+            </Button>
             <Button variant="ghost" onClick={() => window.location.reload()}>Close</Button>
           </div>
         </main>
+
+        <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} amount={donationAmount} onDonate={handleDonateMethod} onOpenPayment={() => { setPaymentOpen(true); setDonateOpen(false); }} />
+        <PaymentModal open={paymentOpen} onClose={() => setPaymentOpen(false)} amount={donationAmount} onSuccess={(id) => showToast('Thank you — payment succeeded', 'success')} onFailure={(msg) => showToast(`Payment failed: ${msg}`, 'error')} />
+      
+        {toast && (
+          <div className={`fixed bottom-6 right-6 z-50 rounded-lg px-4 py-3 animate-in slide-in-from-bottom-4 ${toast.type === 'success' ? 'bg-green-600 text-white' : toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
+            {toast.msg}
+          </div>
+        )}
       </div>
     );
   }
-
-  useEffect(() => {
-    const onScroll = () => {
-      const nearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 120);
-      setButterVisible(nearBottom);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 pb-6 print:bg-white print:p-0">
@@ -355,10 +451,8 @@ export default function App() {
         </div>
       </header>
 
-          {/* preview controls intentionally removed to simplify export UI */}
       <main className="w-full max-w-7xl mx-auto print:w-full print:max-w-none print:p-0">
         <div className="p-4 md:p-8 print:border-none print:shadow-none print:p-0">
-          {/* removed full-page A4 preview from export page to avoid duplicate/old layout */}
           {renderStep()}
         </div>
       </main>
@@ -366,34 +460,34 @@ export default function App() {
       <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} amount={donationAmount} onDonate={handleDonateMethod} onOpenPayment={() => { setPaymentOpen(true); setDonateOpen(false); }} />
       <PaymentModal open={paymentOpen} onClose={() => setPaymentOpen(false)} amount={donationAmount} onSuccess={(id) => showToast('Thank you — payment succeeded', 'success')} onFailure={(msg) => showToast(`Payment failed: ${msg}`, 'error')} />
 
+      {/* ОНОВЛЕНИЙ PREVIEW MODAL (ТІЛЬКИ ПЕРЕГЛЯД) */}
       {previewOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
-          <div className="relative bg-white w-full max-w-4xl h-full max-h-[90vh] overflow-auto rounded-lg p-6">
-            <button onClick={() => setPreviewOpen(false)} className="absolute top-4 right-4 text-slate-600">✕</button>
-            <div className="mb-4 flex justify-between items-center">
-              <div className="text-lg font-bold">Preview — {previewTemplate}</div>
-              <div className="flex gap-2">
-                <Button onClick={() => window.print()}>Download</Button>
-                <Button variant="ghost" onClick={() => { const mailTo = `mailto:?subject=${encodeURIComponent('Pet CV')}&body=${encodeURIComponent('Please find my pet CV attached (save as PDF first).')}`; window.location.href = mailTo; }}>Send</Button>
-                <Button onClick={() => { setDonationAmount('5'); setDonateOpen(true); }}>Donate 5 CHF</Button>
-              </div>
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 print:hidden">
+          <div className="relative bg-transparent w-full h-full flex flex-col items-center justify-center" onClick={() => setPreviewOpen(false)}>
+            <button onClick={(e) => { e.stopPropagation(); setPreviewOpen(false); }} className="absolute top-4 right-4 text-white/70 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all">
+              <X size={32} />
+            </button>
+            
+            <div className="text-white mb-4 font-medium flex items-center gap-2 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md" onClick={(e) => e.stopPropagation()}>
+               <Camera size={18} /> Preview Mode — {previewTemplate}
             </div>
-            <div className="w-full flex justify-center">
-              <div className="w-[210mm] overflow-hidden">
-                <SwissDocument data={data} t={t} templateType={previewTemplate} />
-              </div>
+
+            <div className="w-full max-w-4xl h-full overflow-auto flex justify-center items-start pt-4" onClick={(e) => e.stopPropagation()}>
+               <div className="origin-top scale-[0.4] sm:scale-[0.6] md:scale-[0.8] lg:scale-100 shadow-2xl">
+                  <SwissDocument data={data} t={t} templateType={previewTemplate} />
+               </div>
             </div>
           </div>
         </div>
       )}
 
       {toast && (
-        <div className={`fixed bottom-6 right-6 z-50 rounded-lg px-4 py-3 ${toast.type === 'success' ? 'bg-green-600 text-white' : toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
+        <div className={`fixed bottom-6 right-6 z-50 rounded-lg px-4 py-3 animate-in slide-in-from-bottom-4 ${toast.type === 'success' ? 'bg-green-600 text-white' : toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
           {toast.msg}
         </div>
       )}
 
-      {step > 0 && step < (t.steps.length - 1) && (
+      {step > 0 && step < 8 && (
         <div className="nav-panel print:hidden">
           <Button variant="ghost" className="btn" onClick={() => goToStep(step - 1)}><ChevronLeft size={16} /></Button>
           <div className="px-4 text-sm text-slate-600">{t.steps[step]}</div>
@@ -401,14 +495,12 @@ export default function App() {
         </div>
       )}
 
-      <div className="butter-footer">
+      <div className="butter-footer print:hidden">
         <div className={`butter-inner ${butterVisible ? 'visible' : ''}`}>
             <img src="https://flagcdn.com/20x15/ch.png" alt="CH" width="20" height="15" style={{ display: 'inline-block', marginRight: 8 }} />
             St. Gallen — Developed in Switzerland
           </div>
       </div>
-
-      {/* removed hidden print block that rendered full A4 behind the app */}
     </div>
   );
 }
