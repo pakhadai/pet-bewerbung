@@ -36,12 +36,12 @@ const GlobalStyles = ({ theme = 'light' }) => {
     .app-header { border-radius: 12px; margin: 12px auto; max-width: calc(100% - 24px); box-shadow: 0 6px 18px rgba(16,24,40,0.06); }
 
     /* Bottom nav panel */
-    .nav-panel { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; z-index: 60; background: rgba(255,255,255,0.9); backdrop-filter: blur(6px); border-radius: 999px; padding: 8px; box-shadow: 0 10px 30px rgba(2,6,23,0.08); border: 1px solid rgba(15,23,42,0.06); display:flex; gap:8px; align-items:center }
-    .nav-panel .btn { border-radius: 999px }
+    .nav-panel { position: fixed; left: 50%; transform: translateX(-50%); bottom: 18px; z-index: 60; background: rgba(255,255,255,0.9); backdrop-filter: blur(6px); border-radius: 999px; padding: 8px; box-shadow: 0 10px 30px rgba(2,6,23,0.08); border: 1px solid var(--border); display:flex; gap:8px; align-items:center; height: 44px; justify-content: center; min-width: 320px; color: var(--text); }
+    .nav-panel .btn { border-radius: 999px; height: 28px; min-width: 28px; padding: 0 12px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: var(--text); background: var(--card-bg); border: 1px solid var(--border); }
 
     /* Footer butter (made in Switzerland) */
     .butter-footer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display:flex; justify-content:center; pointer-events:none }
-    .butter-inner { pointer-events:auto; transform: translateY(100%); transition: transform 420ms cubic-bezier(.2,.9,.3,1); background: linear-gradient(90deg,#fafafa,#fff); border-top-left-radius:12px; border-top-right-radius:12px; padding:8px 16px; margin:0 12px 12px; border:1px solid rgba(15,23,42,0.06); box-shadow: 0 10px 30px rgba(2,6,23,0.06); font-size:13px; color:var(--muted) }
+    .butter-inner { pointer-events:auto; transform: translateY(100%); transition: transform 420ms cubic-bezier(.2,.9,.3,1); background: linear-gradient(90deg, var(--card-bg), var(--bg)); border-top-left-radius:12px; border-top-right-radius:12px; padding:8px 16px; margin:0 12px 12px; border:1px solid var(--border); box-shadow: 0 10px 30px rgba(2,6,23,0.06); font-size:13px; color:var(--text-muted) }
     .butter-inner.visible { transform: translateY(0); }
 
     /* Page transitions */
