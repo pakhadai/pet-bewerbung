@@ -29,10 +29,9 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
            <div className="text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Swiss Standard Pet CV</div>
         </div>
         <h1 className="text-4xl font-extrabold tracking-tight uppercase mb-2">{t.doc.title}</h1>
-        <div className="flex justify-between items-end border-b-4 border-black pb-4">
-           <span className="text-base font-medium text-gray-500">{t.doc.subtitle}</span>
-           <span className="text-xs font-mono text-gray-400">ID: {Math.floor(Math.random()*1000000)}</span>
-        </div>
+          <div className="flex justify-between items-end border-b-4 border-black pb-4">
+            <span className="text-base font-medium text-gray-500">{t.doc.subtitle}</span>
+          </div>
       </div>
 
       <div className="flex gap-12 grow">
@@ -55,7 +54,8 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
              <h3 className="font-bold uppercase tracking-wider text-xs mb-4 border-b border-gray-200 pb-1">{t.doc.sectionOwner}</h3>
              <div className="space-y-2">
                <p className="font-bold text-lg leading-tight">{data.ownerName || '—'}</p>
-               <p className="text-gray-600 leading-tight">{data.address || '—'}</p>
+               <p className="text-gray-600 leading-tight">{(data.street || '') + (data.houseNumber ? ' ' + data.houseNumber : '')}</p>
+               <p className="text-gray-600 leading-tight">{(data.postal ? data.postal + ' ' : '') + (data.city || '')}</p>
                <div className="pt-4 space-y-2 text-gray-500 text-xs">
                  <p className="flex items-center gap-2"><Phone size={12}/> {data.phone || '—'}</p>
                  <p className="flex items-center gap-2"><Mail size={12}/> {data.email || '—'}</p>

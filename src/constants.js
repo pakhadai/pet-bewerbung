@@ -11,10 +11,13 @@ const TRANSLATIONS = {
       features: [
         { title: "Schweizer Format", desc: "Seriöses PDF-Design, wie es Verwaltungen erwarten." },
         { title: "KI-Textoptimierung", desc: "Verwandelt Stichworte in sympathische Texte." },
-        { title: "Alle Landessprachen", desc: "Verfügbar in DE, FR, IT und Rätoromanisch." }
+        { title: "Alle Landessprachen", desc: "Verfügbar in DE, FR, IT und Rätoromanisch." },
+        { title: "Mehrere Vorlagen", desc: "Wählen Sie aus mehreren professionellen PDF-Vorlagen." },
+        { title: "Keine Registrierung", desc: "Kein Konto nötig — schnell und anonym." },
+        { title: "Daten werden nicht gespeichert", desc: "Daten werden nach dem Erstellen nicht aufbewahrt — maximaler Datenschutz." }
       ]
     },
-    steps: ["Start", "Halter", "Tier", "Gesundheit", "Wesen", "Foto", "Export"],
+    steps: ["Start", "Halter", "Tier", "Gesundheit", "Wesen", "Foto", "Export", "Danke"],
     labels: {
       type: "Tierart",
       dog: "Hund",
@@ -24,6 +27,10 @@ const TRANSLATIONS = {
       email: "E-Mail",
       phone: "Telefon",
       address: "Aktuelle Adresse",
+      street: "Strasse",
+      houseNumber: "Hausnummer",
+      postal: "PLZ",
+      city: "Stadt",
       petName: "Name des Tieres",
       breed: "Rasse / Art",
       age: "Alter (Jahre)",
@@ -61,6 +68,10 @@ const TRANSLATIONS = {
       coffee: "Kaffee spendieren (5 CHF)",
       bone: "Leckerli spendieren (10 CHF)"
     },
+    thankYou: {
+      title: "Danke",
+      msg: "Danke, dass Sie unseren Service genutzt haben. Ihr Dokument wurde lokal erstellt."
+    },
     templates: {
       intro: "Bei dem beschriebenen Tier handelt es sich um einen sehr gepflegten und sozialverträglichen Mitbewohner.",
       keywords: "Besonders hervorzuheben sind folgende Eigenschaften: ",
@@ -79,10 +90,13 @@ const TRANSLATIONS = {
       features: [
         { title: "Format Suisse", desc: "Design PDF sérieux, comme l'attendent les régies." },
         { title: "Optimisation IA", desc: "Transforme les mots-clés en texte convaincant." },
-        { title: "Toutes les langues", desc: "Disponible en DE, FR, IT et Romanche." }
+        { title: "Toutes les langues", desc: "Disponible en DE, FR, IT et Romanche." },
+        { title: "Plusieurs modèles", desc: "Choisissez parmi plusieurs modèles PDF professionnels." },
+        { title: "Sans inscription", desc: "Aucun compte requis — rapide et anonyme." },
+        { title: "Données non conservées", desc: "Les données ne sont pas conservées après création — confidentialité maximale." }
       ]
     },
-    steps: ["Début", "Détenteur", "Animal", "Santé", "Caractère", "Photo", "Export"],
+    steps: ["Début", "Détenteur", "Animal", "Santé", "Caractère", "Photo", "Export", "Merci"],
     labels: {
       type: "Type d'animal",
       dog: "Chien",
@@ -129,6 +143,10 @@ const TRANSLATIONS = {
       coffee: "Offrir un café (5 CHF)",
       bone: "Offrir une friandise (10 CHF)"
     },
+    thankYou: {
+      title: "Merci",
+      msg: "Merci d'avoir utilisé notre service. Votre document a été généré localement."
+    },
     templates: {
       intro: "L'animal décrit est un compagnon très soigné et sociable.",
       keywords: "Les caractéristiques suivantes sont particulièrement notables : ",
@@ -147,10 +165,13 @@ const TRANSLATIONS = {
       features: [
         { title: "Formato Svizzero", desc: "Design PDF serio, come richiesto dalle amministrazioni." },
         { title: "Ottimizzazione IA", desc: "Trasforma le parole chiave in testo convincente." },
-        { title: "Tutte le lingue", desc: "Disponibile in DE, FR, IT e Romancio." }
+        { title: "Tutte le lingue", desc: "Disponibile in DE, FR, IT e Romancio." },
+        { title: "Più modelli", desc: "Scegli tra più modelli PDF professionali." },
+        { title: "Nessuna registrazione", desc: "Nessun account richiesto — rapido e anonimo." },
+        { title: "Dati non salvati", desc: "I dati non vengono conservati dopo la creazione — privacy massima." }
       ]
     },
-    steps: ["Inizio", "Proprietario", "Animale", "Salute", "Carattere", "Foto", "Export"],
+    steps: ["Inizio", "Proprietario", "Animale", "Salute", "Carattere", "Foto", "Export", "Grazie"],
     labels: {
       type: "Tipo di animale",
       dog: "Cane",
@@ -197,6 +218,10 @@ const TRANSLATIONS = {
       coffee: "Offri un caffè (5 CHF)",
       bone: "Offri un osso (10 CHF)"
     },
+    thankYou: {
+      title: "Grazie",
+      msg: "Grazie per aver usato il servizio. Il documento è stato generato localmente."
+    },
     templates: {
       intro: "L'animale descritto è un compagno molto curato e socievole.",
       keywords: "Le seguenti caratteristiche sono particolarmente degne di nota: ",
@@ -215,10 +240,13 @@ const TRANSLATIONS = {
       features: [
         { title: "Format Svizzer", desc: "Design PDF serius." },
         { title: "Optimaziun IA", desc: "Transfurma pleds-clav en text." },
-        { title: "Tut las linguas", desc: "Disponibel en DE, FR, IT e Rumantsch." }
+        { title: "Tut las linguas", desc: "Disponibel en DE, FR, IT e Rumantsch." },
+        { title: "Plirs templates", desc: "Tscherner tran plirs templates PDF professiunal." },
+        { title: "Nessuna registraziun", desc: "Betg basegn da account — direct e anonim." },
+        { title: "Datas betg tgiradas", desc: "Las datas vegnan betg tgiradas suenter creaziun — maxima privacy." }
       ]
     },
-    steps: ["Start", "Possessur", "Animal", "Sanadad", "Wesen", "Foto", "Export"],
+    steps: ["Start", "Possessur", "Animal", "Sanadad", "Wesen", "Foto", "Export", "Grazia"],
     labels: {
       type: "Tip d'animal",
       dog: "Chaun",
@@ -265,6 +293,10 @@ const TRANSLATIONS = {
       coffee: "Offrir un café (5 CHF)",
       bone: "Offrir in oss (10 CHF)"
     },
+    thankYou: {
+      title: "Grazia",
+      msg: "Grazia fitg per l'utilisaziun. Il document è vegnì generà localmain."
+    },
     templates: {
       intro: "L'animal descrit è un cumpogn fitg tgirà e sociabel.",
       keywords: "Las suandantas qualitads èn da menziunar: ",
@@ -283,10 +315,13 @@ const TRANSLATIONS = {
       features: [
         { title: "Swiss Format", desc: "Serious PDF design, as expected by agencies." },
         { title: "AI Text Optimization", desc: "Turns simple keywords into convincing text." },
-        { title: "All National Languages", desc: "Available in DE, FR, IT, and Romansh." }
+        { title: "All National Languages", desc: "Available in DE, FR, IT, and Romansh." },
+        { title: "Multiple Templates", desc: "Choose from several professional PDF templates." },
+        { title: "No Registration", desc: "No account required — fast and anonymous." },
+        { title: "Data Not Stored", desc: "Data is not kept after creation — privacy first." }
       ]
     },
-    steps: ["Start", "Owner", "Pet", "Health", "Nature", "Photo", "Export"],
+    steps: ["Start", "Owner", "Pet", "Health", "Nature", "Photo", "Export", "Thank you"],
     labels: {
       type: "Animal Type",
       dog: "Dog",
@@ -333,6 +368,10 @@ const TRANSLATIONS = {
       coffee: "Buy us a coffee (5 CHF)",
       bone: "Buy a treat (10 CHF)"
     },
+    thankYou: {
+      title: "Thank you",
+      msg: "Thanks for using the service. Your document was created locally."
+    },
     templates: {
       intro: "The described animal is a very well-groomed and socially compatible companion.",
       keywords: "The following characteristics are particularly noteworthy: ",
@@ -351,10 +390,13 @@ const TRANSLATIONS = {
       features: [
         { title: "Швейцарський Формат", desc: "Серйозний дизайн PDF, якого очікують агенції." },
         { title: "ШІ-Оптимізація", desc: "Перетворює прості слова на переконливий текст." },
-        { title: "Всі державні мови", desc: "Доступно німецькою, французькою, італійською." }
+        { title: "Всі державні мови", desc: "Доступно німецькою, французькою, італійською." },
+        { title: "Кілька шаблонів", desc: "Вибирайте серед декількох професійних шаблонів PDF." },
+        { title: "Без реєстрації", desc: "Не потрібно створювати акаунт — швидко й анонімно." },
+        { title: "Дані не зберігаються", desc: "Дані не зберігаються після створення — конфіденційність перш за все." }
       ]
     },
-    steps: ["Старт", "Власник", "Тварина", "Здоров'я", "Характер", "Фото", "Експорт"],
+    steps: ["Старт", "Власник", "Тварина", "Здоров'я", "Характер", "Фото", "Експорт", "Дякуємо"],
     labels: {
       type: "Вид тварини",
       dog: "Собака",
@@ -401,6 +443,10 @@ const TRANSLATIONS = {
       coffee: "Пригостити кавою (5 CHF)",
       bone: "Купити кістку (10 CHF)"
     },
+    thankYou: {
+      title: "Дякуємо",
+      msg: "Дякуємо, що скористалися сервісом. Документ згенеровано локально."
+    },
     templates: {
       intro: "Описана тварина є дуже доглянутим та соціалізованим компаньйоном.",
       keywords: "Особливо варто відзначити такі риси: ",
@@ -415,7 +461,10 @@ const INITIAL_DATA = {
   ownerName: '',
   email: '',
   phone: '',
-  address: '',
+  street: '',
+  houseNumber: '',
+  postal: '',
+  city: '',
   name: '',
   breed: '',
   age: '',

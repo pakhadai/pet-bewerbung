@@ -4,6 +4,8 @@ const GlobalStyles = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     :root { --primary: #4f46e5; --bg: #ffffff; --muted:#6b7280 }
+    /* Prefer system UI fonts so emoji (flags) use color emoji fonts when available */
+    body, select, button, input, textarea { font-family: Inter, system-ui, -apple-system, "Segoe UI", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif; }
 
     /* Basic entrance */
     .fade-enter { opacity: 0; transform: translateY(10px); animation: fadeIn 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -47,6 +49,12 @@ const GlobalStyles = () => (
     /* Parallax layers smoothing */
     [data-speed] { will-change: transform; transition: transform 220ms cubic-bezier(.2,.9,.3,1); }
     [data-scroll] { will-change: transform; }
+
+    /* Hero subtitle: keep visual space for exactly three text lines */
+    .hero-sub { line-height: 1.5rem; /* 24px */
+      min-height: calc(1.5rem * 3); /* 3 lines */
+      display: block;
+    }
 
     @media print { @page { size: A4; margin: 0; } body { -webkit-print-color-adjust: exact; background: white; } .print\\:hidden { display: none !important; } }
   `}</style>

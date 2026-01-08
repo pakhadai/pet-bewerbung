@@ -5,21 +5,33 @@ import GlobalStyles from './components/GlobalStyles';
 import Label from './components/Label';
 import Input from './components/Input';
 import Button from './components/Button';
+import LanguageSelector from './components/LanguageSelector';
 import LandingPage from './components/LandingPage';
 import SwissDocument from './components/SwissDocument';
-import { Dog, Cat, Bird, Camera, ArrowRight, ShieldCheck, Sparkles, CheckCircle2, Flag, PawPrint, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { Dog, Cat, Bird, Camera, ArrowRight, ShieldCheck, Sparkles, CheckCircle2, Flag, PawPrint, ChevronLeft, ChevronRight } from 'lucide-react';
 import DonateModal from './components/DonateModal';
 import PaymentModal from './components/PaymentModal';
 
 export default function App() {
   const [step, setStep] = useState(0);
-  const [data, setData] = useState(INITIAL_DATA);
+  const detectLang = () => {
+    try {
+      const nav = (navigator && (navigator.language || navigator.userLanguage) || '').slice(0,2).toLowerCase();
+      if (nav === 'uk') return 'ua';
+      if (['de','fr','it','rm','en','ua'].includes(nav)) return nav;
+    } catch (e) {
+      // ignore
+    }
+    return INITIAL_DATA.lang || 'de';
+  };
+  const [data, setData] = useState(() => ({ ...INITIAL_DATA, lang: detectLang() }));
   const [isGenerating, setIsGenerating] = useState(false);
   const [donationTier, setDonationTier] = useState(null);
   const [animDir, setAnimDir] = useState('left');
   const prevStepRef = useRef(0);
   const [butterVisible, setButterVisible] = useState(false);
   const [templateType, setTemplateType] = useState(TEMPLATE_OPTIONS[0].id);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [donationAmount, setDonationAmount] = useState('5');
 
   const t = TRANSLATIONS[data.lang] || TRANSLATIONS.de;
@@ -71,6 +83,9 @@ export default function App() {
     setTimeout(() => setToast(null), 5000);
   };
 
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewTemplate, setPreviewTemplate] = useState(templateType);
+
   const handleDonateMethod = async (method) => {
     const parsed = parseFloat(donationAmount || '0');
     const amount = Math.max(1, Math.round(parsed));
@@ -106,9 +121,18 @@ export default function App() {
           </h2>
           <div className="grid grid-cols-1 gap-5">
             <div><Label>{t.labels.ownerName}</Label><Input value={data.ownerName} onChange={e => updateData('ownerName', e.target.value)} placeholder="Max Mustermann" /></div>
-            <div><Label>{t.labels.email}</Label><Input type="email" value={data.email} onChange={e => updateData('email', e.target.value)} /></div>
-            <div><Label>{t.labels.phone}</Label><Input type="tel" value={data.phone} onChange={e => updateData('phone', e.target.value)} /></div>
-            <div><Label>{t.labels.address}</Label><Input value={data.address} onChange={e => updateData('address', e.target.value)} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>{t.labels.street}</Label><Input value={data.street} onChange={e => updateData('street', e.target.value)} placeholder="Bahnhofstrasse" /></div>
+              <div><Label>{t.labels.houseNumber}</Label><Input value={data.houseNumber} onChange={e => updateData('houseNumber', e.target.value)} placeholder="12A" /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>{t.labels.postal}</Label><Input value={data.postal} onChange={e => updateData('postal', e.target.value)} placeholder="9000" /></div>
+              <div><Label>{t.labels.city}</Label><Input value={data.city} onChange={e => updateData('city', e.target.value)} placeholder="St. Gallen" /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label>{t.labels.email}</Label><Input type="email" value={data.email} onChange={e => updateData('email', e.target.value)} /></div>
+              <div><Label>{t.labels.phone}</Label><Input type="tel" value={data.phone} onChange={e => updateData('phone', e.target.value)} /></div>
+            </div>
           </div>
         </div>
       );
@@ -222,34 +246,91 @@ export default function App() {
       case 6: return (
         <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 text-center max-w-4xl mx-auto`}>
           <h2 className="text-3xl font-bold tracking-tight">{t.monetization.title}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-            {['free', 'coffee', 'bone'].map(tier => (
-              <div key={tier} onClick={() => setDonationTier(tier)}
-                className={`p-6 border rounded-2xl cursor-pointer transition-all hover-glass ${donationTier === tier ? 'border-indigo-600 bg-indigo-50 ring-1 ring-indigo-600' : 'border-slate-200 bg-white'}`}>
-                <div className="text-3xl mb-3">{tier === 'free' ? '🎈' : tier === 'coffee' ? '☕' : '🦴'}</div>
-                <div className="font-bold text-slate-900">{t.monetization[tier]}</div>
+          <div className="mb-6">
+            {selectedTemplate ? (
+              <div className="mb-6 flex flex-col items-center gap-4">
+                <div className="w-full max-w-3xl flex justify-between items-center">
+                  <div className="text-left"><span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Options</span></div>
+                  <div className="flex items-center gap-2">
+                    <Button onClick={() => { window.print(); }} className="px-4">{t.labels.download}</Button>
+                    <Button variant="ghost" onClick={() => { const mailTo = `mailto:?subject=${encodeURIComponent('Pet CV')}&body=${encodeURIComponent('Please find my pet CV attached (save as PDF first).')}`; window.location.href = mailTo; }}>Send</Button>
+                    <Button onClick={() => { setDonationAmount('5'); setDonateOpen(true); }}>Donate</Button>
+                  </div>
+                </div>
+                <div className="w-full flex justify-center">
+                  <div className="overflow-hidden border rounded shadow-sm" style={{ width: '210mm' }}>
+                    <SwissDocument data={data} t={t} templateType={selectedTemplate} />
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {['classic', 'modern', 'compact'].map((tpl) => (
+              <div key={tpl} className="p-4 border rounded-2xl bg-white hover-glass flex flex-col items-center">
+                <div className="mb-4 text-sm font-semibold">{tpl.charAt(0).toUpperCase() + tpl.slice(1)}</div>
+                <div className="w-full h-80 overflow-hidden rounded-md border border-slate-100 mb-3 flex items-center justify-center">
+                  <div style={{ width: '210mm', transform: 'scale(0.26)', transformOrigin: 'top center' }}>
+                    <SwissDocument data={data} t={t} templateType={tpl} />
+                  </div>
+                </div>
+                <div className="flex gap-2 justify-center">
+                  <Button variant="ghost" onClick={() => { setPreviewTemplate(tpl); setPreviewOpen(true); }}>Preview</Button>
+                  <Button onClick={() => { setTemplateType(tpl); setSelectedTemplate(tpl); showToast('Template selected', 'info'); }}>Select</Button>
+                </div>
               </div>
             ))}
           </div>
-          {donationTier && (
-            <div className="fade-enter">
-              <Button onClick={() => window.print()} className="py-4 px-12 text-lg shadow-xl shadow-slate-200">
-                <Download className="mr-2" /> {t.labels.download}
-              </Button>
-            </div>
-          )}
           <div className="w-full h-px bg-slate-100 my-8"></div>
-          <div className="text-left mb-2"><span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Preview</span></div>
-          <div className="w-full overflow-hidden flex justify-center bg-slate-100 rounded-xl border border-slate-200 p-4 sm:p-8">
-             <div className="transform scale-[0.45] sm:scale-[0.6] md:scale-[0.75] origin-top h-[140mm] sm:h-[190mm] md:h-[230mm] shadow-2xl transition-transform duration-500 hover:scale-[0.76]">
-                <SwissDocument data={data} t={t} />
-             </div>
+          <div className="text-left mb-2"><span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Options</span></div>
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+            <Button onClick={() => { window.print(); }} className="px-6">{t.labels.download}</Button>
+            <Button variant="ghost" onClick={() => { const mailTo = `mailto:?subject=${encodeURIComponent('Pet CV')}&body=${encodeURIComponent('Please find my pet CV attached (save as PDF first).')}`; window.location.href = mailTo; }}>Send via Email</Button>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-500 mr-2">Support:</span>
+              {[0,5,10,15].map(a => (
+                <Button key={a} variant={a===0? 'ghost' : undefined} onClick={() => {
+                  if (a===0) { showToast('Selected free download', 'info'); window.print(); return; }
+                  // use checkout for twint or PaymentModal for card
+                  // open donate modal and prefill amount
+                  setDonationAmount(String(a));
+                  setDonateOpen(true);
+                }}>{a===0? 'Free' : `${a} CHF`}</Button>
+              ))}
+            </div>
           </div>
         </div>
       );
       default: return null;
     }
   };
+
+  // Thank you / final page rendering
+  if (step === (t.steps.length - 1)) {
+    return (
+      <div className="min-h-screen bg-white font-sans text-slate-900 pb-6 print:bg-white print:p-0">
+        <GlobalStyles />
+        <header className="app-header bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
+          <div className="flex items-center gap-2 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
+            <div className="bg-indigo-600 text-white p-1.5 rounded-lg shadow-md shadow-indigo-200"><PawPrint size={18} /></div>
+            <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <LanguageSelector value={data.lang} onChange={(v) => updateData('lang', v)} />
+          </div>
+        </header>
+        <main className="w-full max-w-3xl mx-auto py-20 text-center">
+          <h2 className="text-3xl font-bold mb-4">{t.thankYou.title}</h2>
+          <p className="text-lg text-slate-600 mb-8">{t.thankYou.msg}</p>
+          <div className="flex justify-center gap-3">
+            <Button onClick={() => { setStep(0); showToast('Restarting'); }}>Start again</Button>
+            <Button variant="ghost" onClick={() => window.location.reload()}>Close</Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const onScroll = () => {
@@ -262,7 +343,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900 pb-32 print:bg-white print:p-0">
+    <div className="min-h-screen bg-white font-sans text-slate-900 pb-6 print:bg-white print:p-0">
       <GlobalStyles />
       <header className="app-header bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
         <div className="flex items-center gap-2 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
@@ -270,49 +351,14 @@ export default function App() {
           <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
         </div>
         <div className="flex items-center gap-4">
-          <select value={data.lang} onChange={(e) => updateData('lang', e.target.value)}
-            className="bg-slate-50 border border-slate-200 text-sm font-medium outline-none cursor-pointer hover:bg-slate-100 py-1.5 px-3 rounded-lg transition-colors">
-            <option value="de">🇩🇪 DE</option>
-            <option value="fr">🇫🇷 FR</option>
-            <option value="it">🇮🇹 IT</option>
-            <option value="rm">🇨🇭 RM</option>
-          </select>
-
-          <div className="flex items-center justify-center gap-4">
-            <Button onClick={() => window.print()} className="py-2 px-4 text-sm shadow-sm">
-              <Download className="mr-2" size={14} /> {t.labels.download}
-            </Button>
-            <Button variant="ghost" onClick={() => setDonateOpen(true)} className="py-2 px-3 text-sm">Support</Button>
-          </div>
+          <LanguageSelector value={data.lang} onChange={(v) => updateData('lang', v)} />
         </div>
       </header>
 
-          {/* Show preview controls only on preview step */}
-          {step === 6 && (
-            <div className="mb-4 flex items-center justify-between">
-              <div className="text-left"><span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Preview</span></div>
-              <div className="text-right">
-                <span className="text-xs text-slate-500 mr-3">Template:</span>
-                <select value={templateType} onChange={e => setTemplateType(e.target.value)} className="px-2 py-1 border rounded">
-                  {TEMPLATE_OPTIONS.map(opt => <option key={opt.id} value={opt.id}>{opt.label}</option>)}
-                </select>
-                <Button variant="ghost" className="ml-3" onClick={() => goToStep(5)}>Back to Edit</Button>
-              </div>
-            </div>
-          )}
+          {/* preview controls intentionally removed to simplify export UI */}
       <main className="w-full max-w-7xl mx-auto print:w-full print:max-w-none print:p-0">
         <div className="p-4 md:p-8 print:border-none print:shadow-none print:p-0">
-          {/* Preview document and progress only on preview step */}
-          {step === 6 && (
-            <>
-              <SwissDocument data={data} t={t} templateType={templateType} />
-              <div className="flex gap-2 mb-8 max-w-lg mx-auto">
-                {t.steps.map((_, i) => (
-                  <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${i <= step ? 'bg-indigo-600' : 'bg-slate-100'}`} />
-                ))}
-              </div>
-            </>
-          )}
+          {/* removed full-page A4 preview from export page to avoid duplicate/old layout */}
           {renderStep()}
         </div>
       </main>
@@ -320,13 +366,34 @@ export default function App() {
       <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} amount={donationAmount} onDonate={handleDonateMethod} onOpenPayment={() => { setPaymentOpen(true); setDonateOpen(false); }} />
       <PaymentModal open={paymentOpen} onClose={() => setPaymentOpen(false)} amount={donationAmount} onSuccess={(id) => showToast('Thank you — payment succeeded', 'success')} onFailure={(msg) => showToast(`Payment failed: ${msg}`, 'error')} />
 
+      {previewOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-6">
+          <div className="relative bg-white w-full max-w-4xl h-full max-h-[90vh] overflow-auto rounded-lg p-6">
+            <button onClick={() => setPreviewOpen(false)} className="absolute top-4 right-4 text-slate-600">✕</button>
+            <div className="mb-4 flex justify-between items-center">
+              <div className="text-lg font-bold">Preview — {previewTemplate}</div>
+              <div className="flex gap-2">
+                <Button onClick={() => window.print()}>Download</Button>
+                <Button variant="ghost" onClick={() => { const mailTo = `mailto:?subject=${encodeURIComponent('Pet CV')}&body=${encodeURIComponent('Please find my pet CV attached (save as PDF first).')}`; window.location.href = mailTo; }}>Send</Button>
+                <Button onClick={() => { setDonationAmount('5'); setDonateOpen(true); }}>Donate 5 CHF</Button>
+              </div>
+            </div>
+            <div className="w-full flex justify-center">
+              <div className="w-[210mm] overflow-hidden">
+                <SwissDocument data={data} t={t} templateType={previewTemplate} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {toast && (
         <div className={`fixed bottom-6 right-6 z-50 rounded-lg px-4 py-3 ${toast.type === 'success' ? 'bg-green-600 text-white' : toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
           {toast.msg}
         </div>
       )}
 
-      {step > 0 && step < 6 && (
+      {step > 0 && step < (t.steps.length - 1) && (
         <div className="nav-panel print:hidden">
           <Button variant="ghost" className="btn" onClick={() => goToStep(step - 1)}><ChevronLeft size={16} /></Button>
           <div className="px-4 text-sm text-slate-600">{t.steps[step]}</div>
@@ -336,13 +403,12 @@ export default function App() {
 
       <div className="butter-footer">
         <div className={`butter-inner ${butterVisible ? 'visible' : ''}`}>
-          Developed in Switzerland • Zürich • Lausanne • Lugano
-        </div>
+            <img src="https://flagcdn.com/20x15/ch.png" alt="CH" width="20" height="15" style={{ display: 'inline-block', marginRight: 8 }} />
+            St. Gallen — Developed in Switzerland
+          </div>
       </div>
 
-      <div className="hidden print:block absolute top-0 left-0 w-full bg-white z-[9999]">
-         <SwissDocument data={data} t={t} />
-      </div>
+      {/* removed hidden print block that rendered full A4 behind the app */}
     </div>
   );
 }
