@@ -404,7 +404,8 @@ export default function App() {
           </div>
 
           {/* Step 9 title in center */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 theme-text font-semibold text-base hidden md:block">
+          <div className="absolute left-1/2 transform -translate-x-1/2 theme-text font-semibold text-base hidden md:flex items-center gap-2">
+            <span className="text-lg">✅</span>
             {t.thankYou.title}
           </div>
 
@@ -415,25 +416,37 @@ export default function App() {
         </header>
 
         <main className="w-full max-w-2xl mx-auto py-20 text-center px-4">
+          {/* Animated success icon */}
           <div className="mb-8 flex justify-center">
-            <div className="w-20 h-20 theme-success rounded-full flex items-center justify-center bounce-in">
-              <CheckCircle2 size={40} />
+            <div className="relative">
+              {/* Pulsing rings */}
+              <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: 'var(--success)' }} />
+              <div className="absolute inset-0 rounded-full animate-pulse opacity-30" style={{ background: 'var(--success)' }} />
+
+              {/* Main icon */}
+              <div className="relative w-24 h-24 theme-success rounded-full flex items-center justify-center shadow-xl animate-in zoom-in duration-500">
+                <CheckCircle2 size={48} className="animate-in slide-in-from-top-4 duration-700 delay-200" />
+              </div>
             </div>
           </div>
-          
-          <h2 className="text-3xl font-bold mb-4 theme-text">{t.thankYou.title}</h2>
-          <p className="text-lg theme-text-muted mb-12">{t.thankYou.msg}</p>
 
-          <div className="theme-bg-secondary rounded-2xl p-8 theme-border border mb-12">
+          <h2 className="text-4xl font-bold mb-4 theme-text animate-in slide-in-from-bottom-4 duration-500 delay-300">
+            {t.thankYou.title}
+          </h2>
+          <p className="text-lg theme-text-muted mb-12 animate-in fade-in duration-500 delay-500">
+            {t.thankYou.msg}
+          </p>
+
+          <div className="theme-bg-secondary rounded-2xl p-8 theme-border border mb-12 shadow-xl animate-in slide-in-from-bottom-4 duration-500 delay-700">
              <h3 className="text-xl font-bold mb-2 flex items-center justify-center gap-2 theme-text">
-               <Heart className="theme-error fill-current" size={20} />
+               <Heart className="theme-error fill-current animate-pulse" size={20} />
                {t.monetization.title}
              </h3>
              <p className="theme-text-muted mb-8 max-w-md mx-auto">{t.monetization.desc}</p>
-             
+
              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[0, 5, 10, 20].map(amount => (
-                  <button 
+                {[0, 5, 10, 20].map((amount, index) => (
+                  <button
                     key={amount}
                     onClick={() => {
                       if (amount === 0) {
@@ -443,11 +456,12 @@ export default function App() {
                         setDonateOpen(true);
                       }
                     }}
-                    className={`py-3 px-4 rounded-xl font-semibold transition-all ${
+                    className={`py-3 px-4 rounded-xl font-semibold transition-all animate-in slide-in-from-bottom-4 duration-500 ${
                       amount === 0
-                      ? 'theme-card border theme-border theme-text-muted hover:theme-card-bg-hover'
-                      : 'theme-button-primary shadow-lg hover:scale-105'
+                      ? 'theme-card border theme-border theme-text-muted hover:theme-card-bg-hover hover:scale-105'
+                      : 'theme-button-primary shadow-lg hover:scale-110 hover:shadow-xl'
                     }`}
+                    style={{ animationDelay: `${900 + index * 100}ms` }}
                   >
                     {amount === 0 ? t.monetization.free : `${amount} CHF`}
                   </button>
@@ -483,7 +497,10 @@ export default function App() {
 
         {/* Step title in center */}
         {step > 0 && step < 9 && (
-          <div className="absolute left-1/2 transform -translate-x-1/2 theme-text font-semibold text-base hidden md:block">
+          <div className="absolute left-1/2 transform -translate-x-1/2 theme-text font-semibold text-base hidden md:flex items-center gap-2">
+            <span className="text-lg">
+              {step === 1 ? '1️⃣' : step === 2 ? '2️⃣' : step === 3 ? '3️⃣' : step === 4 ? '4️⃣' : step === 5 ? '5️⃣' : step === 6 ? '6️⃣' : step === 7 ? '7️⃣' : '8️⃣'}
+            </span>
             {t.stepTitles?.[step] || ''}
           </div>
         )}

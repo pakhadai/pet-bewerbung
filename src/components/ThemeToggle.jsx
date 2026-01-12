@@ -3,50 +3,58 @@ import { Sun, Moon, Palette } from 'lucide-react';
 
 export default function ThemeToggle({ theme, onThemeChange }) {
   const themes = [
-    { id: 'light', icon: Sun, label: 'Light' },
-    { id: 'dark', icon: Moon, label: 'Dark' },
-    { id: 'sepia', icon: Palette, label: 'Sepia' }
+    { id: 'light', icon: Sun, label: 'Light', emoji: '☀️' },
+    { id: 'dark', icon: Moon, label: 'Dark', emoji: '🌙' },
+    { id: 'sepia', icon: Palette, label: 'Sepia', emoji: '🎨' }
   ];
 
   const currentIndex = themes.findIndex(t => t.id === theme);
+  const currentTheme = themes[currentIndex];
+  const nextIndex = (currentIndex + 1) % themes.length;
+  const nextTheme = themes[nextIndex];
+
+  const Icon = currentTheme.icon;
 
   return (
-    <div className="relative inline-flex items-center p-1 rounded-xl theme-card theme-border border">
-      {/* Animated slider background */}
-      <div
-        className="absolute inset-1 rounded-lg transition-all duration-300 ease-out"
-        style={{
-          width: 'calc(33.333% - 0.25rem)',
-          transform: `translateX(${currentIndex * 100}%)`,
-          background: theme === 'dark'
-            ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
-            : theme === 'sepia'
-            ? 'linear-gradient(135deg, #fef5e7 0%, #fef3c7 100%)'
-            : 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-        }}
-      />
+    <button
+      onClick={() => onThemeChange(nextTheme.id)}
+      className="relative group px-4 py-2 rounded-xl theme-card theme-border border hover:scale-105 transition-all duration-300 flex items-center gap-2"
+      title={`Switch to ${nextTheme.label}`}
+    >
+      {/* Icon with animation */}
+      <div className="relative">
+        <Icon
+          size={20}
+          className="theme-text transition-all duration-300 group-hover:rotate-12"
+        />
 
-      {/* Theme buttons */}
-      {themes.map((t, index) => {
-        const Icon = t.icon;
-        const isActive = theme === t.id;
-        return (
-          <button
-            key={t.id}
-            onClick={() => onThemeChange(t.id)}
-            className="relative z-10 px-3 py-2 rounded-lg transition-colors flex items-center justify-center"
-            title={t.label}
-            style={{
-              color: isActive
-                ? (theme === 'dark' ? '#f1f5f9' : theme === 'sepia' ? '#92400e' : '#4338ca')
-                : 'var(--text-muted)'
-            }}
-          >
-            <Icon size={18} />
-          </button>
-        );
-      })}
-    </div>
+        {/* Glow effect on hover */}
+        <div
+          className="absolute inset-0 blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300"
+          style={{
+            background: theme === 'dark'
+              ? '#6366f1'
+              : theme === 'sepia'
+              ? '#f59e0b'
+              : '#4f46e5'
+          }}
+        />
+      </div>
+
+      {/* Theme name (hidden on mobile) */}
+      <span className="hidden sm:inline theme-text text-sm font-medium">
+        {currentTheme.label}
+      </span>
+
+      {/* Animated arrow hint */}
+      <svg
+        className="w-3 h-3 theme-text-muted group-hover:translate-x-0.5 transition-transform"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
   );
 }

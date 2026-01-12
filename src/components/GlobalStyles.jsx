@@ -125,6 +125,8 @@ const GlobalStyles = ({ theme = 'light' }) => {
     .theme-card-bg-hover { background-color: var(--card-bg-hover) !important; }
     .theme-border { border-color: var(--border) !important; }
     .bg-primary { background-color: var(--primary) !important; }
+    .from-primary { --tw-gradient-from: var(--primary) !important; --tw-gradient-to: rgb(79 70 229 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+    .to-primary-hover { --tw-gradient-to: var(--primary-hover) !important; }
 
     /* Special theme classes */
     .theme-step-badge {
