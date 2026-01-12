@@ -17,7 +17,47 @@ const TRANSLATIONS = {
         { title: "Daten werden nicht gespeichert", desc: "Daten werden nach dem Erstellen nicht aufbewahrt — maximaler Datenschutz." }
       ]
     },
-    steps: ["Start", "Halter", "Tier", "Gesundheit", "Wesen", "Foto", "Export", "Datei", "Danke"],
+    steps: ["Start", "Halter", "Tier", "Gesundheit", "Wesen", "Foto", "Überprüfung", "Vorlage", "Datei", "Danke"],
+    stepTitles: {
+      1: "Halter Information",
+      2: "Tier Details",
+      3: "Gesundheit & Versicherung",
+      4: "Charakter Beschreibung",
+      5: "Foto hochladen",
+      6: "Daten überprüfen",
+      7: "Vorlage auswählen",
+      8: "Vorschau & Download"
+    },
+    summary: {
+      title: "Überprüfung Ihrer Daten",
+      owner: "Halter",
+      address: "Adresse",
+      petName: "Tiername",
+      breed: "Rasse",
+      ageWeight: "Alter / Gewicht",
+      gender: "Geschlecht",
+      description: "Beschreibung",
+      confirmation: "Alles korrekt? Weiter zur Vorlagenauswahl!"
+    },
+    templateSelection: {
+      title: "Vorlage auswählen",
+      subtitle: "Wählen Sie ein Design für Ihr Pet CV"
+    },
+    preview: {
+      title: "Ihr Pet CV ist fertig!",
+      instruction: "📄 Verwenden Sie die Schaltflächen unten zum Herunterladen oder Versenden des Dokuments"
+    },
+    finalMessage: "Vielen Dank für die Nutzung unseres Service! 🐾",
+    ui: {
+      select: "Wählen",
+      preview: "Vorschau",
+      previewMode: "Vorschau-Modus",
+      emailComingSoon: "E-Mail-Funktion wird in Kürze hinzugefügt",
+      emailInDevelopment: "E-Mail-Funktion in Entwicklung",
+      freeSuccess: "Vielen Dank! Viel Erfolg bei der Suche.",
+      insuranceInfoDog: "Für Hunde sind AMICUS und Haftpflicht in der Schweiz oft Pflicht.",
+      insuranceInfoCat: "Auch für Katzen wird eine Versicherung oft empfohlen (Mieterschäden)."
+    },
     labels: {
       type: "Tierart",
       dog: "Hund",
@@ -96,7 +136,47 @@ const TRANSLATIONS = {
         { title: "Données non conservées", desc: "Les données ne sont pas conservées après création — confidentialité maximale." }
       ]
     },
-    steps: ["Début", "Détenteur", "Animal", "Santé", "Caractère", "Photo", "Export", "Fichier", "Merci"],
+    steps: ["Début", "Détenteur", "Animal", "Santé", "Caractère", "Photo", "Vérification", "Modèle", "Fichier", "Merci"],
+    stepTitles: {
+      1: "Informations du propriétaire",
+      2: "Détails de l'animal",
+      3: "Santé et assurance",
+      4: "Description du caractère",
+      5: "Télécharger une photo",
+      6: "Vérifier les données",
+      7: "Choisir un modèle",
+      8: "Aperçu et téléchargement"
+    },
+    summary: {
+      title: "Vérification de vos données",
+      owner: "Propriétaire",
+      address: "Adresse",
+      petName: "Nom de l'animal",
+      breed: "Race",
+      ageWeight: "Âge / Poids",
+      gender: "Sexe",
+      description: "Description",
+      confirmation: "Tout est correct? Passez au choix du modèle!"
+    },
+    templateSelection: {
+      title: "Choisir un modèle",
+      subtitle: "Sélectionnez un design pour votre Pet CV"
+    },
+    preview: {
+      title: "Votre Pet CV est prêt!",
+      instruction: "📄 Utilisez les boutons ci-dessous pour télécharger ou envoyer le document"
+    },
+    finalMessage: "Merci d'avoir utilisé notre service! 🐾",
+    ui: {
+      select: "Sélectionner",
+      preview: "Aperçu",
+      previewMode: "Mode Aperçu",
+      emailComingSoon: "La fonction e-mail sera bientôt ajoutée",
+      emailInDevelopment: "Fonction e-mail en développement",
+      freeSuccess: "Merci! Bonne chance dans votre recherche.",
+      insuranceInfoDog: "Pour les chiens, AMICUS et l'assurance responsabilité civile sont souvent obligatoires en Suisse.",
+      insuranceInfoCat: "Pour les chats aussi, une assurance est souvent recommandée (dommages locatifs)."
+    },
     labels: {
       type: "Type d'animal",
       dog: "Chien",
@@ -106,6 +186,10 @@ const TRANSLATIONS = {
       email: "E-mail",
       phone: "Téléphone",
       address: "Adresse actuelle",
+      street: "Rue",
+      houseNumber: "Numéro",
+      postal: "Code postal",
+      city: "Ville",
       petName: "Nom de l'animal",
       breed: "Race / Espèce",
       age: "Âge (ans)",
@@ -138,7 +222,7 @@ const TRANSLATIONS = {
     },
     monetization: {
       title: "Soutenir le projet",
-      desc: "Ce service est gratuit. Aidez-nous avec une donación.",
+      desc: "Ce service est gratuit. Aidez-nous avec une donation.",
       free: "Utiliser gratuitement",
       coffee: "Offrir un café (5 CHF)",
       bone: "Offrir une friandise (10 CHF)"
@@ -171,7 +255,47 @@ const TRANSLATIONS = {
         { title: "Dati non salvati", desc: "I dati non vengono conservati dopo la creazione — privacy massima." }
       ]
     },
-    steps: ["Inizio", "Proprietario", "Animale", "Salute", "Carattere", "Foto", "Export", "File", "Grazie"],
+    steps: ["Inizio", "Proprietario", "Animale", "Salute", "Carattere", "Foto", "Verifica", "Modello", "File", "Grazie"],
+    stepTitles: {
+      1: "Informazioni proprietario",
+      2: "Dettagli animale",
+      3: "Salute e assicurazione",
+      4: "Descrizione carattere",
+      5: "Caricare foto",
+      6: "Verifica dati",
+      7: "Scegli modello",
+      8: "Anteprima e download"
+    },
+    summary: {
+      title: "Verifica dei tuoi dati",
+      owner: "Proprietario",
+      address: "Indirizzo",
+      petName: "Nome animale",
+      breed: "Razza",
+      ageWeight: "Età / Peso",
+      gender: "Sesso",
+      description: "Descrizione",
+      confirmation: "Tutto corretto? Vai alla selezione del modello!"
+    },
+    templateSelection: {
+      title: "Scegli modello",
+      subtitle: "Seleziona un design per il tuo Pet CV"
+    },
+    preview: {
+      title: "Il tuo Pet CV è pronto!",
+      instruction: "📄 Usa i pulsanti sotto per scaricare o inviare il documento"
+    },
+    finalMessage: "Grazie per aver utilizzato il nostro servizio! 🐾",
+    ui: {
+      select: "Seleziona",
+      preview: "Anteprima",
+      previewMode: "Modalità Anteprima",
+      emailComingSoon: "Funzione email verrà aggiunta presto",
+      emailInDevelopment: "Funzione email in sviluppo",
+      freeSuccess: "Grazie! Buona fortuna con la ricerca.",
+      insuranceInfoDog: "Per i cani, AMICUS e l'assicurazione di responsabilità civile sono spesso obbligatori in Svizzera.",
+      insuranceInfoCat: "Anche per i gatti, un'assicurazione è spesso consigliata (danni locativi)."
+    },
     labels: {
       type: "Tipo di animale",
       dog: "Cane",
@@ -181,6 +305,10 @@ const TRANSLATIONS = {
       email: "E-mail",
       phone: "Telefono",
       address: "Indirizzo attuale",
+      street: "Via",
+      houseNumber: "Numero civico",
+      postal: "CAP",
+      city: "Città",
       petName: "Nome dell'animale",
       breed: "Razza / Specie",
       age: "Età (anni)",
@@ -246,7 +374,47 @@ const TRANSLATIONS = {
         { title: "Datas betg tgiradas", desc: "Las datas vegnan betg tgiradas suenter creaziun — maxima privacy." }
       ]
     },
-    steps: ["Start", "Possessur", "Animal", "Sanadad", "Wesen", "Foto", "Export", "Datoteca", "Grazia"],
+    steps: ["Start", "Possessur", "Animal", "Sanadad", "Wesen", "Foto", "Controlla", "Model", "Datoteca", "Grazia"],
+    stepTitles: {
+      1: "Infurmaziuns possessur",
+      2: "Detagls animal",
+      3: "Sanadad & assicuranza",
+      4: "Descripziun caracter",
+      5: "Chargiar foto",
+      6: "Controllar datas",
+      7: "Tscherner model",
+      8: "Prevista & Download"
+    },
+    summary: {
+      title: "Controlla da vossas datas",
+      owner: "Possessur",
+      address: "Adressa",
+      petName: "Num animal",
+      breed: "Razza",
+      ageWeight: "Vegliadetgna / Paisa",
+      gender: "Gener",
+      description: "Descripziun",
+      confirmation: "Tuttafatg correct? Vinavant tar tscherna dal model!"
+    },
+    templateSelection: {
+      title: "Tscherner model",
+      subtitle: "Tscherni in design per tes Pet CV"
+    },
+    preview: {
+      title: "Tes Pet CV è pront!",
+      instruction: "📄 Duvra ils buttuns sut per telechargiar u trametter il document"
+    },
+    finalMessage: "Grazia per avair duvra nos servetsch! 🐾",
+    ui: {
+      select: "Tscherner",
+      preview: "Prevista",
+      previewMode: "Modus Prevista",
+      emailComingSoon: "Funcziun email vegn agiuntada en cuort",
+      emailInDevelopment: "Funcziun email en svilup",
+      freeSuccess: "Grazia! BunsSuccès tar tschertgar.",
+      insuranceInfoDog: "Per chauns èn AMICUS e l'assicuranza da responsabladad savens obligatoris en Svizra.",
+      insuranceInfoCat: "Era per gliats vegn in'assicuranza savens recumandada (donns da locaziun)."
+    },
     labels: {
       type: "Tip d'animal",
       dog: "Chaun",
@@ -256,6 +424,10 @@ const TRANSLATIONS = {
       email: "E-Mail",
       phone: "Telefon",
       address: "Adressa actuala",
+      street: "Via",
+      houseNumber: "Numer",
+      postal: "Numer postal",
+      city: "Citad",
       petName: "Num da l'animal",
       breed: "Rassa",
       age: "Vegliadetgna (onns)",
@@ -269,7 +441,7 @@ const TRANSLATIONS = {
       neutered: "Castrà",
       vaccination: "Vaccinà",
       registration: "Registrà (AMICUS/ANIS)",
-      aiPrompt: "Pleds-clav (p.ex. quiet)",
+      aiPrompt: "Pleds-clav (p.ex. quiets, net)",
       aiBtn: "Generar text",
       aiResult: "Text per il locatari",
       photo: "Eleger foto",
@@ -321,7 +493,47 @@ const TRANSLATIONS = {
         { title: "Data Not Stored", desc: "Data is not kept after creation — privacy first." }
       ]
     },
-    steps: ["Start", "Owner", "Pet", "Health", "Nature", "Photo", "Export", "File", "Thank you"],
+    steps: ["Start", "Owner", "Pet", "Health", "Nature", "Photo", "Review", "Template", "File", "Thank you"],
+    stepTitles: {
+      1: "Owner Information",
+      2: "Pet Details",
+      3: "Health & Insurance",
+      4: "Character Description",
+      5: "Upload Photo",
+      6: "Review Data",
+      7: "Choose Template",
+      8: "Preview & Download"
+    },
+    summary: {
+      title: "Review Your Data",
+      owner: "Owner",
+      address: "Address",
+      petName: "Pet Name",
+      breed: "Breed",
+      ageWeight: "Age / Weight",
+      gender: "Gender",
+      description: "Description",
+      confirmation: "Everything looks good? Proceed to template selection!"
+    },
+    templateSelection: {
+      title: "Choose Template",
+      subtitle: "Select a design for your Pet CV"
+    },
+    preview: {
+      title: "Your Pet CV is ready!",
+      instruction: "📄 Use the buttons below to download or send the document"
+    },
+    finalMessage: "Thank you for using our service! 🐾",
+    ui: {
+      select: "Select",
+      preview: "Preview",
+      previewMode: "Preview Mode",
+      emailComingSoon: "Email function will be added soon",
+      emailInDevelopment: "Email function in development",
+      freeSuccess: "Thank you! Good luck with your search.",
+      insuranceInfoDog: "For dogs, AMICUS and liability insurance are often mandatory in Switzerland.",
+      insuranceInfoCat: "For cats too, insurance is often recommended (tenant damages)."
+    },
     labels: {
       type: "Animal Type",
       dog: "Dog",
@@ -331,6 +543,10 @@ const TRANSLATIONS = {
       email: "Email",
       phone: "Phone",
       address: "Current Address",
+      street: "Street",
+      houseNumber: "House Number",
+      postal: "Postal Code",
+      city: "City",
       petName: "Pet Name",
       breed: "Breed / Species",
       age: "Age (years)",
@@ -396,7 +612,47 @@ const TRANSLATIONS = {
         { title: "Дані не зберігаються", desc: "Дані не зберігаються після створення — конфіденційність перш за все." }
       ]
     },
-    steps: ["Старт", "Власник", "Тварина", "Здоров'я", "Характер", "Фото", "Експорт", "Файл", "Дякуємо"],
+    steps: ["Старт", "Власник", "Тварина", "Здоров'я", "Характер", "Фото", "Перевірка", "Шаблон", "Файл", "Дякуємо"],
+    stepTitles: {
+      1: "Інформація про власника",
+      2: "Деталі про тварину",
+      3: "Здоров'я та страхування",
+      4: "Опис характеру",
+      5: "Завантажити фото",
+      6: "Перевірка даних",
+      7: "Вибір шаблону",
+      8: "Попередній перегляд"
+    },
+    summary: {
+      title: "Огляд введених даних",
+      owner: "Власник",
+      address: "Адреса",
+      petName: "Ім'я тварини",
+      breed: "Порода",
+      ageWeight: "Вік / Вага",
+      gender: "Стать",
+      description: "Опис",
+      confirmation: "Все виглядає добре? Перейдіть до вибору дизайну!"
+    },
+    templateSelection: {
+      title: "Виберіть шаблон",
+      subtitle: "Оберіть дизайн для вашого Pet CV"
+    },
+    preview: {
+      title: "Ваш Pet CV готовий!",
+      instruction: "📄 Використовуйте кнопки знизу для завантаження або надсилання документу"
+    },
+    finalMessage: "Дякуємо, що скористалися нашим сервісом! 🐾",
+    ui: {
+      select: "Обрати",
+      preview: "Попередній перегляд",
+      previewMode: "Режим перегляду",
+      emailComingSoon: "Функція надсилання на пошту буде додана незабаром",
+      emailInDevelopment: "Email функція в розробці",
+      freeSuccess: "Дякуємо! Успіхів у пошуку.",
+      insuranceInfoDog: "Для собак AMICUS та страхування відповідальності часто є обов'язковими у Швейцарії.",
+      insuranceInfoCat: "Для котів також рекомендується страхування (шкода орендованому житлу)."
+    },
     labels: {
       type: "Вид тварини",
       dog: "Собака",
@@ -406,13 +662,17 @@ const TRANSLATIONS = {
       email: "Email",
       phone: "Телефон",
       address: "Поточна адреса",
+      street: "Вулиця",
+      houseNumber: "Номер будинку",
+      postal: "Поштовий індекс",
+      city: "Місто",
       petName: "Кличка",
       breed: "Порода / Вид",
       age: "Вік (років)",
       weight: "Вага (кг)",
       gender: "Стать",
-      m: "Хлопчик",
-      f: "Дівчинка",
+      m: "Самець",
+      f: "Самиця",
       chipId: "№ Чіпу / ID",
       insurance: "Страхова (Haftpflicht)",
       vet: "Ветеринар / Клініка",

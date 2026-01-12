@@ -1,16 +1,21 @@
 import React from 'react';
 
 const Button = ({ variant = 'primary', className = '', children, ...props }) => {
-  const base = "inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm transition-all focus:outline-none active:scale-[0.98] btn-press";
+  const base = "inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.96] btn-press disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group";
+
   const styles = {
-    primary: "bg-slate-900 text-white hover:bg-slate-800 shadow-xl shadow-slate-200 hover:shadow-2xl",
-    secondary: "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50",
-    magic: "bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-700 hover:to-violet-700 shadow-lg shadow-indigo-200",
-    ghost: "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+    primary: "theme-button-primary text-white shadow-lg hover:shadow-xl",
+    secondary: "theme-button-secondary shadow-md hover:shadow-lg",
+    magic: "theme-button-magic text-white shadow-lg hover:shadow-xl",
+    ghost: "theme-button-ghost hover:shadow-md"
   };
+
   return (
     <button className={`${base} ${styles[variant]} ${className}`} {...props}>
-      {children}
+      <span className="relative z-10 flex items-center gap-2">{children}</span>
+      {variant !== 'ghost' && (
+        <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></span>
+      )}
     </button>
   );
 };

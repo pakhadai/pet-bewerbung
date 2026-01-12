@@ -1,32 +1,95 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ChevronDown } from 'lucide-react';
 
-const FLAG_MAP = {
-  de: 'de',
-  fr: 'fr',
-  it: 'it',
-  rm: 'ch',
-  en: 'gb',
-  ua: 'ua'
-};
+const LANGUAGES = [
+  { id: 'de', label: 'Deutsch', flag: 'de' },
+  { id: 'fr', label: 'Français', flag: 'fr' },
+  { id: 'it', label: 'Italiano', flag: 'it' },
+  { id: 'rm', label: 'Rumantsch', flag: 'ch' },
+  { id: 'en', label: 'English', flag: 'gb' },
+  { id: 'ua', label: 'Українська', flag: 'ua' },
+];
 
 export default function LanguageSelector({ value, onChange }) {
-  const langs = [
-    { id: 'de', label: 'DE' },
-    { id: 'fr', label: 'FR' },
-    { id: 'it', label: 'IT' },
-    { id: 'rm', label: 'RM' },
-    { id: 'en', label: 'EN' },
-    { id: 'ua', label: 'UA' },
-  ];
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const currentLang = LANGUAGES.find(l => l.id === value) || LANGUAGES[0];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelect = (langId) => {
+    onChange(langId);
+    setIsOpen(false);
+  };
 
   return (
-    <div className="language-selector flex items-center gap-2">
-      {langs.map(l => (
-        <button key={l.id} onClick={() => onChange(l.id)} className={`flex items-center gap-2 px-2 py-1 rounded-md transition-colors ${value === l.id ? 'ring-2 ring-indigo-300' : 'hover:bg-slate-100'}`} aria-pressed={value===l.id}>
-          <img src={`https://flagcdn.com/24x18/${FLAG_MAP[l.id]}.png`} alt={`${l.label} flag`} width="24" height="18" style={{ display: 'inline-block' }} />
-          <span className="hidden sm:inline text-sm font-medium">{l.label}</span>
-        </button>
-      ))}
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-3 py-2 rounded-lg theme-card theme-border border hover:theme-card-bg-hover transition-colors"
+        aria-expanded={isOpen}
+      >
+        <img
+          src={`https://flagcdn.com/24x18/${currentLang.flag}.png`}
+          alt={currentLang.label}
+          width="24"
+          height="18"
+          className="shadow-sm"
+        />
+        <span className="theme-text text-sm font-medium hidden sm:inline">{currentLang.label}</span>
+        <ChevronDown
+          size={16}
+          className={`theme-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full right-0 mt-2 w-48 theme-card border theme-border rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang.id}
+              onClick={() => handleSelect(lang.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${
+                value === lang.id
+                  ? 'bg-primary text-white'
+                  : 'theme-text hover:theme-card-bg-hover'
+              }`}
+            >
+              <img
+                src={`https://flagcdn.com/24x18/${lang.flag}.png`}
+                alt={lang.label}
+                width="24"
+                height="18"
+                className="shadow-sm"
+              />
+              <span className="text-sm font-medium">{lang.label}</span>
+              {value === lang.id && (
+                <svg
+                  className="ml-auto"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                >
+                  <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

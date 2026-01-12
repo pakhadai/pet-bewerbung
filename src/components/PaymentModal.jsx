@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import API_ENDPOINTS from '../config';
 
 function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFailure }) {
   const stripe = useStripe();
@@ -9,7 +10,7 @@ function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFai
 
   const pollStatus = async (id) => {
     try {
-      const res = await fetch(`http://localhost:4242/payment-status/${id}`);
+      const res = await fetch(API_ENDPOINTS.paymentStatus(id));
       const json = await res.json();
       return json.status;
     } catch (err) {
@@ -63,8 +64,8 @@ function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFai
     <form onSubmit={handleSubmit} className="space-y-4">
       <PaymentElement />
       <div className="flex justify-end">
-        <button type="button" onClick={onClose} className="mr-2 px-4 py-2 rounded-lg border">Cancel</button>
-        <button disabled={!stripe} className="px-4 py-2 rounded-lg bg-indigo-600 text-white">{loading ? 'Processing…' : 'Pay'}</button>
+        <button type="button" onClick={onClose} className="theme-radio theme-border mr-2 px-4 py-2 rounded-lg border">Cancel</button>
+        <button disabled={!stripe} className="theme-button-magic px-4 py-2 rounded-lg text-white">{loading ? 'Processing…' : 'Pay'}</button>
       </div>
     </form>
   );
@@ -80,7 +81,7 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
     let mounted = true;
     (async () => {
       try {
-        const res = await fetch('http://localhost:4242/create-payment-intent', {
+        const res = await fetch(API_ENDPOINTS.createPaymentIntent, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ amount: Math.max(1, Math.round(parseFloat(amount || '5'))) * 100, currency: 'eur' }),
@@ -92,7 +93,7 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
           if (json.publishableKey) setStripePromise(loadStripe(json.publishableKey));
           if (json.paymentIntentId) setPaymentIntentId(json.paymentIntentId);
           else {
-            const cfg = await fetch('http://localhost:4242/stripe-config').then(r => r.json());
+            const cfg = await fetch(API_ENDPOINTS.stripeConfig).then(r => r.json());
             if (cfg.publishableKey) setStripePromise(loadStripe(cfg.publishableKey));
           }
         } else {
@@ -108,11 +109,11 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="theme-card rounded-xl shadow-xl w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold">Pay €{amount}</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-900">✕</button>
+          <h3 className="theme-text text-lg font-bold">Pay €{amount}</h3>
+          <button onClick={onClose} className="theme-text-muted hover:theme-text transition-colors">✕</button>
         </div>
         <div>
           {clientSecret && stripePromise ? (

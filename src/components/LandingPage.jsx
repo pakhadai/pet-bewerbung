@@ -8,28 +8,28 @@ const LandingPage = ({ t, setStep }) => (
     <div className="relative isolate px-6 pt-4 lg:px-8 text-center pb-8 sm:pb-12">
       <div className="mx-auto max-w-2xl py-8 sm:py-12 fade-enter stagger-1 min-h-[180px] sm:min-h-[220px] md:min-h-[260px] flex flex-col justify-center">
         <div className="hidden sm:mb-8 sm:flex sm:justify-center">
-          <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 hover:bg-gray-50 transition-all cursor-default">
+          <div className="relative rounded-full px-3 py-1 text-sm leading-6 theme-text-muted ring-1 theme-border hover:theme-border hover:theme-card-bg-hover transition-all cursor-default">
             <span className="flex items-center gap-2">
                <Flag size={14} className="text-red-600 fill-red-600" /> {t.landing.badge}
             </span>
           </div>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl mb-4 leading-tight">
+        <h1 className="text-3xl font-bold tracking-tight theme-text sm:text-5xl mb-4 leading-tight">
           {t.landing.heroTitle} <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">
+          <span className="text-transparent bg-clip-text theme-gradient-text">
             {t.landing.heroTitleSuffix}
           </span>
         </h1>
-        <p className="hero-sub mt-4 text-base text-gray-600 max-w-xl mx-auto">
+        <p className="hero-sub mt-4 text-base theme-text-muted max-w-xl mx-auto">
           {t.landing.heroSub}
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
-          <Button onClick={() => setStep(1)} className="text-lg px-8 py-4 shadow-indigo-200">
+          <Button variant="primary" onClick={() => setStep(1)} className="text-lg px-8 py-4">
             {t.landing.cta} <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>
         
-        <div className="mt-8 flex items-center justify-center gap-2 text-sm text-slate-500">
+        <div className="mt-8 flex items-center justify-center gap-2 text-sm theme-text-muted">
            <CheckCircle2 size={16} className="text-green-600" /> {t.landing.trust}
         </div>
       </div>
@@ -48,12 +48,12 @@ const LandingPage = ({ t, setStep }) => (
           const icons = [ShieldCheck, Sparkles, Globe];
           const Icon = icons[i % icons.length];
           return (
-            <div key={i} className="flex flex-col bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover-glass">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+            <div key={i} className="flex flex-col theme-card p-6 rounded-2xl shadow-sm border theme-border hover-glass">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl theme-info-box theme-text">
                 <Icon className="h-6 w-6" aria-hidden="true" />
               </div>
-              <dt className="text-lg font-bold leading-7 text-gray-900 mb-2">{feat.title}</dt>
-              <dd className="text-base leading-7 text-gray-600 flex-auto">{feat.desc}</dd>
+              <dt className="text-lg font-bold leading-7 theme-text mb-2">{feat.title}</dt>
+              <dd className="text-base leading-7 theme-text-secondary flex-auto">{feat.desc}</dd>
             </div>
           );
         })}

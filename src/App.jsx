@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import html2pdf from 'html2pdf.js';
 import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS, TRANSLATIONS, INITIAL_DATA } from './constants';
+import API_ENDPOINTS from './config';
 import GlobalStyles from './components/GlobalStyles';
 import ThemeToggle from './components/ThemeToggle';
 import PageTitle from './components/PageTitle';
@@ -37,7 +38,7 @@ export default function App() {
   
   // Template State
   const [templateType, setTemplateType] = useState(TEMPLATE_OPTIONS[0].id);
-  const [selectedTemplate, setSelectedTemplate] = useState(null); 
+  const [selectedTemplate, setSelectedTemplate] = useState(TEMPLATE_OPTIONS[0].id); // Виправлено: замість null 
   
   // Donation State
   const [donationAmount, setDonationAmount] = useState('5');
@@ -64,10 +65,22 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Попередження про застарілий згенерований текст при зміні мови
+  const prevLangRef = useRef(data.lang);
+  useEffect(() => {
+    if (prevLangRef.current !== data.lang && data.generatedText && data.generatedText.length > 0) {
+      // Очищаємо згенерований текст при зміні мови
+      updateData('generatedText', '');
+      showToast(TRANSLATIONS[data.lang]?.labels?.aiPrompt || 'Please regenerate text for the new language', 'info');
+    }
+    prevLangRef.current = data.lang;
+  }, [data.lang, data.generatedText]);
+
   const updateData = (field, value) => setData(prev => ({ ...prev, [field]: value }));
 
   const goToStep = (newStep) => {
-    setAnimDir(newStep > prevStepRef.current ? 'left' : 'right');
+    // Виправлена логіка: вперед = right, назад = left
+    setAnimDir(newStep > prevStepRef.current ? 'right' : 'left');
     prevStepRef.current = newStep;
     setStep(newStep);
   };
@@ -117,19 +130,21 @@ export default function App() {
         html2canvas: { scale: 2 },
         jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
       };
-      html2pdf().set(options).from(element).save();
+      await html2pdf().set(options).from(element).save();
       showToast('PDF downloaded successfully!', 'success');
+      // Автоматичний редирект на step 9 після завантаження - збільшена затримка
+      setTimeout(() => goToStep(9), 2000);
     } catch (err) {
       showToast('Failed to download PDF: ' + err.message, 'error');
     }
   };
 
   const handleDonateMethod = async (method) => {
-    const parsed = parseFloat(donationAmount || '0');
-    const amount = Math.max(1, Math.round(parsed));
+    const parsed = parseFloat(donationAmount || '5');
+    const amount = Math.max(1, Math.round(parsed)); // Мінімум 1 CHF
     const cents = amount * 100;
     try {
-      const res = await fetch('http://localhost:4242/create-checkout-session', {
+      const res = await fetch(API_ENDPOINTS.createCheckoutSession, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: cents, currency: 'eur', successUrl: window.location.href, cancelUrl: window.location.href, payment_method: method }),
@@ -152,12 +167,8 @@ export default function App() {
     switch(step) {
       case 0: return <div className={`page page-enter-${animDir} reveal fade-enter`}><LandingPage t={t} setStep={goToStep} /></div>;
       case 1: return (
-        <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 max-w-lg mx-auto`}>
-          <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm">{step}</span>
-             {t.steps[1]}
-          </h2>
-          <div className="grid grid-cols-1 gap-5">
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-lg mx-auto`}>
+          <div className="grid grid-cols-1 gap-3">
             <div><Label>{t.labels.ownerName}</Label><Input value={data.ownerName} onChange={e => updateData('ownerName', e.target.value)} placeholder="Max Mustermann" /></div>
             <div className="grid grid-cols-2 gap-3">
               <div><Label>{t.labels.street}</Label><Input value={data.street} onChange={e => updateData('street', e.target.value)} placeholder="Bahnhofstrasse" /></div>
@@ -175,20 +186,16 @@ export default function App() {
         </div>
       );
       case 2: return (
-        <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 max-w-lg mx-auto`}>
-          <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm">{step}</span>
-             {t.steps[2]}
-          </h2>
-          <div className="grid grid-cols-3 gap-3 mb-8">
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-lg mx-auto`}>
+          <div className="grid grid-cols-3 gap-2 mb-4">
             {[{ id: 'dog', label: t.labels.dog, icon: Dog }, { id: 'cat', label: t.labels.cat, icon: Cat }, { id: 'other', label: t.labels.other, icon: Bird }].map(type => (
               <button key={type.id} onClick={() => updateData('petType', type.id)}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all hover-glass ${data.petType === type.id ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-100 bg-white text-slate-500'}`}>
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all hover-glass ${data.petType === type.id ? 'theme-radio-selected' : 'theme-radio theme-border'}`}>
                 <type.icon size={24} className="mb-2" /><span className="text-sm font-medium">{type.label}</span>
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="sm:col-span-2"><Label>{t.labels.petName}</Label><Input value={data.name} onChange={e => updateData('name', e.target.value)} /></div>
             <div><Label>{t.labels.breed}</Label><Input value={data.breed} onChange={e => updateData('breed', e.target.value)} /></div>
             <div><Label>{t.labels.age}</Label><Input type="number" value={data.age} onChange={e => updateData('age', e.target.value)} /></div>
@@ -196,7 +203,7 @@ export default function App() {
             <div><Label>{t.labels.gender}</Label>
               <div className="flex gap-2 h-[46px]">
                 {['m', 'f'].map(g => (
-                  <label key={g} className={`flex items-center justify-center gap-2 cursor-pointer border rounded-lg flex-1 transition-colors ${data.gender === g ? 'bg-slate-900 text-white border-slate-900' : 'bg-white border-slate-200 hover:bg-slate-50'}`}>
+                  <label key={g} className={`flex items-center justify-center gap-2 cursor-pointer border rounded-lg flex-1 transition-colors ${data.gender === g ? 'theme-radio-selected' : 'theme-radio theme-border hover:theme-card-bg-hover'}`}>
                     <input type="radio" name="gender" checked={data.gender === g} onChange={() => updateData('gender', g)} className="hidden" />
                     <span className="text-sm font-medium">{g === 'm' ? t.labels.m : t.labels.f}</span>
                   </label>
@@ -207,14 +214,10 @@ export default function App() {
         </div>
       );
       case 3: return (
-        <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 max-w-lg mx-auto`}>
-          <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm">{step}</span>
-             {t.steps[3]}
-          </h2>
-          <div className="p-4 bg-indigo-50 rounded-xl text-sm text-indigo-900 flex gap-3 leading-relaxed border border-indigo-100 mb-6">
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-7 max-w-lg mx-auto`}>
+          <div className="p-4 theme-info-box rounded-xl text-sm flex gap-3 leading-relaxed border mb-6">
             <ShieldCheck className="shrink-0 mt-0.5" />
-            <span>{data.petType === 'dog' ? "Für Hunde sind AMICUS und Haftpflicht in der Schweiz oft Pflicht." : "Auch für Katzen wird eine Versicherung oft empfohlen (Mieterschäden)."}</span>
+            <span>{data.petType === 'dog' ? t.ui.insuranceInfoDog : t.ui.insuranceInfoCat}</span>
           </div>
           <div className="grid grid-cols-1 gap-5">
             <div><Label>{t.labels.insurance}</Label><Input value={data.insuranceProvider} onChange={e => updateData('insuranceProvider', e.target.value)} placeholder="z.B. AXA, Mobiliar" /></div>
@@ -225,9 +228,9 @@ export default function App() {
           </div>
           <div className="flex flex-col gap-3 pt-2">
             {[{ id: 'isNeutered', label: t.labels.neutered }, { id: 'hasVaccination', label: t.labels.vaccination }, { id: 'hasRegistration', label: t.labels.registration }].map(opt => (
-              <label key={opt.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white hover-glass">
-                <span className="text-sm font-medium text-slate-700">{opt.label}</span>
-                <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${data[opt.id] ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300'}`}>
+              <label key={opt.id} className="flex items-center justify-between p-4 theme-border rounded-xl cursor-pointer hover:theme-card-bg-hover transition-colors theme-card hover-glass">
+                <span className="text-sm font-medium theme-text">{opt.label}</span>
+                <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${data[opt.id] ? 'theme-radio-selected' : 'theme-border'}`}>
                   {data[opt.id] && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                 </div>
                 <input type="checkbox" className="hidden" checked={data[opt.id]} onChange={e => updateData(opt.id, e.target.checked)} />
@@ -237,26 +240,22 @@ export default function App() {
         </div>
       );
       case 4: return (
-        <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 max-w-lg mx-auto`}>
-          <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm">{step}</span>
-             {t.steps[4]}
-          </h2>
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-lg mx-auto`}>
           <div>
             <Label>{t.labels.aiPrompt}</Label>
-              <textarea maxLength={MAX_DESCRIPTION_LENGTH} className="w-full p-4 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none h-40 resize-none bg-slate-50 transition-all hover:bg-white"
+              <textarea maxLength={MAX_DESCRIPTION_LENGTH} className="theme-input w-full p-3 border rounded-xl text-sm focus:ring-2 outline-none h-32 resize-none transition-all"
                 placeholder={data.lang === 'ua' ? "тихий, охайний, любить спати" : "ruhig, sauber, schläft viel"}
                 value={data.generatedText || data.keywords} onChange={e => updateData('generatedText', e.target.value.slice(0, MAX_DESCRIPTION_LENGTH))} />
-              <div className="text-xs text-slate-500 mt-2">{(data.generatedText || data.keywords).length} / {MAX_DESCRIPTION_LENGTH} chars</div>
+              <div className="text-xs theme-text-muted mt-1">{(data.generatedText || data.keywords).length} / {MAX_DESCRIPTION_LENGTH} chars</div>
           </div>
           <Button variant="magic" className="w-full" onClick={generateText} disabled={!data.keywords || isGenerating}>
             {isGenerating ? <Sparkles className="animate-spin mr-2" size={16} /> : <Sparkles className="mr-2" size={16} />}
             {t.labels.aiBtn}
           </Button>
           {data.generatedText && (
-            <div className="mt-4 fade-enter">
+            <div className="mt-3 fade-enter">
               <Label>{t.labels.aiResult}</Label>
-              <div className="bg-white p-6 rounded-xl border border-indigo-100 shadow-sm text-sm leading-relaxed text-slate-700 italic">
+              <div className="theme-card p-4 rounded-xl border theme-border shadow-sm text-sm leading-relaxed theme-text-secondary italic">
                 {data.generatedText}
               </div>
             </div>
@@ -264,17 +263,16 @@ export default function App() {
         </div>
       );
       case 5: return (
-        <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 text-center max-w-lg mx-auto`}>
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">{t.steps[5]}</h2>
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 text-center max-w-lg mx-auto`}>
           <div className="relative group cursor-pointer inline-block w-full">
             <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-            <div className={`aspect-square w-full max-w-[300px] mx-auto rounded-2xl border-2 border-dashed flex flex-col items-center justify-center transition-all ${data.photo ? 'border-indigo-500 p-2' : 'border-slate-300 bg-slate-50 hover:bg-slate-100 hover:scale-105'}`}>
+            <div className={`aspect-square w-full max-w-[240px] mx-auto rounded-2xl border-2 border-dashed flex flex-col items-center justify-center transition-all ${data.photo ? 'border-primary p-2' : 'theme-border theme-bg-secondary hover:theme-card-bg-hover hover:scale-105'}`}>
               {data.photo ? (
                 <img src={data.photo} className="w-full h-full object-cover rounded-xl shadow-sm" alt="Pet" />
               ) : (
                 <>
-                  <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-4 text-slate-400"><Camera size={32} /></div>
-                  <span className="text-slate-600 font-medium">{t.labels.photo}</span>
+                  <div className="w-14 h-14 theme-bg-secondary rounded-full flex items-center justify-center mb-3 theme-text-muted"><Camera size={28} /></div>
+                  <span className="theme-text font-medium">{t.labels.photo}</span>
                 </>
               )}
             </div>
@@ -282,46 +280,95 @@ export default function App() {
         </div>
       );
 
-      // --- КРОК 6: ВИБІР ШАБЛОНУ (ТІЛЬКИ СІТКА, БЕЗ ДОКУМЕНТУ) ---
+      // --- КРОК 6: ОГЛЯД ДАНИХ (SUMMARY) ---
       case 6: return (
-        <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 text-center max-w-4xl mx-auto`}>
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-            {t.landing.heroTitle || 'Оберіть стиль'}
-          </h2>
-          <p className="text-slate-600 mb-8">{t.landing.heroSub || 'Виберіть професійний дизайн'}</p>
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-2xl mx-auto`}>
+          <div className="theme-card rounded-2xl p-5 theme-border border space-y-3 scale-hover">
+            <div className="grid grid-cols-2 gap-3 text-sm slide-up-stagger">
+              <div>
+                <span className="theme-text-muted font-medium">{t.summary.owner}:</span>
+                <p className="theme-text font-semibold">{data.ownerName || '—'}</p>
+              </div>
+              <div>
+                <span className="theme-text-muted font-medium">{t.summary.address}:</span>
+                <p className="theme-text">{data.street} {data.houseNumber}, {data.postal} {data.city}</p>
+              </div>
+              <div>
+                <span className="theme-text-muted font-medium">{t.summary.petName}:</span>
+                <p className="theme-text font-semibold">{data.name || '—'}</p>
+              </div>
+              <div>
+                <span className="theme-text-muted font-medium">{t.summary.breed}:</span>
+                <p className="theme-text">{data.breed || '—'}</p>
+              </div>
+              <div>
+                <span className="theme-text-muted font-medium">{t.summary.ageWeight}:</span>
+                <p className="theme-text">{data.age || '—'} / {data.weight || '—'}</p>
+              </div>
+              <div>
+                <span className="theme-text-muted font-medium">{t.summary.gender}:</span>
+                <p className="theme-text">{data.gender === 'm' ? t.labels.m : t.labels.f}</p>
+              </div>
+            </div>
 
+            {data.generatedText && (
+              <div className="pt-3 border-t theme-border">
+                <span className="theme-text-muted font-medium text-sm">{t.summary.description}:</span>
+                <p className="theme-text-secondary text-sm mt-1 leading-relaxed italic">
+                  {data.generatedText}
+                </p>
+              </div>
+            )}
+
+            {data.photo && (
+              <div className="pt-3 border-t theme-border flex justify-center">
+                <img src={data.photo} alt="Pet" className="w-28 h-28 object-cover rounded-xl shadow-sm" />
+              </div>
+            )}
+          </div>
+
+          <div className="theme-info-box rounded-xl p-3 text-sm text-center">
+            <CheckCircle2 size={18} className="inline mr-2" />
+            {t.summary.confirmation}
+          </div>
+        </div>
+      );
+
+      // --- КРОК 7: ВИБІР ШАБЛОНУ (ТІЛЬКИ СІТКА, БЕЗ ДОКУМЕНТУ) ---
+      case 7: return (
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-10 text-center max-w-4xl mx-auto`}>
           {/* СІТКА ВИБОРУ ШАБЛОНУ */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl mx-auto px-4">
             {['classic', 'modern', 'compact'].map((tpl) => (
-              <div key={tpl} 
-                   className="group relative p-4 border-2 border-slate-100 rounded-3xl bg-white hover:border-indigo-400 hover:shadow-xl hover:shadow-indigo-100 transition-all duration-300 flex flex-col items-center cursor-pointer"
+              <div key={tpl}
+                   className="group relative p-4 border-2 theme-border rounded-3xl theme-card hover:border-primary hover:shadow-xl hover:shadow-strong transition-all duration-300 flex flex-col items-center cursor-pointer card-lift"
                    onClick={() => { setTemplateType(tpl); setSelectedTemplate(tpl); showToast('Template selected', 'info'); goToStep(step + 1); }}>
-                
+
                 <div className="absolute top-4 left-0 right-0 text-center">
-                  <span className="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-widest group-hover:bg-indigo-100 group-hover:text-indigo-700 transition-colors">
+                  <span className="inline-block px-3 py-1 rounded-full theme-bg-secondary theme-text-muted text-xs font-bold uppercase tracking-widest group-hover:bg-primary-light group-hover:text-primary transition-colors">
                     {tpl}
                   </span>
                 </div>
 
-                <div className="mt-10 w-full aspect-[1/1.4] overflow-hidden rounded-xl border border-slate-100 bg-slate-50 group-hover:bg-white transition-colors relative">
+                <div className="mt-10 w-full aspect-[1/1.4] overflow-hidden rounded-xl border theme-border theme-bg-secondary group-hover:theme-card transition-colors relative">
                   {/* Мініатюра */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                      <div style={{ width: '210mm', transform: 'scale(0.25)', transformOrigin: 'center' }} className="shadow-lg">
                        <SwissDocument data={data} t={t} templateType={tpl} />
                      </div>
                   </div>
-                  
+
                   {/* Overlay при наведенні */}
-                  <div className="absolute inset-0 bg-indigo-900/0 group-hover:bg-indigo-900/10 transition-colors flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 bg-white px-4 py-2 rounded-lg shadow-lg font-medium text-indigo-600">
-                      Select
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 theme-card px-4 py-2 rounded-lg shadow-lg font-medium theme-text">
+                      {t.ui.select}
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-4 flex gap-3 w-full">
                   <Button variant="ghost" className="flex-1 text-xs" onClick={(e) => { e.stopPropagation(); setPreviewTemplate(tpl); setPreviewOpen(true); }}>
-                    <Camera size={14} className="mr-1"/> Preview
+                    <Camera size={14} className="mr-1"/> {t.ui.preview}
                   </Button>
                 </div>
               </div>
@@ -330,57 +377,14 @@ export default function App() {
         </div>
       );
 
-      // --- КРОК 7: ФАЙЛ / ЗАВАНТАЖИТИ / ВІДПРАВИТИ ---
-      case 7: return (
-        <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 max-w-3xl mx-auto`}>
-          <h2 className="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm">{step}</span>
-             {t.steps[7]}
-          </h2>
-
+      // --- КРОК 8: PREVIEW ДОКУМЕНТУ ---
+      case 8: return (
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-4xl mx-auto`}>
           {/* Показуємо повний документ */}
-          <div className="w-full flex justify-center overflow-auto py-4 mb-8 border rounded-xl bg-slate-50 p-4">
-            <div id="pdf-document" className="overflow-hidden border rounded shadow-lg bg-white" style={{ width: '210mm' }}>
+          <div className="w-full flex justify-center overflow-auto py-4 mb-4 border rounded-2xl theme-bg-secondary theme-border p-4 shadow-lg">
+            <div id="pdf-document" className="overflow-hidden border-2 rounded-lg shadow-2xl theme-card" style={{ width: '210mm' }}>
               <SwissDocument data={data} t={t} templateType={selectedTemplate} />
             </div>
-          </div>
-
-          {/* ОПЦІЇ: Завантажити або Відправити */}
-          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 border border-indigo-100">
-             <h3 className="text-xl font-bold mb-6 text-slate-900">Оберіть спосіб:</h3>
-             
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-               {/* Завантажити */}
-               <Button 
-                 onClick={handleDownloadPDF} 
-                 className="px-6 py-4 shadow-lg shadow-indigo-200 text-lg font-semibold flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700">
-                 <Printer size={20}/> 
-                 <span>{t.labels.download} (PDF)</span>
-               </Button>
-
-               {/* Відправити на пошту */}
-               <Button 
-                 variant="secondary"
-                 onClick={() => { 
-                   const mailTo = `mailto:?subject=${encodeURIComponent('Pet CV - Pet-Bewerbung.ch')}&body=${encodeURIComponent('Please find my pet CV attached (save as PDF first).')}`; 
-                   window.location.href = mailTo; 
-                 }}
-                 className="px-6 py-4 shadow-lg shadow-slate-200 text-lg font-semibold flex items-center justify-center gap-3">
-                 <Mail size={20}/> 
-                 <span>Відправити на пошту</span>
-               </Button>
-             </div>
-
-             <p className="text-sm text-slate-600 mt-6 text-center">
-               Документ не зберігається на сервері — тільки локально у вашому комп'ютері
-             </p>
-          </div>
-
-          {/* Кнопка далі */}
-          <div className="flex justify-center">
-            <Button className="text-lg px-8 py-4 shadow-xl shadow-indigo-200" onClick={() => goToStep(step + 1)}>
-              Далі на подяку <ArrowRight className="ml-2" size={20}/>
-            </Button>
           </div>
         </div>
       );
@@ -388,54 +392,61 @@ export default function App() {
     }
   };
 
-  // --- КРОК 8: ФІНАЛЬНА СТОРІНКА (ПОДЯКА + ДОНАТИ) ---
-  if (step === 8) {
+  // --- КРОК 9: ФІНАЛЬНА СТОРІНКА (ПОДЯКА + ДОНАТИ) ---
+  if (step === 9) {
     return (
-      <div className="min-h-screen bg-white font-sans text-slate-900 pb-6 print:bg-white print:p-0">
+      <div className="min-h-screen theme-bg font-sans theme-text pb-6 print:bg-white print:p-0">
         <GlobalStyles />
         <header className="app-header bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
-          <div className="flex items-center gap-2 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
-            <div className="bg-indigo-600 text-white p-1.5 rounded-lg shadow-md shadow-indigo-200"><PawPrint size={18} /></div>
+          <div className="flex items-center gap-3 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
+            <div className="theme-button-primary p-1.5 rounded-lg shadow-md"><PawPrint size={18} /></div>
             <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
           </div>
-          <div className="flex items-center gap-4">
+
+          {/* Step 9 title in center */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 theme-text font-semibold text-base hidden md:block">
+            {t.thankYou.title}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <ThemeToggle theme={theme} onThemeChange={setTheme} />
             <LanguageSelector value={data.lang} onChange={(v) => updateData('lang', v)} />
           </div>
         </header>
 
         <main className="w-full max-w-2xl mx-auto py-20 text-center px-4">
           <div className="mb-8 flex justify-center">
-            <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center animate-in zoom-in duration-500">
+            <div className="w-20 h-20 theme-success rounded-full flex items-center justify-center bounce-in">
               <CheckCircle2 size={40} />
             </div>
           </div>
           
-          <h2 className="text-3xl font-bold mb-4">{t.thankYou.title}</h2>
-          <p className="text-lg text-slate-600 mb-12">{t.thankYou.msg}</p>
+          <h2 className="text-3xl font-bold mb-4 theme-text">{t.thankYou.title}</h2>
+          <p className="text-lg theme-text-muted mb-12">{t.thankYou.msg}</p>
 
-          <div className="bg-slate-50 rounded-2xl p-8 border border-slate-100 mb-12">
-             <h3 className="text-xl font-bold mb-2 flex items-center justify-center gap-2">
-               <Heart className="text-red-500 fill-red-500" size={20} />
+          <div className="theme-bg-secondary rounded-2xl p-8 theme-border border mb-12">
+             <h3 className="text-xl font-bold mb-2 flex items-center justify-center gap-2 theme-text">
+               <Heart className="theme-error fill-current" size={20} />
                {t.monetization.title}
              </h3>
-             <p className="text-slate-500 mb-8 max-w-md mx-auto">{t.monetization.desc}</p>
+             <p className="theme-text-muted mb-8 max-w-md mx-auto">{t.monetization.desc}</p>
              
              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[0, 5, 10, 20].map(amount => (
                   <button 
                     key={amount}
                     onClick={() => {
-                      if (amount === 0) { 
-                        showToast('Дякуємо! Успіхів у пошуку.', 'success'); 
+                      if (amount === 0) {
+                        showToast(t.ui.freeSuccess, 'success');
                       } else {
                         setDonationAmount(String(amount));
                         setDonateOpen(true);
                       }
                     }}
                     className={`py-3 px-4 rounded-xl font-semibold transition-all ${
-                      amount === 0 
-                      ? 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-100' 
-                      : 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:scale-105'
+                      amount === 0
+                      ? 'theme-card border theme-border theme-text-muted hover:theme-card-bg-hover'
+                      : 'theme-button-primary shadow-lg hover:scale-105'
                     }`}
                   >
                     {amount === 0 ? t.monetization.free : `${amount} CHF`}
@@ -444,19 +455,16 @@ export default function App() {
              </div>
           </div>
 
-          <div className="flex justify-center gap-4">
-            <Button onClick={() => { setStep(0); setSelectedTemplate(null); showToast('Restarting'); }}>
-              Створити нове
-            </Button>
-            <Button variant="ghost" onClick={() => window.location.reload()}>Close</Button>
-          </div>
+          <p className="text-center theme-text-muted mt-8">
+            {t.finalMessage}
+          </p>
         </main>
 
         <DonateModal open={donateOpen} onClose={() => setDonateOpen(false)} amount={donationAmount} onDonate={handleDonateMethod} onOpenPayment={() => { setPaymentOpen(true); setDonateOpen(false); }} />
         <PaymentModal open={paymentOpen} onClose={() => setPaymentOpen(false)} amount={donationAmount} onSuccess={(id) => showToast('Thank you — payment succeeded', 'success')} onFailure={(msg) => showToast(`Payment failed: ${msg}`, 'error')} />
       
         {toast && (
-          <div className={`fixed bottom-6 right-6 z-50 rounded-lg px-4 py-3 animate-in slide-in-from-bottom-4 ${toast.type === 'success' ? 'bg-green-600 text-white' : toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
+          <div className={`fixed bottom-6 right-6 z-50 rounded-lg px-4 py-3 animate-in slide-in-from-bottom-4 ${toast.type === 'success' ? 'theme-success' : toast.type === 'error' ? 'theme-error' : 'theme-card theme-text'}`}>
             {toast.msg}
           </div>
         )}
@@ -465,14 +473,22 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900 pb-6 print:bg-white print:p-0">
+    <div className="min-h-screen theme-bg font-sans theme-text pb-6 print:bg-white print:p-0">
       <GlobalStyles theme={theme} />
       <header className="app-header bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
-        <div className="flex items-center gap-2 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
-          <div className="bg-indigo-600 text-white p-1.5 rounded-lg shadow-md shadow-indigo-200"><PawPrint size={18} /></div>
+        <div className="flex items-center gap-3 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
+          <div className="theme-button-primary p-1.5 rounded-lg shadow-md"><PawPrint size={18} /></div>
           <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
         </div>
-        <div className="flex items-center gap-4">
+
+        {/* Step title in center */}
+        {step > 0 && step < 9 && (
+          <div className="absolute left-1/2 transform -translate-x-1/2 theme-text font-semibold text-base hidden md:block">
+            {t.stepTitles?.[step] || ''}
+          </div>
+        )}
+
+        <div className="flex items-center gap-3">
           <ThemeToggle theme={theme} onThemeChange={setTheme} />
           <LanguageSelector value={data.lang} onChange={(v) => updateData('lang', v)} />
         </div>
@@ -496,7 +512,7 @@ export default function App() {
             </button>
             
             <div className="text-white mb-4 font-medium flex items-center gap-2 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md" onClick={(e) => e.stopPropagation()}>
-               <Camera size={18} /> Preview Mode — {previewTemplate}
+               <Camera size={18} /> {t.ui.previewMode} — {previewTemplate}
             </div>
 
             <div className="w-full max-w-4xl h-full overflow-auto flex justify-center items-start pt-4" onClick={(e) => e.stopPropagation()}>
@@ -509,20 +525,75 @@ export default function App() {
       )}
 
       {toast && (
-        <div className={`fixed bottom-6 right-6 z-50 rounded-lg px-4 py-3 animate-in slide-in-from-bottom-4 ${toast.type === 'success' ? 'bg-green-600 text-white' : toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
+        <div className={`fixed bottom-6 right-6 z-50 rounded-lg px-4 py-3 animate-in slide-in-from-bottom-4 ${toast.type === 'success' ? 'theme-success' : toast.type === 'error' ? 'theme-error' : 'theme-card theme-text'}`}>
           {toast.msg}
         </div>
       )}
 
-      {step > 0 && step < 8 && (
+      {step > 0 && step < 9 && (
         <div className="nav-panel print:hidden">
-          <Button variant="ghost" className="btn" onClick={() => goToStep(step - 1)}><ChevronLeft size={16} /></Button>
-          <div className="px-4 text-sm text-slate-600">{t.steps[step]}</div>
-          <Button className="btn" onClick={() => goToStep(step + 1)}>Next <ChevronRight size={16} /></Button>
+          <Button
+            variant="ghost"
+            className="btn"
+            onClick={() => goToStep(step - 1)}
+            disabled={step === 1}
+            title={t.steps[step - 1] || 'Previous'}
+          >
+            <ChevronLeft size={18} strokeWidth={2.5} />
+          </Button>
+
+          <div className="progress-container">
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${((step - 1) / 7) * 100}%` }}
+              ></div>
+            </div>
+            <div className="text-xs font-bold theme-text-muted whitespace-nowrap min-w-[60px] text-center">
+              {step}/8
+            </div>
+          </div>
+
+          {step === 8 ? (
+            <>
+              <Button
+                variant="secondary"
+                className="btn"
+                onClick={() => {
+                  handleDownloadPDF();
+                  showToast(t.ui.emailComingSoon, 'info');
+                }}
+                title={t.ui.emailInDevelopment}
+              >
+                <Mail size={18} />
+                <span className="hidden sm:inline ml-2">Email</span>
+              </Button>
+              <Button
+                variant="primary"
+                className="btn shadow-lg hover:shadow-xl"
+                onClick={handleDownloadPDF}
+                title="Download PDF"
+              >
+                <Printer size={18} />
+                <span className="hidden sm:inline ml-2">Download</span>
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="primary"
+              className="btn shadow-lg hover:shadow-xl"
+              onClick={() => goToStep(step + 1)}
+              disabled={step === 8}
+              title={t.steps[step + 1] || 'Next'}
+            >
+              <span className="hidden sm:inline">Next</span>
+              <ChevronRight size={18} strokeWidth={2.5} />
+            </Button>
+          )}
         </div>
       )}
 
-      {(step === 0 || step === 8) && (
+      {(step === 0 || step === 9) && (
         <div className="butter-footer print:hidden">
           <div className={`butter-inner ${butterVisible ? 'visible' : ''}`}>
               <img src="https://flagcdn.com/20x15/ch.png" alt="CH" width="20" height="15" style={{ display: 'inline-block', marginRight: 8 }} />
