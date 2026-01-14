@@ -11,7 +11,7 @@ import Button from './components/Button';
 import LanguageSelector from './components/LanguageSelector';
 import LandingPage from './components/LandingPage';
 import SwissDocument from './components/SwissDocument';
-import { Dog, Cat, Bird, Camera, ArrowRight, ShieldCheck, Sparkles, CheckCircle2, PawPrint, ChevronLeft, ChevronRight, X, Printer, Mail, LayoutTemplate, Heart } from 'lucide-react';
+import { Dog, Cat, Bird, Camera, ArrowRight, ShieldCheck, Sparkles, CheckCircle2, PawPrint, ChevronLeft, ChevronRight, X, Printer, Mail, LayoutTemplate, Heart, Phone, Volume2 } from 'lucide-react';
 import DonateModal from './components/DonateModal';
 import PaymentModal from './components/PaymentModal';
 
@@ -214,28 +214,102 @@ export default function App() {
         </div>
       );
       case 3: return (
-        <div className={`page page-enter-${animDir} reveal fade-enter space-y-7 max-w-lg mx-auto`}>
-          <div className="p-4 theme-info-box rounded-xl text-sm flex gap-3 leading-relaxed border mb-6">
-            <ShieldCheck className="shrink-0 mt-0.5" />
-            <span>{data.petType === 'dog' ? t.ui.insuranceInfoDog : t.ui.insuranceInfoCat}</span>
-          </div>
-          <div className="grid grid-cols-1 gap-5">
-            <div><Label>{t.labels.insurance}</Label><Input value={data.insuranceProvider} onChange={e => updateData('insuranceProvider', e.target.value)} placeholder="z.B. AXA, Mobiliar" /></div>
-            <div className="grid grid-cols-2 gap-5">
-              <div><Label>{t.labels.chipId}</Label><Input value={data.chipId} onChange={e => updateData('chipId', e.target.value)} /></div>
-              <div><Label>{t.labels.vet}</Label><Input value={data.vetName} onChange={e => updateData('vetName', e.target.value)} /></div>
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-7 max-w-2xl mx-auto`}>
+          {/* Insurance Section */}
+          <div className="theme-card rounded-2xl p-6 border theme-border">
+            <div className="p-4 theme-info-box rounded-xl text-sm flex gap-3 leading-relaxed border mb-6">
+              <ShieldCheck className="shrink-0 mt-0.5" />
+              <span>{data.petType === 'dog' ? t.ui.insuranceInfoDog : t.ui.insuranceInfoCat}</span>
+            </div>
+            <div className="grid grid-cols-1 gap-5">
+              <div><Label>{t.labels.insurance}</Label><Input value={data.insuranceProvider} onChange={e => updateData('insuranceProvider', e.target.value)} placeholder="z.B. AXA, Mobiliar" /></div>
+              <div className="grid grid-cols-2 gap-5">
+                <div><Label>{t.labels.chipId}</Label><Input value={data.chipId} onChange={e => updateData('chipId', e.target.value)} /></div>
+                <div><Label>{t.labels.vet}</Label><Input value={data.vetName} onChange={e => updateData('vetName', e.target.value)} /></div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 pt-4">
+              {[{ id: 'isNeutered', label: t.labels.neutered }, { id: 'hasVaccination', label: t.labels.vaccination }, { id: 'hasRegistration', label: t.labels.registration }].map(opt => (
+                <label key={opt.id} className="flex items-center justify-between p-4 theme-border rounded-xl cursor-pointer hover:theme-card-bg-hover transition-colors theme-card hover-glass">
+                  <span className="text-sm font-medium theme-text">{opt.label}</span>
+                  <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${data[opt.id] ? 'theme-radio-selected' : 'theme-border'}`}>
+                    {data[opt.id] && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                  </div>
+                  <input type="checkbox" className="hidden" checked={data[opt.id]} onChange={e => updateData(opt.id, e.target.checked)} />
+                </label>
+              ))}
             </div>
           </div>
-          <div className="flex flex-col gap-3 pt-2">
-            {[{ id: 'isNeutered', label: t.labels.neutered }, { id: 'hasVaccination', label: t.labels.vaccination }, { id: 'hasRegistration', label: t.labels.registration }].map(opt => (
-              <label key={opt.id} className="flex items-center justify-between p-4 theme-border rounded-xl cursor-pointer hover:theme-card-bg-hover transition-colors theme-card hover-glass">
-                <span className="text-sm font-medium theme-text">{opt.label}</span>
-                <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${data[opt.id] ? 'theme-radio-selected' : 'theme-border'}`}>
-                  {data[opt.id] && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+
+          {/* Behavior & Daily Routine Section */}
+          <div className="theme-card rounded-2xl p-6 border theme-border">
+            <h3 className="text-lg font-bold theme-text mb-4 flex items-center gap-2">
+              <Volume2 size={20} />
+              {t.labels.behaviorWithChildren.split(' ')[0]} & Routine
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <Label>{t.labels.noiseLevel}</Label>
+                <select className="theme-input w-full p-3 border rounded-xl text-sm focus:ring-2 outline-none transition-all" value={data.noiseLevel} onChange={e => updateData('noiseLevel', e.target.value)}>
+                  <option value="low">{t.labels.noiseLow}</option>
+                  <option value="medium">{t.labels.noiseMedium}</option>
+                  <option value="high">{t.labels.noiseHigh}</option>
+                </select>
+              </div>
+              <div>
+                <Label>{t.labels.aloneTime}</Label>
+                <Input type="number" min="0" max="24" value={data.aloneTime} onChange={e => updateData('aloneTime', e.target.value)} placeholder="0-24" />
+              </div>
+              <div className="md:col-span-2">
+                <Label>{t.labels.activeHours}</Label>
+                <Input value={data.activeHours} onChange={e => updateData('activeHours', e.target.value)} placeholder="07:00-09:00, 18:00-20:00" />
+              </div>
+              <div>
+                <Label>{t.labels.behaviorWithChildren}</Label>
+                <select className="theme-input w-full p-3 border rounded-xl text-sm focus:ring-2 outline-none transition-all" value={data.behaviorWithChildren} onChange={e => updateData('behaviorWithChildren', e.target.value)}>
+                  <option value="">{t.labels.behaviorNeutral}</option>
+                  <option value="good">{t.labels.behaviorGood}</option>
+                  <option value="neutral">{t.labels.behaviorNeutral}</option>
+                  <option value="avoid">{t.labels.behaviorAvoid}</option>
+                </select>
+              </div>
+              <div>
+                <Label>{t.labels.behaviorWithPets}</Label>
+                <select className="theme-input w-full p-3 border rounded-xl text-sm focus:ring-2 outline-none transition-all" value={data.behaviorWithPets} onChange={e => updateData('behaviorWithPets', e.target.value)}>
+                  <option value="">{t.labels.behaviorNeutral}</option>
+                  <option value="good">{t.labels.behaviorGood}</option>
+                  <option value="neutral">{t.labels.behaviorNeutral}</option>
+                  <option value="avoid">{t.labels.behaviorAvoid}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Reference & Emergency Contact Section */}
+          <div className="theme-card rounded-2xl p-6 border theme-border">
+            <h3 className="text-lg font-bold theme-text mb-4 flex items-center gap-2">
+              <Phone size={20} />
+              {t.labels.previousLandlord} & {t.labels.emergencyContact}
+            </h3>
+            <div className="grid grid-cols-1 gap-5">
+              <div className="pb-4 border-b theme-border">
+                <Label className="text-base font-semibold mb-3 block">{t.labels.previousLandlord}</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div><Label>{t.labels.previousLandlordName}</Label><Input value={data.previousLandlordName} onChange={e => updateData('previousLandlordName', e.target.value)} /></div>
+                  <div><Label>{t.labels.previousDuration}</Label><Input value={data.previousDuration} onChange={e => updateData('previousDuration', e.target.value)} placeholder="3 Jahre" /></div>
+                  <div><Label>{t.labels.previousLandlordPhone}</Label><Input value={data.previousLandlordPhone} onChange={e => updateData('previousLandlordPhone', e.target.value)} placeholder="+41 XX XXX XX XX" /></div>
+                  <div><Label>{t.labels.previousLandlordEmail}</Label><Input type="email" value={data.previousLandlordEmail} onChange={e => updateData('previousLandlordEmail', e.target.value)} /></div>
                 </div>
-                <input type="checkbox" className="hidden" checked={data[opt.id]} onChange={e => updateData(opt.id, e.target.checked)} />
-              </label>
-            ))}
+              </div>
+              <div>
+                <Label className="text-base font-semibold mb-3 block">{t.labels.emergencyContact}</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div><Label>{t.labels.emergencyContactName}</Label><Input value={data.emergencyContactName} onChange={e => updateData('emergencyContactName', e.target.value)} /></div>
+                  <div><Label>{t.labels.emergencyContactRelation}</Label><Input value={data.emergencyContactRelation} onChange={e => updateData('emergencyContactRelation', e.target.value)} placeholder="Freund, Familie" /></div>
+                  <div className="md:col-span-2"><Label>{t.labels.emergencyContactPhone}</Label><Input value={data.emergencyContactPhone} onChange={e => updateData('emergencyContactPhone', e.target.value)} placeholder="+41 XX XXX XX XX" /></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -336,25 +410,25 @@ export default function App() {
 
       // --- КРОК 7: ВИБІР ШАБЛОНУ (ТІЛЬКИ СІТКА, БЕЗ ДОКУМЕНТУ) ---
       case 7: return (
-        <div className={`page page-enter-${animDir} reveal fade-enter space-y-10 text-center max-w-4xl mx-auto`}>
+        <div className={`page page-enter-${animDir} reveal fade-enter space-y-10 text-center max-w-7xl mx-auto`}>
           {/* СІТКА ВИБОРУ ШАБЛОНУ */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl mx-auto px-4">
-            {['classic', 'modern', 'compact'].map((tpl) => (
-              <div key={tpl}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto px-4">
+            {TEMPLATE_OPTIONS.map((tplOption) => (
+              <div key={tplOption.id}
                    className="group relative p-4 border-2 theme-border rounded-3xl theme-card hover:border-primary hover:shadow-xl hover:shadow-strong transition-all duration-300 flex flex-col items-center cursor-pointer card-lift"
-                   onClick={() => { setTemplateType(tpl); setSelectedTemplate(tpl); showToast('Template selected', 'info'); goToStep(step + 1); }}>
+                   onClick={() => { setTemplateType(tplOption.id); setSelectedTemplate(tplOption.id); showToast('Template selected', 'info'); goToStep(step + 1); }}>
 
                 <div className="absolute top-4 left-0 right-0 text-center">
                   <span className="inline-block px-3 py-1 rounded-full theme-bg-secondary theme-text-muted text-xs font-bold uppercase tracking-widest group-hover:bg-primary-light group-hover:text-primary transition-colors">
-                    {tpl}
+                    {tplOption.label}
                   </span>
                 </div>
 
                 <div className="mt-10 w-full aspect-[1/1.4] overflow-hidden rounded-xl border theme-border theme-bg-secondary group-hover:theme-card transition-colors relative">
                   {/* Мініатюра */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                     <div style={{ width: '210mm', transform: 'scale(0.25)', transformOrigin: 'center' }} className="shadow-lg">
-                       <SwissDocument data={data} t={t} templateType={tpl} />
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-1">
+                     <div style={{ width: '210mm', transform: 'scale(0.42)', transformOrigin: 'center' }} className="shadow-lg">
+                       <SwissDocument data={data} t={t} templateType={tplOption.id} />
                      </div>
                   </div>
 
@@ -367,7 +441,7 @@ export default function App() {
                 </div>
 
                 <div className="mt-4 flex gap-3 w-full">
-                  <Button variant="ghost" className="flex-1 text-xs" onClick={(e) => { e.stopPropagation(); setPreviewTemplate(tpl); setPreviewOpen(true); }}>
+                  <Button variant="ghost" className="flex-1 text-xs" onClick={(e) => { e.stopPropagation(); setPreviewTemplate(tplOption.id); setPreviewOpen(true); }}>
                     <Camera size={14} className="mr-1"/> {t.ui.preview}
                   </Button>
                 </div>
@@ -397,7 +471,7 @@ export default function App() {
     return (
       <div className="min-h-screen theme-bg font-sans theme-text pb-6 print:bg-white print:p-0">
         <GlobalStyles />
-        <header className="app-header bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
+        <header className="app-header sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
           <div className="flex items-center gap-3 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
             <div className="theme-button-primary p-1.5 rounded-lg shadow-md"><PawPrint size={18} /></div>
             <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
@@ -410,7 +484,6 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-3">
-            <ThemeToggle theme={theme} onThemeChange={setTheme} />
             <LanguageSelector value={data.lang} onChange={(v) => updateData('lang', v)} />
           </div>
         </header>
@@ -489,7 +562,7 @@ export default function App() {
   return (
     <div className="min-h-screen theme-bg font-sans theme-text pb-6 print:bg-white print:p-0">
       <GlobalStyles theme={theme} />
-      <header className="app-header bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
+      <header className={`app-header ${step === 0 ? 'app-header-full' : ''} sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all`}>
         <div className="flex items-center gap-3 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
           <div className="theme-button-primary p-1.5 rounded-lg shadow-md"><PawPrint size={18} /></div>
           <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
@@ -511,8 +584,8 @@ export default function App() {
         </div>
       </header>
 
-      <main className="w-full max-w-7xl mx-auto print:w-full print:max-w-none print:p-0">
-        <div className="p-4 md:p-8 print:border-none print:shadow-none print:p-0">
+      <main className="w-full print:w-full print:max-w-none print:p-0">
+        <div className={step === 0 ? "w-full" : "max-w-7xl mx-auto p-4 md:p-8 print:border-none print:shadow-none print:p-0"}>
           {renderStep()}
         </div>
       </main>

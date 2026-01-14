@@ -1,6 +1,12 @@
 import React from 'react';
-import { PawPrint, Camera, Dog, Cat, Bird, Phone, Mail } from 'lucide-react';
-import StatusItem from './StatusItem';
+import { PawPrint } from 'lucide-react';
+import PetPhoto from './document/PetPhoto';
+import OwnerInfo from './document/OwnerInfo';
+import PetDetails from './document/PetDetails';
+import LegalSection from './document/LegalSection';
+import DescriptionSection from './document/DescriptionSection';
+import BehaviorSection from './document/BehaviorSection';
+import ReferenceSection from './document/ReferenceSection';
 
 const SwissDocument = ({ data, t, templateType = 'classic' }) => {
   const getLocale = (lang) => {
@@ -15,333 +21,387 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
   };
   const today = new Date().toLocaleDateString(getLocale(data.lang));
 
-  const variantClasses = {
-    classic: 'p-[20mm] text-sm',
-    modern: 'p-[16mm] text-sm leading-relaxed',
-    compact: 'p-[12mm] text-xs'
+  // Template configuration
+  const getTemplateConfig = () => {
+    const configs = {
+      classic: {
+        container: 'w-[210mm] h-[297mm] bg-white text-slate-900 p-[20mm] text-sm font-sans relative box-border flex flex-col shadow-none mx-auto',
+        headerContainer: 'mb-10',
+        headerFlex: 'flex items-center justify-between mb-8',
+        headerIconContainer: 'flex items-center gap-3',
+        headerIconBg: 'bg-slate-900 text-white p-2 rounded',
+        headerIconSize: 20,
+        titleText: 'text-2xl font-black uppercase tracking-wide',
+        subtitleText: 'text-xs uppercase tracking-widest text-slate-500 mt-1',
+        dateText: 'text-xs text-slate-400 text-right',
+        dateLabel: t.doc.date,
+        mainLayout: 'flex gap-10 flex-1',
+        sidebarWidth: 'w-[35%]',
+        sidebarSpace: 'space-y-6',
+        mainWidth: 'flex-1',
+        mainSpace: 'space-y-6',
+        footerContainer: 'mt-auto pt-6 border-t-2 border-slate-900 flex justify-between items-end',
+        footerText: 'text-[10px] text-slate-400 uppercase tracking-wider',
+        footerSignContainer: 'w-64 border-t-2 border-slate-900 pt-2',
+        footerSignText: 'text-[10px] uppercase font-black tracking-wider',
+        badge: null // No badge for classic
+      },
+
+      modern: {
+        container: 'w-[210mm] h-[297mm] bg-gradient-to-br from-white via-rose-50 to-pink-50 text-slate-900 p-[16mm] text-sm leading-relaxed font-sans relative box-border flex flex-col shadow-none mx-auto',
+        headerContainer: 'mb-8',
+        headerFlex: 'bg-gradient-to-r from-rose-400 to-pink-400 -mx-[16mm] -mt-[16mm] px-[16mm] pt-[16mm] pb-6 mb-8 text-white flex items-center justify-between',
+        headerIconContainer: 'flex items-center gap-4',
+        headerIconBg: 'bg-white text-rose-500 p-3 rounded-full shadow-lg',
+        headerIconSize: 24,
+        titleText: 'text-3xl font-black',
+        subtitleText: 'text-sm font-medium opacity-90 mt-1',
+        dateText: 'text-sm text-right opacity-90',
+        dateLabel: today,
+        mainLayout: 'flex gap-6 flex-1',
+        sidebarWidth: 'w-[35%]',
+        sidebarSpace: 'space-y-5',
+        mainWidth: 'flex-1',
+        mainSpace: 'space-y-5',
+        footerContainer: 'mt-auto pt-4 border-t border-rose-200 text-center',
+        footerText: 'text-xs text-slate-500',
+        footerSignContainer: null,
+        footerSignText: null,
+        badge: null
+      },
+
+      elegant: {
+        container: 'w-[210mm] h-[297mm] bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 text-slate-800 p-[18mm] text-sm font-serif relative box-border flex flex-col shadow-none mx-auto border-8 border-amber-400',
+        headerContainer: 'mb-8 text-center border-b-4 border-amber-400 pb-6',
+        headerFlex: null,
+        headerIconContainer: 'inline-block bg-gradient-to-r from-amber-400 to-yellow-500 text-white p-3 rounded-full mb-4',
+        headerIconBg: null,
+        headerIconSize: 28,
+        titleText: 'text-5xl font-bold text-amber-700 mb-2',
+        subtitleText: 'text-sm text-amber-600 uppercase tracking-widest',
+        dateText: 'text-xs text-amber-600 mt-2',
+        dateLabel: today,
+        mainLayout: 'flex gap-6 flex-1',
+        sidebarWidth: 'w-[35%]',
+        sidebarSpace: 'space-y-5',
+        mainWidth: 'flex-1',
+        mainSpace: 'space-y-5',
+        footerContainer: 'mt-auto pt-4 border-t-2 border-amber-400 text-center',
+        footerText: 'text-xs text-amber-600',
+        footerSignContainer: null,
+        footerSignText: null,
+        badge: null
+      },
+
+      minimal: {
+        container: 'w-[210mm] h-[297mm] bg-white text-black p-[24mm] text-sm font-sans relative box-border flex flex-col shadow-none mx-auto',
+        headerContainer: 'mb-12',
+        headerFlex: 'flex items-start justify-between',
+        headerIconContainer: null,
+        headerIconBg: null,
+        headerIconSize: 32,
+        titleText: 'text-6xl font-light tracking-tight mb-2',
+        subtitleText: 'text-sm uppercase tracking-widest text-gray-400',
+        dateText: 'text-xs text-right text-gray-400',
+        dateLabel: today,
+        mainLayout: 'space-y-8 flex-1',
+        sidebarWidth: null,
+        sidebarSpace: null,
+        mainWidth: 'w-full',
+        mainSpace: 'space-y-6',
+        footerContainer: 'mt-auto pt-6 border-t border-gray-200 text-center',
+        footerText: 'text-xs text-gray-400',
+        footerSignContainer: null,
+        footerSignText: null,
+        badge: 'mb-6' // Special: PawPrint before title
+      },
+
+      colorful: {
+        container: 'w-[210mm] h-[297mm] bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 text-slate-800 p-[16mm] text-sm font-sans relative box-border flex flex-col shadow-none mx-auto',
+        headerContainer: 'mb-6 bg-white rounded-3xl p-6 shadow-xl',
+        headerFlex: 'flex items-center justify-between',
+        headerIconContainer: 'flex items-center gap-4',
+        headerIconBg: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white p-3 rounded-2xl shadow-lg',
+        headerIconSize: 28,
+        titleText: 'text-3xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent',
+        subtitleText: 'text-sm text-purple-500 font-bold mt-1',
+        dateText: 'text-sm text-slate-500',
+        dateLabel: today,
+        mainLayout: 'grid grid-cols-2 gap-6 flex-1',
+        sidebarWidth: null,
+        sidebarSpace: null,
+        mainWidth: 'space-y-6',
+        mainSpace: 'space-y-6',
+        footerContainer: 'mt-auto pt-4 text-center',
+        footerText: 'text-xs text-slate-500',
+        footerSignContainer: null,
+        footerSignText: null,
+        badge: null
+      },
+
+      professional: {
+        container: 'w-[210mm] h-[297mm] bg-slate-900 text-white p-[20mm] text-sm font-sans relative box-border flex flex-col shadow-none mx-auto',
+        headerContainer: 'mb-8 pb-6 border-b border-slate-700',
+        headerFlex: 'flex items-center justify-between',
+        headerIconContainer: 'flex items-center gap-4',
+        headerIconBg: 'bg-blue-500 p-3 rounded-lg',
+        headerIconSize: 28,
+        titleText: 'text-2xl font-bold',
+        subtitleText: 'text-sm text-slate-400 mt-1',
+        dateText: 'text-sm text-slate-400',
+        dateLabel: today,
+        mainLayout: 'flex gap-6 flex-1',
+        sidebarWidth: 'w-[38%]',
+        sidebarSpace: 'space-y-5',
+        mainWidth: 'flex-1',
+        mainSpace: 'space-y-5',
+        footerContainer: 'mt-auto pt-4 border-t border-slate-700 text-center',
+        footerText: 'text-xs text-slate-500',
+        footerSignContainer: null,
+        footerSignText: null,
+        badge: null
+      },
+
+      playful: {
+        container: 'w-[210mm] h-[297mm] bg-gradient-to-br from-yellow-100 via-orange-100 to-red-100 text-slate-800 p-[16mm] text-sm font-sans relative box-border flex flex-col shadow-none mx-auto',
+        headerContainer: 'mb-6 text-center',
+        headerFlex: null,
+        headerIconContainer: 'inline-block bg-gradient-to-r from-orange-400 to-red-400 text-white p-4 rounded-full mb-4 shadow-lg',
+        headerIconBg: null,
+        headerIconSize: 32,
+        titleText: 'text-4xl font-black text-orange-600 mb-2',
+        subtitleText: 'text-sm text-orange-500 font-bold uppercase tracking-wide',
+        dateText: 'text-xs text-slate-500 mt-2',
+        dateLabel: today,
+        mainLayout: 'flex gap-6 flex-1',
+        sidebarWidth: 'w-[35%]',
+        sidebarSpace: 'space-y-5',
+        mainWidth: 'flex-1',
+        mainSpace: 'space-y-5',
+        footerContainer: 'mt-auto pt-4 text-center',
+        footerText: 'text-xs text-slate-500',
+        footerSignContainer: null,
+        footerSignText: null,
+        badge: null
+      },
+
+      swiss: {
+        container: 'w-[210mm] h-[297mm] bg-white text-slate-900 p-[20mm] text-sm font-sans relative box-border flex flex-col shadow-none mx-auto border-t-8 border-red-600',
+        headerContainer: 'mb-8 flex items-center justify-between border-b-2 border-red-600 pb-6',
+        headerFlex: 'flex items-center gap-4',
+        headerIconContainer: null,
+        headerIconBg: 'bg-red-600 text-white p-3',
+        headerIconSize: 28,
+        titleText: 'text-3xl font-bold text-slate-900',
+        subtitleText: 'text-sm text-red-600 font-semibold',
+        dateText: 'text-xs text-slate-500',
+        dateLabel: today,
+        dateBadge: '🇨🇭 ' + t.ui.swissStandard.toUpperCase(),
+        mainLayout: 'flex gap-6 flex-1',
+        sidebarWidth: 'w-[35%]',
+        sidebarSpace: 'space-y-5',
+        mainWidth: 'flex-1',
+        mainSpace: 'space-y-5',
+        footerContainer: 'mt-auto pt-4 border-t-2 border-red-600 text-center',
+        footerText: 'text-xs text-slate-600',
+        footerSignContainer: null,
+        footerSignText: null,
+        badge: null
+      },
+
+      compact: {
+        container: 'w-[210mm] h-[297mm] bg-white text-slate-900 p-[12mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto',
+        headerContainer: 'mb-6',
+        headerFlex: 'flex items-center justify-between mb-4 border-b border-slate-300 pb-3',
+        headerIconContainer: 'flex items-center gap-2',
+        headerIconBg: 'bg-slate-900 text-white p-1.5',
+        headerIconSize: 16,
+        titleText: 'text-lg font-bold',
+        subtitleText: 'text-[10px] text-slate-500 uppercase tracking-wider',
+        dateText: 'text-[10px] text-slate-400',
+        dateLabel: today,
+        mainLayout: 'flex gap-6 flex-1',
+        sidebarWidth: 'w-[35%]',
+        sidebarSpace: 'space-y-4',
+        mainWidth: 'flex-1',
+        mainSpace: 'space-y-4',
+        footerContainer: 'mt-auto pt-3 border-t border-slate-300 text-center',
+        footerText: 'text-[9px] text-slate-400',
+        footerSignContainer: null,
+        footerSignText: null,
+        badge: null
+      }
+    };
+
+    return configs[templateType] || configs.classic;
   };
 
-  // 🎨 CLASSIC TEMPLATE - Мінімалістичний Swiss Design
-  if (templateType === 'classic') {
+  const config = getTemplateConfig();
+
+  // Render header based on template
+  const renderHeader = () => {
+    if (templateType === 'minimal') {
+      return (
+        <div className={config.headerContainer}>
+          <PawPrint size={config.headerIconSize} className="mb-6" />
+          <div className={config.headerFlex}>
+            <div>
+              <h1 className={config.titleText}>{data.name || t.ui.owner}</h1>
+              <p className={config.subtitleText}>{t.doc.subtitle}</p>
+            </div>
+            <div className={config.dateText}>
+              <p>{config.dateLabel}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (templateType === 'elegant' || templateType === 'playful') {
+      return (
+        <div className={config.headerContainer}>
+          <div className={config.headerIconContainer}>
+            <PawPrint size={config.headerIconSize} />
+          </div>
+          <h1 className={config.titleText}>{t.doc.title}</h1>
+          <p className={config.subtitleText}>{t.doc.subtitle}</p>
+          <p className={config.dateText}>{config.dateLabel}</p>
+        </div>
+      );
+    }
+
+    if (templateType === 'swiss') {
+      return (
+        <div className={config.headerContainer}>
+          <div className={config.headerFlex}>
+            <div className={config.headerIconBg}>
+              <PawPrint size={config.headerIconSize} />
+            </div>
+            <div>
+              <h1 className={config.titleText}>{t.doc.title}</h1>
+              <p className={config.subtitleText}>{t.doc.subtitle}</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className={config.dateText}>{config.dateLabel}</p>
+            <p className="text-xs text-red-600 font-bold mt-1">{config.dateBadge}</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Default header (classic, modern, colorful, professional, compact)
     return (
-      <div className="w-[210mm] h-[297mm] bg-white text-slate-900 p-[20mm] text-sm font-sans relative box-border flex flex-col shadow-none mx-auto">
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="bg-slate-900 text-white p-2"><PawPrint size={24} /></div>
-              <div className="text-xs font-bold tracking-[0.3em] uppercase text-slate-500">Pet Dossier</div>
+      <div className={config.headerContainer}>
+        <div className={config.headerFlex}>
+          <div className={config.headerIconContainer}>
+            <div className={config.headerIconBg}>
+              <PawPrint size={config.headerIconSize} />
             </div>
-            <div className="text-xs text-slate-400 uppercase tracking-wider">{today}</div>
+            <div>
+              <h1 className={config.titleText}>{t.doc.title}</h1>
+              <p className={config.subtitleText}>{t.doc.subtitle}</p>
+            </div>
           </div>
-          <h1 className="text-4xl font-black tracking-tighter uppercase mb-2 text-slate-900">{t.doc.title}</h1>
-          <div className="border-b-4 border-slate-900 pb-2">
-            <span className="text-sm font-medium text-slate-500">{t.doc.subtitle}</span>
+          <div className={config.dateText}>
+            <p>{config.dateLabel}</p>
           </div>
         </div>
+      </div>
+    );
+  };
 
-        <div className="flex gap-12 grow">
-          <div className="w-[35%] flex flex-col gap-8">
-            <div className="aspect-[3/4] w-full bg-slate-100 flex items-center justify-center overflow-hidden relative rounded-none border-4 border-slate-900">
-              {data.photo ? (
-                <img src={data.photo} className="w-full h-full object-cover grayscale" alt="Pet" />
-              ) : (
-                <div className="text-slate-300 text-center">
-                  <Camera size={32} className="mx-auto mb-2 opacity-50" />
-                  <span className="text-xs">NO IMAGE</span>
-                </div>
-              )}
-              <div className="absolute top-0 right-0 bg-slate-900 text-white p-3">
-                {data.petType === 'dog' ? <Dog size={20}/> : data.petType === 'cat' ? <Cat size={20}/> : <Bird size={20}/>}
-              </div>
-            </div>
+  // Render footer
+  const renderFooter = () => {
+    if (!config.footerContainer) return null;
 
-            <div>
-              <h3 className="font-black uppercase tracking-wider text-xs mb-4 border-b-2 border-slate-900 pb-2">{t.doc.sectionOwner}</h3>
-              <div className="space-y-2">
-                <p className="font-bold text-lg leading-tight">{data.ownerName || '—'}</p>
-                <p className="text-slate-600 text-sm leading-tight">{(data.street || '') + (data.houseNumber ? ' ' + data.houseNumber : '')}</p>
-                <p className="text-slate-600 text-sm leading-tight">{(data.postal ? data.postal + ' ' : '') + (data.city || '')}</p>
-                <div className="pt-4 space-y-2 text-slate-500 text-xs">
-                  <p className="flex items-center gap-2"><Phone size={12}/> {data.phone || '—'}</p>
-                  <p className="flex items-center gap-2"><Mail size={12}/> {data.email || '—'}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-[65%] flex flex-col gap-8">
-            <div>
-              <h3 className="font-black uppercase tracking-wider text-xs mb-4 border-b-2 border-slate-900 pb-2">{t.doc.sectionPet}</h3>
-              <div className="grid grid-cols-2 gap-y-6 gap-x-8">
-                <div>
-                  <span className="block text-[10px] text-slate-600 uppercase tracking-wide mb-1 font-bold">{t.labels.petName}</span>
-                  <span className="font-black text-2xl">{data.name || '—'}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-slate-600 uppercase tracking-wide mb-1 font-bold">{t.labels.breed}</span>
-                  <span className="text-base font-medium">{data.breed || '—'}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-slate-600 uppercase tracking-wide mb-1 font-bold">{t.labels.gender} / {t.labels.age}</span>
-                  <span className="text-base font-medium">{data.gender === 'm' ? t.labels.m : t.labels.f}, {data.age}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-slate-600 uppercase tracking-wide mb-1 font-bold">{t.labels.weight}</span>
-                  <span className="text-base font-medium">{data.weight || '—'}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="grow">
-              <h3 className="font-black uppercase tracking-wider text-xs mb-4 border-b-2 border-slate-900 pb-2">{t.doc.sectionAbout}</h3>
-              <div className="text-base leading-relaxed text-slate-700 text-justify">
-                {data.generatedText || <span className="text-slate-300 italic">No description available</span>}
-              </div>
-            </div>
-
-            <div className="bg-stone-50 p-6 border-2 border-slate-200">
-              <h3 className="font-black uppercase tracking-wider text-xs mb-4 text-slate-600">{t.doc.sectionLegal}</h3>
-              <div className="grid grid-cols-2 gap-6 text-sm">
-                <div>
-                  <span className="block text-[10px] text-slate-600 uppercase tracking-wide mb-1 font-bold">{t.labels.chipId}</span>
-                  <span className="font-mono bg-white px-2 py-1 border border-slate-200 inline-block">{data.chipId || '—'}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-slate-600 uppercase tracking-wide mb-1 font-bold">{t.labels.insurance}</span>
-                  <span className="font-medium">{data.insuranceProvider || '—'}</span>
-                </div>
-                <div className="col-span-2 flex flex-wrap gap-6 mt-2 pt-4 border-t-2 border-slate-200">
-                  <StatusItem label={t.labels.neutered} active={data.isNeutered} />
-                  <StatusItem label={t.labels.vaccination} active={data.hasVaccination} />
-                  <StatusItem label={t.labels.registration} active={data.hasRegistration} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-auto pt-6 border-t-2 border-slate-900 flex justify-between items-end">
-          <div className="text-[10px] text-slate-400 uppercase tracking-wider">
+    if (config.footerSignContainer) {
+      // Classic style with signature
+      return (
+        <div className={config.footerContainer}>
+          <div className={config.footerText}>
             <p className="font-bold">{t.doc.footer}</p>
           </div>
-          <div className="w-64 border-t-2 border-slate-900 pt-2">
-            <p className="text-[10px] uppercase font-black tracking-wider">{t.doc.sign}</p>
+          <div className={config.footerSignContainer}>
+            <p className={config.footerSignText}>{t.doc.sign}</p>
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  // 🌸 MODERN TEMPLATE - Пастельні відтінки, сучасний дизайн
-  if (templateType === 'modern') {
+    // Simple centered footer
     return (
-      <div className="w-[210mm] h-[297mm] bg-gradient-to-br from-rose-50 via-white to-pink-50 text-slate-800 p-[16mm] text-sm leading-relaxed font-sans relative box-border flex flex-col shadow-none mx-auto">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="bg-gradient-to-br from-rose-400 to-pink-400 text-white p-3 rounded-2xl shadow-lg"><PawPrint size={28} /></div>
-            <div>
-              <div className="text-xs font-bold tracking-[0.2em] uppercase text-rose-500">Swiss Pet CV</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">{today}</div>
+      <div className={config.footerContainer}>
+        <p className={config.footerText}>{t.doc.footer}</p>
+      </div>
+    );
+  };
+
+  // Render main content layout
+  const renderContent = () => {
+    // Minimal template has unique single-column layout
+    if (templateType === 'minimal') {
+      return (
+        <div className={config.mainLayout}>
+          <div className="flex gap-8 mb-6">
+            <div className="w-48">
+              <PetPhoto photo={data.photo} petType={data.petType} t={t} variant={templateType} />
+            </div>
+            <div className="flex-1 space-y-6">
+              <OwnerInfo data={data} t={t} variant={templateType} />
+              <PetDetails data={data} t={t} variant={templateType} />
             </div>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2 text-slate-800">{t.doc.title}</h1>
-          <div className="border-b-2 border-rose-300 pb-3">
-            <span className="text-sm font-medium text-slate-600">{t.doc.subtitle}</span>
+          <DescriptionSection text={data.generatedText} t={t} variant={templateType} />
+          <BehaviorSection data={data} t={t} variant={templateType} />
+          <LegalSection data={data} t={t} variant={templateType} />
+          <ReferenceSection data={data} t={t} variant={templateType} />
+        </div>
+      );
+    }
+
+    // Colorful template has 2-column grid
+    if (templateType === 'colorful') {
+      return (
+        <div className={config.mainLayout}>
+          <div className={config.mainWidth}>
+            <PetPhoto photo={data.photo} petType={data.petType} t={t} variant={templateType} />
+            <OwnerInfo data={data} t={t} variant={templateType} />
+            <BehaviorSection data={data} t={t} variant={templateType} />
+          </div>
+          <div className={config.mainSpace}>
+            <PetDetails data={data} t={t} variant={templateType} />
+            <DescriptionSection text={data.generatedText} t={t} variant={templateType} />
+            <LegalSection data={data} t={t} variant={templateType} />
+            <ReferenceSection data={data} t={t} variant={templateType} />
           </div>
         </div>
+      );
+    }
 
-        <div className="flex gap-10 grow">
-          <div className="w-[40%] flex flex-col gap-8">
-            <div className="aspect-square w-full bg-gradient-to-br from-rose-100 to-pink-100 flex items-center justify-center overflow-hidden relative rounded-2xl shadow-xl border-4 border-white">
-              {data.photo ? (
-                <img src={data.photo} className="w-full h-full object-cover" alt="Pet" />
-              ) : (
-                <div className="text-rose-200 text-center">
-                  <Camera size={36} className="mx-auto mb-2" />
-                  <span className="text-xs">Photo</span>
-                </div>
-              )}
-              <div className="absolute bottom-4 right-4 bg-gradient-to-br from-rose-400 to-pink-400 text-white p-3 rounded-2xl shadow-lg">
-                {data.petType === 'dog' ? <Dog size={22}/> : data.petType === 'cat' ? <Cat size={22}/> : <Bird size={22}/>}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 shadow-md">
-              <h3 className="font-bold tracking-wide text-sm mb-4 text-rose-500">{t.doc.sectionOwner}</h3>
-              <div className="space-y-2">
-                <p className="font-bold text-lg leading-tight text-slate-800">{data.ownerName || '—'}</p>
-                <p className="text-slate-600 text-sm leading-relaxed">{(data.street || '') + (data.houseNumber ? ' ' + data.houseNumber : '')}</p>
-                <p className="text-slate-600 text-sm leading-relaxed">{(data.postal ? data.postal + ' ' : '') + (data.city || '')}</p>
-                <div className="pt-3 space-y-2 text-slate-500 text-xs">
-                  <p className="flex items-center gap-2"><Phone size={12} className="text-rose-400"/> {data.phone || '—'}</p>
-                  <p className="flex items-center gap-2"><Mail size={12} className="text-rose-400"/> {data.email || '—'}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-[60%] flex flex-col gap-8">
-            <div>
-              <h3 className="font-bold tracking-wide text-sm mb-4 text-rose-500">{t.doc.sectionPet}</h3>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl p-4 shadow-sm">
-                  <span className="block text-[10px] text-rose-500 uppercase tracking-wide mb-2 font-bold">{t.labels.petName}</span>
-                  <span className="font-bold text-xl text-slate-800">{data.name || '—'}</span>
-                </div>
-                <div className="bg-white rounded-xl p-4 shadow-sm">
-                  <span className="block text-[10px] text-rose-500 uppercase tracking-wide mb-2 font-bold">{t.labels.breed}</span>
-                  <span className="text-base font-medium">{data.breed || '—'}</span>
-                </div>
-                <div className="bg-white rounded-xl p-4 shadow-sm">
-                  <span className="block text-[10px] text-rose-500 uppercase tracking-wide mb-2 font-bold">{t.labels.gender} / {t.labels.age}</span>
-                  <span className="text-base font-medium">{data.gender === 'm' ? t.labels.m : t.labels.f}, {data.age}</span>
-                </div>
-                <div className="bg-white rounded-xl p-4 shadow-sm">
-                  <span className="block text-[10px] text-rose-500 uppercase tracking-wide mb-2 font-bold">{t.labels.weight}</span>
-                  <span className="text-base font-medium">{data.weight || '—'}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="grow bg-white rounded-2xl p-6 shadow-md">
-              <h3 className="font-bold tracking-wide text-sm mb-4 text-rose-500">{t.doc.sectionAbout}</h3>
-              <div className="text-sm leading-relaxed text-slate-700">
-                {data.generatedText || <span className="text-slate-300 italic">No description</span>}
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-rose-50 to-pink-50 p-6 rounded-2xl shadow-md border-l-4 border-rose-300">
-              <h3 className="font-bold tracking-wide text-sm mb-4 text-rose-500">{t.doc.sectionLegal}</h3>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="block text-[10px] text-rose-500 uppercase tracking-wide mb-2 font-bold">{t.labels.chipId}</span>
-                  <span className="font-mono bg-white px-3 py-2 rounded-lg border border-rose-200 inline-block shadow-sm">{data.chipId || '—'}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-rose-500 uppercase tracking-wide mb-2 font-bold">{t.labels.insurance}</span>
-                  <span className="font-medium">{data.insuranceProvider || '—'}</span>
-                </div>
-                <div className="col-span-2 flex flex-wrap gap-4 mt-2">
-                  <StatusItem label={t.labels.neutered} active={data.isNeutered} />
-                  <StatusItem label={t.labels.vaccination} active={data.hasVaccination} />
-                  <StatusItem label={t.labels.registration} active={data.hasRegistration} />
-                </div>
-              </div>
-            </div>
-          </div>
+    // Standard two-column layout (classic, modern, elegant, professional, playful, swiss, compact)
+    return (
+      <div className={config.mainLayout}>
+        <div className={`${config.sidebarWidth} ${config.sidebarSpace}`}>
+          <PetPhoto photo={data.photo} petType={data.petType} t={t} variant={templateType} />
+          <OwnerInfo data={data} t={t} variant={templateType} />
+          <BehaviorSection data={data} t={t} variant={templateType} />
         </div>
-
-        <div className="mt-auto pt-6 border-t border-rose-200 flex justify-between items-center">
-          <div className="text-[10px] text-slate-400 tracking-wide">
-            <p className="font-medium">{t.doc.footer}</p>
-          </div>
-          <div className="w-48 border-t border-rose-300 pt-2">
-            <p className="text-[10px] uppercase font-bold tracking-wider text-rose-500">{t.doc.sign}</p>
-          </div>
+        <div className={`${config.mainWidth} ${config.mainSpace}`}>
+          <PetDetails data={data} t={t} variant={templateType} />
+          <DescriptionSection text={data.generatedText} t={t} variant={templateType} />
+          <LegalSection data={data} t={t} variant={templateType} />
+          <ReferenceSection data={data} t={t} variant={templateType} />
         </div>
       </div>
     );
-  }
+  };
 
-  // 🌿 COMPACT TEMPLATE - Зелені пастельні тони, nature-inspired
   return (
-    <div className="w-[210mm] h-[297mm] bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 text-slate-700 p-[12mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto">
-      {/* Centered Header */}
-      <div className="text-center mb-6">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <div className="bg-gradient-to-br from-emerald-400 to-teal-400 text-white p-2.5 rounded-full shadow-lg"><PawPrint size={22} /></div>
-        </div>
-        <h1 className="text-2xl font-bold tracking-tight mb-1 text-slate-700">{t.doc.title}</h1>
-        <div className="border-b-3 border-emerald-300 pb-2 mx-auto max-w-md">
-          <span className="text-xs font-medium text-slate-600">{t.doc.subtitle}</span>
-        </div>
-        <div className="text-[9px] text-slate-400 uppercase tracking-wider mt-2">{today}</div>
-      </div>
-
-      {/* Photo + Basic Info in one row */}
-      <div className="flex gap-6 mb-6">
-        <div className="w-32 h-32 bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center overflow-hidden relative rounded-full shadow-lg border-4 border-white shrink-0">
-          {data.photo ? (
-            <img src={data.photo} className="w-full h-full object-cover" alt="Pet" />
-          ) : (
-            <Camera size={28} className="text-emerald-200" />
-          )}
-          <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-emerald-400 to-teal-400 text-white p-2 rounded-full shadow-lg">
-            {data.petType === 'dog' ? <Dog size={16}/> : data.petType === 'cat' ? <Cat size={16}/> : <Bird size={16}/>}
-          </div>
-        </div>
-
-        <div className="flex-1 grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-xl p-3 shadow-sm">
-            <span className="block text-[9px] text-emerald-600 uppercase tracking-wide mb-1 font-bold">{t.labels.petName}</span>
-            <span className="font-bold text-lg text-slate-700">{data.name || '—'}</span>
-          </div>
-          <div className="bg-white rounded-xl p-3 shadow-sm">
-            <span className="block text-[9px] text-emerald-600 uppercase tracking-wide mb-1 font-bold">{t.labels.breed}</span>
-            <span className="text-sm font-medium">{data.breed || '—'}</span>
-          </div>
-          <div className="bg-white rounded-xl p-3 shadow-sm">
-            <span className="block text-[9px] text-emerald-600 uppercase tracking-wide mb-1 font-bold">{t.labels.gender}</span>
-            <span className="text-sm font-medium">{data.gender === 'm' ? t.labels.m : t.labels.f}</span>
-          </div>
-          <div className="bg-white rounded-xl p-3 shadow-sm">
-            <span className="block text-[9px] text-emerald-600 uppercase tracking-wide mb-1 font-bold">{t.labels.age} / {t.labels.weight}</span>
-            <span className="text-sm font-medium">{data.age} / {data.weight || '—'}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Description */}
-      <div className="bg-white rounded-2xl p-5 shadow-md mb-6">
-        <h3 className="font-bold tracking-wide text-xs mb-3 text-emerald-600 uppercase">{t.doc.sectionAbout}</h3>
-        <div className="text-xs leading-relaxed text-slate-700">
-          {data.generatedText || <span className="text-slate-300 italic">No description</span>}
-        </div>
-      </div>
-
-      {/* Owner Info + Legal in two columns */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
-        <div className="bg-white rounded-2xl p-5 shadow-md">
-          <h3 className="font-bold tracking-wide text-xs mb-3 text-emerald-600 uppercase">{t.doc.sectionOwner}</h3>
-          <div className="space-y-1.5">
-            <p className="font-bold text-sm leading-tight text-slate-700">{data.ownerName || '—'}</p>
-            <p className="text-slate-600 text-xs leading-relaxed">{(data.street || '') + (data.houseNumber ? ' ' + data.houseNumber : '')}</p>
-            <p className="text-slate-600 text-xs leading-relaxed">{(data.postal ? data.postal + ' ' : '') + (data.city || '')}</p>
-            <div className="pt-2 space-y-1 text-slate-500 text-[10px]">
-              <p className="flex items-center gap-1.5"><Phone size={10} className="text-emerald-500"/> {data.phone || '—'}</p>
-              <p className="flex items-center gap-1.5"><Mail size={10} className="text-emerald-500"/> {data.email || '—'}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-5 border-2 border-emerald-200 rounded-xl shadow-md">
-          <h3 className="font-bold tracking-wide text-xs mb-3 text-emerald-600 uppercase">{t.doc.sectionLegal}</h3>
-          <div className="space-y-3 text-xs">
-            <div>
-              <span className="block text-[9px] text-emerald-600 uppercase tracking-wide mb-1 font-bold">{t.labels.chipId}</span>
-              <span className="font-mono bg-white px-2 py-1.5 rounded border border-emerald-200 inline-block text-[10px] shadow-sm">{data.chipId || '—'}</span>
-            </div>
-            <div>
-              <span className="block text-[9px] text-emerald-600 uppercase tracking-wide mb-1 font-bold">{t.labels.insurance}</span>
-              <span className="font-medium text-xs">{data.insuranceProvider || '—'}</span>
-            </div>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <StatusItem label={t.labels.neutered} active={data.isNeutered} />
-              <StatusItem label={t.labels.vaccination} active={data.hasVaccination} />
-              <StatusItem label={t.labels.registration} active={data.hasRegistration} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-auto pt-4 border-t border-emerald-200 flex justify-between items-center text-[9px]">
-        <div className="text-slate-400 tracking-wide">
-          <p className="font-medium">{t.doc.footer}</p>
-        </div>
-        <div className="w-40 border-t border-emerald-300 pt-1.5">
-          <p className="uppercase font-bold tracking-wider text-emerald-600 text-right">{t.doc.sign}</p>
-        </div>
-      </div>
+    <div className={config.container}>
+      {renderHeader()}
+      {renderContent()}
+      {renderFooter()}
     </div>
   );
 };

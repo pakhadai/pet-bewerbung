@@ -22,11 +22,13 @@ const TRANSLATIONS = {
       1: "Halter Information",
       2: "Tier Details",
       3: "Gesundheit & Versicherung",
-      4: "Charakter Beschreibung",
-      5: "Foto hochladen",
-      6: "Daten überprüfen",
-      7: "Vorlage auswählen",
-      8: "Vorschau & Download"
+      4: "Verhalten & Tagesablauf",
+      5: "Charakter Beschreibung",
+      6: "Foto hochladen",
+      7: "Referenzen & Notfallkontakt",
+      8: "Daten überprüfen",
+      9: "Vorlage auswählen",
+      10: "Vorschau & Download"
     },
     summary: {
       title: "Überprüfung Ihrer Daten",
@@ -56,7 +58,21 @@ const TRANSLATIONS = {
       emailInDevelopment: "E-Mail-Funktion in Entwicklung",
       freeSuccess: "Vielen Dank! Viel Erfolg bei der Suche.",
       insuranceInfoDog: "Für Hunde sind AMICUS und Haftpflicht in der Schweiz oft Pflicht.",
-      insuranceInfoCat: "Auch für Katzen wird eine Versicherung oft empfohlen (Mieterschäden)."
+      insuranceInfoCat: "Auch für Katzen wird eine Versicherung oft empfohlen (Mieterschäden).",
+      petPhotoAlt: "Haustierfoto",
+      noImage: "Kein Bild",
+      noDescription: "Keine Beschreibung verfügbar",
+      owner: "Halter",
+      about: "Über",
+      details: "Details",
+      status: "Status",
+      contact: "Kontakt",
+      petProfile: "Tierprofil",
+      petInfo: "Tierinformationen",
+      aboutMe: "Über mich",
+      myStatus: "Mein Status",
+      swissStandard: "Schweizer Standard",
+      photo: "Foto"
     },
     labels: {
       type: "Tierart",
@@ -89,6 +105,30 @@ const TRANSLATIONS = {
       aiResult: "Text für Vermieter",
       photo: "Foto wählen",
       download: "PDF speichern",
+      years: "Jahre",
+      kg: "kg",
+      // Swiss-specific labels
+      noiseLevel: "Lautstärke",
+      noiseLow: "Ruhig (selten laut)",
+      noiseMedium: "Gelegentlich (bei Besuch)",
+      noiseHigh: "Häufiger (bei Trennung)",
+      aloneTime: "Alleine pro Tag (Stunden)",
+      activeHours: "Aktivste Zeiten",
+      previousLandlord: "Vorheriger Vermieter",
+      previousLandlordName: "Name des Vermieters",
+      previousLandlordPhone: "Telefon",
+      previousLandlordEmail: "E-Mail",
+      previousDuration: "Wohndauer (Jahre)",
+      emergencyContact: "Notfallkontakt",
+      emergencyContactName: "Name",
+      emergencyContactPhone: "Telefon",
+      emergencyContactRelation: "Beziehung",
+      depositWillingness: "Bereit für Haustier-Kaution",
+      behaviorWithChildren: "Verhalten mit Kindern",
+      behaviorWithPets: "Verhalten mit anderen Tieren",
+      behaviorGood: "Sehr gut",
+      behaviorNeutral: "Neutral / Unbekannt",
+      behaviorAvoid: "Sollte vermieden werden"
     },
     doc: {
       title: "Tierhalter-Referenzblatt",
@@ -99,7 +139,10 @@ const TRANSLATIONS = {
       sectionAbout: "Beschreibung & Wesen",
       footer: "Dokument generiert via Pet-Bewerbung.ch",
       date: "Ort, Datum",
-      sign: "Unterschrift"
+      sign: "Unterschrift",
+      petDossier: "Haustier-Dossier",
+      swissPetCV: "Schweizer Haustier-Lebenslauf",
+      insurancePrefix: "Versicherung:"
     },
     monetization: {
       title: "Projekt unterstützen",
@@ -141,11 +184,13 @@ const TRANSLATIONS = {
       1: "Informations du propriétaire",
       2: "Détails de l'animal",
       3: "Santé et assurance",
-      4: "Description du caractère",
-      5: "Télécharger une photo",
-      6: "Vérifier les données",
-      7: "Choisir un modèle",
-      8: "Aperçu et téléchargement"
+      4: "Comportement & Routine",
+      5: "Description du caractère",
+      6: "Télécharger une photo",
+      7: "Références & Urgence",
+      8: "Vérifier les données",
+      9: "Choisir un modèle",
+      10: "Aperçu et téléchargement"
     },
     summary: {
       title: "Vérification de vos données",
@@ -175,7 +220,21 @@ const TRANSLATIONS = {
       emailInDevelopment: "Fonction e-mail en développement",
       freeSuccess: "Merci! Bonne chance dans votre recherche.",
       insuranceInfoDog: "Pour les chiens, AMICUS et l'assurance responsabilité civile sont souvent obligatoires en Suisse.",
-      insuranceInfoCat: "Pour les chats aussi, une assurance est souvent recommandée (dommages locatifs)."
+      insuranceInfoCat: "Pour les chats aussi, une assurance est souvent recommandée (dommages locatifs).",
+      petPhotoAlt: "Photo de l'animal",
+      noImage: "Aucune image",
+      noDescription: "Aucune description disponible",
+      owner: "Propriétaire",
+      about: "À propos",
+      details: "Détails",
+      status: "Statut",
+      contact: "Contact",
+      petProfile: "Profil de l'animal",
+      petInfo: "Infos sur l'animal",
+      aboutMe: "À propos de moi",
+      myStatus: "Mon statut",
+      swissStandard: "Standard suisse",
+      photo: "Photo"
     },
     labels: {
       type: "Type d'animal",
@@ -208,6 +267,30 @@ const TRANSLATIONS = {
       aiResult: "Texte pour la régie",
       photo: "Choisir une photo",
       download: "Télécharger PDF",
+      years: "ans",
+      kg: "kg",
+      // Swiss-specific labels
+      noiseLevel: "Niveau sonore",
+      noiseLow: "Calme (rarement bruyant)",
+      noiseMedium: "Occasionnellement (lors de visites)",
+      noiseHigh: "Plus fréquent (séparation)",
+      aloneTime: "Seul par jour (heures)",
+      activeHours: "Heures les plus actives",
+      previousLandlord: "Ancien propriétaire",
+      previousLandlordName: "Nom du propriétaire",
+      previousLandlordPhone: "Téléphone",
+      previousLandlordEmail: "E-mail",
+      previousDuration: "Durée de location (années)",
+      emergencyContact: "Contact d'urgence",
+      emergencyContactName: "Nom",
+      emergencyContactPhone: "Téléphone",
+      emergencyContactRelation: "Relation",
+      depositWillingness: "Prêt pour caution animale",
+      behaviorWithChildren: "Comportement avec enfants",
+      behaviorWithPets: "Comportement avec autres animaux",
+      behaviorGood: "Très bon",
+      behaviorNeutral: "Neutre / Inconnu",
+      behaviorAvoid: "À éviter"
     },
     doc: {
       title: "Fiche de Référence Animale",
@@ -218,7 +301,10 @@ const TRANSLATIONS = {
       sectionAbout: "Description & Caractère",
       footer: "Document généré via Pet-Bewerbung.ch",
       date: "Lieu, Date",
-      sign: "Signature"
+      sign: "Signature",
+      petDossier: "Dossier de l'animal",
+      swissPetCV: "CV Animal Suisse",
+      insurancePrefix: "Assurance:"
     },
     monetization: {
       title: "Soutenir le projet",
@@ -260,11 +346,13 @@ const TRANSLATIONS = {
       1: "Informazioni proprietario",
       2: "Dettagli animale",
       3: "Salute e assicurazione",
-      4: "Descrizione carattere",
-      5: "Caricare foto",
-      6: "Verifica dati",
-      7: "Scegli modello",
-      8: "Anteprima e download"
+      4: "Comportamento & Routine",
+      5: "Descrizione carattere",
+      6: "Caricare foto",
+      7: "Referenze & Emergenza",
+      8: "Verifica dati",
+      9: "Scegli modello",
+      10: "Anteprima e download"
     },
     summary: {
       title: "Verifica dei tuoi dati",
@@ -294,7 +382,21 @@ const TRANSLATIONS = {
       emailInDevelopment: "Funzione email in sviluppo",
       freeSuccess: "Grazie! Buona fortuna con la ricerca.",
       insuranceInfoDog: "Per i cani, AMICUS e l'assicurazione di responsabilità civile sono spesso obbligatori in Svizzera.",
-      insuranceInfoCat: "Anche per i gatti, un'assicurazione è spesso consigliata (danni locativi)."
+      insuranceInfoCat: "Anche per i gatti, un'assicurazione è spesso consigliata (danni locativi).",
+      petPhotoAlt: "Foto dell'animale",
+      noImage: "Nessuna immagine",
+      noDescription: "Nessuna descrizione disponibile",
+      owner: "Proprietario",
+      about: "Informazioni",
+      details: "Dettagli",
+      status: "Stato",
+      contact: "Contatto",
+      petProfile: "Profilo dell'animale",
+      petInfo: "Info animale",
+      aboutMe: "Chi sono",
+      myStatus: "Il mio stato",
+      swissStandard: "Standard svizzero",
+      photo: "Foto"
     },
     labels: {
       type: "Tipo di animale",
@@ -327,6 +429,30 @@ const TRANSLATIONS = {
       aiResult: "Testo per il proprietario",
       photo: "Scegli foto",
       download: "Salva PDF",
+      years: "anni",
+      kg: "kg",
+      // Swiss-specific labels
+      noiseLevel: "Livello di rumore",
+      noiseLow: "Tranquillo (raramente rumoroso)",
+      noiseMedium: "Occasionalmente (durante visite)",
+      noiseHigh: "Più frequente (separazione)",
+      aloneTime: "Solo al giorno (ore)",
+      activeHours: "Ore più attive",
+      previousLandlord: "Proprietario precedente",
+      previousLandlordName: "Nome del proprietario",
+      previousLandlordPhone: "Telefono",
+      previousLandlordEmail: "E-mail",
+      previousDuration: "Durata locazione (anni)",
+      emergencyContact: "Contatto d'emergenza",
+      emergencyContactName: "Nome",
+      emergencyContactPhone: "Telefono",
+      emergencyContactRelation: "Relazione",
+      depositWillingness: "Disposto a cauzione animale",
+      behaviorWithChildren: "Comportamento con bambini",
+      behaviorWithPets: "Comportamento con altri animali",
+      behaviorGood: "Molto buono",
+      behaviorNeutral: "Neutrale / Sconosciuto",
+      behaviorAvoid: "Da evitare"
     },
     doc: {
       title: "Scheda di Referenza Animale",
@@ -337,7 +463,10 @@ const TRANSLATIONS = {
       sectionAbout: "Descrizione & Carattere",
       footer: "Documento generato via Pet-Bewerbung.ch",
       date: "Luogo, Data",
-      sign: "Firma"
+      sign: "Firma",
+      petDossier: "Dossier dell'animale",
+      swissPetCV: "CV Animale Svizzero",
+      insurancePrefix: "Assicurazione:"
     },
     monetization: {
       title: "Sostieni il progetto",
@@ -379,11 +508,13 @@ const TRANSLATIONS = {
       1: "Infurmaziuns possessur",
       2: "Detagls animal",
       3: "Sanadad & assicuranza",
-      4: "Descripziun caracter",
-      5: "Chargiar foto",
-      6: "Controllar datas",
-      7: "Tscherner model",
-      8: "Prevista & Download"
+      4: "Cumportament & Rutina",
+      5: "Descripziun caracter",
+      6: "Chargiar foto",
+      7: "Referenzas & Urgenza",
+      8: "Controllar datas",
+      9: "Tscherner model",
+      10: "Prevista & Download"
     },
     summary: {
       title: "Controlla da vossas datas",
@@ -413,7 +544,21 @@ const TRANSLATIONS = {
       emailInDevelopment: "Funcziun email en svilup",
       freeSuccess: "Grazia! BunsSuccès tar tschertgar.",
       insuranceInfoDog: "Per chauns èn AMICUS e l'assicuranza da responsabladad savens obligatoris en Svizra.",
-      insuranceInfoCat: "Era per gliats vegn in'assicuranza savens recumandada (donns da locaziun)."
+      insuranceInfoCat: "Era per gliats vegn in'assicuranza savens recumandada (donns da locaziun).",
+      petPhotoAlt: "Maletg dal animal",
+      noImage: "Nagin maletg",
+      noDescription: "Nagina descripziun disponibla",
+      owner: "Possessur",
+      about: "Davart",
+      details: "Detagls",
+      status: "Status",
+      contact: "Contact",
+      petProfile: "Profil dal animal",
+      petInfo: "Infurmaziuns dal animal",
+      aboutMe: "Davart mai",
+      myStatus: "Mes status",
+      swissStandard: "Standard svizzer",
+      photo: "Foto"
     },
     labels: {
       type: "Tip d'animal",
@@ -446,6 +591,30 @@ const TRANSLATIONS = {
       aiResult: "Text per il locatari",
       photo: "Eleger foto",
       download: "Memorisar PDF",
+      years: "onns",
+      kg: "kg",
+      // Swiss-specific labels
+      noiseLevel: "Niveau da rumur",
+      noiseLow: "Quiet (savens laut)",
+      noiseMedium: "Occasiunalmain (cun visitas)",
+      noiseHigh: "Pli savens (separaziun)",
+      aloneTime: "Sulettà per di (uras)",
+      activeHours: "Temp il pli activ",
+      previousLandlord: "Bainfittader precedent",
+      previousLandlordName: "Num dal bainfittader",
+      previousLandlordPhone: "Telefon",
+      previousLandlordEmail: "E-mail",
+      previousDuration: "Durada (onns)",
+      emergencyContact: "Contact d'urgenza",
+      emergencyContactName: "Num",
+      emergencyContactPhone: "Telefon",
+      emergencyContactRelation: "Relaziun",
+      depositWillingness: "Pront per garanzia",
+      behaviorWithChildren: "Cumportament cun uffants",
+      behaviorWithPets: "Cumportament cun auters animals",
+      behaviorGood: "Fitg bun",
+      behaviorNeutral: "Neutral / Nunenconuschent",
+      behaviorAvoid: "Sto vegnir evità"
     },
     doc: {
       title: "Fegl da Referenza per Animals",
@@ -456,7 +625,10 @@ const TRANSLATIONS = {
       sectionAbout: "Descripziun & Caracter",
       footer: "Generà via Pet-Bewerbung.ch",
       date: "Lieu, Data",
-      sign: "Suttascripziun"
+      sign: "Suttascripziun",
+      petDossier: "Dossier dal animal",
+      swissPetCV: "CV Animal Svizzer",
+      insurancePrefix: "Assicuranza:"
     },
     monetization: {
       title: "Sustegnai nus",
@@ -498,11 +670,13 @@ const TRANSLATIONS = {
       1: "Owner Information",
       2: "Pet Details",
       3: "Health & Insurance",
-      4: "Character Description",
-      5: "Upload Photo",
-      6: "Review Data",
-      7: "Choose Template",
-      8: "Preview & Download"
+      4: "Behavior & Daily Routine",
+      5: "Character Description",
+      6: "Upload Photo",
+      7: "References & Emergency",
+      8: "Review Data",
+      9: "Choose Template",
+      10: "Preview & Download"
     },
     summary: {
       title: "Review Your Data",
@@ -532,7 +706,21 @@ const TRANSLATIONS = {
       emailInDevelopment: "Email function in development",
       freeSuccess: "Thank you! Good luck with your search.",
       insuranceInfoDog: "For dogs, AMICUS and liability insurance are often mandatory in Switzerland.",
-      insuranceInfoCat: "For cats too, insurance is often recommended (tenant damages)."
+      insuranceInfoCat: "For cats too, insurance is often recommended (tenant damages).",
+      petPhotoAlt: "Pet photo",
+      noImage: "No image",
+      noDescription: "No description available",
+      owner: "Owner",
+      about: "About",
+      details: "Details",
+      status: "Status",
+      contact: "Contact",
+      petProfile: "Pet Profile",
+      petInfo: "Pet Info",
+      aboutMe: "About Me",
+      myStatus: "My Status",
+      swissStandard: "Swiss Standard",
+      photo: "Photo"
     },
     labels: {
       type: "Animal Type",
@@ -565,6 +753,30 @@ const TRANSLATIONS = {
       aiResult: "Text for Landlord",
       photo: "Select Photo",
       download: "Save PDF",
+      years: "years",
+      kg: "kg",
+      // Swiss-specific labels
+      noiseLevel: "Noise Level",
+      noiseLow: "Quiet (rarely noisy)",
+      noiseMedium: "Occasionally (during visits)",
+      noiseHigh: "More frequent (separation)",
+      aloneTime: "Alone per day (hours)",
+      activeHours: "Most active hours",
+      previousLandlord: "Previous Landlord",
+      previousLandlordName: "Landlord Name",
+      previousLandlordPhone: "Phone",
+      previousLandlordEmail: "E-mail",
+      previousDuration: "Rental Duration (years)",
+      emergencyContact: "Emergency Contact",
+      emergencyContactName: "Name",
+      emergencyContactPhone: "Phone",
+      emergencyContactRelation: "Relationship",
+      depositWillingness: "Willing to pay pet deposit",
+      behaviorWithChildren: "Behavior with children",
+      behaviorWithPets: "Behavior with other pets",
+      behaviorGood: "Very good",
+      behaviorNeutral: "Neutral / Unknown",
+      behaviorAvoid: "Should be avoided"
     },
     doc: {
       title: "Pet Reference Sheet",
@@ -575,7 +787,10 @@ const TRANSLATIONS = {
       sectionAbout: "Character & Description",
       footer: "Generated via Pet-Bewerbung.ch",
       date: "Place, Date",
-      sign: "Signature"
+      sign: "Signature",
+      petDossier: "Pet Dossier",
+      swissPetCV: "Swiss Pet CV",
+      insurancePrefix: "Insurance:"
     },
     monetization: {
       title: "Support Us",
@@ -617,11 +832,13 @@ const TRANSLATIONS = {
       1: "Інформація про власника",
       2: "Деталі про тварину",
       3: "Здоров'я та страхування",
-      4: "Опис характеру",
-      5: "Завантажити фото",
-      6: "Перевірка даних",
-      7: "Вибір шаблону",
-      8: "Попередній перегляд"
+      4: "Поведінка і розпорядок",
+      5: "Опис характеру",
+      6: "Завантажити фото",
+      7: "Рекомендації та екстрені контакти",
+      8: "Перевірка даних",
+      9: "Вибір шаблону",
+      10: "Попередній перегляд"
     },
     summary: {
       title: "Огляд введених даних",
@@ -651,7 +868,21 @@ const TRANSLATIONS = {
       emailInDevelopment: "Email функція в розробці",
       freeSuccess: "Дякуємо! Успіхів у пошуку.",
       insuranceInfoDog: "Для собак AMICUS та страхування відповідальності часто є обов'язковими у Швейцарії.",
-      insuranceInfoCat: "Для котів також рекомендується страхування (шкода орендованому житлу)."
+      insuranceInfoCat: "Для котів також рекомендується страхування (шкода орендованому житлу).",
+      petPhotoAlt: "Фото тварини",
+      noImage: "Немає зображення",
+      noDescription: "Опис відсутній",
+      owner: "Власник",
+      about: "Про",
+      details: "Деталі",
+      status: "Статус",
+      contact: "Контакт",
+      petProfile: "Профіль тварини",
+      petInfo: "Інфо про тварину",
+      aboutMe: "Про мене",
+      myStatus: "Мій статус",
+      swissStandard: "Швейцарський стандарт",
+      photo: "Фото"
     },
     labels: {
       type: "Вид тварини",
@@ -684,6 +915,30 @@ const TRANSLATIONS = {
       aiResult: "Текст для власника",
       photo: "Обрати фото",
       download: "Зберегти PDF",
+      years: "років",
+      kg: "kg",
+      // Swiss-specific labels
+      noiseLevel: "Рівень шуму",
+      noiseLow: "Тихо (рідко шумить)",
+      noiseMedium: "Іноді (під час візитів)",
+      noiseHigh: "Частіше (при розлуці)",
+      aloneTime: "Сам на добу (годин)",
+      activeHours: "Найактивніші години",
+      previousLandlord: "Попередній орендодавець",
+      previousLandlordName: "Ім'я орендодавця",
+      previousLandlordPhone: "Телефон",
+      previousLandlordEmail: "E-mail",
+      previousDuration: "Термін оренди (років)",
+      emergencyContact: "Екстрений контакт",
+      emergencyContactName: "Ім'я",
+      emergencyContactPhone: "Телефон",
+      emergencyContactRelation: "Зв'язок",
+      depositWillingness: "Готовий платити депозит",
+      behaviorWithChildren: "Поведінка з дітьми",
+      behaviorWithPets: "Поведінка з іншими тваринами",
+      behaviorGood: "Дуже добра",
+      behaviorNeutral: "Нейтральна / Невідома",
+      behaviorAvoid: "Слід уникати"
     },
     doc: {
       title: "Досьє Домашньої Тварини",
@@ -694,7 +949,10 @@ const TRANSLATIONS = {
       sectionAbout: "Характеристика",
       footer: "Згенеровано через Pet-Bewerbung.ch",
       date: "Місце, Дата",
-      sign: "Підпис"
+      sign: "Підпис",
+      petDossier: "Досьє тварини",
+      swissPetCV: "Швейцарське резюме тварини",
+      insurancePrefix: "Страхування:"
     },
     monetization: {
       title: "Підтримайте нас",
@@ -739,6 +997,20 @@ const INITIAL_DATA = {
   hasRegistration: true,
   keywords: '',
   generatedText: '',
+  // New Swiss-specific fields
+  noiseLevel: 'low', // low, medium, high
+  aloneTime: '', // hours per day
+  activeHours: '', // e.g. "07:00-09:00, 18:00-20:00"
+  previousLandlordName: '',
+  previousLandlordPhone: '',
+  previousLandlordEmail: '',
+  previousDuration: '', // years/months
+  emergencyContactName: '',
+  emergencyContactPhone: '',
+  emergencyContactRelation: '',
+  willingToPayDeposit: true,
+  behaviorWithChildren: '', // good, neutral, avoid
+  behaviorWithPets: '', // good, neutral, avoid
 };
 
 const MAX_DESCRIPTION_LENGTH = 1600; // limit for generated / manual descriptions
@@ -746,7 +1018,13 @@ const MAX_DESCRIPTION_LENGTH = 1600; // limit for generated / manual description
 const TEMPLATE_OPTIONS = [
   { id: 'classic', label: 'Classic' },
   { id: 'modern', label: 'Modern' },
-  { id: 'compact', label: 'Compact' }
+  { id: 'compact', label: 'Compact' },
+  { id: 'elegant', label: 'Elegant' },
+  { id: 'minimal', label: 'Minimal' },
+  { id: 'colorful', label: 'Colorful' },
+  { id: 'professional', label: 'Professional' },
+  { id: 'playful', label: 'Playful' },
+  { id: 'swiss', label: 'Swiss' }
 ];
 
 export { TRANSLATIONS, INITIAL_DATA, MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS };

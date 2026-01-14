@@ -28,7 +28,9 @@ const GlobalStyles = ({ theme = 'light' }) => {
         '--warning': '#f59e0b',
         '--button-primary': '#1f2937',
         '--button-primary-hover': '#111827',
-        '--button-text': '#ffffff'
+        '--button-text': '#ffffff',
+        '--header-bg': 'rgba(255, 255, 255, 0.4)',
+        '--header-border': 'rgba(229, 231, 235, 0.5)'
       },
       dark: {
         '--primary': '#6366f1',
@@ -51,7 +53,9 @@ const GlobalStyles = ({ theme = 'light' }) => {
         '--warning': '#fbbf24',
         '--button-primary': '#6366f1',
         '--button-primary-hover': '#818cf8',
-        '--button-text': '#ffffff'
+        '--button-text': '#ffffff',
+        '--header-bg': 'rgba(30, 41, 59, 0.4)',
+        '--header-border': 'rgba(51, 65, 85, 0.5)'
       },
       sepia: {
         '--primary': '#b45309',
@@ -74,7 +78,9 @@ const GlobalStyles = ({ theme = 'light' }) => {
         '--warning': '#ea580c',
         '--button-primary': '#92400e',
         '--button-primary-hover': '#78350f',
-        '--button-text': '#ffffff'
+        '--button-text': '#ffffff',
+        '--header-bg': 'rgba(255, 251, 235, 0.4)',
+        '--header-border': 'rgba(221, 161, 94, 0.5)'
       }
     };
 
@@ -108,6 +114,10 @@ const GlobalStyles = ({ theme = 'light' }) => {
     }
 
     /* Prefer system UI fonts so emoji (flags) use color emoji fonts when available */
+    html {
+      background: var(--bg);
+      transition: background 300ms;
+    }
     body, select, button, input, textarea {
       font-family: Inter, system-ui, -apple-system, "Segoe UI", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
       color: var(--text);
@@ -124,6 +134,7 @@ const GlobalStyles = ({ theme = 'light' }) => {
     .theme-card { background-color: var(--card-bg) !important; }
     .theme-card-bg-hover { background-color: var(--card-bg-hover) !important; }
     .theme-border { border-color: var(--border) !important; }
+    .theme-border-card { border-color: var(--card-bg) !important; }
     .bg-primary { background-color: var(--primary) !important; }
     .from-primary { --tw-gradient-from: var(--primary) !important; --tw-gradient-to: rgb(79 70 229 / 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
     .to-primary-hover { --tw-gradient-to: var(--primary-hover) !important; }
@@ -250,14 +261,20 @@ const GlobalStyles = ({ theme = 'light' }) => {
     /* Button press */
     .btn-press:active { transform: scale(0.98); }
 
-    /* Header rounded look */
+    /* Header rounded look with transparency */
     .app-header {
-      background: var(--card-bg) !important;
-      border: 1px solid var(--border) !important;
+      background: var(--header-bg) !important;
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--header-border) !important;
       border-radius: 16px;
       margin: 12px auto;
       max-width: min(1400px, calc(100% - 24px));
       box-shadow: 0 6px 18px var(--shadow);
+    }
+
+    /* Full-width header for landing page */
+    .app-header-full {
+      max-width: calc(100% - 24px) !important;
     }
 
     /* Bottom nav panel - Modern floating design */
@@ -479,6 +496,46 @@ const GlobalStyles = ({ theme = 'light' }) => {
     .card-lift:hover {
       transform: translateY(-8px);
       box-shadow: 0 20px 40px -12px var(--shadow-strong);
+    }
+
+    /* Blob animation for background */
+    @keyframes blob {
+      0%, 100% {
+        transform: translate(0, 0) scale(1);
+      }
+      25% {
+        transform: translate(20px, -50px) scale(1.1);
+      }
+      50% {
+        transform: translate(-20px, 20px) scale(0.9);
+      }
+      75% {
+        transform: translate(50px, 50px) scale(1.05);
+      }
+    }
+    .animate-blob {
+      animation: blob 7s infinite;
+    }
+    .animation-delay-2000 {
+      animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+      animation-delay: 4s;
+    }
+
+    /* Gradient animation */
+    @keyframes gradient-x {
+      0%, 100% {
+        background-size: 200% 200%;
+        background-position: left center;
+      }
+      50% {
+        background-size: 200% 200%;
+        background-position: right center;
+      }
+    }
+    .animate-gradient-x {
+      animation: gradient-x 3s ease infinite;
     }
 
     @media print { @page { size: A4; margin: 0; } body { -webkit-print-color-adjust: exact; background: white; } .print\\:hidden { display: none !important; } }
