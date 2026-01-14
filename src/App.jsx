@@ -383,6 +383,36 @@ export default function App() {
                 <span className="theme-text-muted font-medium">{t.summary.gender}:</span>
                 <p className="theme-text">{data.gender === 'm' ? t.labels.m : t.labels.f}</p>
               </div>
+              {data.noiseLevel && (
+                <div>
+                  <span className="theme-text-muted font-medium">{t.labels.noiseLevel}:</span>
+                  <p className="theme-text">{data.noiseLevel === 'low' ? t.labels.noiseLow : data.noiseLevel === 'medium' ? t.labels.noiseMedium : t.labels.noiseHigh}</p>
+                </div>
+              )}
+              {data.aloneTime && (
+                <div>
+                  <span className="theme-text-muted font-medium">{t.labels.aloneTime}:</span>
+                  <p className="theme-text">{data.aloneTime}h</p>
+                </div>
+              )}
+              {data.behaviorWithChildren && (
+                <div>
+                  <span className="theme-text-muted font-medium">{t.labels.behaviorWithChildren}:</span>
+                  <p className="theme-text">{data.behaviorWithChildren === 'good' ? t.labels.behaviorGood : data.behaviorWithChildren === 'neutral' ? t.labels.behaviorNeutral : t.labels.behaviorAvoid}</p>
+                </div>
+              )}
+              {data.previousLandlordName && (
+                <div>
+                  <span className="theme-text-muted font-medium">{t.labels.previousLandlord}:</span>
+                  <p className="theme-text">{data.previousLandlordName}</p>
+                </div>
+              )}
+              {data.emergencyContactName && (
+                <div>
+                  <span className="theme-text-muted font-medium">{t.labels.emergencyContact}:</span>
+                  <p className="theme-text">{data.emergencyContactName}</p>
+                </div>
+              )}
             </div>
 
             {data.generatedText && (
@@ -471,22 +501,6 @@ export default function App() {
     return (
       <div className="min-h-screen theme-bg font-sans theme-text pb-6 print:bg-white print:p-0">
         <GlobalStyles />
-        <header className="app-header sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
-          <div className="flex items-center gap-3 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
-            <div className="theme-button-primary p-1.5 rounded-lg shadow-md"><PawPrint size={18} /></div>
-            <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
-          </div>
-
-          {/* Step 9 title in center */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 theme-text font-semibold text-base hidden md:flex items-center gap-2">
-            <span className="text-lg">✅</span>
-            {t.thankYou.title}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <LanguageSelector value={data.lang} onChange={(v) => updateData('lang', v)} />
-          </div>
-        </header>
 
         <main className="w-full max-w-2xl mx-auto py-20 text-center px-4">
           {/* Animated success icon */}

@@ -272,9 +272,20 @@ const GlobalStyles = ({ theme = 'light' }) => {
       box-shadow: 0 6px 18px var(--shadow);
     }
 
-    /* Full-width header for landing page */
+    /* Full-width and taller header for landing page */
     .app-header-full {
       max-width: calc(100% - 24px) !important;
+      height: 80px !important;
+      font-size: 1.25rem !important;
+    }
+
+    .app-header-full .theme-button-primary {
+      padding: 0.625rem !important;
+    }
+
+    .app-header-full svg {
+      width: 24px !important;
+      height: 24px !important;
     }
 
     /* Bottom nav panel - Modern floating design */

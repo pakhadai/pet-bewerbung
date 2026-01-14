@@ -1013,7 +1013,7 @@ const INITIAL_DATA = {
   behaviorWithPets: '', // good, neutral, avoid
 };
 
-const MAX_DESCRIPTION_LENGTH = 1600; // limit for generated / manual descriptions
+const MAX_DESCRIPTION_LENGTH = 470; // limit for generated / manual descriptions
 
 const TEMPLATE_OPTIONS = [
   { id: 'classic', label: 'Classic' },
