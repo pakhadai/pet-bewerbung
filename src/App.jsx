@@ -3,6 +3,9 @@ import html2pdf from 'html2pdf.js';
 import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS, TRANSLATIONS, INITIAL_DATA } from './constants';
 import API_ENDPOINTS from './config';
 import GlobalStyles from './components/GlobalStyles';
+import Header from './components/Header';
+import Navigation from './components/Navigation';
+import Footer from './components/Footer';
 import ThemeToggle from './components/ThemeToggle';
 import PageTitle from './components/PageTitle';
 import Label from './components/Label';
@@ -501,6 +504,15 @@ export default function App() {
     return (
       <div className="min-h-screen theme-bg font-sans theme-text pb-6 print:bg-white print:p-0">
         <GlobalStyles />
+        <Header
+          step={step}
+          theme={theme}
+          onThemeChange={setTheme}
+          lang={data.lang}
+          onLangChange={(v) => updateData('lang', v)}
+          onLogoClick={() => goToStep(0)}
+          t={t}
+        />
 
         <main className="w-full max-w-2xl mx-auto py-20 text-center px-4">
           {/* Animated success icon */}
@@ -576,27 +588,15 @@ export default function App() {
   return (
     <div className="min-h-screen theme-bg font-sans theme-text pb-6 print:bg-white print:p-0">
       <GlobalStyles theme={theme} />
-      <header className={`app-header ${step === 0 ? 'app-header-full' : ''} sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all`}>
-        <div className="flex items-center gap-3 font-bold text-lg cursor-pointer" onClick={() => goToStep(0)}>
-          <div className="theme-button-primary p-1.5 rounded-lg shadow-md"><PawPrint size={18} /></div>
-          <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
-        </div>
-
-        {/* Step title in center */}
-        {step > 0 && step < 9 && (
-          <div className="absolute left-1/2 transform -translate-x-1/2 theme-text font-semibold text-base hidden md:flex items-center gap-2">
-            <span className="text-lg">
-              {step === 1 ? '1️⃣' : step === 2 ? '2️⃣' : step === 3 ? '3️⃣' : step === 4 ? '4️⃣' : step === 5 ? '5️⃣' : step === 6 ? '6️⃣' : step === 7 ? '7️⃣' : '8️⃣'}
-            </span>
-            {t.stepTitles?.[step] || ''}
-          </div>
-        )}
-
-        <div className="flex items-center gap-3">
-          <ThemeToggle theme={theme} onThemeChange={setTheme} />
-          <LanguageSelector value={data.lang} onChange={(v) => updateData('lang', v)} />
-        </div>
-      </header>
+      <Header
+        step={step}
+        theme={theme}
+        onThemeChange={setTheme}
+        lang={data.lang}
+        onLangChange={(v) => updateData('lang', v)}
+        onLogoClick={() => goToStep(0)}
+        t={t}
+      />
 
       <main className="w-full print:w-full print:max-w-none print:p-0">
         <div className={step === 0 ? "w-full" : "max-w-7xl mx-auto p-4 md:p-8 print:border-none print:shadow-none print:p-0"}>
@@ -634,77 +634,16 @@ export default function App() {
         </div>
       )}
 
-      {step > 0 && step < 9 && (
-        <div className="nav-panel print:hidden">
-          <Button
-            variant="ghost"
-            className="btn"
-            onClick={() => goToStep(step - 1)}
-            disabled={step === 1}
-            title={t.steps[step - 1] || 'Previous'}
-          >
-            <ChevronLeft size={18} strokeWidth={2.5} />
-          </Button>
+      <Navigation
+        step={step}
+        onPrev={() => goToStep(step - 1)}
+        onNext={() => goToStep(step + 1)}
+        onDownloadPDF={handleDownloadPDF}
+        showToast={showToast}
+        t={t}
+      />
 
-          <div className="progress-container">
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${((step - 1) / 7) * 100}%` }}
-              ></div>
-            </div>
-            <div className="text-xs font-bold theme-text-muted whitespace-nowrap min-w-[60px] text-center">
-              {step}/8
-            </div>
-          </div>
-
-          {step === 8 ? (
-            <>
-              <Button
-                variant="secondary"
-                className="btn"
-                onClick={() => {
-                  handleDownloadPDF();
-                  showToast(t.ui.emailComingSoon, 'info');
-                }}
-                title={t.ui.emailInDevelopment}
-              >
-                <Mail size={18} />
-                <span className="hidden sm:inline ml-2">Email</span>
-              </Button>
-              <Button
-                variant="primary"
-                className="btn shadow-lg hover:shadow-xl"
-                onClick={handleDownloadPDF}
-                title="Download PDF"
-              >
-                <Printer size={18} />
-                <span className="hidden sm:inline ml-2">Download</span>
-              </Button>
-            </>
-          ) : (
-            <Button
-              variant="primary"
-              className="btn shadow-lg hover:shadow-xl"
-              onClick={() => goToStep(step + 1)}
-              disabled={step === 8}
-              title={t.steps[step + 1] || 'Next'}
-            >
-              <span className="hidden sm:inline">Next</span>
-              <ChevronRight size={18} strokeWidth={2.5} />
-            </Button>
-          )}
-        </div>
-      )}
-
-      {(step === 0 || step === 9) && (
-        <div className="butter-footer print:hidden">
-          <div className={`butter-inner ${butterVisible ? 'visible' : ''}`}>
-              <img src="https://flagcdn.com/20x15/ch.png" alt="CH" width="20" height="15" style={{ display: 'inline-block', marginRight: 8 }} />
-              St. Gallen — Developed in Switzerland
-            </div>
-        </div>
-      )}
+      <Footer step={step} butterVisible={butterVisible} />
     </div>
   );
 }
