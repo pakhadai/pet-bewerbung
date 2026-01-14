@@ -20,54 +20,54 @@ const ReferenceSection = ({ data, t, variant = 'classic' }) => {
     switch (variant) {
       case 'classic':
         return {
-          container: 'bg-blue-50 p-6 border-2 border-blue-200 mt-6',
-          heading: 'font-black uppercase tracking-wider text-xs mb-4 text-blue-900',
-          subsection: 'mb-4',
-          subheading: 'text-[10px] font-bold uppercase tracking-wide mb-2 text-blue-700',
-          grid: 'space-y-2 text-sm',
-          fieldLabel: 'text-[10px] text-slate-600 uppercase tracking-wide font-semibold',
-          fieldValue: 'font-medium text-slate-800',
-          contactItem: 'flex items-center gap-2 text-xs text-slate-600',
-          iconSize: 12
+          container: 'bg-blue-50 p-3 border border-blue-200 mt-3',
+          heading: 'font-black uppercase tracking-wider text-[10px] mb-2 text-blue-900',
+          subsection: 'mb-3',
+          subheading: 'text-[9px] font-bold uppercase tracking-wide mb-1 text-blue-700',
+          grid: 'space-y-1 text-xs',
+          fieldLabel: 'text-[9px] text-slate-600 uppercase tracking-wide font-semibold',
+          fieldValue: 'font-medium text-slate-800 text-[10px]',
+          contactItem: 'flex items-center gap-1 text-[10px] text-slate-600',
+          iconSize: 10
         };
 
       case 'modern':
       case 'colorful':
         return {
-          container: 'bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-5 border-2 border-blue-200 mt-5',
-          heading: 'font-bold text-blue-600 text-sm mb-4',
-          subsection: 'mb-4',
-          subheading: 'text-xs font-bold uppercase tracking-wide mb-2 text-blue-600',
-          grid: 'space-y-2 text-sm',
-          fieldLabel: 'text-xs text-blue-500 font-semibold',
-          fieldValue: 'font-semibold text-slate-800',
-          contactItem: 'flex items-center gap-2 text-xs text-slate-600',
-          iconSize: 12
+          container: 'bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-3 border border-blue-200 mt-3',
+          heading: 'font-bold text-blue-600 text-[10px] mb-2',
+          subsection: 'mb-3',
+          subheading: 'text-[9px] font-bold uppercase tracking-wide mb-1 text-blue-600',
+          grid: 'space-y-1 text-xs',
+          fieldLabel: 'text-[9px] text-blue-500 font-semibold',
+          fieldValue: 'font-semibold text-slate-800 text-[10px]',
+          contactItem: 'flex items-center gap-1 text-[10px] text-slate-600',
+          iconSize: 10
         };
 
       case 'professional':
         return {
-          container: 'bg-slate-800 rounded-lg p-5 border border-blue-500/30 mt-5',
-          heading: 'font-bold text-blue-400 text-sm mb-4',
-          subsection: 'mb-4',
-          subheading: 'text-xs font-bold uppercase tracking-wide mb-2 text-blue-400',
-          grid: 'space-y-2 text-sm',
-          fieldLabel: 'text-xs text-blue-300 font-semibold',
-          fieldValue: 'font-medium text-slate-200',
-          contactItem: 'flex items-center gap-2 text-xs text-slate-400',
-          iconSize: 12
+          container: 'bg-slate-800 rounded-lg p-3 border border-blue-500/30 mt-3',
+          heading: 'font-bold text-blue-400 text-[10px] mb-2',
+          subsection: 'mb-3',
+          subheading: 'text-[9px] font-bold uppercase tracking-wide mb-1 text-blue-400',
+          grid: 'space-y-1 text-xs',
+          fieldLabel: 'text-[9px] text-blue-300 font-semibold',
+          fieldValue: 'font-medium text-slate-200 text-[10px]',
+          contactItem: 'flex items-center gap-1 text-[10px] text-slate-400',
+          iconSize: 10
         };
 
       case 'minimal':
         return {
-          container: 'border-t-2 border-gray-300 pt-4 mt-4',
-          heading: 'text-xs uppercase tracking-widest mb-3 font-bold',
-          subsection: 'mb-3',
-          subheading: 'text-[10px] uppercase tracking-wider mb-2 font-semibold',
+          container: 'border-t border-gray-300 pt-3 mt-3',
+          heading: 'text-[10px] uppercase tracking-widest mb-2 font-bold',
+          subsection: 'mb-2',
+          subheading: 'text-[9px] uppercase tracking-wider mb-1 font-semibold',
           grid: 'space-y-1 text-xs',
-          fieldLabel: 'text-[10px] uppercase font-medium',
-          fieldValue: 'font-medium',
-          contactItem: 'flex items-center gap-1 text-xs',
+          fieldLabel: 'text-[9px] uppercase font-medium',
+          fieldValue: 'font-medium text-[10px]',
+          contactItem: 'flex items-center gap-1 text-[10px]',
           iconSize: 10
         };
 
@@ -75,11 +75,11 @@ const ReferenceSection = ({ data, t, variant = 'classic' }) => {
         return {
           container: 'border-t border-slate-300 pt-3 mt-3',
           heading: 'text-[10px] font-bold uppercase tracking-wider mb-2',
-          subsection: 'mb-3',
+          subsection: 'mb-2',
           subheading: 'text-[9px] uppercase tracking-wider mb-1 font-bold',
           grid: 'space-y-1 text-xs',
           fieldLabel: 'text-[9px] uppercase font-semibold',
-          fieldValue: 'font-medium text-xs',
+          fieldValue: 'font-medium text-[10px]',
           contactItem: 'flex items-center gap-1 text-[10px]',
           iconSize: 10
         };

@@ -13,61 +13,61 @@ const BehaviorSection = ({ data, t, variant = 'classic' }) => {
     switch (variant) {
       case 'classic':
         return {
-          container: 'bg-stone-50 p-6 border-2 border-slate-200',
-          heading: 'font-black uppercase tracking-wider text-xs mb-4',
-          grid: 'grid grid-cols-2 gap-4 text-sm',
-          fieldLabel: 'block text-[10px] text-slate-600 uppercase tracking-wide mb-2 font-bold',
-          fieldValue: 'font-medium',
-          badge: 'inline-block px-3 py-1 rounded-full text-xs font-semibold',
+          container: 'bg-stone-50 p-3 border-2 border-slate-200',
+          heading: 'font-black uppercase tracking-wider text-[10px] mb-2',
+          grid: 'grid grid-cols-2 gap-2 text-xs',
+          fieldLabel: 'block text-[9px] text-slate-600 uppercase tracking-wide mb-1 font-bold',
+          fieldValue: 'font-medium text-[10px]',
+          badge: 'inline-block px-2 py-0.5 rounded-full text-[9px] font-semibold',
           badgeLow: 'bg-green-100 text-green-700',
           badgeMedium: 'bg-yellow-100 text-yellow-700',
           badgeHigh: 'bg-red-100 text-red-700',
           badgeGood: 'bg-green-100 text-green-700',
           badgeNeutral: 'bg-gray-100 text-gray-700',
-          iconContainer: 'flex items-center gap-2'
+          iconContainer: 'flex items-center gap-1'
         };
 
       case 'modern':
       case 'colorful':
         return {
-          container: 'bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl p-5 border-2 border-rose-200',
-          heading: 'font-bold text-rose-600 text-sm mb-4',
-          grid: 'grid grid-cols-2 gap-4 text-sm',
-          fieldLabel: 'block text-xs text-rose-400 uppercase tracking-wide mb-2 font-semibold',
-          fieldValue: 'font-semibold',
-          badge: 'inline-block px-3 py-1 rounded-lg text-xs font-bold',
+          container: 'bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-3 border border-rose-200',
+          heading: 'font-bold text-rose-600 text-[10px] mb-2',
+          grid: 'grid grid-cols-2 gap-2 text-xs',
+          fieldLabel: 'block text-[9px] text-rose-400 uppercase tracking-wide mb-1 font-semibold',
+          fieldValue: 'font-semibold text-[10px]',
+          badge: 'inline-block px-2 py-0.5 rounded-lg text-[9px] font-bold',
           badgeLow: 'bg-green-200 text-green-800',
           badgeMedium: 'bg-yellow-200 text-yellow-800',
           badgeHigh: 'bg-red-200 text-red-800',
           badgeGood: 'bg-green-200 text-green-800',
           badgeNeutral: 'bg-gray-200 text-gray-800',
-          iconContainer: 'flex items-center gap-2'
+          iconContainer: 'flex items-center gap-1'
         };
 
       case 'professional':
         return {
-          container: 'bg-slate-700 rounded-lg p-5 border border-slate-600',
-          heading: 'font-bold text-blue-400 text-sm mb-4',
-          grid: 'grid grid-cols-2 gap-4 text-sm',
-          fieldLabel: 'block text-xs text-blue-300 uppercase tracking-wide mb-2 font-semibold',
-          fieldValue: 'font-medium text-slate-200',
-          badge: 'inline-block px-3 py-1 rounded-md text-xs font-semibold',
+          container: 'bg-slate-700 rounded-lg p-3 border border-slate-600',
+          heading: 'font-bold text-blue-400 text-[10px] mb-2',
+          grid: 'grid grid-cols-2 gap-2 text-xs',
+          fieldLabel: 'block text-[9px] text-blue-300 uppercase tracking-wide mb-1 font-semibold',
+          fieldValue: 'font-medium text-slate-200 text-[10px]',
+          badge: 'inline-block px-2 py-0.5 rounded-md text-[9px] font-semibold',
           badgeLow: 'bg-green-500/20 text-green-300',
           badgeMedium: 'bg-yellow-500/20 text-yellow-300',
           badgeHigh: 'bg-red-500/20 text-red-300',
           badgeGood: 'bg-green-500/20 text-green-300',
           badgeNeutral: 'bg-gray-500/20 text-gray-300',
-          iconContainer: 'flex items-center gap-2 text-slate-200'
+          iconContainer: 'flex items-center gap-1 text-slate-200'
         };
 
       case 'minimal':
         return {
-          container: 'border-t border-gray-200 pt-4 mt-4',
-          heading: 'text-xs uppercase tracking-widest mb-3 font-bold',
-          grid: 'grid grid-cols-2 gap-3 text-xs',
-          fieldLabel: 'block text-[10px] uppercase tracking-wider mb-1 font-semibold',
-          fieldValue: 'font-medium',
-          badge: 'inline-block px-2 py-0.5 border text-xs font-medium',
+          container: 'border-t border-gray-200 pt-3 mt-3',
+          heading: 'text-[10px] uppercase tracking-widest mb-2 font-bold',
+          grid: 'grid grid-cols-2 gap-2 text-xs',
+          fieldLabel: 'block text-[9px] uppercase tracking-wider mb-1 font-semibold',
+          fieldValue: 'font-medium text-[10px]',
+          badge: 'inline-block px-2 py-0.5 border text-[9px] font-medium',
           badgeLow: 'border-green-500 text-green-700',
           badgeMedium: 'border-yellow-500 text-yellow-700',
           badgeHigh: 'border-red-500 text-red-700',
@@ -78,12 +78,12 @@ const BehaviorSection = ({ data, t, variant = 'classic' }) => {
 
       default:
         return {
-          container: 'border border-slate-300 p-4',
-          heading: 'text-[10px] font-bold uppercase tracking-wider mb-3',
-          grid: 'grid grid-cols-2 gap-3 text-xs',
+          container: 'border border-slate-300 p-3',
+          heading: 'text-[10px] font-bold uppercase tracking-wider mb-2',
+          grid: 'grid grid-cols-2 gap-2 text-xs',
           fieldLabel: 'block text-[9px] text-slate-500 uppercase tracking-wider mb-1 font-bold',
-          fieldValue: 'font-medium',
-          badge: 'inline-block px-2 py-0.5 rounded text-[10px] font-semibold',
+          fieldValue: 'font-medium text-[10px]',
+          badge: 'inline-block px-2 py-0.5 rounded text-[9px] font-semibold',
           badgeLow: 'bg-green-100 text-green-700',
           badgeMedium: 'bg-yellow-100 text-yellow-700',
           badgeHigh: 'bg-red-100 text-red-700',
