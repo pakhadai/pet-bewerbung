@@ -128,7 +128,9 @@ const TRANSLATIONS = {
       behaviorWithPets: "Verhalten mit anderen Tieren",
       behaviorGood: "Sehr gut",
       behaviorNeutral: "Neutral / Unbekannt",
-      behaviorAvoid: "Sollte vermieden werden"
+      behaviorAvoid: "Sollte vermieden werden",
+      behaviorTitle: "Verhalten & Routine",
+      referenceTitle: "Referenzen & Notfallkontakt"
     },
     doc: {
       title: "Tierhalter-Referenzblatt",
@@ -290,7 +292,9 @@ const TRANSLATIONS = {
       behaviorWithPets: "Comportement avec autres animaux",
       behaviorGood: "Très bon",
       behaviorNeutral: "Neutre / Inconnu",
-      behaviorAvoid: "À éviter"
+      behaviorAvoid: "À éviter",
+      behaviorTitle: "Comportement & Routine",
+      referenceTitle: "Références & Contact d'urgence"
     },
     doc: {
       title: "Fiche de Référence Animale",
@@ -452,7 +456,9 @@ const TRANSLATIONS = {
       behaviorWithPets: "Comportamento con altri animali",
       behaviorGood: "Molto buono",
       behaviorNeutral: "Neutrale / Sconosciuto",
-      behaviorAvoid: "Da evitare"
+      behaviorAvoid: "Da evitare",
+      behaviorTitle: "Comportamento & Routine",
+      referenceTitle: "Riferimenti & Contatto emergenza"
     },
     doc: {
       title: "Scheda di Referenza Animale",
@@ -614,7 +620,9 @@ const TRANSLATIONS = {
       behaviorWithPets: "Cumportament cun auters animals",
       behaviorGood: "Fitg bun",
       behaviorNeutral: "Neutral / Nunenconuschent",
-      behaviorAvoid: "Sto vegnir evità"
+      behaviorAvoid: "Sto vegnir evità",
+      behaviorTitle: "Cumportament & Rutina",
+      referenceTitle: "References & Contact d'urgenza"
     },
     doc: {
       title: "Fegl da Referenza per Animals",
@@ -776,7 +784,9 @@ const TRANSLATIONS = {
       behaviorWithPets: "Behavior with other pets",
       behaviorGood: "Very good",
       behaviorNeutral: "Neutral / Unknown",
-      behaviorAvoid: "Should be avoided"
+      behaviorAvoid: "Should be avoided",
+      behaviorTitle: "Behavior & Routine",
+      referenceTitle: "References & Emergency Contact"
     },
     doc: {
       title: "Pet Reference Sheet",
@@ -938,7 +948,9 @@ const TRANSLATIONS = {
       behaviorWithPets: "Поведінка з іншими тваринами",
       behaviorGood: "Дуже добра",
       behaviorNeutral: "Нейтральна / Невідома",
-      behaviorAvoid: "Слід уникати"
+      behaviorAvoid: "Слід уникати",
+      behaviorTitle: "Поведінка & Режим",
+      referenceTitle: "Рекомендації & Екстрений контакт"
     },
     doc: {
       title: "Досьє Домашньої Тварини",

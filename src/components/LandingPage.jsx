@@ -4,9 +4,9 @@ import { Flag, ArrowRight, ShieldCheck, Sparkles, Globe, CheckCircle2, Heart, Za
 import Parallax from './Parallax';
 
 const LandingPage = ({ t, setStep }) => (
-  <div className="flex flex-col relative overflow-hidden">
-    {/* Animated background gradients */}
-    <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+  <div className="flex flex-col relative min-h-screen theme-bg">
+    {/* Animated background gradients - cover full viewport */}
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
       <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-500/10 rounded-full mix-blend-normal filter blur-3xl animate-blob" />
       <div className="absolute top-0 -right-4 w-96 h-96 bg-pink-500/10 rounded-full mix-blend-normal filter blur-3xl animate-blob animation-delay-2000" />
       <div className="absolute -bottom-8 left-20 w-96 h-96 bg-blue-500/10 rounded-full mix-blend-normal filter blur-3xl animate-blob animation-delay-4000" />
@@ -108,19 +108,6 @@ const LandingPage = ({ t, setStep }) => (
       </div>
     </div>
 
-    {/* Bottom decoration */}
-    <div className="mx-auto max-w-4xl px-6 pb-12 text-center">
-      <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full theme-card border theme-border shadow-sm animate-in fade-in duration-700 delay-1000">
-        <div className="flex -space-x-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 border-2 theme-border-card" />
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 border-2 theme-border-card" />
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 border-2 theme-border-card" />
-        </div>
-        <span className="text-sm font-medium theme-text">
-          🇨🇭 Developed in Switzerland with ❤️
-        </span>
-      </div>
-    </div>
   </div>
 );
 
