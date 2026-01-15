@@ -24,7 +24,7 @@ const Step9ThankYou = ({
 }) => {
   return (
     <div className="min-h-screen theme-bg font-sans theme-text pb-6 print:bg-white print:p-0">
-      <GlobalStyles />
+      <GlobalStyles theme={theme} />
       <Header
         step={9}
         theme={theme}
