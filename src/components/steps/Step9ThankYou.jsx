@@ -5,7 +5,7 @@ import Header from '../Header';
 import DonateModal from '../DonateModal';
 import PaymentModal from '../PaymentModal';
 
-const Step9ThankYou = ({
+const Step9ThankYou = React.memo(({
   data,
   t,
   theme,
@@ -134,6 +134,8 @@ const Step9ThankYou = ({
       )}
     </div>
   );
-};
+});
+
+Step9ThankYou.displayName = 'Step9ThankYou';
 
 export default Step9ThankYou;

@@ -1,7 +1,7 @@
 import React from 'react';
 import SwissDocument from '../SwissDocument';
 
-const Step8Preview = ({ data, t, animDir, selectedTemplate }) => {
+const Step8Preview = React.memo(({ data, t, animDir, selectedTemplate }) => {
   return (
     <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-4xl mx-auto pb-20`}>
       {/* Full Document Preview */}
@@ -16,6 +16,8 @@ const Step8Preview = ({ data, t, animDir, selectedTemplate }) => {
       </div>
     </div>
   );
-};
+});
+
+Step8Preview.displayName = 'Step8Preview';
 
 export default Step8Preview;

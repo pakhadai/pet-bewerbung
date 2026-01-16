@@ -4,7 +4,7 @@ import Label from '../Label';
 import Button from '../Button';
 import { MAX_DESCRIPTION_LENGTH } from '../../constants';
 
-const Step4Description = ({ data, updateData, t, animDir, isGenerating, onGenerate }) => {
+const Step4Description = React.memo(({ data, updateData, t, animDir, isGenerating, onGenerate }) => {
   return (
     <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-lg mx-auto`}>
       <div>
@@ -45,6 +45,8 @@ const Step4Description = ({ data, updateData, t, animDir, isGenerating, onGenera
       )}
     </div>
   );
-};
+});
+
+Step4Description.displayName = 'Step4Description';
 
 export default Step4Description;

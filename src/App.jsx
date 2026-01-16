@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import html2pdf from 'html2pdf.js';
-import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS, TRANSLATIONS, INITIAL_DATA } from './constants';
+import { MAX_DESCRIPTION_LENGTH, TRANSLATIONS } from './constants';
 import API_ENDPOINTS from './config';
 import GlobalStyles from './components/GlobalStyles';
 import Header from './components/Header';
@@ -25,53 +25,50 @@ import {
   Step9ThankYou
 } from './components/steps';
 
+// Import custom hooks
+import {
+  useFormWizard,
+  useTemplateSelection,
+  usePaymentFlow,
+  useToast,
+  useScrollVisibility
+} from './hooks';
+
 export default function App() {
-  const [step, setStep] = useState(0);
+  // Custom hooks for state management
+  const {
+    step,
+    data,
+    animDir,
+    t,
+    updateData,
+    goToStep
+  } = useFormWizard();
+
+  const {
+    selectedTemplate,
+    setSelectedTemplate,
+    previewOpen,
+    previewTemplate,
+    openPreview,
+    closePreview
+  } = useTemplateSelection();
+
+  const {
+    donationAmount,
+    setDonationAmount,
+    donateOpen,
+    setDonateOpen,
+    paymentOpen,
+    setPaymentOpen
+  } = usePaymentFlow();
+
+  const { toast, showToast } = useToast();
+  const butterVisible = useScrollVisibility(120);
+
+  // Theme state (kept local as it's simple)
   const [theme, setTheme] = useState('light');
-
-  const detectLang = () => {
-    try {
-      const nav = (navigator && (navigator.language || navigator.userLanguage) || '').slice(0,2).toLowerCase();
-      if (nav === 'uk') return 'ua';
-      if (['de','fr','it','rm','en','ua'].includes(nav)) return nav;
-    } catch (e) {
-      // ignore
-    }
-    return INITIAL_DATA.lang || 'de';
-  };
-
-  const [data, setData] = useState(() => ({ ...INITIAL_DATA, lang: detectLang() }));
   const [isGenerating, setIsGenerating] = useState(false);
-  const [animDir, setAnimDir] = useState('left');
-  const prevStepRef = useRef(0);
-  const [butterVisible, setButterVisible] = useState(false);
-
-  // Template State - consolidated to single state
-  const [selectedTemplate, setSelectedTemplate] = useState(TEMPLATE_OPTIONS[0].id);
-
-  // Donation State
-  const [donationAmount, setDonationAmount] = useState('5');
-  const [donateOpen, setDonateOpen] = useState(false);
-  const [paymentOpen, setPaymentOpen] = useState(false);
-
-  const [toast, setToast] = useState(null);
-
-  // Preview State (Modal)
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewTemplate, setPreviewTemplate] = useState(selectedTemplate);
-
-  const t = TRANSLATIONS[data.lang] || TRANSLATIONS.de;
-
-  // Scroll listener for footer visibility
-  useEffect(() => {
-    const onScroll = () => {
-      const nearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 120);
-      setButterVisible(nearBottom);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   // Clear generated text when language changes
   const prevLangRef = useRef(data.lang);
@@ -81,15 +78,7 @@ export default function App() {
       showToast(TRANSLATIONS[data.lang]?.labels?.aiPrompt || 'Please regenerate text for the new language', 'info');
     }
     prevLangRef.current = data.lang;
-  }, [data.lang, data.generatedText]);
-
-  const updateData = (field, value) => setData(prev => ({ ...prev, [field]: value }));
-
-  const goToStep = (newStep) => {
-    setAnimDir(newStep > prevStepRef.current ? 'right' : 'left');
-    prevStepRef.current = newStep;
-    setStep(newStep);
-  };
+  }, [data.lang, data.generatedText, updateData, showToast]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -114,11 +103,6 @@ export default function App() {
       updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
       setIsGenerating(false);
     }, 1000);
-  };
-
-  const showToast = (msg, type = 'info') => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 5000);
   };
 
   const handleDownloadPDF = async () => {
@@ -173,11 +157,6 @@ export default function App() {
     goToStep(step + 1);
   };
 
-  const handlePreview = (templateId) => {
-    setPreviewTemplate(templateId);
-    setPreviewOpen(true);
-  };
-
   const renderStep = () => {
     switch(step) {
       case 0:
@@ -214,7 +193,7 @@ export default function App() {
             t={t}
             animDir={animDir}
             onSelectTemplate={handleSelectTemplate}
-            onPreview={handlePreview}
+            onPreview={openPreview}
             showToast={showToast}
           />
         );
@@ -285,9 +264,9 @@ export default function App() {
       {/* Preview Modal */}
       {previewOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 print:hidden">
-          <div className="relative bg-transparent w-full h-full flex flex-col items-center justify-center" onClick={() => setPreviewOpen(false)}>
+          <div className="relative bg-transparent w-full h-full flex flex-col items-center justify-center" onClick={closePreview}>
             <button
-              onClick={(e) => { e.stopPropagation(); setPreviewOpen(false); }}
+              onClick={(e) => { e.stopPropagation(); closePreview(); }}
               className="absolute top-4 right-4 text-white/70 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
             >
               <X size={32} />

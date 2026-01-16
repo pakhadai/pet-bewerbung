@@ -3,7 +3,7 @@ import { Dog, Cat, Bird } from 'lucide-react';
 import Label from '../Label';
 import Input from '../Input';
 
-const Step2PetInfo = ({ data, updateData, t, animDir }) => {
+const Step2PetInfo = React.memo(({ data, updateData, t, animDir }) => {
   const petTypes = [
     { id: 'dog', label: t.labels.dog, icon: Dog },
     { id: 'cat', label: t.labels.cat, icon: Cat },
@@ -88,6 +88,8 @@ const Step2PetInfo = ({ data, updateData, t, animDir }) => {
       </div>
     </div>
   );
-};
+});
+
+Step2PetInfo.displayName = 'Step2PetInfo';
 
 export default Step2PetInfo;

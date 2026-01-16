@@ -2,7 +2,7 @@ import React from 'react';
 import Label from '../Label';
 import Input from '../Input';
 
-const Step1OwnerInfo = ({ data, updateData, t, animDir }) => {
+const Step1OwnerInfo = React.memo(({ data, updateData, t, animDir }) => {
   return (
     <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-lg mx-auto`}>
       <div className="grid grid-cols-1 gap-3">
@@ -71,6 +71,8 @@ const Step1OwnerInfo = ({ data, updateData, t, animDir }) => {
       </div>
     </div>
   );
-};
+});
+
+Step1OwnerInfo.displayName = 'Step1OwnerInfo';
 
 export default Step1OwnerInfo;

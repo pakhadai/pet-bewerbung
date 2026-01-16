@@ -1,6 +1,12 @@
 import React from 'react';
 
-const Button = ({ variant = 'primary', className = '', children, ...props }) => {
+const Button = React.forwardRef(({
+  variant = 'primary',
+  className = '',
+  children,
+  'aria-label': ariaLabel,
+  ...props
+}, ref) => {
   const base = "inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.96] btn-press disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group";
 
   const styles = {
@@ -11,13 +17,20 @@ const Button = ({ variant = 'primary', className = '', children, ...props }) => 
   };
 
   return (
-    <button className={`${base} ${styles[variant]} ${className}`} {...props}>
+    <button
+      ref={ref}
+      className={`${base} ${styles[variant]} ${className}`}
+      aria-label={ariaLabel}
+      {...props}
+    >
       <span className="relative z-10 flex items-center gap-2">{children}</span>
       {variant !== 'ghost' && (
-        <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></span>
+        <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out" aria-hidden="true"></span>
       )}
     </button>
   );
-};
+});
+
+Button.displayName = 'Button';
 
 export default Button;

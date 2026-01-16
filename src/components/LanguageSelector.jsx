@@ -38,27 +38,37 @@ export default function LanguageSelector({ value, onChange }) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg theme-card theme-border border hover:theme-card-bg-hover transition-colors"
         aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-label={`Select language. Current: ${currentLang.label}`}
       >
         <img
           src={`https://flagcdn.com/24x18/${currentLang.flag}.png`}
-          alt={currentLang.label}
+          alt=""
           width="24"
           height="18"
           className="shadow-sm"
+          aria-hidden="true"
         />
         <span className="theme-text text-sm font-medium hidden sm:inline">{currentLang.label}</span>
         <ChevronDown
           size={16}
           className={`theme-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          aria-hidden="true"
         />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-48 theme-card border theme-border rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+        <div
+          className="absolute top-full right-0 mt-2 w-48 theme-card border theme-border rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2"
+          role="listbox"
+          aria-label="Language selection"
+        >
           {LANGUAGES.map((lang) => (
             <button
               key={lang.id}
               onClick={() => handleSelect(lang.id)}
+              role="option"
+              aria-selected={value === lang.id}
               className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${
                 value === lang.id
                   ? 'bg-primary text-white'
@@ -67,10 +77,11 @@ export default function LanguageSelector({ value, onChange }) {
             >
               <img
                 src={`https://flagcdn.com/24x18/${lang.flag}.png`}
-                alt={lang.label}
+                alt=""
                 width="24"
                 height="18"
                 className="shadow-sm"
+                aria-hidden="true"
               />
               <span className="text-sm font-medium">{lang.label}</span>
               {value === lang.id && (
@@ -82,6 +93,7 @@ export default function LanguageSelector({ value, onChange }) {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="3"
+                  aria-hidden="true"
                 >
                   <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>

@@ -13,7 +13,7 @@ const TemplateSkeleton = () => (
   </div>
 );
 
-const Step7TemplateSelect = ({
+const Step7TemplateSelect = React.memo(({
   data,
   t,
   animDir,
@@ -101,6 +101,8 @@ const Step7TemplateSelect = ({
       </div>
     </div>
   );
-};
+});
+
+Step7TemplateSelect.displayName = 'Step7TemplateSelect';
 
 export default Step7TemplateSelect;

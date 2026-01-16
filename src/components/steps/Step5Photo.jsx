@@ -1,7 +1,7 @@
 import React from 'react';
 import { Camera } from 'lucide-react';
 
-const Step5Photo = ({ data, onFileChange, t, animDir }) => {
+const Step5Photo = React.memo(({ data, onFileChange, t, animDir }) => {
   return (
     <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 text-center max-w-lg mx-auto`}>
       <div className="relative group cursor-pointer inline-block w-full">
@@ -34,6 +34,8 @@ const Step5Photo = ({ data, onFileChange, t, animDir }) => {
       </div>
     </div>
   );
-};
+});
+
+Step5Photo.displayName = 'Step5Photo';
 
 export default Step5Photo;

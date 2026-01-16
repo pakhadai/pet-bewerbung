@@ -9,25 +9,26 @@ const Navigation = ({ step, onPrev, onNext, onDownloadPDF, showToast, t }) => {
   }
 
   return (
-    <div className="nav-panel print:hidden">
+    <nav className="nav-panel print:hidden" role="navigation" aria-label="Form navigation">
       <Button
         variant="ghost"
         className="btn"
         onClick={onPrev}
         disabled={step === 1}
         title={t.steps?.[step - 1] || 'Previous'}
+        aria-label={`Go to previous step: ${t.steps?.[step - 1] || 'Previous'}`}
       >
-        <ChevronLeft size={18} strokeWidth={2.5} />
+        <ChevronLeft size={18} strokeWidth={2.5} aria-hidden="true" />
       </Button>
 
-      <div className="progress-container">
+      <div className="progress-container" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={8} aria-label={`Step ${step} of 8`}>
         <div className="progress-bar">
           <div
             className="progress-fill"
             style={{ width: `${((step - 1) / 7) * 100}%` }}
           ></div>
         </div>
-        <div className="text-xs font-bold theme-text-muted whitespace-nowrap min-w-[60px] text-center">
+        <div className="text-xs font-bold theme-text-muted whitespace-nowrap min-w-[60px] text-center" aria-hidden="true">
           {step}/8
         </div>
       </div>
@@ -42,8 +43,9 @@ const Navigation = ({ step, onPrev, onNext, onDownloadPDF, showToast, t }) => {
               showToast(t.ui.emailComingSoon, 'info');
             }}
             title={t.ui.emailInDevelopment}
+            aria-label="Send document via email (coming soon)"
           >
-            <Mail size={18} />
+            <Mail size={18} aria-hidden="true" />
             <span className="hidden sm:inline ml-2">Email</span>
           </Button>
           <Button
@@ -51,8 +53,9 @@ const Navigation = ({ step, onPrev, onNext, onDownloadPDF, showToast, t }) => {
             className="btn shadow-lg hover:shadow-xl"
             onClick={onDownloadPDF}
             title="Download PDF"
+            aria-label="Download document as PDF"
           >
-            <Printer size={18} />
+            <Printer size={18} aria-hidden="true" />
             <span className="hidden sm:inline ml-2">Download</span>
           </Button>
         </>
@@ -63,12 +66,13 @@ const Navigation = ({ step, onPrev, onNext, onDownloadPDF, showToast, t }) => {
           onClick={onNext}
           disabled={step === 8}
           title={t.steps?.[step + 1] || 'Next'}
+          aria-label={`Go to next step: ${t.steps?.[step + 1] || 'Next'}`}
         >
           <span className="hidden sm:inline">Next</span>
-          <ChevronRight size={18} strokeWidth={2.5} />
+          <ChevronRight size={18} strokeWidth={2.5} aria-hidden="true" />
         </Button>
       )}
-    </div>
+    </nav>
   );
 };
 

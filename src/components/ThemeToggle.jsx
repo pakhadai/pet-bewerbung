@@ -20,9 +20,12 @@ export default function ThemeToggle({ theme, onThemeChange }) {
       onClick={() => onThemeChange(nextTheme.id)}
       className="relative group px-4 py-2 rounded-xl theme-card theme-border border hover:scale-105 transition-all duration-300 flex items-center gap-2"
       title={`Switch to ${nextTheme.label}`}
+      aria-label={`Current theme: ${currentTheme.label}. Click to switch to ${nextTheme.label}`}
+      role="switch"
+      aria-checked={theme === 'dark'}
     >
       {/* Icon with animation */}
-      <div className="relative">
+      <div className="relative" aria-hidden="true">
         <Icon
           size={20}
           className="theme-text transition-all duration-300 group-hover:rotate-12"
@@ -52,6 +55,7 @@ export default function ThemeToggle({ theme, onThemeChange }) {
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
+        aria-hidden="true"
       >
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
       </svg>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { CheckCircle2 } from 'lucide-react';
 
-const Step6Summary = ({ data, t, animDir }) => {
+const Step6Summary = React.memo(({ data, t, animDir }) => {
   return (
     <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-2xl mx-auto`}>
       <div className="theme-card rounded-2xl p-5 theme-border border space-y-3 scale-hover">
@@ -95,6 +95,8 @@ const Step6Summary = ({ data, t, animDir }) => {
       </div>
     </div>
   );
-};
+});
+
+Step6Summary.displayName = 'Step6Summary';
 
 export default Step6Summary;
