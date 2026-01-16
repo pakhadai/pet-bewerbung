@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import html2pdf from 'html2pdf.js';
 import { MAX_DESCRIPTION_LENGTH, TRANSLATIONS } from './constants';
 import API_ENDPOINTS from './config';
+import compressImage from './utils/imageCompression';
 import GlobalStyles from './components/GlobalStyles';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
@@ -11,6 +12,9 @@ import SwissDocument from './components/SwissDocument';
 import { X, Camera } from 'lucide-react';
 import DonateModal from './components/DonateModal';
 import PaymentModal from './components/PaymentModal';
+import LegalPages from './components/LegalPages';
+import ErrorBoundary from './components/ErrorBoundary';
+import CookieBanner from './components/CookieBanner';
 
 // Import step components
 import {
@@ -31,7 +35,8 @@ import {
   useTemplateSelection,
   usePaymentFlow,
   useToast,
-  useScrollVisibility
+  useScrollVisibility,
+  useFormValidation
 } from './hooks';
 
 export default function App() {
@@ -65,10 +70,12 @@ export default function App() {
 
   const { toast, showToast } = useToast();
   const butterVisible = useScrollVisibility(120);
+  const { errors: validationErrors, isValid: canProceed } = useFormValidation(data, step);
 
   // Theme state (kept local as it's simple)
   const [theme, setTheme] = useState('light');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [legalPage, setLegalPage] = useState(null); // 'impressum', 'privacy', 'terms', or null
 
   // Clear generated text when language changes
   const prevLangRef = useRef(data.lang);
@@ -80,12 +87,25 @@ export default function App() {
     prevLangRef.current = data.lang;
   }, [data.lang, data.generatedText, updateData, showToast]);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => updateData('photo', reader.result);
-      reader.readAsDataURL(file);
+      try {
+        // Compress image before storing
+        const compressedImage = await compressImage(file, {
+          maxWidth: 800,
+          maxHeight: 800,
+          quality: 0.8,
+          maxSizeKB: 500
+        });
+        updateData('photo', compressedImage);
+      } catch (err) {
+        // Fallback to uncompressed if compression fails
+        const reader = new FileReader();
+        reader.onloadend = () => updateData('photo', reader.result);
+        reader.readAsDataURL(file);
+        showToast('Image compression failed, using original', 'info');
+      }
     }
   };
 
@@ -284,7 +304,13 @@ export default function App() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="origin-top scale-[0.4] sm:scale-[0.6] md:scale-[0.8] lg:scale-100 shadow-2xl">
-                <SwissDocument data={data} t={t} templateType={previewTemplate} />
+                <ErrorBoundary
+                  fallbackTitle="Preview Error"
+                  fallbackMessage="Failed to render document preview. Please check your data and try again."
+                  onReset={closePreview}
+                >
+                  <SwissDocument data={data} t={t} templateType={previewTemplate} />
+                </ErrorBoundary>
               </div>
             </div>
           </div>
@@ -306,9 +332,14 @@ export default function App() {
         onDownloadPDF={handleDownloadPDF}
         showToast={showToast}
         t={t}
+        canProceed={canProceed}
       />
 
-      <Footer step={step} butterVisible={butterVisible} />
+      <Footer step={step} butterVisible={butterVisible} t={t} onOpenLegal={setLegalPage} />
+
+      <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
+
+      <CookieBanner t={t} onOpenPrivacy={() => setLegalPage('privacy')} />
     </div>
   );
 }

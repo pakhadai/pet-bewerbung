@@ -3,5 +3,6 @@ export {
   useTemplateSelection,
   usePaymentFlow,
   useToast,
-  useScrollVisibility
+  useScrollVisibility,
+  useFormValidation
 } from './useFormWizard';

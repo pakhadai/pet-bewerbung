@@ -1,5 +1,6 @@
 import React from 'react';
 import SwissDocument from '../SwissDocument';
+import ErrorBoundary from '../ErrorBoundary';
 
 const Step8Preview = React.memo(({ data, t, animDir, selectedTemplate }) => {
   return (
@@ -11,7 +12,12 @@ const Step8Preview = React.memo(({ data, t, animDir, selectedTemplate }) => {
           className="overflow-hidden border-2 rounded-lg shadow-2xl theme-card"
           style={{ width: '210mm' }}
         >
-          <SwissDocument data={data} t={t} templateType={selectedTemplate} />
+          <ErrorBoundary
+            fallbackTitle={t.ui?.previewError || "Document Error"}
+            fallbackMessage={t.ui?.previewErrorMessage || "Failed to render the document. Please try selecting a different template or check your data."}
+          >
+            <SwissDocument data={data} t={t} templateType={selectedTemplate} />
+          </ErrorBoundary>
         </div>
       </div>
     </div>

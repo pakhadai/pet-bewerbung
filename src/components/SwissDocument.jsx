@@ -397,11 +397,37 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     );
   };
 
+  // Watermark component
+  const Watermark = () => (
+    <div
+      className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.04] select-none"
+      style={{ zIndex: 0 }}
+    >
+      <div
+        className="absolute whitespace-nowrap font-bold text-slate-900"
+        style={{
+          fontSize: '80px',
+          transform: 'rotate(-45deg)',
+          top: '50%',
+          left: '50%',
+          marginLeft: '-400px',
+          marginTop: '-100px',
+          letterSpacing: '8px',
+        }}
+      >
+        Pet-Bewerbung.ch
+      </div>
+    </div>
+  );
+
   return (
     <div className={config.container}>
-      {renderHeader()}
-      {renderContent()}
-      {renderFooter()}
+      <Watermark />
+      <div className="relative z-10 flex flex-col h-full">
+        {renderHeader()}
+        {renderContent()}
+        {renderFooter()}
+      </div>
     </div>
   );
 };

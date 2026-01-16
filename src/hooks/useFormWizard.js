@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { TEMPLATE_OPTIONS, TRANSLATIONS, INITIAL_DATA } from '../constants';
+import { validateSwissPhone, validateSwissPostal, validateEmail } from '../utils/swissValidation';
 
 const detectLang = () => {
   try {
@@ -156,4 +157,74 @@ export const useScrollVisibility = (threshold = 120) => {
   }, [threshold]);
 
   return isVisible;
+};
+
+/**
+ * Form validation hook - validates data for each step
+ * @param {Object} data - Form data
+ * @param {number} step - Current step
+ * @returns {Object} - Validation state
+ */
+export const useFormValidation = (data, step) => {
+  const validation = useMemo(() => {
+    const errors = {};
+    let isValid = true;
+
+    switch (step) {
+      case 1: // Owner info
+        if (!data.ownerName || data.ownerName.trim().length < 2) {
+          errors.ownerName = true;
+          isValid = false;
+        }
+        if (data.email && !validateEmail(data.email)) {
+          errors.email = true;
+          isValid = false;
+        }
+        if (data.phone && !validateSwissPhone(data.phone)) {
+          errors.phone = true;
+          isValid = false;
+        }
+        if (data.postal && !validateSwissPostal(data.postal)) {
+          errors.postal = true;
+          isValid = false;
+        }
+        break;
+
+      case 2: // Pet info
+        if (!data.name || data.name.trim().length < 1) {
+          errors.name = true;
+          isValid = false;
+        }
+        if (!data.petType) {
+          errors.petType = true;
+          isValid = false;
+        }
+        break;
+
+      case 3: // Health & Insurance - optional fields, no validation needed
+        break;
+
+      case 4: // Description - optional
+        break;
+
+      case 5: // Photo - optional
+        break;
+
+      case 6: // Summary - no validation needed (review step)
+        break;
+
+      case 7: // Template selection - handled by template grid
+        break;
+
+      case 8: // Preview - no validation needed
+        break;
+
+      default:
+        break;
+    }
+
+    return { errors, isValid };
+  }, [data, step]);
+
+  return validation;
 };

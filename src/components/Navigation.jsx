@@ -2,7 +2,7 @@ import React from 'react';
 import { ChevronLeft, ChevronRight, Mail, Printer } from 'lucide-react';
 import Button from './Button';
 
-const Navigation = ({ step, onPrev, onNext, onDownloadPDF, showToast, t }) => {
+const Navigation = ({ step, onPrev, onNext, onDownloadPDF, showToast, t, canProceed = true }) => {
   // Don't show navigation on step 0 (landing) or step 9 (thank you)
   if (step === 0 || step === 9) {
     return null;
@@ -34,38 +34,23 @@ const Navigation = ({ step, onPrev, onNext, onDownloadPDF, showToast, t }) => {
       </div>
 
       {step === 8 ? (
-        <>
-          <Button
-            variant="secondary"
-            className="btn"
-            onClick={() => {
-              onDownloadPDF();
-              showToast(t.ui.emailComingSoon, 'info');
-            }}
-            title={t.ui.emailInDevelopment}
-            aria-label="Send document via email (coming soon)"
-          >
-            <Mail size={18} aria-hidden="true" />
-            <span className="hidden sm:inline ml-2">Email</span>
-          </Button>
-          <Button
-            variant="primary"
-            className="btn shadow-lg hover:shadow-xl"
-            onClick={onDownloadPDF}
-            title="Download PDF"
-            aria-label="Download document as PDF"
-          >
-            <Printer size={18} aria-hidden="true" />
-            <span className="hidden sm:inline ml-2">Download</span>
-          </Button>
-        </>
-      ) : (
         <Button
           variant="primary"
           className="btn shadow-lg hover:shadow-xl"
-          onClick={onNext}
-          disabled={step === 8}
-          title={t.steps?.[step + 1] || 'Next'}
+          onClick={onDownloadPDF}
+          title="Download PDF"
+          aria-label="Download document as PDF"
+        >
+          <Printer size={18} aria-hidden="true" />
+          <span className="hidden sm:inline ml-2">Download</span>
+        </Button>
+      ) : (
+        <Button
+          variant="primary"
+          className={`btn shadow-lg hover:shadow-xl ${!canProceed ? 'opacity-50 cursor-not-allowed' : ''}`}
+          onClick={canProceed ? onNext : undefined}
+          disabled={!canProceed}
+          title={!canProceed ? 'Please fill in required fields' : (t.steps?.[step + 1] || 'Next')}
           aria-label={`Go to next step: ${t.steps?.[step + 1] || 'Next'}`}
         >
           <span className="hidden sm:inline">Next</span>

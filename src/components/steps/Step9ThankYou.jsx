@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckCircle2, Heart } from 'lucide-react';
 import GlobalStyles from '../GlobalStyles';
 import Header from '../Header';
+import Footer from '../Footer';
 import DonateModal from '../DonateModal';
 import PaymentModal from '../PaymentModal';
+import LegalPages from '../LegalPages';
 
 const Step9ThankYou = React.memo(({
   data,
@@ -22,6 +24,7 @@ const Step9ThankYou = React.memo(({
   showToast,
   toast
 }) => {
+  const [legalPage, setLegalPage] = useState(null);
   return (
     <div className="min-h-screen theme-bg font-sans theme-text pb-6 print:bg-white print:p-0">
       <GlobalStyles theme={theme} />
@@ -132,6 +135,9 @@ const Step9ThankYou = React.memo(({
           {toast.msg}
         </div>
       )}
+
+      <Footer step={9} butterVisible={true} t={t} onOpenLegal={setLegalPage} />
+      <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
     </div>
   );
 });
