@@ -40,22 +40,19 @@ services:
       start_period: 20s
 
   # Cloudflare Tunnel (з'єднує локальний сервер з pet.ohmyrevit.pp.ua)
+  # ВАЖЛИВО: образ cloudflared не має shell, тому використовуємо масив команд
   tunnel:
     image: cloudflare/cloudflared:latest
     container_name: pet-tunnel
     restart: always
-    command: >
-      sh -c "
-      echo '⏳ Очікування готовності frontend (10 секунд)...';
-      sleep 10;
-      if [ -z \"$$TUNNEL_TOKEN\" ]; then
-        echo '❌ ERROR: TUNNEL_TOKEN не встановлено!';
-        exit 1;
-      fi;
-      echo '🚀 Запуск Cloudflare Tunnel...';
-      echo '🌐 Target: pet.ohmyrevit.pp.ua -> frontend:80';
-      exec cloudflared tunnel --no-autoupdate --loglevel info run --token \"$$TUNNEL_TOKEN\"
-      "
+    command:
+      - tunnel
+      - --no-autoupdate
+      - --loglevel
+      - info
+      - run
+      - --token
+      - ${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
       frontend:
         condition: service_healthy
