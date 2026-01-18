@@ -48,15 +48,11 @@ const ImpressumContent = ({ t }) => (
       <h3 className="font-semibold text-base mb-2">{t.legal?.operator || 'Operator / Betreiber'}</h3>
       <div className="theme-text-muted">
         <p className="font-medium">Pet-Bewerbung.ch</p>
-        <p>[Ihr vollständiger Name / Your full legal name]</p>
-        <p>[Ihre Adresse / Your address]</p>
-        <p>[PLZ Stadt / Postal code City], Switzerland</p>
+        <p>Dmytro Pakhadai</p>
+        <p>Chölpen 1</p>
+        <p>9525 Lenggenwil, Switzerland</p>
         <p className="mt-2">Email: info@pet-bewerbung.ch</p>
-        {/* <p>UID: CHE-xxx.xxx.xxx</p> */}
       </div>
-      <p className="text-xs theme-text-muted mt-2 italic">
-        {t.legal?.impressumNote || 'Please update this section with your actual legal information before going live.'}
-      </p>
     </section>
 
     <section>

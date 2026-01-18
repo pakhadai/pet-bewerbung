@@ -123,7 +123,7 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="theme-card rounded-xl shadow-xl w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="theme-text text-lg font-bold">Pay €{amount}</h3>
+          <h3 className="theme-text text-lg font-bold">Pay CHF {amount}</h3>
           <button onClick={onClose} className="theme-text-muted hover:theme-text transition-colors">✕</button>
         </div>
         <div>

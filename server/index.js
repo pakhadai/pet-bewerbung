@@ -14,23 +14,27 @@ const stripe = Stripe(stripeKey || '');
 // ============================================
 // SECURITY: CORS Configuration
 // ============================================
-const allowedOrigins = isProduction
-  ? [
-      'https://pet.ohmyrevit.pp.ua',
-      'https://pet-bewerbung.ch',
-      'https://www.pet-bewerbung.ch',
-    ]
-  : ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000'];
+const allowedOrigins = [
+  // Production domains
+  'https://pet.ohmyrevit.pp.ua',
+  'https://pet-bewerbung.ch',
+  'https://www.pet-bewerbung.ch',
+  // Development domains
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:3000',
+];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, etc.) in development only
-    if (!origin && !isProduction) {
+    // Allow requests with no origin (server-to-server, mobile apps)
+    if (!origin) {
       return callback(null, true);
     }
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
+    console.warn(`CORS blocked origin: ${origin}`);
     callback(new Error('CORS policy: Origin not allowed'));
   },
   credentials: true,
