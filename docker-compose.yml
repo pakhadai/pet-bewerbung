@@ -42,14 +42,18 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: pet-tunnel
     restart: always
-    command:
-      - --no-autoupdate
-      - --loglevel
-      - info
-      - tunnel
-      - run
-      - --token
-      - ${CLOUDFLARE_TUNNEL_TOKEN}
+    command: >
+      sh -c "
+      echo '⏳ Очікування готовності frontend (10 секунд)...';
+      sleep 10;
+      if [ -z \"$$TUNNEL_TOKEN\" ]; then
+        echo '❌ ERROR: TUNNEL_TOKEN не встановлено!';
+        exit 1;
+      fi;
+      echo '🚀 Запуск Cloudflare Tunnel...';
+      echo '🌐 Target: pet.ohmyrevit.pp.ua -> frontend:80';
+      exec cloudflared tunnel --no-autoupdate --loglevel info run --token \"$$TUNNEL_TOKEN\"
+      "
     depends_on:
       frontend:
         condition: service_healthy
@@ -57,6 +61,7 @@ services:
       - .env
     environment:
       - TUNNEL_TRANSPORT_PROTOCOL=quic
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
       - TUNNEL_RETRIES=10
       - TUNNEL_GRACE_PERIOD=30s
     networks:
