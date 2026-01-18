@@ -21,6 +21,9 @@ export const API_ENDPOINTS = {
   stripeConfig: `${STRIPE_API_URL}/stripe-config`,
   paymentStatus: (id) => `${STRIPE_API_URL}/payment-status/${id}`,
   checkoutSession: (id) => `${STRIPE_API_URL}/checkout-session/${id}`,
+  // AI endpoints
+  generatePetDescription: `${STRIPE_API_URL}/generate-pet-description`,
+  aiRateLimit: `${STRIPE_API_URL}/ai-rate-limit`,
 };
 
 export default API_ENDPOINTS;

@@ -2,11 +2,51 @@ require('dotenv').config();
 const express = require('express');
 const Stripe = require('stripe');
 const cors = require('cors');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const port = process.env.PORT || 4242;
 const stripeKey = process.env.STRIPE_SECRET_KEY;
+const geminiKey = process.env.GEMINI_API_KEY;
 const isProduction = process.env.NODE_ENV === 'production';
+
+// Initialize Gemini AI
+const genAI = geminiKey ? new GoogleGenerativeAI(geminiKey) : null;
+
+// ============================================
+// Rate Limiting for AI Generation (IP-based)
+// ============================================
+const AI_RATE_LIMIT = parseInt(process.env.AI_RATE_LIMIT) || 3; // requests per day
+const AI_RATE_WINDOW = 24 * 60 * 60 * 1000; // 24 hours in ms
+const aiRateLimits = new Map(); // IP -> { count, resetTime }
+
+function checkAIRateLimit(ip) {
+  const now = Date.now();
+  const record = aiRateLimits.get(ip);
+  
+  if (!record || now > record.resetTime) {
+    // Reset or create new record
+    aiRateLimits.set(ip, { count: 1, resetTime: now + AI_RATE_WINDOW });
+    return { allowed: true, remaining: AI_RATE_LIMIT - 1, resetTime: now + AI_RATE_WINDOW };
+  }
+  
+  if (record.count >= AI_RATE_LIMIT) {
+    return { allowed: false, remaining: 0, resetTime: record.resetTime };
+  }
+  
+  record.count++;
+  return { allowed: true, remaining: AI_RATE_LIMIT - record.count, resetTime: record.resetTime };
+}
+
+// Clean up old rate limit records every hour
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, record] of aiRateLimits.entries()) {
+    if (now > record.resetTime) {
+      aiRateLimits.delete(ip);
+    }
+  }
+}, 60 * 60 * 1000);
 
 if (!stripeKey) console.warn('Warning: STRIPE_SECRET_KEY not set. Checkout requests will fail.');
 const stripe = Stripe(stripeKey || '');
@@ -252,6 +292,176 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   }
 
   res.json({ received: true });
+});
+
+// ============================================
+// AI Pet Description Generation (Gemini)
+// ============================================
+const AI_MAX_CHARS = 470;
+
+// Strict prompt template - ONLY generates pet descriptions
+function buildPetPrompt(petData, lang) {
+  const langInstructions = {
+    de: 'Antworte auf Deutsch.',
+    en: 'Respond in English.',
+    fr: 'Réponds en français.',
+    it: 'Rispondi in italiano.',
+    ua: 'Відповідай українською.',
+    rm: 'Antworte auf Deutsch.', // Romansh -> German
+  };
+  
+  const langInstruction = langInstructions[lang] || langInstructions.de;
+  
+  return `Du bist ein professioneller Texter für Mietbewerbungen mit Haustieren in der Schweiz.
+
+STRENGE REGELN:
+1. Schreibe NUR eine Beschreibung für das Haustier - KEINE anderen Themen
+2. Maximal ${AI_MAX_CHARS} Zeichen (inklusive Leerzeichen)
+3. Professioneller, freundlicher Ton
+4. Betone positive Eigenschaften für Vermieter (ruhig, stubenrein, gut erzogen)
+5. KEINE erfundenen Fakten - nutze nur die gegebenen Informationen
+6. ${langInstruction}
+
+HAUSTIER-DATEN:
+- Name: ${petData.petName || 'Unbekannt'}
+- Tierart: ${petData.petType || 'Haustier'}
+- Rasse: ${petData.breed || 'Unbekannt'}
+- Alter: ${petData.age || 'Unbekannt'}
+- Geschlecht: ${petData.gender || 'Unbekannt'}
+- Gewicht: ${petData.weight || 'Unbekannt'}
+- Eigenschaften: ${petData.traits || 'freundlich, ruhig'}
+- Kastriert/Sterilisiert: ${petData.neutered ? 'Ja' : 'Nein'}
+- Geimpft: ${petData.vaccinated ? 'Ja' : 'Nein'}
+
+Schreibe jetzt eine überzeugende, professionelle Beschreibung für dieses Haustier, die Vermieter anspricht:`;
+}
+
+app.post('/generate-pet-description', async (req, res) => {
+  // Get client IP (considering proxies)
+  const clientIP = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
+                   req.headers['x-real-ip'] || 
+                   req.socket.remoteAddress || 
+                   'unknown';
+  
+  // Check rate limit
+  const rateCheck = checkAIRateLimit(clientIP);
+  
+  // Set rate limit headers
+  res.set('X-RateLimit-Limit', AI_RATE_LIMIT.toString());
+  res.set('X-RateLimit-Remaining', rateCheck.remaining.toString());
+  res.set('X-RateLimit-Reset', new Date(rateCheck.resetTime).toISOString());
+  
+  if (!rateCheck.allowed) {
+    const resetDate = new Date(rateCheck.resetTime);
+    return res.status(429).json({ 
+      error: 'Rate limit exceeded', 
+      message: `Maximum ${AI_RATE_LIMIT} AI requests per day. Try again after ${resetDate.toLocaleTimeString()}.`,
+      resetTime: rateCheck.resetTime,
+      remaining: 0
+    });
+  }
+  
+  // Check if Gemini is configured
+  if (!genAI) {
+    return res.status(503).json({ 
+      error: 'AI service not configured',
+      message: 'GEMINI_API_KEY not set on server'
+    });
+  }
+  
+  const { petData, lang = 'de' } = req.body || {};
+  
+  if (!petData || !petData.petName) {
+    return res.status(400).json({ error: 'Pet data required' });
+  }
+  
+  try {
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-1.5-flash',
+      generationConfig: {
+        maxOutputTokens: 200,
+        temperature: 0.7,
+      },
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+      ],
+    });
+    
+    const prompt = buildPetPrompt(petData, lang);
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    let text = response.text().trim();
+    
+    // Ensure max length
+    if (text.length > AI_MAX_CHARS) {
+      // Try to cut at sentence boundary
+      const cutText = text.substring(0, AI_MAX_CHARS);
+      const lastSentenceEnd = Math.max(
+        cutText.lastIndexOf('.'),
+        cutText.lastIndexOf('!'),
+        cutText.lastIndexOf('?')
+      );
+      text = lastSentenceEnd > AI_MAX_CHARS * 0.6 
+        ? cutText.substring(0, lastSentenceEnd + 1) 
+        : cutText.substring(0, AI_MAX_CHARS - 3) + '...';
+    }
+    
+    if (!isProduction) {
+      console.log(`AI generated description for ${petData.petName} (${text.length} chars), remaining: ${rateCheck.remaining}`);
+    }
+    
+    res.json({ 
+      description: text, 
+      length: text.length,
+      remaining: rateCheck.remaining,
+      resetTime: rateCheck.resetTime
+    });
+    
+  } catch (err) {
+    console.error('AI generation error:', err.message);
+    
+    // Don't count failed requests against rate limit
+    const record = aiRateLimits.get(clientIP);
+    if (record && record.count > 0) {
+      record.count--;
+    }
+    
+    res.status(500).json({ 
+      error: 'AI generation failed',
+      message: err.message || 'Unknown error',
+      remaining: rateCheck.remaining + 1 // Refund the request
+    });
+  }
+});
+
+// Check remaining AI requests
+app.get('/ai-rate-limit', (req, res) => {
+  const clientIP = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
+                   req.headers['x-real-ip'] || 
+                   req.socket.remoteAddress || 
+                   'unknown';
+  
+  const now = Date.now();
+  const record = aiRateLimits.get(clientIP);
+  
+  if (!record || now > record.resetTime) {
+    return res.json({ 
+      limit: AI_RATE_LIMIT, 
+      remaining: AI_RATE_LIMIT, 
+      resetTime: now + AI_RATE_WINDOW,
+      configured: !!genAI
+    });
+  }
+  
+  res.json({ 
+    limit: AI_RATE_LIMIT, 
+    remaining: Math.max(0, AI_RATE_LIMIT - record.count), 
+    resetTime: record.resetTime,
+    configured: !!genAI
+  });
 });
 
 // ============================================

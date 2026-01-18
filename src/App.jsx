@@ -139,9 +139,68 @@ export default function App() {
     }
   };
 
-  const generateText = () => {
+  const generateText = async () => {
     setIsGenerating(true);
-    setTimeout(() => {
+    
+    try {
+      // Prepare pet data for AI
+      const petData = {
+        petName: data.petName,
+        petType: data.petType,
+        breed: data.breed,
+        age: data.age,
+        gender: data.gender,
+        weight: data.weight,
+        traits: data.keywords,
+        neutered: data.neutered,
+        vaccinated: data.vaccinated,
+      };
+      
+      const res = await fetch(API_ENDPOINTS.generatePetDescription, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ petData, lang: data.lang }),
+      });
+      
+      const json = await res.json();
+      
+      if (res.status === 429) {
+        // Rate limit exceeded
+        showToast(json.message || 'AI limit reached. Try again tomorrow.', 'error');
+        return;
+      }
+      
+      if (res.status === 503) {
+        // AI not configured - fall back to template
+        const tmpl = t.templates;
+        const rawKeywords = data.keywords.split(',').map(s => s.trim()).filter(s => s);
+        let middleSection = "";
+        if (rawKeywords.length > 0) {
+          const formattedKeywords = rawKeywords.map(k => `**${k}**`).join(', ');
+          middleSection = `${tmpl.keywords}${formattedKeywords}. `;
+        }
+        const fullText = `${tmpl.intro} ${middleSection}${tmpl.outro}`;
+        updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
+        showToast('Using template (AI not available)', 'info');
+        return;
+      }
+      
+      if (!res.ok) {
+        throw new Error(json.error || 'AI generation failed');
+      }
+      
+      updateData('generatedText', json.description);
+      
+      // Show remaining requests
+      if (json.remaining !== undefined) {
+        showToast(`Generated! ${json.remaining} AI requests remaining today.`, 'success');
+      }
+      
+    } catch (err) {
+      console.error('AI generation error:', err);
+      showToast('AI error: ' + (err.message || 'Unknown error'), 'error');
+      
+      // Fall back to template on error
       const tmpl = t.templates;
       const rawKeywords = data.keywords.split(',').map(s => s.trim()).filter(s => s);
       let middleSection = "";
@@ -151,8 +210,9 @@ export default function App() {
       }
       const fullText = `${tmpl.intro} ${middleSection}${tmpl.outro}`;
       updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
+    } finally {
       setIsGenerating(false);
-    }, 1000);
+    }
   };
 
   const handleDownloadPDF = async () => {
