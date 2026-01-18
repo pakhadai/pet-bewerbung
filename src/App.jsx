@@ -222,7 +222,7 @@ export default function App() {
         showToast('Document not found', 'error');
         return;
       }
-      const filename = `${data.name || 'Pet-CV'}-${new Date().getTime()}.pdf`;
+      const filename = `${data.petName || 'Pet-CV'}-${new Date().getTime()}.pdf`;
       const options = {
         margin: 0,
         filename: filename,
@@ -230,9 +230,28 @@ export default function App() {
         html2canvas: { scale: 2 },
         jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
       };
-      await html2pdf().set(options).from(element).save();
+      
+      // Generate PDF as blob for better mobile support
+      const pdfBlob = await html2pdf().set(options).from(element).outputPdf('blob');
+      
+      // Create download link
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
       showToast('PDF downloaded successfully!', 'success');
-      setTimeout(() => goToStep(9), 2000);
+      // Go to thank you page after short delay
+      setTimeout(() => goToStep(9), 1500);
     } catch (err) {
       showToast('Failed to download PDF: ' + err.message, 'error');
     }
@@ -306,7 +325,7 @@ export default function App() {
           />
         );
       case 5:
-        return <Step5Photo data={data} onFileChange={handleFileChange} t={t} animDir={animDir} />;
+        return <Step5Photo data={data} onFileChange={handleFileChange} updateData={updateData} t={t} animDir={animDir} />;
       case 6:
         return <Step6Summary data={data} t={t} animDir={animDir} />;
       case 7:

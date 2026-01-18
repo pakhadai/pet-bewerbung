@@ -85,7 +85,8 @@ const Step9ThankYou = React.memo(({
                     showToast(t.ui.freeSuccess, 'success');
                   } else {
                     setDonationAmount(String(amount));
-                    setDonateOpen(true);
+                    // Go directly to in-app payment
+                    setPaymentOpen(true);
                   }
                 }}
                 className={`py-3 px-4 rounded-xl font-semibold transition-all animate-in slide-in-from-bottom-4 duration-500 ${
@@ -120,6 +121,7 @@ const Step9ThankYou = React.memo(({
         open={paymentOpen}
         onClose={() => setPaymentOpen(false)}
         amount={donationAmount}
+        lang={data.lang}
         onSuccess={() => showToast('Thank you — payment succeeded', 'success')}
         onFailure={(msg) => showToast(`Payment failed: ${msg}`, 'error')}
       />
