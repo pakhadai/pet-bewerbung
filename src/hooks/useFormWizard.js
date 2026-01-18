@@ -2,6 +2,9 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { TEMPLATE_OPTIONS, TRANSLATIONS, INITIAL_DATA } from '../constants';
 import { validateSwissPhone, validateSwissPostal, validateEmail } from '../utils/swissValidation';
 
+const STORAGE_KEY = 'pet-bewerbung-form-data';
+const STORAGE_STEP_KEY = 'pet-bewerbung-step';
+
 const detectLang = () => {
   try {
     const nav = (navigator && (navigator.language || navigator.userLanguage) || '').slice(0, 2).toLowerCase();
@@ -13,14 +16,80 @@ const detectLang = () => {
   return INITIAL_DATA.lang || 'de';
 };
 
+/**
+ * Load saved form data from localStorage
+ */
+const loadSavedData = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Merge with INITIAL_DATA to ensure all fields exist
+      return { ...INITIAL_DATA, ...parsed, lang: parsed.lang || detectLang() };
+    }
+  } catch (e) {
+    console.warn('Could not load saved form data:', e);
+  }
+  return { ...INITIAL_DATA, lang: detectLang() };
+};
+
+/**
+ * Load saved step from localStorage
+ */
+const loadSavedStep = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_STEP_KEY);
+    if (saved) {
+      const step = parseInt(saved, 10);
+      // Don't restore step 0 (landing) or steps after 8 (thank you)
+      if (step >= 1 && step <= 8) {
+        return step;
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+  return 0;
+};
+
 export const useFormWizard = () => {
-  const [step, setStep] = useState(0);
-  const [data, setData] = useState(() => ({ ...INITIAL_DATA, lang: detectLang() }));
+  const [step, setStep] = useState(() => loadSavedStep());
+  const [data, setData] = useState(() => loadSavedData());
   const [animDir, setAnimDir] = useState('left');
-  const prevStepRef = useRef(0);
+  const prevStepRef = useRef(step);
 
   // Translations
   const t = TRANSLATIONS[data.lang] || TRANSLATIONS.de;
+
+  // Save data to localStorage when it changes
+  useEffect(() => {
+    try {
+      // Don't save photo data to localStorage (too large)
+      const dataToSave = { ...data };
+      if (dataToSave.photoPreview && dataToSave.photoPreview.length > 50000) {
+        // If photo is too large, store a flag instead
+        dataToSave.photoPreview = '';
+        dataToSave.hasPhotoSaved = false;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+    } catch (e) {
+      console.warn('Could not save form data to localStorage:', e);
+    }
+  }, [data]);
+
+  // Save step to localStorage when it changes
+  useEffect(() => {
+    try {
+      // Don't save step 0 (landing) or step 9 (thank you)
+      if (step >= 1 && step <= 8) {
+        localStorage.setItem(STORAGE_STEP_KEY, String(step));
+      } else {
+        localStorage.removeItem(STORAGE_STEP_KEY);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [step]);
 
   // Update single field
   const updateData = useCallback((field, value) => {
@@ -43,6 +112,18 @@ export const useFormWizard = () => {
   const nextStep = useCallback(() => goToStep(step + 1), [step, goToStep]);
   const prevStep = useCallback(() => goToStep(step - 1), [step, goToStep]);
 
+  // Clear all saved data and reset to initial state
+  const clearSavedData = useCallback(() => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_STEP_KEY);
+    } catch (e) {
+      // ignore
+    }
+    setData({ ...INITIAL_DATA, lang: data.lang });
+    setStep(0);
+  }, [data.lang]);
+
   // Clear generated text when language changes
   const prevLangRef = useRef(data.lang);
   useEffect(() => {
@@ -63,7 +144,8 @@ export const useFormWizard = () => {
     updateMultipleData,
     goToStep,
     nextStep,
-    prevStep
+    prevStep,
+    clearSavedData
   };
 };
 

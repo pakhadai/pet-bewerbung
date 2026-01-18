@@ -37,25 +37,38 @@ const LegalModal = ({ isOpen, onClose, title, icon: Icon, children }) => {
 };
 
 // Impressum Content
+// NOTE: Swiss law (Art. 3 Abs. 1 lit. s UWG) requires:
+// - Full legal name (person or company)
+// - Physical address (not P.O. box)
+// - Email address
+// - UID number if registered (CHE-xxx.xxx.xxx)
 const ImpressumContent = ({ t }) => (
   <div className="space-y-4 text-sm leading-relaxed">
     <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.operator || 'Operator'}</h3>
-      <p>Pet-Bewerbung.ch</p>
-      <p>St. Gallen, Switzerland</p>
-      <p>Email: info@pet-bewerbung.ch</p>
-    </section>
-
-    <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.disclaimer || 'Disclaimer'}</h3>
-      <p className="theme-text-muted">
-        {t.legal?.disclaimerText ||
-          'This service generates application documents for pets. The use of this service does not guarantee acceptance by landlords or property management companies. The generated documents are for informational purposes and serve as a supplement to your rental application.'}
+      <h3 className="font-semibold text-base mb-2">{t.legal?.operator || 'Operator / Betreiber'}</h3>
+      <div className="theme-text-muted">
+        <p className="font-medium">Pet-Bewerbung.ch</p>
+        <p>[Ihr vollständiger Name / Your full legal name]</p>
+        <p>[Ihre Adresse / Your address]</p>
+        <p>[PLZ Stadt / Postal code City], Switzerland</p>
+        <p className="mt-2">Email: info@pet-bewerbung.ch</p>
+        {/* <p>UID: CHE-xxx.xxx.xxx</p> */}
+      </div>
+      <p className="text-xs theme-text-muted mt-2 italic">
+        {t.legal?.impressumNote || 'Please update this section with your actual legal information before going live.'}
       </p>
     </section>
 
     <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.liability || 'Limitation of Liability'}</h3>
+      <h3 className="font-semibold text-base mb-2">{t.legal?.disclaimer || 'Disclaimer / Haftungsausschluss'}</h3>
+      <p className="theme-text-muted">
+        {t.legal?.disclaimerText ||
+          'This service generates application documents for pets. The use of this service does not guarantee acceptance by landlords or property management companies. The generated documents are for informational purposes and serve as a supplement to your rental application. We make no warranties regarding the effectiveness of these documents in securing housing.'}
+      </p>
+    </section>
+
+    <section>
+      <h3 className="font-semibold text-base mb-2">{t.legal?.liability || 'Limitation of Liability / Haftungsbeschränkung'}</h3>
       <p className="theme-text-muted">
         {t.legal?.liabilityText ||
           'We assume no liability for the accuracy, completeness, or timeliness of the information provided. The use of this service is at your own risk. We are not liable for any damages arising from the use or inability to use this service.'}
@@ -63,7 +76,7 @@ const ImpressumContent = ({ t }) => (
     </section>
 
     <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.copyright || 'Copyright'}</h3>
+      <h3 className="font-semibold text-base mb-2">{t.legal?.copyright || 'Copyright / Urheberrecht'}</h3>
       <p className="theme-text-muted">
         {t.legal?.copyrightText ||
           'All content on this website is protected by copyright. Reproduction or use without express permission is prohibited. Users are responsible for ensuring they own the rights to any photos uploaded.'}
@@ -73,32 +86,46 @@ const ImpressumContent = ({ t }) => (
 );
 
 // Privacy Policy (Datenschutz) Content
+// Compliant with Swiss nFADP (New Federal Act on Data Protection)
 const PrivacyContent = ({ t }) => (
   <div className="space-y-4 text-sm leading-relaxed">
     <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.privacyIntro || 'Data Protection'}</h3>
+      <h3 className="font-semibold text-base mb-2">{t.legal?.privacyIntro || 'Data Protection / Datenschutz'}</h3>
       <p className="theme-text-muted">
         {t.legal?.privacyIntroText ||
-          'We take the protection of your personal data seriously. This privacy policy explains how we handle your information.'}
+          'We take the protection of your personal data seriously. This privacy policy explains how we handle your information in accordance with the Swiss Federal Act on Data Protection (nFADP/revDSG).'}
       </p>
     </section>
 
     <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.dataCollection || 'Data Collection'}</h3>
+      <h3 className="font-semibold text-base mb-2">{t.legal?.dataCollection || 'Local Data Processing'}</h3>
       <p className="theme-text-muted">
         {t.legal?.dataCollectionText ||
-          'All data you enter (name, address, pet information, photos) is processed exclusively in your browser. No personal data is transmitted to or stored on our servers. PDF generation happens entirely on the client side.'}
+          'All data you enter for your pet dossier (name, address, pet information, photos) is processed exclusively in your browser (client-side). This data is NOT transmitted to or stored on our servers. PDF generation happens entirely on your device. Your form data is temporarily stored in your browser\'s localStorage to prevent data loss on page refresh.'}
       </p>
     </section>
 
     <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.thirdParty || 'Third-Party Services'}</h3>
-      <ul className="theme-text-muted space-y-2">
+      <h3 className="font-semibold text-base mb-2">{t.legal?.paymentData || 'Payment Data Processing'}</h3>
+      <p className="theme-text-muted">
+        {t.legal?.paymentDataText ||
+          'When you make a voluntary donation, the following data is processed by our payment provider:'}
+      </p>
+      <ul className="theme-text-muted space-y-2 mt-2 list-disc list-inside">
+        <li>Email address (for payment receipt)</li>
+        <li>Payment amount and currency</li>
+        <li>Payment method details (processed by Stripe, not stored by us)</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3 className="font-semibold text-base mb-2">{t.legal?.thirdParty || 'Third-Party Services / Drittanbieter'}</h3>
+      <ul className="theme-text-muted space-y-3">
         <li>
-          <strong>Stripe:</strong> {t.legal?.stripeText || 'For donation processing, we use Stripe. When you make a donation, your payment data is processed directly by Stripe according to their privacy policy.'}
+          <strong>Stripe Inc. (USA):</strong> {t.legal?.stripeText || 'For payment processing, we use Stripe. Stripe is compliant with the Swiss-US Data Privacy Framework. When you make a donation, your payment data is processed directly by Stripe according to their privacy policy (stripe.com/privacy). Payment data is transmitted to and processed in the USA.'}
         </li>
         <li>
-          <strong>Google Fonts:</strong> {t.legal?.fontsText || 'We use locally hosted fonts to avoid data transfer to Google servers.'}
+          <strong>Cloudflare (USA):</strong> {t.legal?.cloudflareText || 'We use Cloudflare for website delivery and security. Cloudflare may process IP addresses and browser information for security purposes.'}
         </li>
       </ul>
     </section>
@@ -107,20 +134,20 @@ const PrivacyContent = ({ t }) => (
       <h3 className="font-semibold text-base mb-2">{t.legal?.cookies || 'Cookies'}</h3>
       <p className="theme-text-muted">
         {t.legal?.cookiesText ||
-          'We use only technically necessary cookies to store your language and theme preferences. No tracking cookies are used. Stripe may set its own cookies for payment processing.'}
+          'We use only technically necessary cookies and localStorage to store your language preference, theme setting, and form progress. No tracking or advertising cookies are used. Stripe and Cloudflare may set their own cookies for functionality and fraud prevention.'}
       </p>
     </section>
 
     <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.rights || 'Your Rights'}</h3>
+      <h3 className="font-semibold text-base mb-2">{t.legal?.rights || 'Your Rights / Ihre Rechte'}</h3>
       <p className="theme-text-muted">
         {t.legal?.rightsText ||
-          'Under Swiss data protection law (DSG/nDSG) and GDPR, you have the right to information, correction, deletion, and data portability. Since we do not store your data, these rights are automatically fulfilled.'}
+          'Under Swiss data protection law (nFADP/revDSG), you have the right to information, correction, deletion, restriction of processing, and data portability. Since we do not store your pet dossier data on our servers, these rights are automatically fulfilled for that data. For payment-related data processed by Stripe, please contact Stripe directly or us for assistance.'}
       </p>
     </section>
 
     <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.contact || 'Contact'}</h3>
+      <h3 className="font-semibold text-base mb-2">{t.legal?.contact || 'Data Protection Contact'}</h3>
       <p className="theme-text-muted">
         {t.legal?.contactText ||
           'For data protection inquiries: info@pet-bewerbung.ch'}
