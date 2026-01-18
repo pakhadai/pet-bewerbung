@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
   createPaymentIntent: `${STRIPE_API_URL}/create-payment-intent`,
   stripeConfig: `${STRIPE_API_URL}/stripe-config`,
   paymentStatus: (id) => `${STRIPE_API_URL}/payment-status/${id}`,
+  checkoutSession: (id) => `${STRIPE_API_URL}/checkout-session/${id}`,
 };
 
 export default API_ENDPOINTS;

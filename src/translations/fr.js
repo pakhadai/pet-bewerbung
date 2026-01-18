@@ -156,6 +156,18 @@ export default {
     title: "Merci",
     msg: "Merci d'avoir utilisé notre service. Votre document a été généré localement."
   },
+  paymentSuccess: {
+    title: "Paiement réussi !",
+    message: "Merci pour votre généreux don !",
+    detailsTitle: "Détails du paiement",
+    thankYouTitle: "Merci !",
+    thankYouMessage: "Votre soutien nous aide à maintenir et améliorer ce service. Nous apprécions vraiment votre générosité !",
+    amount: "Montant",
+    email: "E-mail",
+    status: "Statut",
+    completed: "Terminé",
+    goHome: "Retour à l'accueil"
+  },
   templates: {
     intro: "L'animal décrit est un compagnon très soigné et sociable.",
     keywords: "Les caractéristiques suivantes sont particulièrement notables : ",

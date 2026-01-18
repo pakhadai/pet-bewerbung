@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import html2pdf from 'html2pdf.js';
-import { MAX_DESCRIPTION_LENGTH, TRANSLATIONS } from './constants';
+import { MAX_DESCRIPTION_LENGTH, TRANSLATIONS, PAYMENT_SUCCESS_BEHAVIOR } from './constants';
+import PaymentSuccess from './components/PaymentSuccess';
 import API_ENDPOINTS from './config';
 import compressImage from './utils/imageCompression';
 import GlobalStyles from './components/GlobalStyles';
@@ -76,6 +77,35 @@ export default function App() {
   const [theme, setTheme] = useState('light');
   const [isGenerating, setIsGenerating] = useState(false);
   const [legalPage, setLegalPage] = useState(null); // 'impressum', 'privacy', 'terms', or null
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [paymentSessionId, setPaymentSessionId] = useState(null);
+
+  // Handle URL parameters for payment success/cancel
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paymentSuccess = params.get('payment_success');
+    const sessionId = params.get('session_id');
+    const paymentCanceled = params.get('payment_canceled');
+
+    if (paymentSuccess === 'true' && sessionId) {
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
+        setShowPaymentSuccess(true);
+        setPaymentSessionId(sessionId);
+      } else if (PAYMENT_SUCCESS_BEHAVIOR === 'redirect_home') {
+        goToStep(0);
+        showToast(t?.paymentSuccess?.message || 'Payment successful! Thank you!', 'success');
+      } else if (PAYMENT_SUCCESS_BEHAVIOR === 'show_toast') {
+        showToast(t?.paymentSuccess?.message || 'Payment successful! Thank you!', 'success');
+      }
+    } else if (paymentCanceled === 'true') {
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      showToast('Payment was canceled', 'info');
+    }
+  }, [goToStep, showToast, t]);
 
   // Clear generated text when language changes
   const prevLangRef = useRef(data.lang);
@@ -152,12 +182,24 @@ export default function App() {
     const parsed = parseFloat(donationAmount || '5');
     const amount = Math.max(1, Math.round(parsed));
     const cents = amount * 100;
+    // All payments use CHF (Swiss Francs) - Swiss service
+    const currency = 'chf';
     try {
       const res = await fetch(API_ENDPOINTS.createCheckoutSession, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: cents, currency: 'eur', successUrl: window.location.href, cancelUrl: window.location.href, payment_method: method }),
+        body: JSON.stringify({ amount: cents, currency: currency, successUrl: window.location.href, cancelUrl: window.location.href, payment_method: method }),
       });
+      
+      // Перевірка типу відповіді перед парсингом
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error('Non-JSON response:', text.substring(0, 200));
+        showToast('Payment error: Server returned HTML instead of JSON. Check API connection.', 'error');
+        return;
+      }
+      
       const json = await res.json();
       if (json.url) {
         window.open(json.url, '_blank');
@@ -166,6 +208,7 @@ export default function App() {
         showToast(json.error || 'Failed to create checkout session', 'error');
       }
     } catch (err) {
+      console.error('Payment error:', err);
       showToast('Payment error: ' + (err.message || err), 'error');
     } finally {
       setDonateOpen(false);
@@ -223,6 +266,24 @@ export default function App() {
         return null;
     }
   };
+
+  // Payment Success Page (shown after successful Stripe Checkout)
+  if (showPaymentSuccess) {
+    return (
+      <PaymentSuccess
+        data={data}
+        t={t}
+        theme={theme}
+        onThemeChange={setTheme}
+        onLangChange={(v) => updateData('lang', v)}
+        onLogoClick={() => {
+          setShowPaymentSuccess(false);
+          goToStep(0);
+        }}
+        sessionId={paymentSessionId}
+      />
+    );
+  }
 
   // Step 9: Thank You Page
   if (step === 9) {

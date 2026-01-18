@@ -84,8 +84,19 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
         const res = await fetch(API_ENDPOINTS.createPaymentIntent, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: Math.max(1, Math.round(parseFloat(amount || '5'))) * 100, currency: 'eur' }),
+          body: JSON.stringify({ amount: Math.max(1, Math.round(parseFloat(amount || '5'))) * 100, currency: 'chf' }),
         });
+        
+        // Перевірка типу відповіді перед парсингом
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await res.text();
+          console.error('Non-JSON response:', text.substring(0, 200));
+          if (!mounted) return;
+          alert('Payment error: Server returned HTML instead of JSON. Check API connection.');
+          return;
+        }
+        
         const json = await res.json();
         if (!mounted) return;
         if (json.clientSecret) {

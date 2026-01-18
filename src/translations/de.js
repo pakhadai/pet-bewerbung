@@ -156,6 +156,18 @@ export default {
     title: "Danke",
     msg: "Danke, dass Sie unseren Service genutzt haben. Ihr Dokument wurde lokal erstellt."
   },
+  paymentSuccess: {
+    title: "Zahlung erfolgreich!",
+    message: "Vielen Dank für Ihre großzügige Spende!",
+    detailsTitle: "Zahlungsdetails",
+    thankYouTitle: "Vielen Dank!",
+    thankYouMessage: "Ihre Unterstützung hilft uns, diesen Service zu erhalten und zu verbessern. Wir schätzen Ihre Großzügigkeit sehr!",
+    amount: "Betrag",
+    email: "E-Mail",
+    status: "Status",
+    completed: "Abgeschlossen",
+    goHome: "Zur Startseite"
+  },
   templates: {
     intro: "Bei dem beschriebenen Tier handelt es sich um einen sehr gepflegten und sozialverträglichen Mitbewohner.",
     keywords: "Besonders hervorzuheben sind folgende Eigenschaften: ",

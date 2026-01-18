@@ -156,6 +156,18 @@ export default {
     title: "Grazie",
     msg: "Grazie per aver usato il servizio. Il documento è stato generato localmente."
   },
+  paymentSuccess: {
+    title: "Pagamento riuscito!",
+    message: "Grazie per la tua generosa donazione!",
+    detailsTitle: "Dettagli del pagamento",
+    thankYouTitle: "Grazie!",
+    thankYouMessage: "Il tuo supporto ci aiuta a mantenere e migliorare questo servizio. Apprezziamo davvero la tua generosità!",
+    amount: "Importo",
+    email: "Email",
+    status: "Stato",
+    completed: "Completato",
+    goHome: "Torna alla home"
+  },
   templates: {
     intro: "L'animale descritto è un compagno molto curato e socievole.",
     keywords: "Le seguenti caratteristiche sono particolarmente degne di nota: ",

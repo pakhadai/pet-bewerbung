@@ -156,6 +156,18 @@ export default {
     title: "Thank you",
     msg: "Thanks for using the service. Your document was created locally."
   },
+  paymentSuccess: {
+    title: "Payment Successful!",
+    message: "Thank you for your generous donation!",
+    detailsTitle: "Payment Details",
+    thankYouTitle: "Thank You!",
+    thankYouMessage: "Your support helps us maintain and improve this service. We truly appreciate your generosity!",
+    amount: "Amount",
+    email: "Email",
+    status: "Status",
+    completed: "Completed",
+    goHome: "Back to Home"
+  },
   templates: {
     intro: "The described animal is a very well-groomed and socially compatible companion.",
     keywords: "The following characteristics are particularly noteworthy: ",

@@ -156,6 +156,18 @@ export default {
     title: "Grazia",
     msg: "Grazia fitg per l'utilisaziun. Il document è vegnì generà localmain."
   },
+  paymentSuccess: {
+    title: "Pagament reussì!",
+    message: "Grazia per tia donaziun generusa!",
+    detailsTitle: "Detagls dal pagament",
+    thankYouTitle: "Grazia!",
+    thankYouMessage: "Tia sustegnida ans gida da mantegnair e meglierar quest servetsch. Nus appreziain fitg tia generusadad!",
+    amount: "Summa",
+    email: "E-mail",
+    status: "Status",
+    completed: "Terminà",
+    goHome: "Turnar a la pagina principala"
+  },
   templates: {
     intro: "L'animal descrit è un cumpogn fitg tgirà e sociabel.",
     keywords: "Las suandantas qualitads èn da menziunar: ",

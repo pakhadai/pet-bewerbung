@@ -55,4 +55,8 @@ const TEMPLATE_OPTIONS = [
   { id: 'swiss', label: 'Swiss' }
 ];
 
-export { TRANSLATIONS, INITIAL_DATA, MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS };
+// Payment success behavior configuration
+// Options: 'show_page' - show PaymentSuccess page, 'redirect_home' - redirect to landing page, 'show_toast' - show toast and stay
+const PAYMENT_SUCCESS_BEHAVIOR = import.meta.env.VITE_PAYMENT_SUCCESS_BEHAVIOR || 'show_page';
+
+export { TRANSLATIONS, INITIAL_DATA, MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS, PAYMENT_SUCCESS_BEHAVIOR };
