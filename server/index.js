@@ -377,7 +377,7 @@ app.post('/generate-pet-description', async (req, res) => {
   
   try {
     const model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash-exp',
       generationConfig: {
         maxOutputTokens: 200,
         temperature: 0.7,
