@@ -71,10 +71,25 @@ function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFai
   );
 }
 
-export default function PaymentModal({ open, onClose, amount, onSuccess, onFailure }) {
+// Map app language codes to Stripe locale codes
+const getStripeLocale = (lang) => {
+  const localeMap = {
+    de: 'de',
+    en: 'en',
+    fr: 'fr',
+    it: 'it',
+    rm: 'de', // Romansh -> German (closest supported)
+    ua: 'uk', // Ukrainian
+  };
+  return localeMap[lang] || 'de';
+};
+
+export default function PaymentModal({ open, onClose, amount, onSuccess, onFailure, lang = 'de' }) {
   const [clientSecret, setClientSecret] = useState(null);
   const [stripePromise, setStripePromise] = useState(null);
   const [paymentIntentId, setPaymentIntentId] = useState(null);
+  
+  const stripeLocale = getStripeLocale(lang);
 
   useEffect(() => {
     if (!open) return;
@@ -101,11 +116,16 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
         if (!mounted) return;
         if (json.clientSecret) {
           setClientSecret(json.clientSecret);
-          if (json.publishableKey) setStripePromise(loadStripe(json.publishableKey));
+          // Load Stripe with locale
+          if (json.publishableKey) {
+            setStripePromise(loadStripe(json.publishableKey, { locale: stripeLocale }));
+          }
           if (json.paymentIntentId) setPaymentIntentId(json.paymentIntentId);
           else {
             const cfg = await fetch(API_ENDPOINTS.stripeConfig).then(r => r.json());
-            if (cfg.publishableKey) setStripePromise(loadStripe(cfg.publishableKey));
+            if (cfg.publishableKey) {
+              setStripePromise(loadStripe(cfg.publishableKey, { locale: stripeLocale }));
+            }
           }
         } else {
           alert(json.error || 'Failed to create payment intent');
@@ -115,7 +135,7 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
       }
     })();
     return () => { mounted = false; };
-  }, [open, amount]);
+  }, [open, amount, stripeLocale]);
 
   if (!open) return null;
 
@@ -128,7 +148,7 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
         </div>
         <div>
           {clientSecret && stripePromise ? (
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <Elements stripe={stripePromise} options={{ clientSecret, locale: stripeLocale }}>
               <CheckoutForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} onClose={onClose} onSuccess={onSuccess} onFailure={onFailure} />
             </Elements>
           ) : (
