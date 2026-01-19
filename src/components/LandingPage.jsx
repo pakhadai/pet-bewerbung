@@ -37,10 +37,10 @@ const LandingPage = ({ t, setStep }) => (
           <Button
             variant="primary"
             onClick={() => setStep(1)}
-            className="group text-lg px-8 py-4 shadow-xl hover:shadow-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300"
+            className="group text-lg px-8 py-4 shadow-xl bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-500 ease-out hover:shadow-2xl hover:from-purple-700 hover:to-pink-700 hover:scale-[1.03]"
           >
             {t.landing.cta}
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+            <ArrowRight className="ml-2 w-5 h-5 transition-transform duration-500 ease-out group-hover:translate-x-2" />
           </Button>
         </div>
 
@@ -79,29 +79,42 @@ const LandingPage = ({ t, setStep }) => (
           return (
             <div
               key={i}
-              className="group relative flex flex-col theme-card p-6 rounded-3xl shadow-lg border theme-border hover:shadow-2xl transition-all duration-500 overflow-hidden animate-in slide-in-from-bottom-8 hover:scale-105 hover:theme-card-bg-hover"
-              style={{ animationDelay: `${800 + i * 150}ms` }}
+              className="group relative flex flex-col theme-card p-6 rounded-3xl shadow-lg border theme-border overflow-hidden animate-in slide-in-from-bottom-8"
+              style={{ 
+                animationDelay: `${800 + i * 150}ms`,
+                transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-8px)';
+                e.currentTarget.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '';
+              }}
             >
               {/* Subtle gradient on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-out" />
 
               {/* Icon with gradient */}
               <div className="relative mb-4 flex">
-                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${iconConfig.color} text-white shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                <div 
+                  className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${iconConfig.color} text-white shadow-lg transition-transform duration-500 ease-out group-hover:scale-110 group-hover:rotate-3`}
+                >
                   <Icon className="h-7 w-7" aria-hidden="true" />
                 </div>
               </div>
 
               {/* Content */}
-              <dt className="relative text-xl font-bold leading-7 theme-text mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-600 transition-all duration-300">
+              <dt className="relative text-xl font-bold leading-7 theme-text mb-3 transition-colors duration-500 ease-out group-hover:text-purple-600">
                 {feat.title}
               </dt>
               <dd className="relative text-base leading-7 theme-text-secondary flex-auto">
                 {feat.desc}
               </dd>
 
-              {/* Shine effect */}
-              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              {/* Shine effect - slower and smoother */}
+              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1500ms] ease-out bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
             </div>
           );
         })}

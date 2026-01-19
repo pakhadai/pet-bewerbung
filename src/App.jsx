@@ -497,7 +497,7 @@ export default function App() {
         canProceed={canProceed}
       />
 
-      <Footer step={step} butterVisible={butterVisible} t={t} onOpenLegal={setLegalPage} />
+      <Footer step={step} t={t} onOpenLegal={setLegalPage} />
 
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
 

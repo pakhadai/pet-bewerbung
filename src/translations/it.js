@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "il tuo animale.",
     heroSub: "Aumenta le tue possibilità. Crea un dossier professionale per il tuo amico a quattro zampe – inclusa la prova di assicurazione.",
     cta: "Crea dossier",
-    trust: "Ottimizzato per amministrazioni e proprietari",
+    trust: "100% gratuito • Senza registrazione",
     features: [
       { title: "Formato Svizzero", desc: "Design PDF serio, come richiesto dalle amministrazioni." },
       { title: "Ottimizzazione IA", desc: "Trasforma le parole chiave in testo convincente." },

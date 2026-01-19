@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "votre animal.",
     heroSub: "Augmentez vos chances. Créez un dossier de candidature professionnel pour votre compagnon à quatre pattes – preuve d'assurance incluse.",
     cta: "Créer un dossier",
-    trust: "Optimisé pour les régies et propriétaires",
+    trust: "100% gratuit • Sans inscription",
     features: [
       { title: "Format Suisse", desc: "Design PDF sérieux, comme l'attendent les régies." },
       { title: "Optimisation IA", desc: "Transforme les mots-clés en texte convaincant." },

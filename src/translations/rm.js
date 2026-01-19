@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "voss animal.",
     heroSub: "Creei in dossier professiunal per voss chaun u voss giat – inclus cumprova d'assicuranza.",
     cta: "Crear dossier",
-    trust: "Optimà per administraziuns e locataris",
+    trust: "100% gratuit • Senza registraziun",
     features: [
       { title: "Format Svizzer", desc: "Design PDF serius." },
       { title: "Optimaziun IA", desc: "Transfurma pleds-clav en text." },

@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "your pet.",
     heroSub: "Increase your chances. Create a professional application dossier for your pet – including proof of insurance.",
     cta: "Create Dossier Now",
-    trust: "Optimized for Agencies & Landlords",
+    trust: "100% Free • No Registration",
     features: [
       { title: "Swiss Format", desc: "Serious PDF design, as expected by agencies." },
       { title: "AI Text Optimization", desc: "Turns simple keywords into convincing text." },

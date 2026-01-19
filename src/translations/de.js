@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "Ihrem Haustier.",
     heroSub: "Erhöhen Sie Ihre Chancen bei der Wohnungssuche. Erstellen Sie ein professionelles Bewerbungsdossier für Ihren Vierbeiner – inklusive Versicherungsnachweis.",
     cta: "Jetzt Dossier erstellen",
-    trust: "Optimiert für Verwaltungen & Private Vermieter",
+    trust: "100% kostenlos • Keine Registrierung",
     features: [
       { title: "Schweizer Format", desc: "Seriöses PDF-Design, wie es Verwaltungen erwarten." },
       { title: "KI-Textoptimierung", desc: "Verwandelt Stichworte in sympathische Texte." },
