@@ -22,7 +22,8 @@ const Step9ThankYou = React.memo(({
   setPaymentOpen,
   onDonate,
   showToast,
-  toast
+  toast,
+  onPaymentSuccess
 }) => {
   const [legalPage, setLegalPage] = useState(null);
   return (
@@ -122,8 +123,12 @@ const Step9ThankYou = React.memo(({
         onClose={() => setPaymentOpen(false)}
         amount={donationAmount}
         lang={data.lang}
-        onSuccess={() => showToast('Thank you — payment succeeded', 'success')}
-        onFailure={(msg) => showToast(`Payment failed: ${msg}`, 'error')}
+        t={t}
+        onSuccess={(paymentId) => {
+          showToast(t?.paymentSuccess?.thankYouMessage || 'Thank you — payment succeeded', 'success');
+          onPaymentSuccess && onPaymentSuccess(paymentId);
+        }}
+        onFailure={(msg) => showToast(`${t?.ui?.error || 'Payment failed'}: ${msg}`, 'error')}
       />
 
       {toast && (

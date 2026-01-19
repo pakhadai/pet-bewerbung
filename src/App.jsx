@@ -404,6 +404,12 @@ export default function App() {
         onDonate={handleDonateMethod}
         showToast={showToast}
         toast={toast}
+        onPaymentSuccess={(paymentId) => {
+          if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
+            setShowPaymentSuccess(true);
+            setPaymentSessionId(paymentId);
+          }
+        }}
       />
     );
   }
@@ -440,7 +446,14 @@ export default function App() {
         amount={donationAmount}
         lang={data.lang}
         t={t}
-        onSuccess={() => showToast(t.paymentSuccess?.thankYouMessage || 'Thank you — payment succeeded', 'success')}
+        onSuccess={(paymentId) => {
+          showToast(t.paymentSuccess?.thankYouMessage || 'Thank you — payment succeeded', 'success');
+          // Show PaymentSuccess page
+          if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
+            setShowPaymentSuccess(true);
+            setPaymentSessionId(paymentId);
+          }
+        }}
         onFailure={(msg) => showToast(`${t.ui?.error || 'Payment failed'}: ${msg}`, 'error')}
       />
 
