@@ -65,14 +65,17 @@ function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFai
       <PaymentElement 
         options={{
           layout: 'tabs',
+          // Enable Apple Pay & Google Pay wallets
           wallets: {
             applePay: 'auto',
             googlePay: 'auto'
           },
-          // Disable Link (save payment info feature)
+          // Hide billing details (simplify form)
           fields: {
             billingDetails: 'never'
-          }
+          },
+          // Show wallets above card form
+          paymentMethodOrder: ['apple_pay', 'google_pay', 'card', 'twint']
         }}
       />
       <div className="flex justify-end">
