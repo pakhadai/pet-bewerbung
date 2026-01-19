@@ -156,10 +156,12 @@ app.post('/create-payment-intent', async (req, res) => {
   if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
 
   try {
+    // Use explicit payment_method_types to avoid Link (Stripe's save-card feature)
+    // Link requires automatic_payment_methods, so we explicitly list methods instead
     const intent = await stripe.paymentIntents.create({
       amount,
       currency,
-      automatic_payment_methods: { enabled: true },
+      payment_method_types: ['card', 'twint'],
     });
 
     res.json({ 

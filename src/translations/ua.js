@@ -129,7 +129,17 @@ export default {
     behaviorNeutral: "Нейтральна / Невідома",
     behaviorAvoid: "Слід уникати",
     behaviorTitle: "Поведінка & Режим",
-    referenceTitle: "Рекомендації & Екстрений контакт"
+    referenceTitle: "Рекомендації & Екстрений контакт",
+    petType: "Вид тварини"
+  },
+  validation: {
+    required: "Обов'язкове поле",
+    ownerNameRequired: "Ім'я обов'язкове (мін. 2 символи)",
+    postalInvalid: "Поштовий індекс має містити 4 цифри",
+    emailInvalid: "Невірна електронна адреса",
+    phoneInvalid: "Невірний номер телефону",
+    petTypeRequired: "Будь ласка, виберіть вид тварини",
+    petNameRequired: "Ім'я обов'язкове"
   },
   doc: {
     title: "Досьє Домашньої Тварини",

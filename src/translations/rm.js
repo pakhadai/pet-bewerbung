@@ -129,7 +129,17 @@ export default {
     behaviorNeutral: "Neutral / Nunenconuschent",
     behaviorAvoid: "Sto vegnir evità",
     behaviorTitle: "Cumportament & Rutina",
-    referenceTitle: "References & Contact d'urgenza"
+    referenceTitle: "References & Contact d'urgenza",
+    petType: "Tip d'animal"
+  },
+  validation: {
+    required: "Obligatori",
+    ownerNameRequired: "Il num è necessari (min. 2 caracters)",
+    postalInvalid: "Il numer postal sto avair 4 cifras",
+    emailInvalid: "Adressa e-mail nunvalida",
+    phoneInvalid: "Numer da telefon nunvalid",
+    petTypeRequired: "Tscherni per plaschair in tip d'animal",
+    petNameRequired: "Il num è necessari"
   },
   doc: {
     title: "Fegl da Referenza per Animals",

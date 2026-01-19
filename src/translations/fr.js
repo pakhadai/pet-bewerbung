@@ -129,7 +129,17 @@ export default {
     behaviorNeutral: "Neutre / Inconnu",
     behaviorAvoid: "À éviter",
     behaviorTitle: "Comportement & Routine",
-    referenceTitle: "Références & Contact d'urgence"
+    referenceTitle: "Références & Contact d'urgence",
+    petType: "Type d'animal"
+  },
+  validation: {
+    required: "Obligatoire",
+    ownerNameRequired: "Le nom est requis (min. 2 caractères)",
+    postalInvalid: "Le code postal doit contenir 4 chiffres",
+    emailInvalid: "Adresse e-mail invalide",
+    phoneInvalid: "Numéro de téléphone invalide",
+    petTypeRequired: "Veuillez sélectionner un type d'animal",
+    petNameRequired: "Le nom est requis"
   },
   doc: {
     title: "Fiche de Référence Animale",

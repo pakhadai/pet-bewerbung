@@ -329,9 +329,9 @@ export default function App() {
           </div>
         );
       case 1:
-        return <Step1OwnerInfo data={data} updateData={updateData} t={t} animDir={animDir} />;
+        return <Step1OwnerInfo data={data} updateData={updateData} t={t} animDir={animDir} errors={validationErrors} />;
       case 2:
-        return <Step2PetInfo data={data} updateData={updateData} t={t} animDir={animDir} />;
+        return <Step2PetInfo data={data} updateData={updateData} t={t} animDir={animDir} errors={validationErrors} />;
       case 3:
         return <Step3HealthInsurance data={data} updateData={updateData} t={t} animDir={animDir} />;
       case 4:

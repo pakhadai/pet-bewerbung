@@ -129,7 +129,17 @@ export default {
     behaviorNeutral: "Neutral / Unbekannt",
     behaviorAvoid: "Sollte vermieden werden",
     behaviorTitle: "Verhalten & Routine",
-    referenceTitle: "Referenzen & Notfallkontakt"
+    referenceTitle: "Referenzen & Notfallkontakt",
+    petType: "Tierart"
+  },
+  validation: {
+    required: "Pflichtfeld",
+    ownerNameRequired: "Name ist erforderlich (min. 2 Zeichen)",
+    postalInvalid: "PLZ muss 4 Ziffern haben",
+    emailInvalid: "Ungültige E-Mail-Adresse",
+    phoneInvalid: "Ungültige Telefonnummer",
+    petTypeRequired: "Bitte wählen Sie eine Tierart aus",
+    petNameRequired: "Name ist erforderlich"
   },
   doc: {
     title: "Tierhalter-Referenzblatt",

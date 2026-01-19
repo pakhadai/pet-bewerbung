@@ -129,7 +129,17 @@ export default {
     behaviorNeutral: "Neutral / Unknown",
     behaviorAvoid: "Should be avoided",
     behaviorTitle: "Behavior & Routine",
-    referenceTitle: "References & Emergency Contact"
+    referenceTitle: "References & Emergency Contact",
+    petType: "Pet Type"
+  },
+  validation: {
+    required: "Required",
+    ownerNameRequired: "Name is required (min. 2 characters)",
+    postalInvalid: "Postal code must be 4 digits",
+    emailInvalid: "Invalid email address",
+    phoneInvalid: "Invalid phone number",
+    petTypeRequired: "Please select a pet type",
+    petNameRequired: "Name is required"
   },
   doc: {
     title: "Pet Reference Sheet",

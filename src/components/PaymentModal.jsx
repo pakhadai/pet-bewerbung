@@ -62,7 +62,19 @@ function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFai
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <PaymentElement />
+      <PaymentElement 
+        options={{
+          layout: 'tabs',
+          wallets: {
+            applePay: 'auto',
+            googlePay: 'auto'
+          },
+          // Disable Link (save payment info feature)
+          fields: {
+            billingDetails: 'never'
+          }
+        }}
+      />
       <div className="flex justify-end">
         <button type="button" onClick={onClose} className="theme-radio theme-border mr-2 px-4 py-2 rounded-lg border">Cancel</button>
         <button disabled={!stripe} className="theme-button-magic px-4 py-2 rounded-lg text-white">{loading ? 'Processing…' : 'Pay'}</button>
@@ -148,7 +160,19 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
         </div>
         <div>
           {clientSecret && stripePromise ? (
-            <Elements stripe={stripePromise} options={{ clientSecret, locale: stripeLocale }}>
+            <Elements 
+              stripe={stripePromise} 
+              options={{ 
+                clientSecret, 
+                locale: stripeLocale,
+                appearance: {
+                  theme: 'stripe',
+                  variables: {
+                    borderRadius: '8px'
+                  }
+                }
+              }}
+            >
               <CheckoutForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} onClose={onClose} onSuccess={onSuccess} onFailure={onFailure} />
             </Elements>
           ) : (
