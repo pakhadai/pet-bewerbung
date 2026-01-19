@@ -439,8 +439,9 @@ export default function App() {
         onClose={() => setPaymentOpen(false)}
         amount={donationAmount}
         lang={data.lang}
-        onSuccess={() => showToast('Thank you — payment succeeded', 'success')}
-        onFailure={(msg) => showToast(`Payment failed: ${msg}`, 'error')}
+        t={t}
+        onSuccess={() => showToast(t.paymentSuccess?.thankYouMessage || 'Thank you — payment succeeded', 'success')}
+        onFailure={(msg) => showToast(`${t.ui?.error || 'Payment failed'}: ${msg}`, 'error')}
       />
 
       {/* Preview Modal */}

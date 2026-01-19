@@ -156,15 +156,13 @@ app.post('/create-payment-intent', async (req, res) => {
   if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
 
   try {
-    // Use automatic_payment_methods for Apple Pay, Google Pay, TWINT, Card
-    // Link can be disabled in Stripe Dashboard: Settings > Payment methods > Link
+    // Explicitly set payment methods to disable Link (save card feature)
+    // Link only works with automatic_payment_methods, so we use explicit list
     const intent = await stripe.paymentIntents.create({
       amount,
       currency,
-      automatic_payment_methods: { 
-        enabled: true,
-        allow_redirects: 'always'
-      },
+      // Explicit payment methods - NO Link!
+      payment_method_types: ['card', 'twint'],
     });
 
     res.json({ 

@@ -3,7 +3,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import API_ENDPOINTS from '../config';
 
-function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFailure }) {
+function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFailure, t }) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -76,17 +76,32 @@ function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFai
             applePay: 'auto',
             googlePay: 'auto'
           },
-          // Hide billing details (simplify form)
+          // Hide billing details and Link autofill
           fields: {
             billingDetails: 'never'
           },
-          // Show wallets above card form
+          // Show wallets above card form, exclude Link
           paymentMethodOrder: ['apple_pay', 'google_pay', 'card', 'twint']
         }}
       />
-      <div className="flex justify-end">
-        <button type="button" onClick={onClose} className="theme-radio theme-border mr-2 px-4 py-2 rounded-lg border">Cancel</button>
-        <button disabled={!stripe} className="theme-button-magic px-4 py-2 rounded-lg text-white">{loading ? 'Processing…' : 'Pay'}</button>
+      {/* Sticky pay button at bottom */}
+      <div className="flex justify-end gap-2 pt-4 border-t theme-border sticky bottom-0 bg-inherit pb-1">
+        <button 
+          type="button" 
+          onClick={onClose} 
+          className="theme-radio theme-border px-5 py-3 rounded-xl border font-medium"
+          style={{ transition: 'all 0.3s ease' }}
+        >
+          {t?.ui?.cancel || 'Cancel'}
+        </button>
+        <button 
+          type="submit"
+          disabled={!stripe || loading} 
+          className="theme-button-magic px-6 py-3 rounded-xl text-white font-bold disabled:opacity-50"
+          style={{ transition: 'all 0.3s ease' }}
+        >
+          {loading ? 'Processing…' : (t?.ui?.pay || 'Pay')}
+        </button>
       </div>
     </form>
   );
@@ -105,12 +120,27 @@ const getStripeLocale = (lang) => {
   return localeMap[lang] || 'de';
 };
 
-export default function PaymentModal({ open, onClose, amount, onSuccess, onFailure, lang = 'de' }) {
+export default function PaymentModal({ open, onClose, amount, onSuccess, onFailure, lang = 'de', t }) {
   const [clientSecret, setClientSecret] = useState(null);
   const [stripePromise, setStripePromise] = useState(null);
   const [paymentIntentId, setPaymentIntentId] = useState(null);
   
   const stripeLocale = getStripeLocale(lang);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -161,13 +191,33 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="theme-card rounded-xl shadow-xl w-full max-w-md p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="theme-text text-lg font-bold">Pay CHF {amount}</h3>
-          <button onClick={onClose} className="theme-text-muted hover:theme-text transition-colors">✕</button>
+    <div 
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={(e) => {
+        // Close on backdrop click
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div 
+        className="theme-card rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header - fixed */}
+        <div className="flex items-center justify-between p-5 border-b theme-border shrink-0">
+          <h3 className="theme-text text-lg font-bold">
+            💳 {t?.monetization?.title || 'Spenden'} — CHF {amount}
+          </h3>
+          <button 
+            onClick={onClose} 
+            className="theme-text-muted hover:theme-text transition-colors p-2 hover:bg-gray-100 rounded-lg"
+            aria-label="Close"
+          >
+            ✕
+          </button>
         </div>
-        <div>
+        
+        {/* Content - scrollable */}
+        <div className="flex-1 overflow-y-auto p-5 overscroll-contain">
           {clientSecret && stripePromise ? (
             <Elements 
               stripe={stripePromise} 
@@ -177,15 +227,38 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
                 appearance: {
                   theme: 'stripe',
                   variables: {
-                    borderRadius: '8px'
+                    borderRadius: '12px',
+                    fontFamily: 'system-ui, -apple-system, sans-serif',
+                    colorPrimary: '#8b5cf6',
+                  },
+                  rules: {
+                    '.Input': {
+                      padding: '12px 14px',
+                      fontSize: '16px'
+                    },
+                    '.Label': {
+                      marginBottom: '8px',
+                      fontSize: '14px',
+                      fontWeight: '500'
+                    }
                   }
                 }
               }}
             >
-              <CheckoutForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} onClose={onClose} onSuccess={onSuccess} onFailure={onFailure} />
+              <CheckoutForm 
+                clientSecret={clientSecret} 
+                paymentIntentId={paymentIntentId} 
+                onClose={onClose} 
+                onSuccess={onSuccess} 
+                onFailure={onFailure}
+                t={t}
+              />
             </Elements>
           ) : (
-            <div className="p-8 text-center">Preparing payment…</div>
+            <div className="p-8 text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-purple-500 border-t-transparent mb-4"></div>
+              <p className="theme-text-muted">{t?.ui?.loading || 'Preparing payment…'}</p>
+            </div>
           )}
         </div>
       </div>
