@@ -12,16 +12,16 @@ const DescriptionSection = ({ text, t, variant = 'classic' }) => {
     switch (variant) {
       case 'classic':
         return {
-          container: 'grow',
-          heading: 'font-black uppercase tracking-wider text-xs mb-4 border-b-2 border-slate-900 pb-2',
-          text: 'text-base leading-relaxed text-slate-700 text-justify'
+          container: 'flex-1 min-h-0 overflow-hidden',
+          heading: 'font-black uppercase tracking-wider text-[10px] mb-2 border-b-2 border-slate-900 pb-1',
+          text: 'text-[11px] leading-snug text-slate-700 text-justify overflow-hidden'
         };
 
       case 'modern':
         return {
-          container: 'grow',
-          heading: 'font-bold text-rose-600 text-sm mb-4 pb-2 border-b-2 border-rose-200',
-          text: 'text-sm leading-relaxed text-slate-700'
+          container: 'flex-1 min-h-0 overflow-hidden',
+          heading: 'font-bold text-rose-600 text-[10px] mb-2 pb-1 border-b-2 border-rose-200',
+          text: 'text-[11px] leading-snug text-slate-700 overflow-hidden'
         };
 
       case 'elegant':
@@ -69,9 +69,9 @@ const DescriptionSection = ({ text, t, variant = 'classic' }) => {
       case 'compact':
       default:
         return {
-          container: 'grow',
-          heading: 'text-[10px] font-bold uppercase tracking-wider mb-2 border-b border-slate-300 pb-1',
-          text: 'text-xs leading-relaxed text-slate-700'
+          container: 'flex-1 min-h-0 overflow-hidden',
+          heading: 'text-[9px] font-bold uppercase tracking-wider mb-1 border-b border-slate-300 pb-0.5',
+          text: 'text-[10px] leading-snug text-slate-700 overflow-hidden'
         };
     }
   };

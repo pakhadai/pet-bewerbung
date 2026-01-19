@@ -225,32 +225,54 @@ export default function App() {
       const options = {
         margin: 0,
         filename: filename,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true },
         jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
       };
       
-      // Generate PDF as blob for better mobile support
+      // Detect mobile
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      
+      // Generate PDF as blob
       const pdfBlob = await html2pdf().set(options).from(element).outputPdf('blob');
-      
-      // Create download link
       const url = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
       
-      // Cleanup
-      setTimeout(() => {
+      if (isIOS) {
+        // iOS Safari: open in new tab (user can save from there)
+        const newWindow = window.open(url, '_blank');
+        if (!newWindow) {
+          // If popup blocked, try direct navigation
+          window.location.href = url;
+        }
+        showToast(t.labels?.pdfSaveHint || 'Tippen Sie auf "Teilen" → "In Dateien sichern"', 'info');
+      } else if (isMobile) {
+        // Android: try download attribute
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }, 100);
+        showToast('PDF downloaded!', 'success');
+      } else {
+        // Desktop: standard download
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('PDF downloaded successfully!', 'success');
+      }
       
-      showToast('PDF downloaded successfully!', 'success');
-      // Go to thank you page after short delay
-      setTimeout(() => goToStep(9), 1500);
+      // Cleanup after delay
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      
+      // Go to thank you page
+      setTimeout(() => goToStep(9), 2000);
     } catch (err) {
       showToast('Failed to download PDF: ' + err.message, 'error');
     }
