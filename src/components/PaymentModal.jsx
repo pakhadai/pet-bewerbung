@@ -3,67 +3,69 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import API_ENDPOINTS from '../config';
 
-function CheckoutForm({ clientSecret, paymentIntentId, onClose, onSuccess, onFailure, t }) {
+function CheckoutForm({ clientSecret, onClose, onSuccess, onFailure, t }) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
-
-  const pollStatus = async (id) => {
-    try {
-      const res = await fetch(API_ENDPOINTS.paymentStatus(id));
-      const json = await res.json();
-      return json.status;
-    } catch (err) {
-      return null;
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) return;
     setLoading(true);
     
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: { return_url: window.location.href },
-      redirect: 'if_required'
-    });
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: { return_url: window.location.href },
+        redirect: 'if_required'
+      });
 
-    setLoading(false);
-    
-    if (error) {
-      onFailure && onFailure(error.message || 'Payment error');
-      onClose();
-      return;
-    }
-
-    // Check payment intent status directly from Stripe response
-    if (paymentIntent) {
-      if (paymentIntent.status === 'succeeded') {
-        onSuccess && onSuccess(paymentIntent.id);
-        onClose();
+      if (error) {
+        setLoading(false);
+        onFailure && onFailure(error.message || 'Payment error');
         return;
       }
-      if (paymentIntent.status === 'requires_action' || paymentIntent.status === 'processing') {
-        // Wait a bit and check status
-        await new Promise(r => setTimeout(r, 2000));
-        const status = await pollStatus(paymentIntent.id);
-        if (status === 'succeeded') {
+
+      // Payment succeeded or is processing
+      if (paymentIntent) {
+        console.log('Payment intent status:', paymentIntent.status);
+        
+        if (paymentIntent.status === 'succeeded') {
+          setLoading(false);
           onSuccess && onSuccess(paymentIntent.id);
           onClose();
           return;
         }
-      }
-      if (paymentIntent.status === 'requires_payment_method') {
-        onFailure && onFailure('Payment failed - please try again');
+        
+        if (paymentIntent.status === 'processing') {
+          // Payment is processing (e.g. bank transfer)
+          setLoading(false);
+          onSuccess && onSuccess(paymentIntent.id);
+          onClose();
+          return;
+        }
+        
+        if (paymentIntent.status === 'requires_payment_method') {
+          setLoading(false);
+          onFailure && onFailure('Payment failed - please try again');
+          return;
+        }
+        
+        // For any other status, assume success (payment went through)
+        setLoading(false);
+        onSuccess && onSuccess(paymentIntent.id);
         onClose();
-        return;
+      } else {
+        // No paymentIntent returned but no error - assume success
+        setLoading(false);
+        onSuccess && onSuccess(null);
+        onClose();
       }
+    } catch (err) {
+      console.error('Payment error:', err);
+      setLoading(false);
+      onFailure && onFailure(err.message || 'Payment error');
     }
-    
-    // Fallback: assume success if no error
-    onSuccess && onSuccess(paymentIntentId);
-    onClose();
   };
 
   return (
@@ -123,7 +125,6 @@ const getStripeLocale = (lang) => {
 export default function PaymentModal({ open, onClose, amount, onSuccess, onFailure, lang = 'de', t }) {
   const [clientSecret, setClientSecret] = useState(null);
   const [stripePromise, setStripePromise] = useState(null);
-  const [paymentIntentId, setPaymentIntentId] = useState(null);
   
   const stripeLocale = getStripeLocale(lang);
 
@@ -170,9 +171,8 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
           // Load Stripe with locale
           if (json.publishableKey) {
             setStripePromise(loadStripe(json.publishableKey, { locale: stripeLocale }));
-          }
-          if (json.paymentIntentId) setPaymentIntentId(json.paymentIntentId);
-          else {
+          } else {
+            // Fallback: get publishable key from config endpoint
             const cfg = await fetch(API_ENDPOINTS.stripeConfig).then(r => r.json());
             if (cfg.publishableKey) {
               setStripePromise(loadStripe(cfg.publishableKey, { locale: stripeLocale }));
@@ -247,7 +247,6 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
             >
               <CheckoutForm 
                 clientSecret={clientSecret} 
-                paymentIntentId={paymentIntentId} 
                 onClose={onClose} 
                 onSuccess={onSuccess} 
                 onFailure={onFailure}
