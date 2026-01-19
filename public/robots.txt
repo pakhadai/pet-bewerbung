@@ -1,5 +1,5 @@
 # Robots.txt for Pet-Bewerbung.ch
-# https://pet.ohmyrevit.pp.ua / https://pet-bewerbung.ch
+# https://pet-bewerbung.ch
 
 User-agent: *
 Allow: /
@@ -7,5 +7,5 @@ Allow: /
 # Sitemap
 Sitemap: https://pet-bewerbung.ch/sitemap.xml
 
-# Disallow sensitive paths (none currently, but for future reference)
-# Disallow: /api/
+# Disallow API endpoints
+Disallow: /api/

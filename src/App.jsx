@@ -143,17 +143,17 @@ export default function App() {
     setIsGenerating(true);
     
     try {
-      // Prepare pet data for AI
+      // Prepare pet data for AI - include all relevant info
       const petData = {
-        petName: data.petName,
-        petType: data.petType,
-        breed: data.breed,
-        age: data.age,
-        gender: data.gender,
-        weight: data.weight,
-        traits: data.keywords,
-        neutered: data.neutered,
-        vaccinated: data.vaccinated,
+        petName: data.petName || '',
+        petType: data.petType || '',
+        breed: data.breed || '',
+        age: data.age || '',
+        gender: data.gender || '',
+        weight: data.weight || '',
+        traits: data.keywords || '',
+        neutered: data.neutered || false,
+        vaccinated: data.vaccinated || false,
       };
       
       const res = await fetch(API_ENDPOINTS.generatePetDescription, {
@@ -172,15 +172,7 @@ export default function App() {
       
       if (res.status === 503) {
         // AI not configured - fall back to template
-        const tmpl = t.templates;
-        const rawKeywords = data.keywords.split(',').map(s => s.trim()).filter(s => s);
-        let middleSection = "";
-        if (rawKeywords.length > 0) {
-          const formattedKeywords = rawKeywords.map(k => `**${k}**`).join(', ');
-          middleSection = `${tmpl.keywords}${formattedKeywords}. `;
-        }
-        const fullText = `${tmpl.intro} ${middleSection}${tmpl.outro}`;
-        updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
+        generateFallbackText();
         showToast('Using template (AI not available)', 'info');
         return;
       }
@@ -193,7 +185,7 @@ export default function App() {
       
       // Show remaining requests
       if (json.remaining !== undefined) {
-        showToast(`Generated! ${json.remaining} AI requests remaining today.`, 'success');
+        showToast(`✨ ${json.remaining} AI requests remaining today.`, 'success');
       }
       
     } catch (err) {
@@ -201,18 +193,25 @@ export default function App() {
       showToast('AI error: ' + (err.message || 'Unknown error'), 'error');
       
       // Fall back to template on error
-      const tmpl = t.templates;
-      const rawKeywords = data.keywords.split(',').map(s => s.trim()).filter(s => s);
-      let middleSection = "";
-      if (rawKeywords.length > 0) {
-        const formattedKeywords = rawKeywords.map(k => `**${k}**`).join(', ');
-        middleSection = `${tmpl.keywords}${formattedKeywords}. `;
-      }
-      const fullText = `${tmpl.intro} ${middleSection}${tmpl.outro}`;
-      updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
+      generateFallbackText();
     } finally {
       setIsGenerating(false);
     }
+  };
+  
+  // Fallback template-based generation
+  const generateFallbackText = () => {
+    const tmpl = t.templates;
+    const rawKeywords = (data.keywords || '').split(',').map(s => s.trim()).filter(s => s);
+    let middleSection = "";
+    if (rawKeywords.length > 0) {
+      const formattedKeywords = rawKeywords.join(', ');
+      middleSection = `${tmpl.keywords || 'Eigenschaften: '}${formattedKeywords}. `;
+    }
+    const petInfo = [data.petName, data.breed].filter(Boolean).join(', ');
+    const intro = petInfo ? `${petInfo} ist ein wunderbares Haustier. ` : (tmpl.intro || '');
+    const fullText = `${intro}${middleSection}${tmpl.outro || ''}`;
+    updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
   };
 
   const handleDownloadPDF = async () => {

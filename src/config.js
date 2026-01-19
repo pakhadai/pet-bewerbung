@@ -1,29 +1,28 @@
 // API Configuration
-const API_CONFIG = {
-  development: {
-    STRIPE_API_URL: 'http://localhost:4242',
-  },
-  production: {
-    STRIPE_API_URL: import.meta.env.VITE_STRIPE_API_URL || 'http://localhost:4242',
-  }
-};
+// In production (Docker), requests go through nginx at /api/
+// In development, requests go directly to backend at localhost:4242
 
-// Визначаємо середовище
-const ENV = import.meta.env.MODE || 'development';
-const isDevelopment = ENV === 'development';
+const isDevelopment = import.meta.env.MODE === 'development' || import.meta.env.DEV;
 
-// Експортуємо конфігурацію для поточного середовища
-export const STRIPE_API_URL = API_CONFIG[ENV]?.STRIPE_API_URL || API_CONFIG.development.STRIPE_API_URL;
+// Base URL for API
+const API_BASE = isDevelopment 
+  ? 'http://localhost:4242'  // Direct to backend in dev
+  : '/api';                   // Through nginx in production
 
 export const API_ENDPOINTS = {
-  createCheckoutSession: `${STRIPE_API_URL}/create-checkout-session`,
-  createPaymentIntent: `${STRIPE_API_URL}/create-payment-intent`,
-  stripeConfig: `${STRIPE_API_URL}/stripe-config`,
-  paymentStatus: (id) => `${STRIPE_API_URL}/payment-status/${id}`,
-  checkoutSession: (id) => `${STRIPE_API_URL}/checkout-session/${id}`,
-  // AI endpoints
-  generatePetDescription: `${STRIPE_API_URL}/generate-pet-description`,
-  aiRateLimit: `${STRIPE_API_URL}/ai-rate-limit`,
+  // Stripe
+  createCheckoutSession: `${API_BASE}/create-checkout-session`,
+  createPaymentIntent: `${API_BASE}/create-payment-intent`,
+  stripeConfig: `${API_BASE}/stripe-config`,
+  paymentStatus: (id) => `${API_BASE}/payment-status/${id}`,
+  checkoutSession: (id) => `${API_BASE}/checkout-session/${id}`,
+  
+  // AI
+  generatePetDescription: `${API_BASE}/generate-pet-description`,
+  aiRateLimit: `${API_BASE}/ai-rate-limit`,
 };
+
+// Legacy export
+export const STRIPE_API_URL = API_BASE;
 
 export default API_ENDPOINTS;
