@@ -78,11 +78,7 @@ function CheckoutForm({ clientSecret, onClose, onSuccess, onFailure, t }) {
             applePay: 'auto',
             googlePay: 'auto'
           },
-          // Hide billing details and Link autofill
-          fields: {
-            billingDetails: 'never'
-          },
-          // Show wallets above card form, exclude Link
+          // Show wallets above card form
           paymentMethodOrder: ['apple_pay', 'google_pay', 'card', 'twint']
         }}
       />
