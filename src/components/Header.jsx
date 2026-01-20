@@ -1,5 +1,4 @@
 import React from 'react';
-import { PawPrint } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
 
@@ -9,9 +8,11 @@ const Header = ({ step, theme, onThemeChange, lang, onLangChange, onLogoClick, t
   return (
     <header className="app-header sticky top-4 z-30 h-16 px-4 flex items-center justify-between print:hidden w-full transition-all">
       <div className="flex items-center gap-3 font-bold text-lg cursor-pointer" onClick={onLogoClick}>
-        <div className="theme-button-primary p-1.5 rounded-lg shadow-md">
-          <PawPrint size={18} />
-        </div>
+        <img 
+          src="/logo.png" 
+          alt="Pet-Bewerbung Logo" 
+          className="w-10 h-10 object-contain drop-shadow-md"
+        />
         <span className="hidden sm:inline">Pet-Bewerbung.ch</span>
       </div>
 

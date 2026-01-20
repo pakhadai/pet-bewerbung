@@ -40,8 +40,16 @@ const Step9ThankYou = React.memo(({
       />
 
       <main className="w-full max-w-2xl mx-auto py-20 text-center px-4">
-        {/* Animated success icon */}
-        <div className="mb-8 flex justify-center">
+        {/* Logo and success animation */}
+        <div className="mb-8 flex flex-col items-center gap-6">
+          {/* Cute logo */}
+          <img 
+            src="/logo.png" 
+            alt="Pet-Bewerbung Logo" 
+            className="w-24 h-24 object-contain drop-shadow-lg animate-in zoom-in duration-500"
+          />
+          
+          {/* Animated success icon */}
           <div className="relative">
             {/* Pulsing rings */}
             <div
@@ -54,10 +62,10 @@ const Step9ThankYou = React.memo(({
             />
 
             {/* Main icon */}
-            <div className="relative w-24 h-24 theme-success rounded-full flex items-center justify-center shadow-xl animate-in zoom-in duration-500">
+            <div className="relative w-20 h-20 theme-success rounded-full flex items-center justify-center shadow-xl animate-in zoom-in duration-500 delay-200">
               <CheckCircle2
-                size={48}
-                className="animate-in slide-in-from-top-4 duration-700 delay-200"
+                size={40}
+                className="animate-in slide-in-from-top-4 duration-700 delay-400"
               />
             </div>
           </div>
