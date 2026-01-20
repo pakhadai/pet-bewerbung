@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { CheckCircle2, Heart, Home, Sparkles } from 'lucide-react';
+import { Heart, Home, Sparkles } from 'lucide-react';
 import GlobalStyles from './GlobalStyles';
 import Header from './Header';
 import Footer from './Footer';
@@ -381,6 +381,12 @@ const PaymentSuccess = ({
           animation: successRingPulse 2s ease-out infinite;
         }
         
+        /* Gentle pulse for logo background */
+        @keyframes gentlePulse {
+          0%, 100% { transform: scale(1); opacity: 0.8; }
+          50% { transform: scale(1.05); opacity: 1; }
+        }
+        
         /* Heart float */
         @keyframes heartFloat {
           0%, 100% { transform: translateY(0) scale(1); }
@@ -428,30 +434,35 @@ const PaymentSuccess = ({
 
       <main className="w-full max-w-2xl mx-auto py-12 text-center px-4 relative z-10">
         
-        {/* Happy bouncing pet */}
-        <div className="mb-6 flex justify-center">
-          <HappyPet type={petType} />
-        </div>
-        
-        {/* Animated success icon with sparkles */}
+        {/* Logo with gentle pulsing circle */}
         <div className="mb-8 flex justify-center">
-          <div className="relative">
-            {/* Multiple pulsing rings */}
-            <div className="absolute inset-0 w-28 h-28 -m-2 rounded-full success-ring" style={{ background: 'linear-gradient(135deg, #22c55e, #10b981)' }} />
-            <div className="absolute inset-0 w-28 h-28 -m-2 rounded-full success-ring" style={{ background: 'linear-gradient(135deg, #22c55e, #10b981)', animationDelay: '0.5s' }} />
-            <div className="absolute inset-0 w-28 h-28 -m-2 rounded-full success-ring" style={{ background: 'linear-gradient(135deg, #22c55e, #10b981)', animationDelay: '1s' }} />
-            
-            {/* Sparkles around */}
-            <Sparkles className="sparkle text-yellow-400" size={24} style={{ top: '-20px', left: '-20px', animationDelay: '0.2s' }} />
-            <Sparkles className="sparkle text-pink-400" size={20} style={{ top: '-15px', right: '-25px', animationDelay: '0.4s' }} />
-            <Sparkles className="sparkle text-purple-400" size={22} style={{ bottom: '-20px', left: '-15px', animationDelay: '0.6s' }} />
-            <Sparkles className="sparkle text-blue-400" size={18} style={{ bottom: '-10px', right: '-20px', animationDelay: '0.8s' }} />
+          <div className="relative flex items-center justify-center">
+            {/* Gentle pulsing green circle */}
+            <div 
+              className="absolute rounded-full"
+              style={{ 
+                width: '160px', 
+                height: '160px',
+                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.15))',
+                animation: 'gentlePulse 3s ease-in-out infinite'
+              }} 
+            />
+            <div 
+              className="absolute rounded-full"
+              style={{ 
+                width: '140px', 
+                height: '140px',
+                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2))',
+                animation: 'gentlePulse 3s ease-in-out infinite 0.5s'
+              }} 
+            />
 
-            {/* Main icon */}
-            <div className="relative w-24 h-24 rounded-full flex items-center justify-center shadow-2xl"
-                 style={{ background: 'linear-gradient(135deg, #22c55e, #10b981)' }}>
-              <CheckCircle2 size={48} className="text-white drop-shadow-lg" />
-            </div>
+            {/* Main logo - static */}
+            <img 
+              src="/logo.png" 
+              alt="Pet-Bewerbung Logo" 
+              className="relative w-28 h-28 object-contain z-10 drop-shadow-lg"
+            />
           </div>
         </div>
 

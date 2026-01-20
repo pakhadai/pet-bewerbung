@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import GlobalStyles from '../GlobalStyles';
 import Header from '../Header';
 import Footer from '../Footer';
@@ -29,6 +29,7 @@ const Step9ThankYou = React.memo(({
   return (
     <div className="min-h-screen theme-bg font-sans theme-text pb-6 print:bg-white print:p-0">
       <GlobalStyles theme={theme} />
+      
       <Header
         step={9}
         theme={theme}
@@ -40,35 +41,13 @@ const Step9ThankYou = React.memo(({
       />
 
       <main className="w-full max-w-2xl mx-auto py-20 text-center px-4">
-        {/* Logo and success animation */}
-        <div className="mb-8 flex flex-col items-center gap-6">
-          {/* Cute logo */}
+        {/* Logo */}
+        <div className="mb-10 flex justify-center">
           <img 
             src="/logo.png" 
             alt="Pet-Bewerbung Logo" 
-            className="w-24 h-24 object-contain drop-shadow-lg animate-in zoom-in duration-500"
+            className="w-32 h-32 object-contain drop-shadow-lg"
           />
-          
-          {/* Animated success icon */}
-          <div className="relative">
-            {/* Pulsing rings */}
-            <div
-              className="absolute inset-0 rounded-full animate-ping opacity-20"
-              style={{ background: 'var(--success)' }}
-            />
-            <div
-              className="absolute inset-0 rounded-full animate-pulse opacity-30"
-              style={{ background: 'var(--success)' }}
-            />
-
-            {/* Main icon */}
-            <div className="relative w-20 h-20 theme-success rounded-full flex items-center justify-center shadow-xl animate-in zoom-in duration-500 delay-200">
-              <CheckCircle2
-                size={40}
-                className="animate-in slide-in-from-top-4 duration-700 delay-400"
-              />
-            </div>
-          </div>
         </div>
 
         <h2 className="text-4xl font-bold mb-4 theme-text animate-in slide-in-from-bottom-4 duration-500 delay-300">
