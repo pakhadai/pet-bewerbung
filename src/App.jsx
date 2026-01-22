@@ -267,12 +267,29 @@ export default function App() {
                 img.style.display = 'none';
               }
             });
-            // Force exact height on cloned document
+            // Force exact dimensions on cloned document to match preview
             const pdfDoc = clonedDoc.getElementById('pdf-document');
             if (pdfDoc) {
+              pdfDoc.style.width = '210mm';
               pdfDoc.style.height = '292mm';
+              pdfDoc.style.maxWidth = '210mm';
               pdfDoc.style.maxHeight = '292mm';
+              pdfDoc.style.minWidth = '210mm';
+              pdfDoc.style.minHeight = '292mm';
               pdfDoc.style.overflow = 'hidden';
+              pdfDoc.style.boxSizing = 'border-box';
+              pdfDoc.style.flexShrink = '0';
+              
+              // Ensure inner document container also has correct dimensions
+              const innerDoc = pdfDoc.querySelector('[class*="w-\\[210mm\\]"]');
+              if (innerDoc) {
+                innerDoc.style.width = '210mm';
+                innerDoc.style.height = '292mm';
+                innerDoc.style.maxWidth = '210mm';
+                innerDoc.style.maxHeight = '292mm';
+                innerDoc.style.overflow = 'hidden';
+                innerDoc.style.boxSizing = 'border-box';
+              }
             }
           }
         },

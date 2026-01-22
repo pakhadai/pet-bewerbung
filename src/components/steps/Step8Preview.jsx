@@ -10,7 +10,7 @@ const Step8Preview = React.memo(({ data, t, animDir, selectedTemplate }) => {
         <div
           id="pdf-document"
           className="overflow-hidden border-2 rounded-lg shadow-2xl theme-card"
-          style={{ width: '210mm' }}
+          style={{ width: '210mm', height: '292mm', flexShrink: 0 }}
         >
           <ErrorBoundary
             fallbackTitle={t.ui?.previewError || "Document Error"}

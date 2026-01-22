@@ -40,7 +40,7 @@ const Step9ThankYou = React.memo(({
         t={t}
       />
 
-      <main className="w-full max-w-2xl mx-auto py-20 text-center px-4">
+      <main className="w-full max-w-2xl mx-auto pt-[52px] pb-20 text-center px-4">
         {/* Logo */}
         <div className="mb-10 flex justify-center">
           <img 
