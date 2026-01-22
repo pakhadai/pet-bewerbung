@@ -26,7 +26,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
   const getTemplateConfig = () => {
     const configs = {
       classic: {
-        container: 'w-[210mm] h-[295mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
         headerContainer: 'mb-6 pb-4 border-b-2 border-slate-900',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
@@ -49,7 +49,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
       },
 
       modern: {
-        container: 'w-[210mm] h-[295mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
         headerContainer: 'mb-6 pb-4 border-b border-slate-200',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
@@ -72,7 +72,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
       },
 
       compact: {
-        container: 'w-[210mm] h-[295mm] bg-white text-slate-900 p-[12mm] text-[10px] font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[12mm] text-[10px] font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
         headerContainer: 'mb-4 pb-3 border-b border-slate-300',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-2',
@@ -174,7 +174,6 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
 
     return (
       <div className={config.footerContainer}>
-        <p className={config.footerText}>{t.doc.footer}</p>
         {config.footerSignContainer && (
           <div className="flex justify-between items-end mt-2">
             <div className={config.footerSignContainer}>

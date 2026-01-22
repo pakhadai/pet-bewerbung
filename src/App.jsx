@@ -255,10 +255,10 @@ export default function App() {
           scale: 2, 
           useCORS: true,
           logging: false, // Disable console logs from html2canvas
-          height: 1115, // A4 height in pixels at 96 DPI (295mm = 1115px)
+          height: 1104, // A4 height in pixels at 96 DPI (292mm = 1104px)
           width: 794, // A4 width in pixels at 96 DPI (210mm = 794px)
           windowWidth: 794,
-          windowHeight: 1115,
+          windowHeight: 1104,
           onclone: (clonedDoc) => {
             // Ensure all images are loaded in cloned document
             const images = clonedDoc.querySelectorAll('img');
@@ -270,8 +270,8 @@ export default function App() {
             // Force exact height on cloned document
             const pdfDoc = clonedDoc.getElementById('pdf-document');
             if (pdfDoc) {
-              pdfDoc.style.height = '295mm';
-              pdfDoc.style.maxHeight = '295mm';
+              pdfDoc.style.height = '292mm';
+              pdfDoc.style.maxHeight = '292mm';
               pdfDoc.style.overflow = 'hidden';
             }
           }
