@@ -2,13 +2,24 @@ import React, { useState } from 'react';
 import { Camera, Crop } from 'lucide-react';
 import ImageCropper from '../ImageCropper';
 
-const Step5Photo = React.memo(({ data, onFileChange, updateData, t, animDir }) => {
+const Step5Photo = React.memo(({ data, onFileChange, updateData, t, animDir, onNavigationVisibilityChange }) => {
   const [showCropper, setShowCropper] = useState(false);
   const [tempImage, setTempImage] = useState(null);
+
+  // Hide navigation when cropper opens, show when it closes
+  React.useEffect(() => {
+    if (onNavigationVisibilityChange) {
+      onNavigationVisibilityChange(!showCropper);
+    }
+  }, [showCropper, onNavigationVisibilityChange]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Hide navigation immediately when file is selected
+      if (onNavigationVisibilityChange) {
+        onNavigationVisibilityChange(false);
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setTempImage(reader.result);
@@ -31,6 +42,10 @@ const Step5Photo = React.memo(({ data, onFileChange, updateData, t, animDir }) =
 
   const handleRecrop = () => {
     if (data.photo) {
+      // Hide navigation immediately when recrop starts
+      if (onNavigationVisibilityChange) {
+        onNavigationVisibilityChange(false);
+      }
       setTempImage(data.photo);
       setShowCropper(true);
     }

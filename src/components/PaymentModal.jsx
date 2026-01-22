@@ -28,7 +28,9 @@ function CheckoutForm({ clientSecret, onClose, onSuccess, onFailure, t }) {
 
       // Payment succeeded or is processing
       if (paymentIntent) {
-        console.log('Payment intent status:', paymentIntent.status);
+        if (import.meta.env.DEV) {
+          console.log('Payment intent status:', paymentIntent.status);
+        }
         
         if (paymentIntent.status === 'succeeded') {
           setLoading(false);
@@ -62,7 +64,9 @@ function CheckoutForm({ clientSecret, onClose, onSuccess, onFailure, t }) {
         onClose();
       }
     } catch (err) {
-      console.error('Payment error:', err);
+      if (import.meta.env.DEV) {
+        console.error('Payment error:', err);
+      }
       setLoading(false);
       onFailure && onFailure(err.message || 'Payment error');
     }
@@ -154,7 +158,9 @@ export default function PaymentModal({ open, onClose, amount, onSuccess, onFailu
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
           const text = await res.text();
-          console.error('Non-JSON response:', text.substring(0, 200));
+          if (import.meta.env.DEV) {
+            console.error('Non-JSON response:', text.substring(0, 200));
+          }
           if (!mounted) return;
           alert('Payment error: Server returned HTML instead of JSON. Check API connection.');
           return;

@@ -18,7 +18,13 @@ export default function ThemeToggle({ theme, onThemeChange }) {
   return (
     <button
       onClick={() => onThemeChange(nextTheme.id)}
-      className="relative group px-4 py-2 rounded-xl theme-card theme-border border hover:scale-105 transition-all duration-300 flex items-center gap-2"
+      className="relative group px-4 py-2 rounded-xl theme-card theme-border border flex items-center gap-2"
+      style={{ 
+        transition: 'transform 500ms ease-in-out',
+        transform: 'scale(1)'
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+      onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
       title={`Switch to ${nextTheme.label}`}
       aria-label={`Current theme: ${currentTheme.label}. Click to switch to ${nextTheme.label}`}
       role="switch"
@@ -28,12 +34,12 @@ export default function ThemeToggle({ theme, onThemeChange }) {
       <div className="relative" aria-hidden="true">
         <Icon
           size={20}
-          className="theme-text transition-all duration-300 group-hover:rotate-12"
+          className="theme-text transition-all duration-500 ease-in-out group-hover:rotate-12"
         />
 
         {/* Glow effect on hover */}
         <div
-          className="absolute inset-0 blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300"
+          className="absolute inset-0 blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-500 ease-in-out"
           style={{
             background: theme === 'dark'
               ? '#6366f1'
@@ -51,7 +57,7 @@ export default function ThemeToggle({ theme, onThemeChange }) {
 
       {/* Animated arrow hint */}
       <svg
-        className="w-3 h-3 theme-text-muted group-hover:translate-x-0.5 transition-transform"
+        className="w-3 h-3 theme-text-muted group-hover:translate-x-0.5 transition-transform duration-500 ease-in-out"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

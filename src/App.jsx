@@ -79,6 +79,7 @@ export default function App() {
   const [legalPage, setLegalPage] = useState(null); // 'impressum', 'privacy', 'terms', or null
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentSessionId, setPaymentSessionId] = useState(null);
+  const [navigationVisible, setNavigationVisible] = useState(true); // Control navigation visibility for Step5Photo
 
   // Handle URL parameters for payment success/cancel
   useEffect(() => {
@@ -116,6 +117,13 @@ export default function App() {
     }
     prevLangRef.current = data.lang;
   }, [data.lang, data.generatedText, updateData, showToast]);
+
+  // Reset navigation visibility when step changes (except when on step 5 with cropper open)
+  useEffect(() => {
+    if (step !== 5) {
+      setNavigationVisible(true);
+    }
+  }, [step]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -189,7 +197,9 @@ export default function App() {
       }
       
     } catch (err) {
-      console.error('AI generation error:', err);
+      if (import.meta.env.DEV) {
+        console.error('AI generation error:', err);
+      }
       showToast('AI error: ' + (err.message || 'Unknown error'), 'error');
       
       // Fall back to template on error
@@ -295,7 +305,9 @@ export default function App() {
       const contentType = res.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await res.text();
-        console.error('Non-JSON response:', text.substring(0, 200));
+        if (import.meta.env.DEV) {
+          console.error('Non-JSON response:', text.substring(0, 200));
+        }
         showToast('Payment error: Server returned HTML instead of JSON. Check API connection.', 'error');
         return;
       }
@@ -308,7 +320,9 @@ export default function App() {
         showToast(json.error || 'Failed to create checkout session', 'error');
       }
     } catch (err) {
-      console.error('Payment error:', err);
+      if (import.meta.env.DEV) {
+        console.error('Payment error:', err);
+      }
       showToast('Payment error: ' + (err.message || err), 'error');
     } finally {
       setDonateOpen(false);
@@ -346,7 +360,7 @@ export default function App() {
           />
         );
       case 5:
-        return <Step5Photo data={data} onFileChange={handleFileChange} updateData={updateData} t={t} animDir={animDir} />;
+        return <Step5Photo data={data} onFileChange={handleFileChange} updateData={updateData} t={t} animDir={animDir} onNavigationVisibilityChange={setNavigationVisible} />;
       case 6:
         return <Step6Summary data={data} t={t} animDir={animDir} />;
       case 7:
@@ -509,6 +523,7 @@ export default function App() {
         showToast={showToast}
         t={t}
         canProceed={canProceed}
+        visible={navigationVisible}
       />
 
       <Footer step={step} t={t} onOpenLegal={setLegalPage} />

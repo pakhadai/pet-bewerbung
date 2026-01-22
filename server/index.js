@@ -215,7 +215,8 @@ app.get('/checkout-session/:id', async (req, res) => {
 });
 
 // ============================================
-// Get payment intent status from Stripe API
+// Get payment status from Stripe API
+// Automatically detects pi_ (PaymentIntent) or cs_ (CheckoutSession) and calls appropriate method
 // ============================================
 app.get('/payment-status/:id', async (req, res) => {
   const id = req.params.id;
@@ -225,11 +226,56 @@ app.get('/payment-status/:id', async (req, res) => {
   }
 
   try {
-    const intent = await stripe.paymentIntents.retrieve(id);
-    res.json({ id, status: intent.status });
+    // Detect type by prefix: pi_ = PaymentIntent, cs_ = CheckoutSession
+    if (id.startsWith('pi_')) {
+      // PaymentIntent
+      const intent = await stripe.paymentIntents.retrieve(id);
+      res.json({ 
+        id, 
+        type: 'payment_intent',
+        status: intent.status,
+        amount: intent.amount,
+        currency: intent.currency
+      });
+    } else if (id.startsWith('cs_')) {
+      // CheckoutSession
+      const session = await stripe.checkout.sessions.retrieve(id);
+      res.json({ 
+        id, 
+        type: 'checkout_session',
+        status: session.payment_status === 'paid' ? 'completed' : session.payment_status,
+        amount: session.amount_total,
+        currency: session.currency
+      });
+    } else {
+      // Unknown type - try both (for backward compatibility)
+      try {
+        const intent = await stripe.paymentIntents.retrieve(id);
+        res.json({ 
+          id, 
+          type: 'payment_intent',
+          status: intent.status,
+          amount: intent.amount,
+          currency: intent.currency
+        });
+      } catch (intentErr) {
+        try {
+          const session = await stripe.checkout.sessions.retrieve(id);
+          res.json({ 
+            id, 
+            type: 'checkout_session',
+            status: session.payment_status === 'paid' ? 'completed' : session.payment_status,
+            amount: session.amount_total,
+            currency: session.currency
+          });
+        } catch (sessionErr) {
+          throw new Error('Invalid payment ID format');
+        }
+      }
+    }
   } catch (err) {
-    console.error('Error retrieving payment intent:', err.message);
-    res.json({ id, status: null });
+    console.error('Error retrieving payment status:', err.message);
+    res.status(404).json({ id, status: null, error: err.message });
   }
 });
 

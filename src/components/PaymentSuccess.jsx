@@ -171,22 +171,35 @@ const PaymentSuccess = ({
   }, []);
 
   useEffect(() => {
-    if (sessionId) {
-      fetch(API_ENDPOINTS.checkoutSession(sessionId))
-        .then(res => res.json())
-        .then(data => {
-          if (data.session) {
-            setPaymentData(data.session);
-          }
-          setLoading(false);
-        })
-        .catch(err => {
-          console.error('Error fetching payment data:', err);
-          setLoading(false);
-        });
-    } else {
+    if (!sessionId) {
       setLoading(false);
+      return;
     }
+
+    let mounted = true;
+    fetch(API_ENDPOINTS.checkoutSession(sessionId))
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (!mounted) return;
+        if (data.session) {
+          setPaymentData(data.session);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        if (!mounted) return;
+        if (import.meta.env.DEV) {
+          console.error('Error fetching payment data:', err);
+        }
+        setLoading(false);
+      });
+
+    return () => { mounted = false; };
   }, [sessionId]);
 
   const handleGoHome = () => {

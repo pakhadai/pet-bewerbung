@@ -328,10 +328,30 @@ const GlobalStyles = ({ theme = 'light' }) => {
       align-items: center;
       min-width: 380px;
       animation: navSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .nav-panel.nav-visible {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: translateX(-50%) translateY(0) !important;
+      pointer-events: auto !important;
+      transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1), 
+                  visibility 400ms cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 400ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .nav-panel.nav-hidden {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      transform: translateX(-50%) translateY(100px) !important;
+      pointer-events: none !important;
+      transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1), 
+                  visibility 400ms cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 400ms cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     .nav-panel:hover {
       box-shadow: 0 24px 60px -12px var(--shadow-strong), 0 0 0 1px var(--primary);
+    }
+    .nav-panel.nav-visible:hover {
       transform: translateX(-50%) translateY(-2px);
     }
     .nav-panel .btn {

@@ -82,7 +82,7 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1 }) =
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="theme-card rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b theme-border">
           <h3 className="theme-text font-bold text-lg">Foto zuschneiden</h3>

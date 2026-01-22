@@ -36,7 +36,13 @@ export default function LanguageSelector({ value, onChange }) {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg theme-card theme-border border hover:theme-card-bg-hover transition-colors"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg theme-card theme-border border hover:theme-card-bg-hover hover:shadow-md"
+        style={{ 
+          transition: 'transform 500ms ease-in-out',
+          transform: 'scale(1)'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-label={`Select language. Current: ${currentLang.label}`}
@@ -69,10 +75,10 @@ export default function LanguageSelector({ value, onChange }) {
               onClick={() => handleSelect(lang.id)}
               role="option"
               aria-selected={value === lang.id}
-              className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${
+              className={`w-full flex items-center gap-3 px-4 py-3 transition-all duration-300 ${
                 value === lang.id
-                  ? 'bg-primary text-white'
-                  : 'theme-text hover:theme-card-bg-hover'
+                  ? 'bg-primary text-white scale-[1.02]'
+                  : 'theme-text hover:bg-primary/30 hover:text-primary hover:font-semibold'
               }`}
             >
               <img

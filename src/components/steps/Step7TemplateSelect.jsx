@@ -25,20 +25,28 @@ const Step7TemplateSelect = React.memo(({
 
   // Progressive loading - load templates in batches
   useEffect(() => {
+    let mounted = true;
     const loadTemplates = async () => {
       // Load first 3 immediately
-      setVisibleTemplates(TEMPLATE_OPTIONS.slice(0, 3).map(t => t.id));
+      if (mounted) {
+        setVisibleTemplates(TEMPLATE_OPTIONS.slice(0, 3).map(t => t.id));
+      }
 
       // Load next 3 after short delay
       await new Promise(resolve => setTimeout(resolve, 100));
-      setVisibleTemplates(TEMPLATE_OPTIONS.slice(0, 6).map(t => t.id));
+      if (mounted) {
+        setVisibleTemplates(TEMPLATE_OPTIONS.slice(0, 6).map(t => t.id));
+      }
 
       // Load remaining after another delay
       await new Promise(resolve => setTimeout(resolve, 100));
-      setVisibleTemplates(TEMPLATE_OPTIONS.map(t => t.id));
+      if (mounted) {
+        setVisibleTemplates(TEMPLATE_OPTIONS.map(t => t.id));
+      }
     };
 
     loadTemplates();
+    return () => { mounted = false; };
   }, []);
 
   return (

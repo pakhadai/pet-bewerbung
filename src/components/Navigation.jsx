@@ -2,14 +2,14 @@ import React from 'react';
 import { ChevronLeft, ChevronRight, Mail, Printer } from 'lucide-react';
 import Button from './Button';
 
-const Navigation = ({ step, onPrev, onNext, onDownloadPDF, showToast, t, canProceed = true }) => {
+const Navigation = ({ step, onPrev, onNext, onDownloadPDF, showToast, t, canProceed = true, visible = true }) => {
   // Don't show navigation on step 0 (landing) or step 9 (thank you)
   if (step === 0 || step === 9) {
     return null;
   }
 
   return (
-    <nav className="nav-panel print:hidden" role="navigation" aria-label="Form navigation">
+    <nav className={`nav-panel print:hidden ${visible ? 'nav-visible' : 'nav-hidden'}`} role="navigation" aria-label="Form navigation">
       <Button
         variant="ghost"
         className="btn"

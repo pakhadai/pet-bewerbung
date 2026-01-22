@@ -28,7 +28,9 @@ const loadSavedData = () => {
       return { ...INITIAL_DATA, ...parsed, lang: parsed.lang || detectLang() };
     }
   } catch (e) {
-    console.warn('Could not load saved form data:', e);
+    if (import.meta.env.DEV) {
+      console.warn('Could not load saved form data:', e);
+    }
   }
   return { ...INITIAL_DATA, lang: detectLang() };
 };
@@ -73,7 +75,9 @@ export const useFormWizard = () => {
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
     } catch (e) {
-      console.warn('Could not save form data to localStorage:', e);
+      if (import.meta.env.DEV) {
+        console.warn('Could not save form data to localStorage:', e);
+      }
     }
   }, [data]);
 
@@ -212,14 +216,32 @@ export const usePaymentFlow = () => {
 
 export const useToast = (duration = 5000) => {
   const [toast, setToast] = useState(null);
+  const timeoutRef = useRef(null);
 
   const showToast = useCallback((msg, type = 'info') => {
+    // Clear existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     setToast({ msg, type });
-    setTimeout(() => setToast(null), duration);
+    timeoutRef.current = setTimeout(() => setToast(null), duration);
   }, [duration]);
 
   const hideToast = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     setToast(null);
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   return { toast, showToast, hideToast };
@@ -234,8 +256,10 @@ export const useScrollVisibility = (threshold = 120) => {
       setIsVisible(nearBottom);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
+    onScroll(); // Check initial state
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
   }, [threshold]);
 
   return isVisible;

@@ -195,27 +195,11 @@ const LandingPage = ({ t, setStep }) => {
                 }}
               />
               <div 
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none group-hover:translate-x-full"
                 style={{
                   background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.15) 55%, transparent 60%)',
                   transform: 'translateX(-100%)',
                   transition: 'transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                }}
-                ref={(el) => {
-                  if (el) {
-                    el.parentElement.addEventListener('mouseenter', () => {
-                      el.style.transform = 'translateX(100%)';
-                    });
-                    el.parentElement.addEventListener('mouseleave', () => {
-                      setTimeout(() => {
-                        el.style.transform = 'translateX(-100%)';
-                        el.style.transition = 'none';
-                        setTimeout(() => {
-                          el.style.transition = 'transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
-                        }, 50);
-                      }, 400);
-                    });
-                  }
                 }}
               />
             </div>
