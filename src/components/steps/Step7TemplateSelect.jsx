@@ -50,25 +50,35 @@ const Step7TemplateSelect = React.memo(({
   }, []);
 
   return (
-    <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 text-center max-w-6xl mx-auto pb-20`}>
-      {/* Template Grid - 4 columns, clean previews */}
-      <div className="grid grid-cols-4 gap-6 mx-auto px-4">
+    <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 text-center max-w-5xl mx-auto pb-20`}>
+      {/* Template Grid - 2 columns, full A4 preview */}
+      <div className="grid grid-cols-2 gap-8 mx-auto px-4">
         {TEMPLATE_OPTIONS.map((tplOption, index) => (
           <div
             key={tplOption.id}
-            className="flex flex-col items-center space-y-3"
+            className="flex flex-col items-center space-y-4"
             style={{
-              animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
+              animation: `fadeInUp 0.6s ease-out ${index * 0.15}s both`
             }}
             onMouseEnter={() => setHoveredTemplate(tplOption.id)}
             onMouseLeave={() => setHoveredTemplate(null)}
           >
-            {/* Template Preview - with button in center */}
-            <div className="relative w-full aspect-[1/1.4] overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-500 group cursor-pointer">
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            {/* Template Preview - full A4 aspect ratio (210mm x 297mm = 1:1.414) */}
+            <div className="relative w-full aspect-[210/297] overflow-visible rounded-lg shadow-xl hover:shadow-2xl transition-all duration-500 group cursor-pointer bg-white p-2">
+              <div className="w-full h-full flex items-center justify-center pointer-events-none overflow-hidden rounded">
                 {visibleTemplates.includes(tplOption.id) ? (
                   <Suspense fallback={<TemplateSkeleton />}>
-                    <div style={{ width: '210mm', transform: 'scale(0.42)', transformOrigin: 'center' }}>
+                    <div 
+                      style={{ 
+                        width: '210mm', 
+                        height: '297mm',
+                        transform: 'scale(0.55)', 
+                        transformOrigin: 'center',
+                        maxWidth: '100%',
+                        maxHeight: '100%'
+                      }}
+                      className="shadow-lg"
+                    >
                       <SwissDocument data={data} t={t} templateType={tplOption.id} />
                     </div>
                   </Suspense>
@@ -105,7 +115,7 @@ const Step7TemplateSelect = React.memo(({
             </div>
 
             {/* Template Name */}
-            <div className="text-sm font-semibold theme-text">
+            <div className="text-base font-semibold theme-text">
               {tplOption.label}
             </div>
           </div>
