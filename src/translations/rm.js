@@ -25,10 +25,9 @@ export default {
     4: "Cumportament & Rutina",
     5: "Descripziun caracter",
     6: "Chargiar foto",
-    7: "Referenzas & Urgenza",
-    8: "Controllar datas",
-    9: "Tscherner model",
-    10: "Prevista & Download"
+    7: "Tscherner model",
+    8: "Prevista & Download",
+    9: "Grazia"
   },
   summary: {
     title: "Controlla da vossas datas",

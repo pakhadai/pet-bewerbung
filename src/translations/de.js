@@ -25,10 +25,9 @@ export default {
     4: "Verhalten & Tagesablauf",
     5: "Charakter Beschreibung",
     6: "Foto hochladen",
-    7: "Referenzen & Notfallkontakt",
-    8: "Daten überprüfen",
-    9: "Vorlage auswählen",
-    10: "Vorschau & Download"
+    7: "Vorlage auswählen",
+    8: "Vorschau & Download",
+    9: "Danke"
   },
   summary: {
     title: "Überprüfung Ihrer Daten",

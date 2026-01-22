@@ -25,10 +25,9 @@ export default {
     4: "Comportamento & Routine",
     5: "Descrizione carattere",
     6: "Caricare foto",
-    7: "Referenze & Emergenza",
-    8: "Verifica dati",
-    9: "Scegli modello",
-    10: "Anteprima e download"
+    7: "Scegli modello",
+    8: "Anteprima e download",
+    9: "Grazie"
   },
   summary: {
     title: "Verifica dei tuoi dati",

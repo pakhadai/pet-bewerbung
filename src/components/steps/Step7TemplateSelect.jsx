@@ -105,17 +105,23 @@ const Step7TemplateSelect = React.memo(({
                   )}
                 </div>
 
+                {/* Dark overlay on hover - behind button */}
+                <div className={`absolute inset-0 bg-black transition-opacity duration-500 rounded pointer-events-none ${
+                  hoveredTemplate === tplOption.id ? 'opacity-30' : 'opacity-0'
+                }`} style={{ zIndex: 1 }}></div>
+
                 {/* Select Button - centered on preview, appears with animation */}
                 <div 
                   className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out ${
                     hoveredTemplate === tplOption.id 
-                      ? 'opacity-100 translate-y-0' 
+                      ? 'opacity-100 translate-y-0 pointer-events-auto' 
                       : 'opacity-0 translate-y-4 pointer-events-none'
                   }`}
+                  style={{ zIndex: 2 }}
                 >
                   <Button
                     variant="primary"
-                    className="px-6 py-2.5 text-sm shadow-xl z-10"
+                    className="px-6 py-2.5 text-sm shadow-xl"
                     onClick={(e) => {
                       e.stopPropagation();
                       onSelectTemplate(tplOption.id);
@@ -125,11 +131,6 @@ const Step7TemplateSelect = React.memo(({
                     {t.ui.select}
                   </Button>
                 </div>
-
-                {/* Dark overlay on hover */}
-                <div className={`absolute inset-0 bg-black transition-opacity duration-500 rounded ${
-                  hoveredTemplate === tplOption.id ? 'opacity-30' : 'opacity-0'
-                }`}></div>
               </div>
 
               {/* Template Name */}

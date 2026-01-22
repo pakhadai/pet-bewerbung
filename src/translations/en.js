@@ -25,10 +25,9 @@ export default {
     4: "Behavior & Daily Routine",
     5: "Character Description",
     6: "Upload Photo",
-    7: "References & Emergency",
-    8: "Review Data",
-    9: "Choose Template",
-    10: "Preview & Download"
+    7: "Choose Template",
+    8: "Preview & Download",
+    9: "Thank you"
   },
   summary: {
     title: "Review Your Data",
