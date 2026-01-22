@@ -1,4 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
+import Button from '../Button';
 import { TEMPLATE_OPTIONS } from '../../constants';
 
 // Lazy load SwissDocument for better performance
@@ -6,7 +7,7 @@ const SwissDocument = lazy(() => import('../SwissDocument'));
 
 // Loading placeholder for template preview
 const TemplateSkeleton = () => (
-  <div className="w-full h-full bg-gradient-to-b from-slate-100 to-slate-200 animate-pulse flex items-center justify-center">
+  <div className="w-full h-full bg-gradient-to-b from-slate-100 to-slate-200 animate-pulse flex items-center justify-center rounded-lg">
     <div className="text-slate-400 text-xs">Loading...</div>
   </div>
 );
@@ -20,6 +21,7 @@ const Step7TemplateSelect = React.memo(({
   showToast
 }) => {
   const [visibleTemplates, setVisibleTemplates] = useState([]);
+  const [hoveredTemplate, setHoveredTemplate] = useState(null);
 
   // Progressive loading - load templates in batches
   useEffect(() => {
@@ -48,39 +50,74 @@ const Step7TemplateSelect = React.memo(({
   }, []);
 
   return (
-    <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 text-center max-w-6xl mx-auto pb-20`}>
-      {/* Template Grid - 4 columns, just previews without blocks */}
-      <div className="grid grid-cols-4 gap-4 mx-auto px-4">
-        {TEMPLATE_OPTIONS.map((tplOption) => (
+    <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 text-center max-w-6xl mx-auto pb-20`}>
+      {/* Template Grid - 4 columns, clean previews */}
+      <div className="grid grid-cols-4 gap-6 mx-auto px-4">
+        {TEMPLATE_OPTIONS.map((tplOption, index) => (
           <div
             key={tplOption.id}
-            className="group relative w-full aspect-[1/1.4] overflow-hidden rounded-lg border-2 theme-border hover:border-primary hover:shadow-xl transition-all duration-300 cursor-pointer"
-            onClick={() => {
-              onSelectTemplate(tplOption.id);
-              showToast('Template selected', 'info');
+            className="flex flex-col items-center space-y-4"
+            style={{
+              animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
             }}
+            onMouseEnter={() => setHoveredTemplate(tplOption.id)}
+            onMouseLeave={() => setHoveredTemplate(null)}
           >
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              {visibleTemplates.includes(tplOption.id) ? (
-                <Suspense fallback={<TemplateSkeleton />}>
-                  <div style={{ width: '210mm', transform: 'scale(0.42)', transformOrigin: 'center' }} className="shadow-lg">
-                    <SwissDocument data={data} t={t} templateType={tplOption.id} />
-                  </div>
-                </Suspense>
-              ) : (
-                <TemplateSkeleton />
-              )}
+            {/* Template Preview - just image, no block */}
+            <div className="relative w-full aspect-[1/1.4] overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-500">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                {visibleTemplates.includes(tplOption.id) ? (
+                  <Suspense fallback={<TemplateSkeleton />}>
+                    <div style={{ width: '210mm', transform: 'scale(0.42)', transformOrigin: 'center' }}>
+                      <SwissDocument data={data} t={t} templateType={tplOption.id} />
+                    </div>
+                  </Suspense>
+                ) : (
+                  <TemplateSkeleton />
+                )}
+              </div>
             </div>
 
-            {/* Hover Overlay */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center">
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity theme-card px-4 py-2 rounded-lg shadow-lg font-medium theme-text text-sm">
+            {/* Template Name */}
+            <div className="text-sm font-semibold theme-text">
+              {tplOption.label}
+            </div>
+
+            {/* Select Button - appears with animation */}
+            <div 
+              className={`transition-all duration-500 ease-out ${
+                hoveredTemplate === tplOption.id 
+                  ? 'opacity-100 translate-y-0' 
+                  : 'opacity-0 translate-y-4 pointer-events-none'
+              }`}
+            >
+              <Button
+                variant="primary"
+                className="px-6 py-2.5 text-sm"
+                onClick={() => {
+                  onSelectTemplate(tplOption.id);
+                  showToast('Template selected', 'info');
+                }}
+              >
                 {t.ui.select}
-              </div>
+              </Button>
             </div>
           </div>
         ))}
       </div>
+
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 });
