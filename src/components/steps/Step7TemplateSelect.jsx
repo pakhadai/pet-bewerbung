@@ -91,7 +91,7 @@ const Step7TemplateSelect = React.memo(({
                         style={{ 
                           width: '210mm', 
                           height: '297mm',
-                          transform: 'scale(0.28)', 
+                          transform: 'scale(0.32)', 
                           transformOrigin: 'center',
                           flexShrink: 0
                         }}
