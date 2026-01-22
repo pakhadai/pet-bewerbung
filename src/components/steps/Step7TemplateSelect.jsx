@@ -50,78 +50,7 @@ const Step7TemplateSelect = React.memo(({
   }, []);
 
   return (
-    <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 text-center max-w-6xl mx-auto pb-20`}>
-      {/* Template Grid - 4 columns, full A4 preview */}
-      <div className="grid grid-cols-4 gap-4 mx-auto px-4">
-        {TEMPLATE_OPTIONS.map((tplOption, index) => (
-          <div
-            key={tplOption.id}
-            className="flex flex-col items-center space-y-3"
-            style={{
-              animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
-            }}
-            onMouseEnter={() => setHoveredTemplate(tplOption.id)}
-            onMouseLeave={() => setHoveredTemplate(null)}
-          >
-            {/* Template Preview - full A4 aspect ratio (210mm x 297mm = 1:1.414) */}
-            <div className="relative w-full aspect-[210/297] overflow-visible rounded-lg shadow-xl hover:shadow-2xl transition-all duration-500 group cursor-pointer bg-white p-1.5">
-              <div className="w-full h-full flex items-center justify-center pointer-events-none overflow-hidden rounded">
-                {visibleTemplates.includes(tplOption.id) ? (
-                  <Suspense fallback={<TemplateSkeleton />}>
-                    <div 
-                      style={{ 
-                        width: '210mm', 
-                        height: '297mm',
-                        transform: 'scale(0.32)', 
-                        transformOrigin: 'center',
-                        maxWidth: '100%',
-                        maxHeight: '100%'
-                      }}
-                      className="shadow-lg"
-                    >
-                      <SwissDocument data={data} t={t} templateType={tplOption.id} />
-                    </div>
-                  </Suspense>
-                ) : (
-                  <TemplateSkeleton />
-                )}
-              </div>
-
-              {/* Select Button - centered on preview, appears with animation */}
-              <div 
-                className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out ${
-                  hoveredTemplate === tplOption.id 
-                    ? 'opacity-100 translate-y-0' 
-                    : 'opacity-0 translate-y-4 pointer-events-none'
-                }`}
-              >
-                <Button
-                  variant="primary"
-                  className="px-6 py-2.5 text-sm shadow-xl z-10"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectTemplate(tplOption.id);
-                    showToast('Template selected', 'info');
-                  }}
-                >
-                  {t.ui.select}
-                </Button>
-              </div>
-
-              {/* Dark overlay on hover */}
-              <div className={`absolute inset-0 bg-black transition-opacity duration-500 ${
-                hoveredTemplate === tplOption.id ? 'opacity-30' : 'opacity-0'
-              }`}></div>
-            </div>
-
-            {/* Template Name */}
-            <div className="text-sm font-semibold theme-text">
-              {tplOption.label}
-            </div>
-          </div>
-        ))}
-      </div>
-
+    <>
       <style>{`
         @keyframes fadeInUp {
           from {
@@ -134,7 +63,84 @@ const Step7TemplateSelect = React.memo(({
           }
         }
       `}</style>
-    </div>
+      <div className={`page page-enter-${animDir} reveal fade-enter space-y-8 text-center max-w-6xl mx-auto pb-20`}>
+        {/* Template Grid - 4 columns, A4 paper preview */}
+        <div className="grid grid-cols-4 gap-4 mx-auto px-4">
+          {TEMPLATE_OPTIONS.map((tplOption, index) => (
+            <div
+              key={tplOption.id}
+              className="flex flex-col items-center space-y-3"
+              style={{
+                animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
+              }}
+              onMouseEnter={() => setHoveredTemplate(tplOption.id)}
+              onMouseLeave={() => setHoveredTemplate(null)}
+            >
+              {/* Template Preview - A4 paper look (210mm x 297mm = 1:1.414) */}
+              <div 
+                className="relative w-full bg-white rounded-lg shadow-xl hover:shadow-2xl transition-all duration-500 group cursor-pointer p-2" 
+                style={{ 
+                  aspectRatio: '210/297',
+                  minHeight: 0
+                }}
+              >
+                <div className="w-full h-full flex items-center justify-center pointer-events-none overflow-hidden rounded" style={{ minHeight: 0 }}>
+                  {visibleTemplates.includes(tplOption.id) ? (
+                    <Suspense fallback={<TemplateSkeleton />}>
+                      <div 
+                        style={{ 
+                          width: '210mm', 
+                          height: '297mm',
+                          transform: 'scale(0.28)', 
+                          transformOrigin: 'center',
+                          flexShrink: 0
+                        }}
+                        className="shadow-sm"
+                      >
+                        <SwissDocument data={data} t={t} templateType={tplOption.id} />
+                      </div>
+                    </Suspense>
+                  ) : (
+                    <TemplateSkeleton />
+                  )}
+                </div>
+
+                {/* Select Button - centered on preview, appears with animation */}
+                <div 
+                  className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out ${
+                    hoveredTemplate === tplOption.id 
+                      ? 'opacity-100 translate-y-0' 
+                      : 'opacity-0 translate-y-4 pointer-events-none'
+                  }`}
+                >
+                  <Button
+                    variant="primary"
+                    className="px-6 py-2.5 text-sm shadow-xl z-10"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectTemplate(tplOption.id);
+                      showToast('Template selected', 'info');
+                    }}
+                  >
+                    {t.ui.select}
+                  </Button>
+                </div>
+
+                {/* Dark overlay on hover */}
+                <div className={`absolute inset-0 bg-black transition-opacity duration-500 rounded ${
+                  hoveredTemplate === tplOption.id ? 'opacity-30' : 'opacity-0'
+                }`}></div>
+              </div>
+
+              {/* Template Name */}
+              <div className="text-sm font-semibold theme-text">
+                {tplOption.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 });
 
