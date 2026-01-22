@@ -43,15 +43,12 @@ const INITIAL_DATA = {
 
 const MAX_DESCRIPTION_LENGTH = 470; // limit for generated / manual descriptions
 
+// Simplified Swiss-style templates for 2026
+// Only 4 professional templates: Classic, Modern, Compact, Swiss
 const TEMPLATE_OPTIONS = [
   { id: 'classic', label: 'Classic' },
   { id: 'modern', label: 'Modern' },
   { id: 'compact', label: 'Compact' },
-  { id: 'elegant', label: 'Elegant' },
-  { id: 'minimal', label: 'Minimal' },
-  { id: 'colorful', label: 'Colorful' },
-  { id: 'professional', label: 'Professional' },
-  { id: 'playful', label: 'Playful' },
   { id: 'swiss', label: 'Swiss' }
 ];
 

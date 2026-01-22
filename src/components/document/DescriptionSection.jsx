@@ -3,75 +3,38 @@ import { isEmptyText } from '../../utils/documentHelpers.jsx';
 
 /**
  * DescriptionSection component - displays pet description/character
- * @param {string} text - Description text
- * @param {Object} t - Translations object
- * @param {string} variant - Template variant
+ * Simplified for Swiss style 2026 with proper text alignment
  */
 const DescriptionSection = ({ text, t, variant = 'classic' }) => {
   const getVariantStyles = () => {
     switch (variant) {
       case 'classic':
         return {
-          container: 'flex-1 min-h-0 overflow-hidden',
-          heading: 'font-black uppercase tracking-wider text-[10px] mb-2 border-b-2 border-slate-900 pb-1',
-          text: 'text-[11px] leading-snug text-slate-700 text-justify overflow-hidden'
+          container: '',
+          heading: 'font-bold uppercase tracking-wider text-xs mb-3 pb-2 border-b-2 border-slate-900',
+          text: 'text-sm leading-relaxed text-slate-700 text-left'
         };
 
       case 'modern':
         return {
-          container: 'flex-1 min-h-0 overflow-hidden',
-          heading: 'font-bold text-rose-600 text-[10px] mb-2 pb-1 border-b-2 border-rose-200',
-          text: 'text-[11px] leading-snug text-slate-700 overflow-hidden'
-        };
-
-      case 'elegant':
-        return {
-          container: 'grow',
-          heading: 'font-bold text-amber-700 text-sm mb-4 border-b-2 border-amber-400 pb-2',
-          text: 'text-sm leading-relaxed text-slate-700 font-serif'
-        };
-
-      case 'minimal':
-        return {
-          container: 'border-t border-gray-200 pt-4 mt-4',
-          heading: 'text-xs uppercase tracking-widest mb-3 font-bold',
-          text: 'text-sm leading-relaxed'
-        };
-
-      case 'colorful':
-        return {
-          container: 'bg-white rounded-2xl p-5 shadow-md',
-          heading: 'font-black text-purple-600 text-base mb-4',
-          text: 'text-sm leading-relaxed text-slate-700'
-        };
-
-      case 'professional':
-        return {
-          container: 'grow',
-          heading: 'font-bold text-blue-400 text-sm mb-4 border-b border-slate-600 pb-2',
-          text: 'text-sm leading-relaxed text-slate-200'
-        };
-
-      case 'playful':
-        return {
-          container: 'bg-white rounded-3xl p-5 shadow-lg',
-          heading: 'font-black text-orange-600 text-base mb-4',
-          text: 'text-sm leading-relaxed text-slate-700'
+          container: '',
+          heading: 'font-semibold text-sm mb-3 pb-2 border-b border-slate-200',
+          text: 'text-sm leading-relaxed text-slate-700 text-left'
         };
 
       case 'swiss':
         return {
-          container: 'grow',
-          heading: 'font-bold uppercase text-xs mb-4 border-b-2 border-red-600 pb-2',
-          text: 'text-sm leading-relaxed text-slate-700'
+          container: '',
+          heading: 'font-bold uppercase tracking-wider text-xs mb-3 pb-2 border-b-2 border-red-600',
+          text: 'text-sm leading-relaxed text-slate-700 text-left'
         };
 
       case 'compact':
       default:
         return {
-          container: 'flex-1 min-h-0 overflow-hidden',
-          heading: 'text-[9px] font-bold uppercase tracking-wider mb-1 border-b border-slate-300 pb-0.5',
-          text: 'text-[10px] leading-snug text-slate-700 overflow-hidden'
+          container: '',
+          heading: 'text-[10px] font-bold uppercase tracking-wider mb-2 pb-1 border-b border-slate-300',
+          text: 'text-[11px] leading-relaxed text-slate-700 text-left'
         };
     }
   };
