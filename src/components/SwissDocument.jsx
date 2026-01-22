@@ -105,7 +105,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         subtitleText: 'text-[10px] uppercase tracking-wider text-red-600 mt-1 font-semibold',
         dateText: 'text-[10px] text-slate-500 text-right',
         dateLabel: `${t.doc.date}: ${today}`,
-        dateBadge: `🇨🇭 ${t.ui.swissStandard.toUpperCase()}`,
+        dateBadge: null, // Removed "Swiss Standard" badge - no official standard exists for pet CVs
         mainLayout: 'flex gap-6 flex-1 min-h-0',
         sidebarWidth: 'w-[35%] flex-shrink-0',
         sidebarSpace: 'space-y-4',
@@ -139,9 +139,8 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
                 <p className={config.subtitleText}>{t.doc.subtitle}</p>
               </div>
             </div>
-            <div className="text-right flex flex-col items-end">
+            <div className="text-right">
               <p className={config.dateText}>{config.dateLabel}</p>
-              <p className="text-[10px] text-red-600 font-bold mt-1">{config.dateBadge}</p>
             </div>
           </div>
         </div>
