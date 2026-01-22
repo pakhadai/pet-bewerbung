@@ -26,8 +26,8 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
   const getTemplateConfig = () => {
     const configs = {
       classic: {
-        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
-        headerContainer: 'mb-6 pb-4 border-b-2 border-slate-900',
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[14mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        headerContainer: 'mb-5 pb-3 border-b-2 border-slate-900',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
         headerIconBg: 'bg-slate-900 text-white p-2 rounded-sm',
@@ -41,16 +41,16 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         sidebarSpace: 'space-y-4',
         mainWidth: 'flex-1 min-w-0',
         mainSpace: 'space-y-4',
-        footerContainer: 'mt-auto pt-3 border-t-2 border-slate-900 flex-shrink-0',
+        footerContainer: 'mt-auto pt-2 border-t-2 border-slate-900 flex-shrink-0 pb-[3mm]',
         footerText: 'text-[9px] text-slate-400 uppercase tracking-wider text-center mb-2',
-        footerSignContainer: 'w-40 border-t border-slate-400 pt-1 mt-2',
+        footerSignContainer: 'w-40 border-t border-slate-400 pt-1',
         footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600',
         badge: null
       },
 
       modern: {
-        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
-        headerContainer: 'mb-6 pb-4 border-b border-slate-200',
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[14mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        headerContainer: 'mb-5 pb-3 border-b border-slate-200',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
         headerIconBg: 'bg-slate-100 text-slate-700 p-2 rounded-md border border-slate-200',
@@ -64,9 +64,9 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         sidebarSpace: 'space-y-4',
         mainWidth: 'flex-1 min-w-0',
         mainSpace: 'space-y-4',
-        footerContainer: 'mt-auto pt-3 border-t border-slate-200 flex-shrink-0',
+        footerContainer: 'mt-auto pt-2 border-t border-slate-200 flex-shrink-0 pb-[3mm]',
         footerText: 'text-[9px] text-slate-400 text-center mb-2',
-        footerSignContainer: 'w-40 border-t border-slate-300 pt-1 mt-2',
+        footerSignContainer: 'w-40 border-t border-slate-300 pt-1',
         footerSignText: 'text-[9px] uppercase font-medium tracking-wider text-slate-500',
         badge: null
       },
@@ -95,8 +95,8 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
       },
 
       swiss: {
-        container: 'w-[210mm] h-[297mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden border-t-4 border-red-600',
-        headerContainer: 'mb-6 pb-4 border-b-2 border-red-600',
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[14mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden border-t-4 border-red-600',
+        headerContainer: 'mb-5 pb-3 border-b-2 border-red-600',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
         headerIconBg: 'bg-red-600 text-white p-2 rounded-sm',
@@ -111,9 +111,9 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         sidebarSpace: 'space-y-4',
         mainWidth: 'flex-1 min-w-0',
         mainSpace: 'space-y-4',
-        footerContainer: 'mt-auto pt-3 border-t-2 border-red-600 flex-shrink-0',
+        footerContainer: 'mt-auto pt-2 border-t-2 border-red-600 flex-shrink-0 pb-[3mm]',
         footerText: 'text-[9px] text-slate-500 text-center mb-2',
-        footerSignContainer: 'w-40 border-t border-red-400 pt-1 mt-2',
+        footerSignContainer: 'w-40 border-t border-red-400 pt-1',
         footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600',
         badge: null
       }
@@ -175,7 +175,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     return (
       <div className={config.footerContainer}>
         {config.footerSignContainer && (
-          <div className="flex justify-between items-end mt-2">
+          <div className="flex justify-end items-end">
             <div className={config.footerSignContainer}>
               <p className={config.footerSignText}>{t.doc.sign}</p>
             </div>
