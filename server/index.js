@@ -52,7 +52,14 @@ setInterval(() => {
   }
 }, 60 * 60 * 1000);
 
-if (!stripeKey) console.warn('Warning: STRIPE_SECRET_KEY not set. Checkout requests will fail.');
+if (!stripeKey) {
+  console.warn('⚠️  Warning: STRIPE_SECRET_KEY not set. Checkout requests will fail.');
+  console.warn('   Please set STRIPE_SECRET_KEY in .env file or environment variables.');
+} else {
+  if (!isProduction) {
+    console.log('✅ STRIPE_SECRET_KEY is configured (length:', stripeKey.length, 'chars)');
+  }
+}
 const stripe = Stripe(stripeKey || '');
 
 // ============================================
@@ -108,8 +115,22 @@ app.get('/', (req, res) => {
 // ============================================
 app.post('/create-checkout-session', async (req, res) => {
   const { amount, currency = 'chf', successUrl, cancelUrl, payment_method = 'card' } = req.body || {};
-  if (!stripeKey) return res.status(400).json({ error: 'STRIPE_SECRET_KEY not configured on server.' });
-  if (!amount || amount <= 0) return res.status(400).json({ error: 'Invalid amount' });
+  
+  // Check Stripe key
+  if (!stripeKey) {
+    if (!isProduction) {
+      console.error('❌ STRIPE_SECRET_KEY not configured');
+    }
+    return res.status(400).json({ error: 'STRIPE_SECRET_KEY not configured on server.' });
+  }
+  
+  // Validate amount
+  if (!amount || amount <= 0) {
+    if (!isProduction) {
+      console.error('❌ Invalid amount:', amount);
+    }
+    return res.status(400).json({ error: 'Invalid amount' });
+  }
 
   // Map requested payment method to Stripe Checkout supported payment_method_types
   const supported = {
