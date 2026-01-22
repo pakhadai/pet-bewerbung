@@ -3,16 +3,16 @@ export default {
   title: "Pet-Dossier",
   landing: {
     badge: "Standard Immobilier Suisse",
-    heroTitle: "Trouvez un appartement avec",
-    heroTitleSuffix: "votre animal.",
-    heroSub: "Augmentez vos chances. Créez un dossier de candidature professionnel pour votre compagnon à quatre pattes – preuve d'assurance incluse.",
-    cta: "Créer un dossier",
+    heroTitle: "Démarquez-vous",
+    heroTitleSuffix: "avec un Pet CV.",
+    heroSub: "Un service divertissant pour surprendre votre propriétaire et vous démarquer de la concurrence. Créez un dossier professionnel pour votre animal avec toutes les informations importantes – cela pourrait augmenter vos chances d'obtenir un logement avec votre compagnon à quatre pattes.",
+    cta: "Créer un Pet CV",
     trust: "100% gratuit • Sans inscription",
     features: [
-      { title: "Format Suisse", desc: "Design PDF sérieux, comme l'attendent les régies." },
-      { title: "Optimisation IA", desc: "Transforme les mots-clés en texte convaincant." },
-      { title: "Toutes les langues", desc: "Disponible en DE, FR, IT et Romanche." },
-      { title: "Plusieurs modèles", desc: "Choisissez parmi plusieurs modèles PDF professionnels." },
+      { title: "Se démarquer", desc: "Surprenez les propriétaires avec un Pet CV unique et professionnel." },
+      { title: "Informations complètes", desc: "Présentez tous les détails importants sur votre animal en un coup d'œil." },
+      { title: "Divertissant & Professionnel", desc: "Un service amusant qui reste sérieux et peut améliorer vos chances." },
+      { title: "Format Suisse", desc: "Design PDF professionnel qui inspire confiance." },
       { title: "Sans inscription", desc: "Aucun compte requis — rapide et anonyme." },
       { title: "Données non conservées", desc: "Les données ne sont pas conservées après création — confidentialité maximale." }
     ]

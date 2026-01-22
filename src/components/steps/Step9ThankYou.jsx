@@ -89,10 +89,6 @@ const Step9ThankYou = React.memo(({
             ))}
           </div>
         </div>
-
-        <p className="text-center theme-text-muted mt-8">
-          {t.finalMessage}
-        </p>
       </main>
 
       <DonateModal

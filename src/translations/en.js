@@ -3,16 +3,16 @@ export default {
   title: "Pet-Resume",
   landing: {
     badge: "Swiss Real Estate Standard",
-    heroTitle: "Find an apartment with",
-    heroTitleSuffix: "your pet.",
-    heroSub: "Increase your chances. Create a professional application dossier for your pet – including proof of insurance.",
-    cta: "Create Dossier Now",
+    heroTitle: "Stand out from the crowd",
+    heroTitleSuffix: "with a Pet CV.",
+    heroSub: "An entertaining service to surprise your landlord and stand out from the competition. Create a professional dossier for your pet with all important information – it might increase your chances of getting a rental with your furry friend.",
+    cta: "Create Pet CV Now",
     trust: "100% Free • No Registration",
     features: [
-      { title: "Swiss Format", desc: "Serious PDF design, as expected by agencies." },
-      { title: "AI Text Optimization", desc: "Turns simple keywords into convincing text." },
-      { title: "All National Languages", desc: "Available in DE, FR, IT, and Romansh." },
-      { title: "Multiple Templates", desc: "Choose from several professional PDF templates." },
+      { title: "Stand Out", desc: "Surprise landlords with a unique, professional Pet CV." },
+      { title: "Complete Information", desc: "Present all important details about your pet at a glance." },
+      { title: "Fun & Professional", desc: "An entertaining service that still looks serious and may improve your chances." },
+      { title: "Swiss Format", desc: "Professional PDF design that builds trust." },
       { title: "No Registration", desc: "No account required — fast and anonymous." },
       { title: "Data Not Stored", desc: "Data is not kept after creation — privacy first." }
     ]

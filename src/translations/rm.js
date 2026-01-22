@@ -3,16 +3,16 @@ export default {
   title: "Pet-Annunzia",
   landing: {
     badge: "Standard Svizzer",
-    heroTitle: "Chattai in'abitaziun cun",
-    heroTitleSuffix: "voss animal.",
-    heroSub: "Creei in dossier professiunal per voss chaun u voss giat – inclus cumprova d'assicuranza.",
-    cta: "Crear dossier",
+    heroTitle: "S'extrar da la massa",
+    heroTitleSuffix: "cun in Pet CV.",
+    heroSub: "In servetsch divertent per surprender voss patrun e s'extrar da la concurrenza. Creei in dossier professiunal per voss animal cun tut las infurmaziuns impurtantas – quai pudess augmentar vossas chanzas dad obtegnair in affit cun voss amit a quatter peis.",
+    cta: "Crear Pet CV",
     trust: "100% gratuit • Senza registraziun",
     features: [
-      { title: "Format Svizzer", desc: "Design PDF serius." },
-      { title: "Optimaziun IA", desc: "Transfurma pleds-clav en text." },
-      { title: "Tut las linguas", desc: "Disponibel en DE, FR, IT e Rumantsch." },
-      { title: "Plirs templates", desc: "Tscherner tran plirs templates PDF professiunal." },
+      { title: "S'extrar", desc: "Surprender ils patruns cun in Pet CV unic e professiunal." },
+      { title: "Infurmaziuns cumplettas", desc: "Preschentar tut ils detagls impurtants davart voss animal in in'egliada." },
+      { title: "Divertent & Professiunal", desc: "In servetsch divertent che resta serius e pudess meglierar vossas chanzas." },
+      { title: "Format Svizzer", desc: "Design PDF professiunal che inspira fidaivladad." },
       { title: "Nessuna registraziun", desc: "Betg basegn da account — direct e anonim." },
       { title: "Datas betg tgiradas", desc: "Las datas vegnan betg tgiradas suenter creaziun — maxima privacy." }
     ]

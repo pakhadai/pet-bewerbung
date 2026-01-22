@@ -3,16 +3,16 @@ export default {
   title: "Pet-Bewerbung",
   landing: {
     badge: "Nach Schweizer Immobilien-Standard",
-    heroTitle: "Finden Sie eine Wohnung mit",
-    heroTitleSuffix: "Ihrem Haustier.",
-    heroSub: "Erhöhen Sie Ihre Chancen bei der Wohnungssuche. Erstellen Sie ein professionelles Bewerbungsdossier für Ihren Vierbeiner – inklusive Versicherungsnachweis.",
-    cta: "Jetzt Dossier erstellen",
+    heroTitle: "Heben Sie sich ab",
+    heroTitleSuffix: "mit einem Pet CV.",
+    heroSub: "Ein unterhaltsamer Service, um Ihren Vermieter zu überraschen und sich von der Masse abzuheben. Erstellen Sie ein professionelles Dossier für Ihren Vierbeiner mit allen wichtigen Informationen – vielleicht erhöht es Ihre Chancen auf eine Wohnung mit Haustier.",
+    cta: "Jetzt Pet CV erstellen",
     trust: "100% kostenlos • Keine Registrierung",
     features: [
-      { title: "Schweizer Format", desc: "Seriöses PDF-Design, wie es Verwaltungen erwarten." },
-      { title: "KI-Textoptimierung", desc: "Verwandelt Stichworte in sympathische Texte." },
-      { title: "Alle Landessprachen", desc: "Verfügbar in DE, FR, IT und Rätoromanisch." },
-      { title: "Mehrere Vorlagen", desc: "Wählen Sie aus mehreren professionellen PDF-Vorlagen." },
+      { title: "Vom Rest abheben", desc: "Überraschen Sie Vermieter mit einem einzigartigen, professionellen Pet CV." },
+      { title: "Vollständige Informationen", desc: "Präsentieren Sie alle wichtigen Details über Ihren Vierbeiner auf einen Blick." },
+      { title: "Unterhaltsam & Professionell", desc: "Ein spaßiger Service, der trotzdem seriös wirkt und Ihre Chancen verbessern kann." },
+      { title: "Schweizer Format", desc: "Professionelles PDF-Design, das Vertrauen schafft." },
       { title: "Keine Registrierung", desc: "Kein Konto nötig — schnell und anonym." },
       { title: "Daten werden nicht gespeichert", desc: "Daten werden nach dem Erstellen nicht aufbewahrt — maximaler Datenschutz." }
     ]
