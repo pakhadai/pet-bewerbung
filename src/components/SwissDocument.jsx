@@ -26,7 +26,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
   const getTemplateConfig = () => {
     const configs = {
       classic: {
-        container: 'w-[210mm] min-h-[297mm] max-h-[297mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        container: 'w-[210mm] h-[297mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
         headerContainer: 'mb-6 pb-4 border-b-2 border-slate-900',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
@@ -36,20 +36,20 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         subtitleText: 'text-[10px] uppercase tracking-wider text-slate-500 mt-1',
         dateText: 'text-[10px] text-slate-500 text-right',
         dateLabel: `${t.doc.date}: ${today}`,
-        mainLayout: 'flex gap-6 flex-1 min-h-0',
+        mainLayout: 'flex gap-6 flex-1 min-h-0 overflow-hidden',
         sidebarWidth: 'w-[35%] flex-shrink-0',
         sidebarSpace: 'space-y-4',
         mainWidth: 'flex-1 min-w-0',
         mainSpace: 'space-y-4',
-        footerContainer: 'mt-auto pt-4 border-t-2 border-slate-900',
-        footerText: 'text-[9px] text-slate-400 uppercase tracking-wider text-center',
-        footerSignContainer: null,
-        footerSignText: null,
+        footerContainer: 'mt-auto pt-3 border-t-2 border-slate-900 flex-shrink-0',
+        footerText: 'text-[9px] text-slate-400 uppercase tracking-wider text-center mb-2',
+        footerSignContainer: 'w-40 border-t border-slate-400 pt-1 mt-2',
+        footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600',
         badge: null
       },
 
       modern: {
-        container: 'w-[210mm] min-h-[297mm] max-h-[297mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        container: 'w-[210mm] h-[297mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
         headerContainer: 'mb-6 pb-4 border-b border-slate-200',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
@@ -59,20 +59,20 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         subtitleText: 'text-[11px] text-slate-500 mt-1.5',
         dateText: 'text-[10px] text-slate-400 text-right',
         dateLabel: today,
-        mainLayout: 'flex gap-6 flex-1 min-h-0',
+        mainLayout: 'flex gap-6 flex-1 min-h-0 overflow-hidden',
         sidebarWidth: 'w-[35%] flex-shrink-0',
         sidebarSpace: 'space-y-4',
         mainWidth: 'flex-1 min-w-0',
         mainSpace: 'space-y-4',
-        footerContainer: 'mt-auto pt-4 border-t border-slate-200',
-        footerText: 'text-[9px] text-slate-400 text-center',
-        footerSignContainer: null,
-        footerSignText: null,
+        footerContainer: 'mt-auto pt-3 border-t border-slate-200 flex-shrink-0',
+        footerText: 'text-[9px] text-slate-400 text-center mb-2',
+        footerSignContainer: 'w-40 border-t border-slate-300 pt-1 mt-2',
+        footerSignText: 'text-[9px] uppercase font-medium tracking-wider text-slate-500',
         badge: null
       },
 
       compact: {
-        container: 'w-[210mm] min-h-[297mm] max-h-[297mm] bg-white text-slate-900 p-[12mm] text-[10px] font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        container: 'w-[210mm] h-[297mm] bg-white text-slate-900 p-[12mm] text-[10px] font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
         headerContainer: 'mb-4 pb-3 border-b border-slate-300',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-2',
@@ -82,20 +82,20 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         subtitleText: 'text-[9px] uppercase tracking-wider text-slate-500 mt-0.5',
         dateText: 'text-[9px] text-slate-400 text-right',
         dateLabel: today,
-        mainLayout: 'flex gap-4 flex-1 min-h-0',
+        mainLayout: 'flex gap-4 flex-1 min-h-0 overflow-hidden',
         sidebarWidth: 'w-[32%] flex-shrink-0',
         sidebarSpace: 'space-y-3',
         mainWidth: 'flex-1 min-w-0',
         mainSpace: 'space-y-3',
-        footerContainer: 'mt-auto pt-3 border-t border-slate-300',
-        footerText: 'text-[8px] text-slate-400 text-center',
-        footerSignContainer: null,
-        footerSignText: null,
+        footerContainer: 'mt-auto pt-2 border-t border-slate-300 flex-shrink-0',
+        footerText: 'text-[8px] text-slate-400 text-center mb-1.5',
+        footerSignContainer: 'w-36 border-t border-slate-300 pt-0.5 mt-1.5',
+        footerSignText: 'text-[8px] uppercase font-medium tracking-wider text-slate-500',
         badge: null
       },
 
       swiss: {
-        container: 'w-[210mm] min-h-[297mm] max-h-[297mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden border-t-4 border-red-600',
+        container: 'w-[210mm] h-[297mm] bg-white text-slate-900 p-[15mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden border-t-4 border-red-600',
         headerContainer: 'mb-6 pb-4 border-b-2 border-red-600',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
@@ -106,15 +106,15 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         dateText: 'text-[10px] text-slate-500 text-right',
         dateLabel: `${t.doc.date}: ${today}`,
         dateBadge: null, // Removed "Swiss Standard" badge - no official standard exists for pet CVs
-        mainLayout: 'flex gap-6 flex-1 min-h-0',
+        mainLayout: 'flex gap-6 flex-1 min-h-0 overflow-hidden',
         sidebarWidth: 'w-[35%] flex-shrink-0',
         sidebarSpace: 'space-y-4',
         mainWidth: 'flex-1 min-w-0',
         mainSpace: 'space-y-4',
-        footerContainer: 'mt-auto pt-4 border-t-2 border-red-600',
-        footerText: 'text-[9px] text-slate-500 text-center',
-        footerSignContainer: null,
-        footerSignText: null,
+        footerContainer: 'mt-auto pt-3 border-t-2 border-red-600 flex-shrink-0',
+        footerText: 'text-[9px] text-slate-500 text-center mb-2',
+        footerSignContainer: 'w-40 border-t border-red-400 pt-1 mt-2',
+        footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600',
         badge: null
       }
     };
@@ -168,13 +168,20 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     );
   };
 
-  // Render footer
+  // Render footer with signature line
   const renderFooter = () => {
     if (!config.footerContainer) return null;
 
     return (
       <div className={config.footerContainer}>
         <p className={config.footerText}>{t.doc.footer}</p>
+        {config.footerSignContainer && (
+          <div className="flex justify-between items-end mt-2">
+            <div className={config.footerSignContainer}>
+              <p className={config.footerSignText}>{t.doc.sign}</p>
+            </div>
+          </div>
+        )}
       </div>
     );
   };

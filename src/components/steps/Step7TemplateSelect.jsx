@@ -51,30 +51,30 @@ const Step7TemplateSelect = React.memo(({
 
   return (
     <div className={`page page-enter-${animDir} reveal fade-enter space-y-6 text-center max-w-5xl mx-auto pb-20`}>
-      {/* Template Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto px-4">
+      {/* Template Grid - 4 columns in one row, responsive */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mx-auto px-4">
         {TEMPLATE_OPTIONS.map((tplOption) => (
           <div
             key={tplOption.id}
-            className="group relative p-3 border-2 theme-border rounded-2xl theme-card hover:border-primary hover:shadow-lg hover:shadow-strong transition-all duration-300 flex flex-col items-center cursor-pointer card-lift"
+            className="group relative p-2 border-2 theme-border rounded-xl theme-card hover:border-primary hover:shadow-lg hover:shadow-strong transition-all duration-300 flex flex-col items-center cursor-pointer card-lift"
             onClick={() => {
               onSelectTemplate(tplOption.id);
               showToast('Template selected', 'info');
             }}
           >
             {/* Template Label */}
-            <div className="absolute top-3 left-0 right-0 text-center">
-              <span className="inline-block px-2 py-0.5 rounded-full theme-bg-secondary theme-text-muted text-[10px] font-bold uppercase tracking-widest group-hover:bg-primary-light group-hover:text-primary transition-colors">
+            <div className="absolute top-2 left-0 right-0 text-center z-10">
+              <span className="inline-block px-1.5 py-0.5 rounded-full theme-bg-secondary theme-text-muted text-[9px] font-bold uppercase tracking-wider group-hover:bg-primary-light group-hover:text-primary transition-colors">
                 {tplOption.label}
               </span>
             </div>
 
-            {/* Template Preview */}
-            <div className="mt-8 w-full aspect-[1/1.4] overflow-hidden rounded-lg border theme-border theme-bg-secondary group-hover:theme-card transition-colors relative">
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-1">
+            {/* Template Preview - larger image inside smaller block */}
+            <div className="mt-6 w-full aspect-[1/1.4] overflow-hidden rounded-lg border theme-border theme-bg-secondary group-hover:theme-card transition-colors relative">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-0.5">
                 {visibleTemplates.includes(tplOption.id) ? (
                   <Suspense fallback={<TemplateSkeleton />}>
-                    <div style={{ width: '210mm', transform: 'scale(0.29)', transformOrigin: 'center' }} className="shadow-lg">
+                    <div style={{ width: '210mm', transform: 'scale(0.35)', transformOrigin: 'center' }} className="shadow-lg">
                       <SwissDocument data={data} t={t} templateType={tplOption.id} />
                     </div>
                   </Suspense>
@@ -92,16 +92,16 @@ const Step7TemplateSelect = React.memo(({
             </div>
 
             {/* Preview Button */}
-            <div className="mt-3 flex gap-2 w-full">
+            <div className="mt-2 flex gap-1.5 w-full">
               <Button
                 variant="ghost"
-                className="flex-1 text-xs py-2"
+                className="flex-1 text-[10px] py-1.5"
                 onClick={(e) => {
                   e.stopPropagation();
                   onPreview(tplOption.id);
                 }}
               >
-                <Camera size={12} className="mr-1" /> {t.ui.preview}
+                <Camera size={10} className="mr-1" /> {t.ui.preview}
               </Button>
             </div>
           </div>

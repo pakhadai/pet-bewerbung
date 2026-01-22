@@ -255,6 +255,10 @@ export default function App() {
           scale: 2, 
           useCORS: true,
           logging: false, // Disable console logs from html2canvas
+          height: 1123, // A4 height in pixels at 96 DPI (297mm = 1123px)
+          width: 794, // A4 width in pixels at 96 DPI (210mm = 794px)
+          windowWidth: 794,
+          windowHeight: 1123,
           onclone: (clonedDoc) => {
             // Ensure all images are loaded in cloned document
             const images = clonedDoc.querySelectorAll('img');
@@ -263,9 +267,22 @@ export default function App() {
                 img.style.display = 'none';
               }
             });
+            // Force exact height on cloned document
+            const pdfDoc = clonedDoc.getElementById('pdf-document');
+            if (pdfDoc) {
+              pdfDoc.style.height = '297mm';
+              pdfDoc.style.maxHeight = '297mm';
+              pdfDoc.style.overflow = 'hidden';
+            }
           }
         },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+        jsPDF: { 
+          orientation: 'portrait', 
+          unit: 'mm', 
+          format: 'a4',
+          compress: true
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
       
       // Detect mobile
