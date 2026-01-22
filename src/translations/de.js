@@ -76,7 +76,11 @@ export default {
     aboutMe: "Über mich",
     myStatus: "Mein Status",
     swissStandard: "Schweizer Standard",
-    photo: "Foto"
+    photo: "Foto",
+    pdfError: "PDF konnte nicht erstellt werden",
+    pdfMemoryError: "PDF-Erstellung fehlgeschlagen wegen großem Bild. Bitte Bildgröße reduzieren.",
+    pdfTimeoutError: "PDF-Erstellung dauerte zu lange. Bitte erneut versuchen.",
+    pdfSaveHint: "Tippen Sie auf \"Teilen\" → \"In Dateien sichern\""
   },
   labels: {
     type: "Tierart",
@@ -107,6 +111,9 @@ export default {
     aiPrompt: "Stichworte (z.B. ruhig, stubenrein)",
     aiBtn: "Text generieren",
     aiResult: "Text für Vermieter",
+    aiError: "KI-Generierung fehlgeschlagen. Verwende Vorlage.",
+    aiNetworkError: "Netzwerkfehler. Bitte Verbindung prüfen und erneut versuchen.",
+    recrop: "Bild zuschneiden",
     photo: "Foto wählen",
     download: "PDF speichern",
     years: "Jahre",

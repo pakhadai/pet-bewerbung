@@ -39,9 +39,11 @@ const LegalModal = ({ isOpen, onClose, title, icon: Icon, children }) => {
 // Impressum Content
 // NOTE: Swiss law (Art. 3 Abs. 1 lit. s UWG) requires:
 // - Full legal name (person or company)
-// - Physical address (not P.O. box)
+// - Physical address (not P.O. box) - MUST be a real address where mail can be received
 // - Email address
 // - UID number if registered (CHE-xxx.xxx.xxx)
+// IMPORTANT: Verify that "Chölpen 1, 9525 Lenggenwil" is your actual physical address
+// P.O. Box addresses are NOT acceptable for Impressum in Switzerland
 const ImpressumContent = ({ t }) => (
   <div className="space-y-4 text-sm leading-relaxed">
     <section>
@@ -52,6 +54,7 @@ const ImpressumContent = ({ t }) => (
         <p>Chölpen 1</p>
         <p>9525 Lenggenwil, Switzerland</p>
         <p className="mt-2">Email: info@pet-bewerbung.ch</p>
+        {/* TODO: Add UID number if registered: <p>UID: CHE-xxx.xxx.xxx</p> */}
       </div>
     </section>
 

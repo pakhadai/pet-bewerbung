@@ -76,7 +76,11 @@ export default {
     aboutMe: "About Me",
     myStatus: "My Status",
     swissStandard: "Swiss Standard",
-    photo: "Photo"
+    photo: "Photo",
+    pdfError: "Failed to create PDF",
+    pdfMemoryError: "PDF generation failed due to large image. Try reducing photo size.",
+    pdfTimeoutError: "PDF generation timed out. Please try again.",
+    pdfSaveHint: "Tap \"Share\" → \"Save to Files\""
   },
   labels: {
     type: "Animal Type",
@@ -107,6 +111,9 @@ export default {
     aiPrompt: "Keywords (e.g. quiet, clean)",
     aiBtn: "Generate Text",
     aiResult: "Text for Landlord",
+    aiError: "AI generation failed. Using template.",
+    aiNetworkError: "Network error. Please check your connection and try again.",
+    recrop: "Crop image",
     photo: "Select Photo",
     download: "Save PDF",
     years: "years",

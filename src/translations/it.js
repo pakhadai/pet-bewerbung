@@ -76,7 +76,11 @@ export default {
     aboutMe: "Chi sono",
     myStatus: "Il mio stato",
     swissStandard: "Standard svizzero",
-    photo: "Foto"
+    photo: "Foto",
+    pdfError: "Impossibile creare il PDF",
+    pdfMemoryError: "Generazione PDF fallita a causa di un'immagine troppo grande. Ridurre le dimensioni della foto.",
+    pdfTimeoutError: "Generazione PDF scaduta. Riprovare.",
+    pdfSaveHint: "Toccare \"Condividi\" → \"Salva in File\""
   },
   labels: {
     type: "Tipo di animale",
@@ -107,6 +111,9 @@ export default {
     aiPrompt: "Parole chiave (es. tranquillo, pulito)",
     aiBtn: "Generare testo",
     aiResult: "Testo per il proprietario",
+    aiError: "Generazione IA fallita. Uso del modello.",
+    aiNetworkError: "Errore di rete. Controlla la connessione e riprova.",
+    recrop: "Ritaglia immagine",
     photo: "Scegli foto",
     download: "Salva PDF",
     years: "anni",

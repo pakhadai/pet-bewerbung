@@ -76,7 +76,11 @@ export default {
     aboutMe: "Davart mai",
     myStatus: "Mes status",
     swissStandard: "Standard svizzer",
-    photo: "Foto"
+    photo: "Foto",
+    pdfError: "Betg reussì da crear il PDF",
+    pdfMemoryError: "Generaziun PDF betg reussida pervia d'in maletg memia grond. Reducir la grondezza da la foto.",
+    pdfTimeoutError: "Generaziun PDF memia lunga. Provar danovamain.",
+    pdfSaveHint: "Tippar \"Cundivider\" → \"Memorisar en datotecas\""
   },
   labels: {
     type: "Tip d'animal",
@@ -107,6 +111,9 @@ export default {
     aiPrompt: "Pleds-clav (p.ex. quiets, net)",
     aiBtn: "Generar text",
     aiResult: "Text per il locatari",
+    aiError: "Generaziun IA betg reussida. Utilisar model.",
+    aiNetworkError: "Errur da rait. Controllar la connexiun e provar danovamain.",
+    recrop: "Cropir maletg",
     photo: "Eleger foto",
     download: "Memorisar PDF",
     years: "onns",

@@ -200,7 +200,15 @@ export default function App() {
       if (import.meta.env.DEV) {
         console.error('AI generation error:', err);
       }
-      showToast('AI error: ' + (err.message || 'Unknown error'), 'error');
+      
+      // Show user-friendly error message
+      const errorMessage = err.message || 'Unknown error';
+      showToast(
+        errorMessage.includes('network') || errorMessage.includes('fetch')
+          ? t?.labels?.aiNetworkError || 'Network error. Please check your connection and try again.'
+          : t?.labels?.aiError || 'AI generation failed. Using template instead.',
+        'error'
+      );
       
       // Fall back to template on error
       generateFallbackText();
@@ -224,11 +232,18 @@ export default function App() {
     updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
   };
 
+  // NOTE: html2pdf.js renders PDF as an image (screenshot), not as selectable text.
+  // This means:
+  // - Text cannot be selected or copied from the PDF
+  // - File size may be larger than text-based PDFs
+  // - Some document scanners may not recognize text
+  // For future improvements, consider server-side PDF generation (react-pdf, puppeteer)
+  // For MVP, this solution is acceptable and works well for the use case.
   const handleDownloadPDF = async () => {
     try {
       const element = document.getElementById('pdf-document');
       if (!element) {
-        showToast('Document not found', 'error');
+        showToast(t?.ui?.error || 'Document not found', 'error');
         return;
       }
       const filename = `${data.petName || 'Pet-CV'}-${new Date().getTime()}.pdf`;
@@ -236,7 +251,20 @@ export default function App() {
         margin: 0,
         filename: filename,
         image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true,
+          logging: false, // Disable console logs from html2canvas
+          onclone: (clonedDoc) => {
+            // Ensure all images are loaded in cloned document
+            const images = clonedDoc.querySelectorAll('img');
+            images.forEach(img => {
+              if (!img.complete) {
+                img.style.display = 'none';
+              }
+            });
+          }
+        },
         jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
       };
       
@@ -284,7 +312,28 @@ export default function App() {
       // Go to thank you page
       setTimeout(() => goToStep(9), 2000);
     } catch (err) {
-      showToast('Failed to download PDF: ' + err.message, 'error');
+      // Better error handling for PDF generation
+      const errorMessage = err.message || 'Unknown error';
+      if (errorMessage.includes('canvas') || errorMessage.includes('memory')) {
+        showToast(
+          t?.ui?.pdfMemoryError || 'PDF generation failed due to large image. Try reducing photo size.',
+          'error'
+        );
+      } else if (errorMessage.includes('timeout')) {
+        showToast(
+          t?.ui?.pdfTimeoutError || 'PDF generation timed out. Please try again.',
+          'error'
+        );
+      } else {
+        showToast(
+          t?.ui?.pdfError || 'Failed to download PDF: ' + errorMessage,
+          'error'
+        );
+      }
+      
+      if (import.meta.env.DEV) {
+        console.error('PDF generation error:', err);
+      }
     }
   };
 

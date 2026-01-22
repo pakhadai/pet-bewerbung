@@ -16,6 +16,10 @@ const genAI = geminiKey ? new GoogleGenerativeAI(geminiKey) : null;
 // ============================================
 // Rate Limiting for AI Generation (IP-based)
 // ============================================
+// NOTE: Rate limits are stored in memory (Map).
+// - If server restarts, limits reset (acceptable for MVP)
+// - For multi-instance scaling, use Redis or database
+// - For production with high traffic, consider Redis-based rate limiting
 const AI_RATE_LIMIT = parseInt(process.env.AI_RATE_LIMIT) || 3; // requests per day
 const AI_RATE_WINDOW = 24 * 60 * 60 * 1000; // 24 hours in ms
 const aiRateLimits = new Map(); // IP -> { count, resetTime }
@@ -54,6 +58,9 @@ const stripe = Stripe(stripeKey || '');
 // ============================================
 // SECURITY: CORS Configuration
 // ============================================
+// IMPORTANT: Update these domains if your production domain changes
+// If domain changes, API will reject requests from new domain
+// Add new production domains here before deploying
 const allowedOrigins = [
   // Production domains
   'https://pet.ohmyrevit.pp.ua',
