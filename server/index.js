@@ -145,11 +145,20 @@ app.post('/create-checkout-session', async (req, res) => {
 
     res.json({ url: session.url, sessionId: session.id });
   } catch (err) {
-    console.error('Stripe checkout error:', err.message);
+    if (!isProduction) {
+      console.error('Stripe checkout error:', err.message);
+      console.error('Error details:', {
+        type: err.type,
+        code: err.code,
+        statusCode: err.statusCode,
+        raw: err.raw ? err.raw.message : null
+      });
+    }
     res.status(500).json({ 
       error: err.message || 'Server error',
       type: err.type,
-      code: err.code
+      code: err.code,
+      details: !isProduction ? err.raw?.message : undefined
     });
   }
 });

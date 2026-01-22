@@ -367,6 +367,32 @@ export default function App() {
         body: JSON.stringify({ amount: cents, currency: currency, successUrl: window.location.href, cancelUrl: window.location.href, payment_method: method }),
       });
       
+      // Check if response is OK
+      if (!res.ok) {
+        const errorText = await res.text();
+        let errorMessage = `Server error (${res.status})`;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.error || errorJson.details || errorMessage;
+          if (import.meta.env.DEV) {
+            console.error('Checkout session error:', {
+              status: res.status,
+              error: errorJson.error,
+              details: errorJson.details,
+              type: errorJson.type,
+              code: errorJson.code
+            });
+          }
+        } catch {
+          errorMessage = errorText.substring(0, 100) || errorMessage;
+          if (import.meta.env.DEV) {
+            console.error('Checkout session error (non-JSON):', res.status, errorText.substring(0, 200));
+          }
+        }
+        showToast(errorMessage || 'Failed to create checkout session', 'error');
+        return;
+      }
+      
       // Перевірка типу відповіді перед парсингом
       const contentType = res.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
@@ -383,7 +409,11 @@ export default function App() {
         window.open(json.url, '_blank');
         showToast('Opening Checkout...', 'info');
       } else {
-        showToast(json.error || 'Failed to create checkout session', 'error');
+        const errorMsg = json.error || json.details || 'Failed to create checkout session';
+        if (import.meta.env.DEV) {
+          console.error('Checkout session response error:', json);
+        }
+        showToast(errorMsg, 'error');
       }
     } catch (err) {
       if (import.meta.env.DEV) {
