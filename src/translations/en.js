@@ -237,5 +237,48 @@ export default {
     learnMore: "Learn more",
     accept: "Accept",
     decline: "Decline"
+  },
+  header: {
+    title: "pet-bewerbung.ch",
+    donate: "Donate"
+  },
+  hero: {
+    badge: "100% Free & No Signup",
+    title: "Free Pet CV Creator",
+    privacyTitle: "Data Privacy Shield",
+    privacyDesc: "Your data is never stored. Everything happens in your browser.",
+    subtitle: "Build a professional resume for your furry friend in minutes. Simple, fast, and completely private.",
+    cta: "Start Securely"
+  },
+  step1Details: {
+    ownerSection: "Owner Information",
+    petSection: "Pet Information"
+  },
+  stepsNew: {
+    step1: {
+      title: "Details",
+      subtitle: "Owner & Pet Info"
+    },
+    step2: {
+      title: "Emergency Info",
+      subtitle: "Vet & Contacts"
+    },
+    step3: {
+      title: "Upload & Select",
+      subtitle: "Photo & Template",
+      badge: "Local"
+    },
+    step4: {
+      title: "Get PDF",
+      subtitle: "Download Resume"
+    }
+  },
+  footer: {
+    copyright: "© 2026 pet-bewerbung.ch. Made with ❤️ for pets everywhere.",
+    impressum: "Impressum",
+    privacy: "Privacy Policy",
+    terms: "Terms",
+    faq: "FAQ",
+    faqComingSoon: "FAQ — coming soon."
   }
 };

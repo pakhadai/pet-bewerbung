@@ -123,7 +123,8 @@ const PaymentSuccess = ({
   onThemeChange,
   onLangChange,
   onLogoClick,
-  sessionId
+  sessionId,
+  showToast = () => {}
 }) => {
   const [legalPage, setLegalPage] = useState(null);
   const [paymentData, setPaymentData] = useState(null);
@@ -589,7 +590,7 @@ const PaymentSuccess = ({
         
       </main>
 
-      <Footer step={9} t={t} onOpenLegal={setLegalPage} />
+      <Footer darkMode={theme === 'dark'} t={t} onOpenLegal={setLegalPage} onFaqClick={() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info')} />
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
     </div>
   );

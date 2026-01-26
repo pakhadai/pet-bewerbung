@@ -237,5 +237,48 @@ export default {
     learnMore: "En savoir plus",
     accept: "Accepter",
     decline: "Refuser"
+  },
+  header: {
+    title: "pet-bewerbung.ch",
+    donate: "Faire un don"
+  },
+  hero: {
+    badge: "100% Gratuit & Sans Inscription",
+    title: "Créateur de CV pour Animaux Gratuit",
+    privacyTitle: "Bouclier de Confidentialité",
+    privacyDesc: "Vos données ne sont jamais stockées. Tout se passe dans votre navigateur.",
+    subtitle: "Créez un CV professionnel pour votre ami à fourrure en quelques minutes. Simple, rapide et entièrement privé.",
+    cta: "Commencer en toute sécurité"
+  },
+  step1Details: {
+    ownerSection: "Informations propriétaire",
+    petSection: "Informations animal"
+  },
+  stepsNew: {
+    step1: {
+      title: "Details",
+      subtitle: "Info Propriétaire & Animal"
+    },
+    step2: {
+      title: "Info d'urgence",
+      subtitle: "Vétérinaire & Contacts"
+    },
+    step3: {
+      title: "Télécharger & Sélectionner",
+      subtitle: "Photo & Modèle",
+      badge: "Local"
+    },
+    step4: {
+      title: "Obtenir le PDF",
+      subtitle: "Télécharger le CV"
+    }
+  },
+  footer: {
+    copyright: "© 2026 pet-bewerbung.ch. Fait avec ❤️ pour les animaux partout.",
+    impressum: "Mentions légales",
+    privacy: "Politique de confidentialité",
+    terms: "CGU",
+    faq: "FAQ",
+    faqComingSoon: "FAQ — bientôt disponible."
   }
 };

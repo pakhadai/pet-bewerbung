@@ -1,6 +1,8 @@
 export { default as Step1OwnerInfo } from './Step1OwnerInfo';
 export { default as Step2PetInfo } from './Step2PetInfo';
+export { default as Step1Details } from './Step1Details';
 export { default as Step3HealthInsurance } from './Step3HealthInsurance';
+export { default as Step3UploadSelect } from './Step3UploadSelect';
 export { default as Step4Description } from './Step4Description';
 export { default as Step5Photo } from './Step5Photo';
 export { default as Step6Summary } from './Step6Summary';

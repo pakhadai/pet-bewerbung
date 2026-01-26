@@ -56,31 +56,6 @@ const GlobalStyles = ({ theme = 'light' }) => {
         '--button-text': '#ffffff',
         '--header-bg': 'rgba(30, 41, 59, 0.4)',
         '--header-border': 'rgba(51, 65, 85, 0.5)'
-      },
-      sepia: {
-        '--primary': '#b45309',
-        '--primary-hover': '#92400e',
-        '--primary-light': '#f59e0b',
-        '--bg': '#fef3c7',
-        '--bg-secondary': '#fef5e7',
-        '--text': '#78350f',
-        '--text-secondary': '#92400e',
-        '--text-muted': '#a16207',
-        '--border': '#dda15e',
-        '--card-bg': '#fffbeb',
-        '--card-bg-hover': '#fef5e7',
-        '--input-bg': '#fffbeb',
-        '--input-border': '#f59e0b',
-        '--shadow': 'rgba(180, 83, 9, 0.15)',
-        '--shadow-strong': 'rgba(180, 83, 9, 0.25)',
-        '--success': '#16a34a',
-        '--error': '#dc2626',
-        '--warning': '#ea580c',
-        '--button-primary': '#92400e',
-        '--button-primary-hover': '#78350f',
-        '--button-text': '#ffffff',
-        '--header-bg': 'rgba(255, 251, 235, 0.4)',
-        '--header-border': 'rgba(221, 161, 94, 0.5)'
       }
     };
 
@@ -152,11 +127,16 @@ const GlobalStyles = ({ theme = 'light' }) => {
     }
 
     /* Prefer system UI fonts so emoji (flags) use color emoji fonts when available */
+    /* html/body background: gradient from index.html (mint/peach/lavender) - do not override */
     html {
-      background: var(--bg);
       transition: background 300ms;
     }
-    body, select, button, input, textarea {
+    body {
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
+      color: var(--text);
+      transition: background 300ms, color 300ms;
+    }
+    select, button, input, textarea {
       font-family: Inter, system-ui, -apple-system, "Segoe UI", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
       color: var(--text);
       background: var(--bg);

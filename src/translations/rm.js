@@ -237,5 +237,48 @@ export default {
     learnMore: "Ulteriuras infurmaziuns",
     accept: "Acceptar",
     decline: "Refusar"
+  },
+  header: {
+    title: "pet-bewerbung.ch",
+    donate: "Donar"
+  },
+  hero: {
+    badge: "100% Gratuit & Nagina Registraziun",
+    title: "Creatur CV per Animals Gratuit",
+    privacyTitle: "Scut da Protecziun da Datas",
+    privacyDesc: "Vossas datas na vegnan mai memorisadas. Tut succeda en voss navigatur.",
+    subtitle: "Crei in curriculum professional per voss ami cun pail en minutas. Simpel, svelt e cumplettamain privat.",
+    cta: "Cumenzar segir"
+  },
+  step1Details: {
+    ownerSection: "Infurmaziuns proprietari",
+    petSection: "Infurmaziuns animal"
+  },
+  stepsNew: {
+    step1: {
+      title: "Details",
+      subtitle: "Infurmaziuns da proprietari & animal"
+    },
+    step2: {
+      title: "Infurmaziuns d'urgenza",
+      subtitle: "Veterinar & contacts"
+    },
+    step3: {
+      title: "Chargiar & tscherner",
+      subtitle: "Foto & model",
+      badge: "Local"
+    },
+    step4: {
+      title: "Obtener PDF",
+      subtitle: "Telechargiar curriculum"
+    }
+  },
+  footer: {
+    copyright: "© 2026 pet-bewerbung.ch. Fatg cun ❤️ per animals dapertut.",
+    impressum: "Impressum",
+    privacy: "Politica da protecziun da datas",
+    terms: "Cundiziuns",
+    faq: "FAQ",
+    faqComingSoon: "FAQ — en curt disponibel."
   }
 };

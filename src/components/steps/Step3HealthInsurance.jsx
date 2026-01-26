@@ -3,7 +3,7 @@ import { ShieldCheck, Volume2, Phone } from 'lucide-react';
 import Label from '../Label';
 import Input from '../Input';
 
-const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir }) => {
+const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMode }) => {
   const statusOptions = [
     { id: 'isNeutered', label: t.labels.neutered },
     { id: 'hasVaccination', label: t.labels.vaccination },

@@ -1,0 +1,138 @@
+import React from 'react';
+
+interface StepsProps {
+  darkMode: boolean;
+  t: any;
+}
+
+interface StepCardProps {
+  number: string;
+  title: string;
+  subtitle: string;
+  iconPrimary: string;
+  iconSecondary?: string;
+  bgColorClass: string;
+  darkModeBgClass: string;
+  rotation: string;
+  hoverRotation: string;
+  badge?: {
+    text: string;
+    icon: string;
+  };
+  darkMode: boolean;
+}
+
+const StepCard: React.FC<StepCardProps> = ({ 
+  number, title, subtitle, iconPrimary, iconSecondary, 
+  bgColorClass, darkModeBgClass, rotation, hoverRotation, badge, darkMode 
+}) => {
+  return (
+    <div className="flex flex-col items-center gap-4 group cursor-default">
+      <div className={`relative flex h-28 w-28 items-center justify-center hand-drawn-border border-2 border-text-main shadow-sm transition-transform duration-300
+        ${darkMode ? darkModeBgClass : bgColorClass}
+        ${rotation} group-hover:${hoverRotation}
+      `}>
+        {/* Number Badge */}
+        <div className={`absolute -top-4 -right-2 flex h-8 w-8 items-center justify-center rounded-full font-display text-xl border-2 border-white
+            ${darkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-text-main text-white'}`}>
+          {number}
+        </div>
+
+        {/* Icons */}
+        <div className="flex items-center justify-center gap-0 relative">
+          <span className="material-symbols-outlined text-4xl text-text-main sketch-icon -mr-1">{iconPrimary}</span>
+          {iconSecondary && (
+             <span className={`material-symbols-outlined text-3xl text-text-main sketch-icon ${iconSecondary === 'pets' ? 'translate-y-2' : '-translate-y-1'}`}>
+               {iconSecondary}
+             </span>
+          )}
+        </div>
+
+        {/* Optional Badge (e.g. Local) */}
+        {badge && (
+          <div className={`absolute -bottom-3 px-2 py-0.5 text-[10px] font-bold border border-text-main rounded-full shadow-sm flex items-center gap-1
+             ${darkMode ? 'bg-gray-800 text-green-400' : 'bg-white text-green-700'}`}>
+             <span className="material-symbols-outlined text-[12px]">{badge.icon}</span> 
+             {badge.text}
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <h3 className={`text-2xl font-bold font-display ${darkMode ? 'text-gray-100' : 'text-text-main'}`}>
+          {title}
+        </h3>
+        <p className={`text-base font-medium ${darkMode ? 'text-gray-400' : 'text-text-secondary'}`}>
+          {subtitle}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+const Steps: React.FC<StepsProps> = ({ darkMode, t }) => {
+  return (
+    <div className="w-full mt-12 relative">
+      {/* Decorative Dashed Line - Hidden on mobile, visible on lg */}
+      <svg className="hidden lg:block absolute top-12 left-0 w-full h-16 -z-10 opacity-20 pointer-events-none" fill="none" viewBox="0 0 1200 100" preserveAspectRatio="none">
+        <path d="M50,50 C300,20 900,80 1150,50" stroke={darkMode ? "#ffffff" : "#4a4a4a"} strokeDasharray="12 12" strokeLinecap="round" strokeWidth="3"></path>
+      </svg>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+        <StepCard 
+          number="1"
+          title={t?.stepsNew?.step1?.title || "Add Details"}
+          subtitle={t?.stepsNew?.step1?.subtitle || "Owner & Pet Info"}
+          iconPrimary="person"
+          iconSecondary="pets"
+          bgColorClass="bg-mint"
+          darkModeBgClass="bg-mint/80"
+          rotation="rotate-[-2deg]"
+          hoverRotation="rotate-1"
+          darkMode={darkMode}
+        />
+        <StepCard 
+          number="2"
+          title={t?.stepsNew?.step2?.title || "Emergency Info"}
+          subtitle={t?.stepsNew?.step2?.subtitle || "Vet & Contacts"}
+          iconPrimary="call"
+          iconSecondary="local_hospital"
+          bgColorClass="bg-peach"
+          darkModeBgClass="bg-peach/80"
+          rotation="rotate-[3deg]"
+          hoverRotation="rotate-0"
+          darkMode={darkMode}
+        />
+        <StepCard 
+          number="3"
+          title={t?.stepsNew?.step3?.title || "Upload & Select"}
+          subtitle={t?.stepsNew?.step3?.subtitle || "Photo & Template"}
+          iconPrimary="photo_camera"
+          iconSecondary="dashboard"
+          bgColorClass="bg-lavender"
+          darkModeBgClass="bg-lavender/80"
+          rotation="rotate-[-1deg]"
+          hoverRotation="rotate-2"
+          badge={{
+            text: t?.stepsNew?.step3?.badge || "Local",
+            icon: 'lock'
+          }}
+          darkMode={darkMode}
+        />
+        <StepCard 
+          number="4"
+          title={t?.stepsNew?.step4?.title || "Get PDF"}
+          subtitle={t?.stepsNew?.step4?.subtitle || "Download Resume"}
+          iconPrimary="downloading"
+          bgColorClass="bg-accent-pink"
+          darkModeBgClass="bg-accent-pink/80"
+          rotation="rotate-[2deg]"
+          hoverRotation="rotate-[-1deg]"
+          darkMode={darkMode}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default Steps;

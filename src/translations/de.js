@@ -237,5 +237,48 @@ export default {
     learnMore: "Mehr erfahren",
     accept: "Akzeptieren",
     decline: "Ablehnen"
+  },
+  header: {
+    title: "pet-bewerbung.ch",
+    donate: "Spenden"
+  },
+  hero: {
+    badge: "100% Kostenlos & Keine Anmeldung",
+    title: "Kostenloser Pet CV Erstellen",
+    privacyTitle: "Datenschutz-Schild",
+    privacyDesc: "Ihre Daten werden niemals gespeichert. Alles passiert in Ihrem Browser.",
+    subtitle: "Erstellen Sie in Minuten einen professionellen Lebenslauf für Ihren vierbeinigen Freund. Einfach, schnell und völlig privat.",
+    cta: "Sicher starten"
+  },
+  step1Details: {
+    ownerSection: "Halterangaben",
+    petSection: "Tierangaben"
+  },
+  stepsNew: {
+    step1: {
+      title: "Details",
+      subtitle: "Halter & Tier Info"
+    },
+    step2: {
+      title: "Notfall-Info",
+      subtitle: "Tierarzt & Kontakte"
+    },
+    step3: {
+      title: "Hochladen & Auswählen",
+      subtitle: "Foto & Vorlage",
+      badge: "Lokal"
+    },
+    step4: {
+      title: "PDF erhalten",
+      subtitle: "Lebenslauf herunterladen"
+    }
+  },
+  footer: {
+    copyright: "© 2026 pet-bewerbung.ch. Mit ❤️ für Haustiere überall gemacht.",
+    impressum: "Impressum",
+    privacy: "Datenschutz",
+    terms: "AGB",
+    faq: "FAQ",
+    faqComingSoon: "FAQ — demnächst verfügbar."
   }
 };

@@ -37,12 +37,36 @@
     <link rel="manifest" href="/site.webmanifest" />
     
     <!-- Theme Color -->
-    <meta name="theme-color" content="#3b82f6" />
+    <meta name="theme-color" content="#b39ddb" />
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     
     <!-- Tailwind CSS is now processed via PostCSS during build -->
+    <style>
+      /* Background gradient – light and dark mode (do not override in GlobalStyles) */
+      html body {
+        background-attachment: fixed;
+        transition: background-color 0.5s ease, background-image 0.5s ease;
+      }
+      body {
+        background-color: #ffffff;
+        background-image: 
+            radial-gradient(circle at 20% 20%, #e0f2f1 0%, transparent 40%),
+            radial-gradient(circle at 80% 80%, #fff3e0 0%, transparent 40%),
+            radial-gradient(circle at 50% 50%, #f3e5f5 0%, transparent 50%);
+      }
+      html.dark body {
+        background-color: #111827;
+        background-image: 
+            radial-gradient(circle at 20% 20%, rgba(30, 41, 59, 0.5) 0%, transparent 40%),
+            radial-gradient(circle at 80% 80%, rgba(17, 24, 39, 0.5) 0%, transparent 40%);
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/main.jsx"></script>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

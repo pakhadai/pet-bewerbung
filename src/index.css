@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .hand-drawn-border {
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  }
+  .hand-drawn-button {
+    border-radius: 20px 5px 20px 5px / 5px 20px 5px 20px;
+  }
+  .sketch-icon {
+    font-variation-settings: 'FILL' 0, 'wght' 300;
+  }
+  .sketch-icon-filled {
+    font-variation-settings: 'FILL' 1, 'wght' 400;
+  }
+  .blob-shape {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+}

@@ -32,4 +32,7 @@ Desktop.ini
 # Temporary files
 tmpclaude-*
 *.old.jsx
+*.jsx.old
+*.old
+*.backup*
 *.backup.*

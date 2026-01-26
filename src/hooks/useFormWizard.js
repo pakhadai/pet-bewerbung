@@ -43,8 +43,8 @@ const loadSavedStep = () => {
     const saved = localStorage.getItem(STORAGE_STEP_KEY);
     if (saved) {
       const step = parseInt(saved, 10);
-      // Don't restore step 0 (landing) or steps after 8 (thank you)
-      if (step >= 1 && step <= 8) {
+      // Don't restore step 0 (landing) or step 6 (thank you)
+      if (step >= 1 && step <= 5) {
         return step;
       }
     }
@@ -84,8 +84,8 @@ export const useFormWizard = () => {
   // Save step to localStorage when it changes
   useEffect(() => {
     try {
-      // Don't save step 0 (landing) or step 9 (thank you)
-      if (step >= 1 && step <= 8) {
+      // Don't save step 0 (landing) or step 6 (thank you)
+      if (step >= 1 && step <= 5) {
         localStorage.setItem(STORAGE_STEP_KEY, String(step));
       } else {
         localStorage.removeItem(STORAGE_STEP_KEY);
@@ -277,7 +277,7 @@ export const useFormValidation = (data, step) => {
     let isValid = true;
 
     switch (step) {
-      case 1: // Owner info
+      case 1: // Details (Owner + Pet)
         if (!data.ownerName || data.ownerName.trim().length < 2) {
           errors.ownerName = true;
           isValid = false;
@@ -294,9 +294,6 @@ export const useFormValidation = (data, step) => {
           errors.postal = true;
           isValid = false;
         }
-        break;
-
-      case 2: // Pet info
         if (!data.name || data.name.trim().length < 1) {
           errors.name = true;
           isValid = false;
@@ -307,22 +304,10 @@ export const useFormValidation = (data, step) => {
         }
         break;
 
-      case 3: // Health & Insurance - optional fields, no validation needed
-        break;
-
-      case 4: // Description - optional
-        break;
-
-      case 5: // Photo - optional
-        break;
-
-      case 6: // Summary - no validation needed (review step)
-        break;
-
-      case 7: // Template selection - handled by template grid
-        break;
-
-      case 8: // Preview - no validation needed
+      case 2: // Emergency - optional
+      case 3: // Upload & Select - optional
+      case 4: // Summary - no validation
+      case 5: // Preview - no validation
         break;
 
       default:

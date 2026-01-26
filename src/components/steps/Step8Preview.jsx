@@ -2,7 +2,7 @@ import React from 'react';
 import SwissDocument from '../SwissDocument';
 import ErrorBoundary from '../ErrorBoundary';
 
-const Step8Preview = React.memo(({ data, t, animDir, selectedTemplate }) => {
+const Step8Preview = React.memo(({ data, t, animDir, selectedTemplate, darkMode }) => {
   return (
     <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-4xl mx-auto pb-20`}>
       {/* Full Document Preview */}

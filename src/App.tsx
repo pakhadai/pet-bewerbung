@@ -8,7 +8,8 @@ import GlobalStyles from './components/GlobalStyles';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
-import LandingPage from './components/LandingPage';
+import Hero from './components/Hero';
+import Steps from './components/Steps';
 import SwissDocument from './components/SwissDocument';
 import { X, Camera } from 'lucide-react';
 import DonateModal from './components/DonateModal';
@@ -19,16 +20,14 @@ import CookieBanner from './components/CookieBanner';
 
 // Import step components
 import {
-  Step1OwnerInfo,
-  Step2PetInfo,
+  Step1Details,
   Step3HealthInsurance,
-  Step4Description,
-  Step5Photo,
+  Step3UploadSelect,
   Step6Summary,
-  Step7TemplateSelect,
   Step8Preview,
   Step9ThankYou
-} from './components/steps';
+} from './components/steps/index';
+import StepProgress from './components/StepProgress';
 
 // Import custom hooks
 import {
@@ -73,13 +72,22 @@ export default function App() {
   const butterVisible = useScrollVisibility(120);
   const { errors: validationErrors, isValid: canProceed } = useFormValidation(data, step);
 
-  // Theme state (kept local as it's simple)
-  const [theme, setTheme] = useState('light');
+  // Dark mode state (changed from theme: 'light'/'dark'/'sepia' to boolean)
+  const [darkMode, setDarkMode] = useState<boolean>(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [legalPage, setLegalPage] = useState(null); // 'impressum', 'privacy', 'terms', or null
+  const [legalPage, setLegalPage] = useState<string | null>(null); // 'impressum', 'privacy', 'terms', or null
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
-  const [paymentSessionId, setPaymentSessionId] = useState(null);
+  const [paymentSessionId, setPaymentSessionId] = useState<string | null>(null);
   const [navigationVisible, setNavigationVisible] = useState(true); // Control navigation visibility for Step5Photo
+
+  // Apply dark mode class to document
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   // Handle URL parameters for payment success/cancel
   useEffect(() => {
@@ -125,8 +133,8 @@ export default function App() {
     }
   }, [step]);
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       try {
         // Compress image before storing
@@ -196,7 +204,7 @@ export default function App() {
         showToast(`✨ ${json.remaining} AI requests remaining today.`, 'success');
       }
       
-    } catch (err) {
+    } catch (err: any) {
       if (import.meta.env.DEV) {
         console.error('AI generation error:', err);
       }
@@ -220,7 +228,7 @@ export default function App() {
   // Fallback template-based generation
   const generateFallbackText = () => {
     const tmpl = t.templates;
-    const rawKeywords = (data.keywords || '').split(',').map(s => s.trim()).filter(s => s);
+    const rawKeywords = (data.keywords || '').split(',').map((s: string) => s.trim()).filter((s: string) => s);
     let middleSection = "";
     if (rawKeywords.length > 0) {
       const formattedKeywords = rawKeywords.join(', ');
@@ -246,7 +254,7 @@ export default function App() {
         showToast(t?.ui?.error || 'Document not found', 'error');
         return;
       }
-      const filename = `${data.petName || 'Pet-CV'}-${new Date().getTime()}.pdf`;
+      const filename = `${data.name || 'Pet-CV'}-${new Date().getTime()}.pdf`;
       const options = {
         margin: 0,
         filename: filename,
@@ -259,12 +267,12 @@ export default function App() {
           width: 794, // A4 width in pixels at 96 DPI (210mm = 794px)
           windowWidth: 794,
           windowHeight: 1104,
-          onclone: (clonedDoc) => {
+          onclone: (clonedDoc: Document) => {
             // Ensure all images are loaded in cloned document
             const images = clonedDoc.querySelectorAll('img');
             images.forEach(img => {
-              if (!img.complete) {
-                img.style.display = 'none';
+              if (!(img as HTMLImageElement).complete) {
+                (img as HTMLImageElement).style.display = 'none';
               }
             });
             // Force exact dimensions on cloned document to match preview
@@ -283,20 +291,15 @@ export default function App() {
               // Ensure inner document container also has correct dimensions
               const innerDoc = pdfDoc.querySelector('[class*="w-\\[210mm\\]"]');
               if (innerDoc) {
-                innerDoc.style.width = '210mm';
-                innerDoc.style.height = '292mm';
-                innerDoc.style.maxWidth = '210mm';
-                innerDoc.style.maxHeight = '292mm';
-                innerDoc.style.overflow = 'hidden';
-                innerDoc.style.boxSizing = 'border-box';
+                innerDoc.setAttribute('style', 'width: 210mm; height: 292mm; max-width: 210mm; max-height: 292mm; overflow: hidden; box-sizing: border-box;');
               }
             }
           }
         },
         jsPDF: { 
-          orientation: 'portrait', 
-          unit: 'mm', 
-          format: 'a4',
+          orientation: 'portrait' as const, 
+          unit: 'mm' as const, 
+          format: 'a4' as const,
           compress: true
         },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
@@ -344,8 +347,8 @@ export default function App() {
       setTimeout(() => URL.revokeObjectURL(url), 5000);
       
       // Go to thank you page
-      setTimeout(() => goToStep(9), 2000);
-    } catch (err) {
+      setTimeout(() => goToStep(6), 2000);
+    } catch (err: any) {
       // Better error handling for PDF generation
       const errorMessage = err.message || 'Unknown error';
       if (errorMessage.includes('canvas') || errorMessage.includes('memory')) {
@@ -371,7 +374,7 @@ export default function App() {
     }
   };
 
-  const handleDonateMethod = async (method) => {
+  const handleDonateMethod = async (method: string) => {
     const parsed = parseFloat(donationAmount || '5');
     const amount = Math.max(1, Math.round(parsed));
     const cents = amount * 100;
@@ -432,7 +435,7 @@ export default function App() {
         }
         showToast(errorMsg, 'error');
       }
-    } catch (err) {
+    } catch (err: any) {
       if (import.meta.env.DEV) {
         console.error('Payment error:', err);
       }
@@ -442,53 +445,57 @@ export default function App() {
     }
   };
 
-  const handleSelectTemplate = (templateId) => {
+  const handleSelectTemplate = (templateId: string) => {
     setSelectedTemplate(templateId);
-    goToStep(step + 1);
   };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  // Convert darkMode to theme string for components that still use theme prop
+  const theme = darkMode ? 'dark' : 'light';
 
   const renderStep = () => {
     switch(step) {
       case 0:
         return (
-          <div className={`page page-enter-${animDir} reveal fade-enter`}>
-            <LandingPage t={t} setStep={goToStep} />
+          <div className={`page page-enter-${animDir} reveal fade-enter flex flex-col items-center pt-28 pb-16 px-4 relative overflow-hidden`}>
+            <div className={`absolute top-[15%] left-[5%] opacity-10 pointer-events-none hidden lg:block transition-opacity duration-300 ${darkMode ? 'opacity-5' : 'opacity-10'}`}>
+              <span className="material-symbols-outlined text-8xl rotate-12 select-none">pets</span>
+            </div>
+            <div className={`absolute bottom-[20%] right-[5%] opacity-10 pointer-events-none hidden lg:block transition-opacity duration-300 ${darkMode ? 'opacity-5' : 'opacity-10'}`}>
+              <span className="material-symbols-outlined text-9xl -rotate-12 select-none">favorite</span>
+            </div>
+            <div className="w-full max-w-6xl flex flex-col items-center text-center z-10 gap-16">
+              <Hero darkMode={darkMode} t={t} onStartClick={() => goToStep(1)} />
+              <Steps darkMode={darkMode} t={t} />
+            </div>
           </div>
         );
       case 1:
-        return <Step1OwnerInfo data={data} updateData={updateData} t={t} animDir={animDir} errors={validationErrors} />;
+        return <Step1Details data={data} updateData={updateData} t={t} animDir={animDir} errors={validationErrors} darkMode={darkMode} />;
       case 2:
-        return <Step2PetInfo data={data} updateData={updateData} t={t} animDir={animDir} errors={validationErrors} />;
+        return <Step3HealthInsurance data={data} updateData={updateData} t={t} animDir={animDir} darkMode={darkMode} />;
       case 3:
-        return <Step3HealthInsurance data={data} updateData={updateData} t={t} animDir={animDir} />;
-      case 4:
         return (
-          <Step4Description
+          <Step3UploadSelect
             data={data}
             updateData={updateData}
             t={t}
             animDir={animDir}
-            isGenerating={isGenerating}
-            onGenerate={generateText}
-          />
-        );
-      case 5:
-        return <Step5Photo data={data} onFileChange={handleFileChange} updateData={updateData} t={t} animDir={animDir} onNavigationVisibilityChange={setNavigationVisible} />;
-      case 6:
-        return <Step6Summary data={data} t={t} animDir={animDir} />;
-      case 7:
-        return (
-          <Step7TemplateSelect
-            data={data}
-            t={t}
-            animDir={animDir}
+            selectedTemplate={selectedTemplate}
             onSelectTemplate={handleSelectTemplate}
             onPreview={openPreview}
             showToast={showToast}
+            onNavigationVisibilityChange={setNavigationVisible}
+            darkMode={darkMode}
           />
         );
-      case 8:
-        return <Step8Preview data={data} t={t} animDir={animDir} selectedTemplate={selectedTemplate} />;
+      case 4:
+        return <Step6Summary data={data} t={t} animDir={animDir} darkMode={darkMode} />;
+      case 5:
+        return <Step8Preview data={data} t={t} animDir={animDir} selectedTemplate={selectedTemplate} darkMode={darkMode} />;
       default:
         return null;
     }
@@ -501,26 +508,27 @@ export default function App() {
         data={data}
         t={t}
         theme={theme}
-        onThemeChange={setTheme}
-        onLangChange={(v) => updateData('lang', v)}
+        onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
+        onLangChange={(v: string) => updateData('lang', v)}
         onLogoClick={() => {
           setShowPaymentSuccess(false);
           goToStep(0);
         }}
         sessionId={paymentSessionId}
+        showToast={showToast}
       />
     );
   }
 
-  // Step 9: Thank You Page
-  if (step === 9) {
+  // Step 6: Thank You Page
+  if (step === 6) {
     return (
       <Step9ThankYou
         data={data}
         t={t}
         theme={theme}
-        onThemeChange={setTheme}
-        onLangChange={(v) => updateData('lang', v)}
+        onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
+        onLangChange={(v: string) => updateData('lang', v)}
         onLogoClick={() => goToStep(0)}
         donationAmount={donationAmount}
         setDonationAmount={setDonationAmount}
@@ -531,7 +539,7 @@ export default function App() {
         onDonate={handleDonateMethod}
         showToast={showToast}
         toast={toast}
-        onPaymentSuccess={(paymentId) => {
+        onPaymentSuccess={(paymentId: string) => {
           if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
             setShowPaymentSuccess(true);
             setPaymentSessionId(paymentId);
@@ -545,17 +553,19 @@ export default function App() {
     <div className={`min-h-screen font-sans theme-text pb-6 print:bg-white print:p-0 ${step !== 0 ? 'theme-bg' : ''}`}>
       <GlobalStyles theme={theme} />
       <Header
-        step={step}
-        theme={theme}
-        onThemeChange={setTheme}
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
         lang={data.lang}
-        onLangChange={(v) => updateData('lang', v)}
+        onLangChange={(v: string) => updateData('lang', v)}
         onLogoClick={() => goToStep(0)}
         t={t}
       />
 
       <main className="w-full print:w-full print:max-w-none print:p-0">
         <div className={step === 0 ? "w-full" : "max-w-7xl mx-auto p-4 md:p-8 print:border-none print:shadow-none print:p-0"}>
+          {step >= 1 && step <= 5 && (
+            <StepProgress step={step} t={t} darkMode={darkMode} />
+          )}
           {renderStep()}
         </div>
       </main>
@@ -573,7 +583,7 @@ export default function App() {
         amount={donationAmount}
         lang={data.lang}
         t={t}
-        onSuccess={(paymentId) => {
+        onSuccess={(paymentId: string) => {
           showToast(t.paymentSuccess?.thankYouMessage || 'Thank you — payment succeeded', 'success');
           // Show PaymentSuccess page
           if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
@@ -581,7 +591,7 @@ export default function App() {
             setPaymentSessionId(paymentId);
           }
         }}
-        onFailure={(msg) => showToast(`${t.ui?.error || 'Payment failed'}: ${msg}`, 'error')}
+        onFailure={(msg: string) => showToast(`${t.ui?.error || 'Payment failed'}: ${msg}`, 'error')}
       />
 
       {/* Preview Modal */}
@@ -637,9 +647,10 @@ export default function App() {
         t={t}
         canProceed={canProceed}
         visible={navigationVisible}
+        darkMode={darkMode}
       />
 
-      <Footer step={step} t={t} onOpenLegal={setLegalPage} />
+      <Footer darkMode={darkMode} t={t} onOpenLegal={setLegalPage} onFaqClick={() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info')} />
 
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
 

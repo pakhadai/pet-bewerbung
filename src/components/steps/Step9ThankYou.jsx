@@ -126,7 +126,7 @@ const Step9ThankYou = React.memo(({
         </div>
       )}
 
-      <Footer step={9} butterVisible={true} t={t} onOpenLegal={setLegalPage} />
+      <Footer darkMode={theme === 'dark'} t={t} onOpenLegal={setLegalPage} onFaqClick={() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info')} />
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
     </div>
   );
