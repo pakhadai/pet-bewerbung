@@ -3,7 +3,7 @@ import { Dog, Cat, Bird } from 'lucide-react';
 import Label from '../Label';
 import Input from '../Input';
 
-const Step1Details = React.memo(({ data, updateData, t, animDir, errors = {}, darkMode }) => {
+const Step1Details = React.memo(({ data, updateData, t, animDir, errors = {}, darkMode, onNext, canProceed = true }) => {
   const petTypes = [
     { id: 'dog', label: t.labels.dog, icon: Dog },
     { id: 'cat', label: t.labels.cat, icon: Cat },
@@ -160,6 +160,24 @@ const Step1Details = React.memo(({ data, updateData, t, animDir, errors = {}, da
             {t?.hero?.privacyDesc ?? 'Your data is private, stays in browser • No servers involved.'}
           </span>
         </div>
+
+        {onNext && (
+          <div className="mt-8 flex justify-center">
+            <button
+              type="button"
+              onClick={canProceed ? onNext : undefined}
+              disabled={!canProceed}
+              className={`font-display font-bold text-xl hand-drawn-button border-2 px-8 py-3 rounded-xl transition-all flex items-center gap-2 ${
+                darkMode
+                  ? 'border-primary bg-primary text-white hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed'
+                  : 'border-primary bg-primary text-white hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed'
+              }`}
+            >
+              {t?.nav?.nextStep ?? t?.ui?.next ?? 'Next'}
+              <span className="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

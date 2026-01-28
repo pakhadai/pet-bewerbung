@@ -108,6 +108,12 @@ export default {
     vaccination: "Vaccinated",
     registration: "Registered (AMICUS/ANIS)",
     aiPrompt: "Keywords (e.g. quiet, clean)",
+    tellUsAboutPet: "Tell us about your pet",
+    descriptionHint: "Share their personality, favorite toys, or funny quirks.",
+    descriptionPlaceholder: "Buddy is a high-energy Golden Retriever who loves belly rubs and chasing squirrels...",
+    aiGenerateBtn: "Generate AI Description (470 chars)",
+    localPrivacy: "Local Generation • Privacy Focused",
+    generating: "Generating...",
     aiBtn: "Generate Text",
     aiResult: "Text for Landlord",
     aiError: "AI generation failed. Using template.",
@@ -174,7 +180,18 @@ export default {
   },
   thankYou: {
     title: "Thank you",
-    msg: "Thanks for using the service. Your document was created locally."
+    msg: "Thanks for using the service. Your document was created locally.",
+    allSet: "You're All Set!",
+    subtitle: "Your pet's professional resume has been generated and is ready.",
+    downloadPdf: "Download PDF",
+    privacyLocal: "Your data was processed locally and is never stored on our servers.",
+    supportTitle: "Support the Project",
+    supportDesc: "Pet-Bewerbung is 100% free. If you like it, consider buying a treat for our team!",
+    supportCta: "PayPal / TWINT",
+    everyTreat: "Every treat counts! Woof & Meow.",
+    createAnother: "← Create Another One",
+    showSupport: "Show support options",
+    purrPerfect: "PURR-FECT!"
   },
   paymentSuccess: {
     title: "Payment Successful!",
@@ -182,11 +199,40 @@ export default {
     detailsTitle: "Payment Details",
     thankYouTitle: "Thank You!",
     thankYouMessage: "Your support helps us maintain and improve this service. We truly appreciate your generosity!",
+    tailWagTitle: "A Huge Tail Wag For You!",
+    donationMade: "Your donation of",
+    donationMadeSuffix: "just made a big difference.",
+    downloadPdf: "Download PDF",
+    returnHome: "Return Home",
+    paymentConfirmed: "Payment Confirmed",
+    secureTransaction: "Secure Transaction",
     amount: "Amount",
     email: "Email",
     status: "Status",
     completed: "Completed",
-    goHome: "Back to Home"
+    goHome: "Back to Homepage",
+    pawsome: "You're Pawsome!",
+    supportFuels: "Your support fuels our mission",
+    thankYouBanner: "THANK YOU!",
+    generosityQuote: '"Your generosity helps us keep PetCV.io free and private for pet owners worldwide. From the whiskers of our cats to the wags of our dogs, we thank you!"',
+    lifetimeBadge: "Lifetime Supporter Badge Earned",
+    shareLove: "Share Love",
+    spreadWord: "Spread the word about PetCV.io",
+    copyLink: "Copy Link",
+    shareText: "Create a pet resume with PetCV.io!",
+    shared: "Link shared!",
+    linkCopied: "Link copied!",
+    shareError: "Could not share",
+    thanks: "Thank you!"
+  },
+  paymentCheckout: {
+    secureCheckout: "Secure Checkout",
+    completeDonation: "Complete your donation",
+    youreDonating: "You're donating",
+    toSupport: "to support pet privacy.",
+    orPayWithCard: "Or pay with card",
+    payAmount: "Pay",
+    stripeProtected: "Stripe Protected"
   },
   templates: {
     intro: "The described animal is a very well-groomed and socially compatible companion.",
@@ -254,6 +300,29 @@ export default {
     ownerSection: "Owner Information",
     petSection: "Pet Information"
   },
+  nav: {
+    nextStep: "Next",
+    back: "Back",
+    nextPhotos: "Next: Photos",
+    nextTemplate: "Next: Template",
+    nextSummary: "Next: Summary",
+    nextPreview: "Next: Preview",
+    downloadPdf: "Download PDF",
+    createAnother: "← Create Another One",
+    previousStep: "← PREVIOUS STEP",
+    finalReview: "FINAL REVIEW →"
+  },
+  step2Emergency: {
+    privacyText: "Private & Secure: Your emergency contacts are only stored locally in this browser session.",
+    emergencyContacts: "Emergency Contacts",
+    vetName: "Vet Name",
+    vetClinicPhone: "Vet Clinic Phone",
+    secondaryContact: "Secondary emergency contact (Name & Phone, e.g. Neighbor, Family)",
+    displayMedical: "Display medical conditions?",
+    medicalHint: "Check this to add a section for allergies/medications.",
+    showMore: "Show additional details",
+    showMoreHint: "Insurance, chip, behavior, references, etc."
+  },
   stepsNew: {
     step1: {
       title: "Details",
@@ -264,17 +333,26 @@ export default {
       subtitle: "Vet & Contacts"
     },
     step3: {
-      title: "Upload & Select",
-      subtitle: "Photo & Template",
-      badge: "Local"
+      title: "Pet Description",
+      subtitle: "Character & AI"
     },
     step4: {
+      title: "Upload & Select",
+      subtitle: "Photo & Template",
+      badge: "Processing stays local"
+    },
+    step5: {
+      title: "Preview",
+      subtitle: "Review template & info"
+    },
+    step6: {
       title: "Get PDF",
-      subtitle: "Download Resume"
+      subtitle: "Download"
     }
   },
   footer: {
     copyright: "© 2026 pet-bewerbung.ch. Made with ❤️ for pets everywhere.",
+    openSource: "Open source",
     impressum: "Impressum",
     privacy: "Privacy Policy",
     terms: "Terms",

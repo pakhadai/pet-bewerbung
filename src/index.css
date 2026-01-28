@@ -15,7 +15,27 @@
   .sketch-icon-filled {
     font-variation-settings: 'FILL' 1, 'wght' 400;
   }
-  .blob-shape {
+  .blob-shape,
+  .blob-accent {
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  .template-card {
+    border: 2px solid rgba(90, 90, 90, 0.8);
+    border-radius: 12px 3px 12px 3px / 3px 12px 3px 12px;
+    transition: all 0.2s ease;
+  }
+  .template-card:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .template-card.active {
+    border-color: #b39ddb;
+    box-shadow: 0 0 15px rgba(179, 157, 219, 0.3);
+  }
+  .dark .template-card {
+    border-color: rgba(90, 90, 90, 0.9);
+  }
+  .dark .template-card.active {
+    border-color: #b39ddb;
+    box-shadow: 0 0 15px rgba(179, 157, 219, 0.35);
   }
 }

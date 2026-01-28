@@ -108,6 +108,12 @@ export default {
     vaccination: "Geimpft",
     registration: "Registriert (AMICUS/ANIS)",
     aiPrompt: "Stichworte (z.B. ruhig, stubenrein)",
+    tellUsAboutPet: "Erzählen Sie uns von Ihrem Tier",
+    descriptionHint: "Persönlichkeit, Lieblingsspielzeug oder kleine Eigenheiten.",
+    descriptionPlaceholder: "Buddy ist ein temperamentvoller Golden Retriever, der Bauchkraulen und Eichhörnchen liebt...",
+    aiGenerateBtn: "KI-Beschreibung generieren (470 Zeichen)",
+    localPrivacy: "Lokale Erzeugung • Datenschutz",
+    generating: "Wird generiert...",
     aiBtn: "Text generieren",
     aiResult: "Text für Vermieter",
     aiError: "KI-Generierung fehlgeschlagen. Verwende Vorlage.",
@@ -174,7 +180,18 @@ export default {
   },
   thankYou: {
     title: "Danke",
-    msg: "Danke, dass Sie unseren Service genutzt haben. Ihr Dokument wurde lokal erstellt."
+    msg: "Danke, dass Sie unseren Service genutzt haben. Ihr Dokument wurde lokal erstellt.",
+    allSet: "Alles erledigt!",
+    subtitle: "Der Lebenslauf Ihres Tieres wurde erstellt und ist bereit.",
+    downloadPdf: "PDF herunterladen",
+    privacyLocal: "Ihre Daten wurden lokal verarbeitet und niemals auf unseren Servern gespeichert.",
+    supportTitle: "Projekt unterstützen",
+    supportDesc: "Pet-Bewerbung ist 100% kostenlos. Wenn es Ihnen gefällt, spenden Sie unserem Team einen Kaffee!",
+    supportCta: "PayPal / TWINT",
+    everyTreat: "Jede Gabe zählt! Wuff & Miau.",
+    createAnother: "← Noch eines erstellen",
+    showSupport: "Unterstützungsoptionen anzeigen",
+    purrPerfect: "PURR-FECT!"
   },
   paymentSuccess: {
     title: "Zahlung erfolgreich!",
@@ -182,11 +199,27 @@ export default {
     detailsTitle: "Zahlungsdetails",
     thankYouTitle: "Vielen Dank!",
     thankYouMessage: "Ihre Unterstützung hilft uns, diesen Service zu erhalten und zu verbessern. Wir schätzen Ihre Großzügigkeit sehr!",
+    tailWagTitle: "Ein großes Schwanzwedeln für Sie!",
+    donationMade: "Ihre Spende von",
+    donationMadeSuffix: "hat gerade einen großen Unterschied gemacht.",
+    downloadPdf: "PDF herunterladen",
+    returnHome: "Zur Startseite",
+    paymentConfirmed: "Zahlung bestätigt",
+    secureTransaction: "Sichere Transaktion",
     amount: "Betrag",
     email: "E-Mail",
     status: "Status",
     completed: "Abgeschlossen",
     goHome: "Zur Startseite"
+  },
+  paymentCheckout: {
+    secureCheckout: "Sicherer Checkout",
+    completeDonation: "Spende abschliessen",
+    youreDonating: "Sie spenden",
+    toSupport: "zur Unterstützung des Projekts.",
+    orPayWithCard: "Oder mit Karte zahlen",
+    payAmount: "Zahlen",
+    stripeProtected: "Stripe Protected"
   },
   templates: {
     intro: "Bei dem beschriebenen Tier handelt es sich um einen sehr gepflegten und sozialverträglichen Mitbewohner.",
@@ -254,6 +287,29 @@ export default {
     ownerSection: "Halterangaben",
     petSection: "Tierangaben"
   },
+  nav: {
+    nextStep: "Weiter",
+    back: "Zurück",
+    nextPhotos: "Weiter: Fotos",
+    nextTemplate: "Weiter: Vorlage",
+    nextSummary: "Weiter: Übersicht",
+    nextPreview: "Weiter: Vorschau",
+    downloadPdf: "PDF herunterladen",
+    createAnother: "← Noch eines erstellen",
+    previousStep: "← Vorheriger Schritt",
+    finalReview: "Abschlussprüfung →"
+  },
+  step2Emergency: {
+    privacyText: "Privat & sicher: Ihre Notfallkontakte werden nur lokal in dieser Browsersitzung gespeichert.",
+    emergencyContacts: "Notfallkontakte",
+    vetName: "Tierarzt / Praxis",
+    vetClinicPhone: "Telefon Tierarzt",
+    secondaryContact: "Zweiter Notfallkontakt (Name & Tel., z.B. Nachbar, Familie)",
+    displayMedical: "Medizinische Angaben anzeigen?",
+    medicalHint: "Aktivieren für einen Bereich Allergien/Medikamente.",
+    showMore: "Weitere Angaben anzeigen",
+    showMoreHint: "Versicherung, Chip, Verhalten, Referenzen usw."
+  },
   stepsNew: {
     step1: {
       title: "Details",
@@ -264,17 +320,26 @@ export default {
       subtitle: "Tierarzt & Kontakte"
     },
     step3: {
+      title: "Tierbeschreibung",
+      subtitle: "Charakter & KI"
+    },
+    step4: {
       title: "Hochladen & Auswählen",
       subtitle: "Foto & Vorlage",
       badge: "Lokal"
     },
-    step4: {
+    step5: {
+      title: "Vorschau",
+      subtitle: "Vorlage & Infos prüfen"
+    },
+    step6: {
       title: "PDF erhalten",
-      subtitle: "Lebenslauf herunterladen"
+      subtitle: "Herunterladen"
     }
   },
   footer: {
     copyright: "© 2026 pet-bewerbung.ch. Mit ❤️ für Haustiere überall gemacht.",
+    openSource: "Open Source",
     impressum: "Impressum",
     privacy: "Datenschutz",
     terms: "AGB",

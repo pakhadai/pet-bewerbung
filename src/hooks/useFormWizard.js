@@ -110,6 +110,8 @@ export const useFormWizard = () => {
     setAnimDir(newStep > prevStepRef.current ? 'right' : 'left');
     prevStepRef.current = newStep;
     setStep(newStep);
+    // Scroll to top so the next step is visible from the start
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   // Navigation helpers

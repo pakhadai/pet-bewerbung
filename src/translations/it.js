@@ -108,6 +108,12 @@ export default {
     vaccination: "Vaccinato",
     registration: "Registrato (AMICUS/ANIS)",
     aiPrompt: "Parole chiave (es. tranquillo, pulito)",
+    tellUsAboutPet: "Raccontaci del tuo animale",
+    descriptionHint: "Personalità, giochi preferiti o piccole manie.",
+    descriptionPlaceholder: "Buddy è un Golden Retriever vivace che ama le coccole e rincorrere gli scoiattoli...",
+    aiGenerateBtn: "Genera descrizione IA (470 caratteri)",
+    localPrivacy: "Generazione locale • Privacy",
+    generating: "Generazione in corso...",
     aiBtn: "Generare testo",
     aiResult: "Testo per il proprietario",
     aiError: "Generazione IA fallita. Uso del modello.",
@@ -174,7 +180,18 @@ export default {
   },
   thankYou: {
     title: "Grazie",
-    msg: "Grazie per aver usato il servizio. Il documento è stato generato localmente."
+    msg: "Grazie per aver usato il servizio. Il documento è stato generato localmente.",
+    allSet: "Tutto fatto!",
+    subtitle: "Il CV del tuo animale è stato generato e pronto.",
+    downloadPdf: "Scarica PDF",
+    privacyLocal: "I tuoi dati sono stati elaborati localmente e non sono mai memorizzati sui nostri server.",
+    supportTitle: "Sostieni il progetto",
+    supportDesc: "Pet-Bewerbung è 100% gratuito. Se ti piace, offri un caffè al team!",
+    supportCta: "PayPal / TWINT",
+    everyTreat: "Ogni donazione conta! Bau & Miao.",
+    createAnother: "← Crea un altro",
+    showSupport: "Mostra opzioni di supporto",
+    purrPerfect: "PURR-FECT!"
   },
   paymentSuccess: {
     title: "Pagamento riuscito!",
@@ -182,6 +199,13 @@ export default {
     detailsTitle: "Dettagli del pagamento",
     thankYouTitle: "Grazie!",
     thankYouMessage: "Il tuo supporto ci aiuta a mantenere e migliorare questo servizio. Apprezziamo davvero la tua generosità!",
+    tailWagTitle: "Un grande scodinzolio per te!",
+    donationMade: "La tua donazione di",
+    donationMadeSuffix: "ha fatto una grande differenza.",
+    downloadPdf: "Scarica PDF",
+    returnHome: "Torna alla home",
+    paymentConfirmed: "Pagamento confermato",
+    secureTransaction: "Transazione sicura",
     amount: "Importo",
     email: "Email",
     status: "Stato",
@@ -254,6 +278,29 @@ export default {
     ownerSection: "Informazioni proprietario",
     petSection: "Informazioni animale"
   },
+  nav: {
+    nextStep: "Avanti",
+    back: "Indietro",
+    nextPhotos: "Avanti: Foto",
+    nextTemplate: "Avanti: Modello",
+    nextSummary: "Avanti: Riepilogo",
+    nextPreview: "Avanti: Anteprima",
+    downloadPdf: "Scarica PDF",
+    createAnother: "← Crea un altro",
+    previousStep: "← Passo precedente",
+    finalReview: "Revisione finale →"
+  },
+  step2Emergency: {
+    privacyText: "Privato e sicuro: i contatti di emergenza sono memorizzati solo localmente in questa sessione.",
+    emergencyContacts: "Contatti di emergenza",
+    vetName: "Veterinario",
+    vetClinicPhone: "Telefono veterinario",
+    secondaryContact: "Contatto secondario (Nome e tel., es. vicino, familiare)",
+    displayMedical: "Mostrare condizioni mediche?",
+    medicalHint: "Attiva per allergie/medicazioni.",
+    showMore: "Mostra altri dettagli",
+    showMoreHint: "Assicurazione, chip, comportamento, referenze, ecc."
+  },
   stepsNew: {
     step1: {
       title: "Details",
@@ -264,17 +311,26 @@ export default {
       subtitle: "Veterinario & Contatti"
     },
     step3: {
+      title: "Descrizione animale",
+      subtitle: "Carattere & IA"
+    },
+    step4: {
       title: "Carica & Seleziona",
       subtitle: "Foto & Modello",
       badge: "Locale"
     },
-    step4: {
+    step5: {
+      title: "Anteprima",
+      subtitle: "Controlla modello e informazioni"
+    },
+    step6: {
       title: "Ottieni PDF",
-      subtitle: "Scarica curriculum"
+      subtitle: "Scarica"
     }
   },
   footer: {
     copyright: "© 2026 pet-bewerbung.ch. Fatto con ❤️ per gli animali ovunque.",
+    openSource: "Codice aperto",
     impressum: "Impressum",
     privacy: "Informativa sulla privacy",
     terms: "Termini",

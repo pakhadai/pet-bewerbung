@@ -20,18 +20,25 @@ interface StepCardProps {
     icon: string;
   };
   darkMode: boolean;
+  animDelay?: string; // e.g. '0.1s'
 }
 
 const StepCard: React.FC<StepCardProps> = ({ 
   number, title, subtitle, iconPrimary, iconSecondary, 
-  bgColorClass, darkModeBgClass, rotation, hoverRotation, badge, darkMode 
+  bgColorClass, darkModeBgClass, rotation, hoverRotation, badge, darkMode,
+  animDelay = ''
 }) => {
   return (
-    <div className="flex flex-col items-center gap-4 group cursor-default">
-      <div className={`relative flex h-28 w-28 items-center justify-center hand-drawn-border border-2 border-text-main shadow-sm transition-transform duration-300
+    <div 
+      className="flex flex-col items-center gap-4 group cursor-default animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both"
+      style={animDelay ? { animationDelay: animDelay } : undefined}
+    >
+      <div className={`relative flex h-28 w-28 items-center justify-center hand-drawn-border border-2 border-text-main shadow-sm transition-transform duration-300 hover:scale-105
         ${darkMode ? darkModeBgClass : bgColorClass}
-        ${rotation} group-hover:${hoverRotation}
-      `}>
+        ${rotation}
+      `}
+        style={{ transition: 'transform 0.3s ease' }}
+      >
         {/* Number Badge */}
         <div className={`absolute -top-4 -right-2 flex h-8 w-8 items-center justify-center rounded-full font-display text-xl border-2 border-white
             ${darkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-text-main text-white'}`}>
@@ -78,7 +85,7 @@ const Steps: React.FC<StepsProps> = ({ darkMode, t }) => {
         <path d="M50,50 C300,20 900,80 1150,50" stroke={darkMode ? "#ffffff" : "#4a4a4a"} strokeDasharray="12 12" strokeLinecap="round" strokeWidth="3"></path>
       </svg>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 [--stagger:0.12s]">
         <StepCard 
           number="1"
           title={t?.stepsNew?.step1?.title || "Add Details"}
@@ -90,6 +97,7 @@ const Steps: React.FC<StepsProps> = ({ darkMode, t }) => {
           rotation="rotate-[-2deg]"
           hoverRotation="rotate-1"
           darkMode={darkMode}
+          animDelay="0.05s"
         />
         <StepCard 
           number="2"
@@ -102,33 +110,37 @@ const Steps: React.FC<StepsProps> = ({ darkMode, t }) => {
           rotation="rotate-[3deg]"
           hoverRotation="rotate-0"
           darkMode={darkMode}
+          animDelay="0.15s"
         />
         <StepCard 
           number="3"
-          title={t?.stepsNew?.step3?.title || "Upload & Select"}
-          subtitle={t?.stepsNew?.step3?.subtitle || "Photo & Template"}
-          iconPrimary="photo_camera"
-          iconSecondary="dashboard"
+          title={t?.stepsNew?.step3?.title || "Pet Description"}
+          subtitle={t?.stepsNew?.step3?.subtitle || "Character & AI"}
+          iconPrimary="stylus"
+          iconSecondary="auto_awesome"
           bgColorClass="bg-lavender"
           darkModeBgClass="bg-lavender/80"
           rotation="rotate-[-1deg]"
           hoverRotation="rotate-2"
-          badge={{
-            text: t?.stepsNew?.step3?.badge || "Local",
-            icon: 'lock'
-          }}
           darkMode={darkMode}
+          animDelay="0.25s"
         />
         <StepCard 
           number="4"
-          title={t?.stepsNew?.step4?.title || "Get PDF"}
-          subtitle={t?.stepsNew?.step4?.subtitle || "Download Resume"}
-          iconPrimary="downloading"
+          title={t?.stepsNew?.step4?.title || "Upload & Select"}
+          subtitle={t?.stepsNew?.step4?.subtitle || "Photo & Template"}
+          iconPrimary="photo_camera"
+          iconSecondary="dashboard"
           bgColorClass="bg-accent-pink"
           darkModeBgClass="bg-accent-pink/80"
           rotation="rotate-[2deg]"
           hoverRotation="rotate-[-1deg]"
+          badge={{
+            text: t?.stepsNew?.step4?.badge || "Local",
+            icon: 'lock'
+          }}
           darkMode={darkMode}
+          animDelay="0.35s"
         />
       </div>
     </div>

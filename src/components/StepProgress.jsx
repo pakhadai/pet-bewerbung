@@ -1,20 +1,22 @@
 import React from 'react';
 
 /**
- * 4-step progress bar: 1 Details | 2 Emergency | 3 Template | 4 Finish.
- * Steps 1–4 map directly; step 5 (Preview) shows 4/4 Finish.
+ * 6-step progress bar: 1 Details | 2 Emergency | 3 Pet Description | 4 Upload&Select | 5 Preview | 6 Get PDF.
+ * Steps 1–5 show the bar; step 6 (Thank you) is the final screen (no bar).
  */
 const StepProgress = ({ step, t, darkMode }) => {
   const steps = [
     { key: 'step1', label: t?.stepsNew?.step1?.title || 'Details', short: '1' },
     { key: 'step2', label: t?.stepsNew?.step2?.title || 'Emergency', short: '2' },
-    { key: 'step3', label: t?.stepsNew?.step3?.title || 'Template', short: '3' },
-    { key: 'step4', label: t?.stepsNew?.step4?.title || 'Finish', short: '4' }
+    { key: 'step3', label: t?.stepsNew?.step3?.title || 'Pet Description', short: '3' },
+    { key: 'step4', label: t?.stepsNew?.step4?.title || 'Upload & Select', short: '4' },
+    { key: 'step5', label: t?.stepsNew?.step5?.title || 'Preview', short: '5' },
+    { key: 'step6', label: t?.stepsNew?.step6?.title || t?.stepsNew?.step5?.title || 'Get PDF', short: '6' }
   ];
-  const current = step >= 5 ? 4 : Math.min(step, 4);
+  const current = step >= 6 ? 6 : Math.min(step, 6);
 
   return (
-    <div className={`flex items-center justify-center gap-2 sm:gap-4 py-4 ${darkMode ? 'text-gray-300' : 'text-text-secondary'}`}>
+    <div className={`flex items-center justify-center gap-2 sm:gap-4 py-0 ${darkMode ? 'text-gray-300' : 'text-text-secondary'}`}>
       {steps.map((s, i) => {
         const idx = i + 1;
         const active = idx === current;

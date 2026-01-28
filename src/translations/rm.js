@@ -108,6 +108,12 @@ export default {
     vaccination: "Vaccinà",
     registration: "Registrà (AMICUS/ANIS)",
     aiPrompt: "Pleds-clav (p.ex. quiets, net)",
+    tellUsAboutPet: "Racontai da vies animal",
+    descriptionHint: "Persunalitad, gieus preferids u pitschnas manias.",
+    descriptionPlaceholder: "Buddy è in Golden Retriever viv da char che amescha las carezzas e suandar squerrs...",
+    aiGenerateBtn: "Generar descripziun IA (470 caracters)",
+    localPrivacy: "Generaziun locala • Sfera privata",
+    generating: "Generaziun...",
     aiBtn: "Generar text",
     aiResult: "Text per il locatari",
     aiError: "Generaziun IA betg reussida. Utilisar model.",
@@ -174,7 +180,18 @@ export default {
   },
   thankYou: {
     title: "Grazia",
-    msg: "Grazia fitg per l'utilisaziun. Il document è vegnì generà localmain."
+    msg: "Grazia fitg per l'utilisaziun. Il document è vegnì generà localmain.",
+    allSet: "Tut fat!",
+    subtitle: "Il curriculum da voss animal è pront.",
+    downloadPdf: "Telechargiar PDF",
+    privacyLocal: "Vossas datas èn vegnidas elaboradas localmain e na vegnan mai memorisadas.",
+    supportTitle: "Sustegnair il project",
+    supportDesc: "Pet-Bewerbung è 100% gratuit. Sche Vus gugent, offri in café al team!",
+    supportCta: "PayPal / TWINT",
+    everyTreat: "Mintga donaziun conta! Wuff & Miau.",
+    createAnother: "← Crear in auter",
+    showSupport: "Mussar opziuns da sustegn",
+    purrPerfect: "PURR-FECT!"
   },
   paymentSuccess: {
     title: "Pagament reussì!",
@@ -182,6 +199,13 @@ export default {
     detailsTitle: "Detagls dal pagament",
     thankYouTitle: "Grazia!",
     thankYouMessage: "Tia sustegnida ans gida da mantegnair e meglierar quest servetsch. Nus appreziain fitg tia generusadad!",
+    tailWagTitle: "In grond moviment da la cua per tai!",
+    donationMade: "Tia donaziun da",
+    donationMadeSuffix: "ha gist fatg ina gronda differenza.",
+    downloadPdf: "Telechargiar PDF",
+    returnHome: "Turnar a la pagina principala",
+    paymentConfirmed: "Pagament confirmà",
+    secureTransaction: "Transacziun segira",
     amount: "Summa",
     email: "E-mail",
     status: "Status",
@@ -254,6 +278,29 @@ export default {
     ownerSection: "Infurmaziuns proprietari",
     petSection: "Infurmaziuns animal"
   },
+  nav: {
+    nextStep: "Enavant",
+    back: "Enavos",
+    nextPhotos: "Enavant: Fotos",
+    nextTemplate: "Enavant: Model",
+    nextSummary: "Enavant: Resum",
+    nextPreview: "Enavant: Prevista",
+    downloadPdf: "Telechargiar PDF",
+    createAnother: "← Crear in auter",
+    previousStep: "← Pass precedent",
+    finalReview: "Revisiun finala →"
+  },
+  step2Emergency: {
+    privacyText: "Privat e segir: vos contacts d'urgenza restan be en questa sessiun.",
+    emergencyContacts: "Contacts d'urgenza",
+    vetName: "Veterinar",
+    vetClinicPhone: "Telefon veterinar",
+    secondaryContact: "Contact secundar (Num & tel., p.ex. vischin, famiglia)",
+    displayMedical: "Mussar cundiziuns medicas?",
+    medicalHint: "Activar per allergias/medicaments.",
+    showMore: "Mussar ulteriurs detagls",
+    showMoreHint: "Assicuranza, chip, cumpurtament, referenzas, etc."
+  },
   stepsNew: {
     step1: {
       title: "Details",
@@ -264,17 +311,26 @@ export default {
       subtitle: "Veterinar & contacts"
     },
     step3: {
+      title: "Descripziun da l'animal",
+      subtitle: "Caracter & IA"
+    },
+    step4: {
       title: "Chargiar & tscherner",
       subtitle: "Foto & model",
       badge: "Local"
     },
-    step4: {
+    step5: {
+      title: "Prevista",
+      subtitle: "Controllar model e infurmaziuns"
+    },
+    step6: {
       title: "Obtener PDF",
-      subtitle: "Telechargiar curriculum"
+      subtitle: "Telechargiar"
     }
   },
   footer: {
     copyright: "© 2026 pet-bewerbung.ch. Fatg cun ❤️ per animals dapertut.",
+    openSource: "Code aviert",
     impressum: "Impressum",
     privacy: "Politica da protecziun da datas",
     terms: "Cundiziuns",

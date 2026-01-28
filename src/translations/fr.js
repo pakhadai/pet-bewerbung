@@ -108,6 +108,12 @@ export default {
     vaccination: "Vacciné",
     registration: "Enregistré (AMICUS/ANIS)",
     aiPrompt: "Mots-clés (ex: calme, propre)",
+    tellUsAboutPet: "Parlez-nous de votre animal",
+    descriptionHint: "Personnalité, jouets préférés ou petits travers.",
+    descriptionPlaceholder: "Buddy est un Golden Retriever énergique qui aime les caresses et courir après les écureuils...",
+    aiGenerateBtn: "Générer la description IA (470 caractères)",
+    localPrivacy: "Génération locale • Confidentialité",
+    generating: "Génération en cours...",
     aiBtn: "Générer le texte",
     aiResult: "Texte pour la régie",
     aiError: "Génération IA échouée. Utilisation du modèle.",
@@ -174,7 +180,18 @@ export default {
   },
   thankYou: {
     title: "Merci",
-    msg: "Merci d'avoir utilisé notre service. Votre document a été généré localement."
+    msg: "Merci d'avoir utilisé notre service. Votre document a été généré localement.",
+    allSet: "C'est fait !",
+    subtitle: "Le CV de votre animal a été généré et est prêt.",
+    downloadPdf: "Télécharger PDF",
+    privacyLocal: "Vos données ont été traitées localement et ne sont jamais stockées sur nos serveurs.",
+    supportTitle: "Soutenir le projet",
+    supportDesc: "Pet-Bewerbung est 100% gratuit. Si cela vous plaît, offrez un café à l'équipe !",
+    supportCta: "PayPal / TWINT",
+    everyTreat: "Chaque don compte ! Wouf & Miaou.",
+    createAnother: "← Créer un autre",
+    showSupport: "Afficher les options de soutien",
+    purrPerfect: "PURR-FECT !"
   },
   paymentSuccess: {
     title: "Paiement réussi !",
@@ -182,6 +199,13 @@ export default {
     detailsTitle: "Détails du paiement",
     thankYouTitle: "Merci !",
     thankYouMessage: "Votre soutien nous aide à maintenir et améliorer ce service. Nous apprécions vraiment votre générosité !",
+    tailWagTitle: "Un grand remuement de queue pour vous !",
+    donationMade: "Votre don de",
+    donationMadeSuffix: "vient de faire une grande différence.",
+    downloadPdf: "Télécharger le PDF",
+    returnHome: "Retour à l'accueil",
+    paymentConfirmed: "Paiement confirmé",
+    secureTransaction: "Transaction sécurisée",
     amount: "Montant",
     email: "E-mail",
     status: "Statut",
@@ -254,6 +278,29 @@ export default {
     ownerSection: "Informations propriétaire",
     petSection: "Informations animal"
   },
+  nav: {
+    nextStep: "Suivant",
+    back: "Retour",
+    nextPhotos: "Suivant : Photos",
+    nextTemplate: "Suivant : Modèle",
+    nextSummary: "Suivant : Résumé",
+    nextPreview: "Suivant : Aperçu",
+    downloadPdf: "Télécharger PDF",
+    createAnother: "← Créer un autre",
+    previousStep: "← Étape précédente",
+    finalReview: "Vérification finale →"
+  },
+  step2Emergency: {
+    privacyText: "Privé et sécurisé : vos contacts d'urgence sont stockés localement dans cette session.",
+    emergencyContacts: "Contacts d'urgence",
+    vetName: "Vétérinaire",
+    vetClinicPhone: "Téléphone vétérinaire",
+    secondaryContact: "Contact secondaire (Nom & Tél., ex. voisin, famille)",
+    displayMedical: "Afficher les conditions médicales ?",
+    medicalHint: "Cochez pour ajouter allergies/médicaments.",
+    showMore: "Afficher plus de détails",
+    showMoreHint: "Assurance, puce, comportement, références, etc."
+  },
   stepsNew: {
     step1: {
       title: "Details",
@@ -264,17 +311,26 @@ export default {
       subtitle: "Vétérinaire & Contacts"
     },
     step3: {
+      title: "Description de l'animal",
+      subtitle: "Caractère & IA"
+    },
+    step4: {
       title: "Télécharger & Sélectionner",
       subtitle: "Photo & Modèle",
       badge: "Local"
     },
-    step4: {
+    step5: {
+      title: "Aperçu",
+      subtitle: "Vérifier le modèle et les infos"
+    },
+    step6: {
       title: "Obtenir le PDF",
-      subtitle: "Télécharger le CV"
+      subtitle: "Télécharger"
     }
   },
   footer: {
     copyright: "© 2026 pet-bewerbung.ch. Fait avec ❤️ pour les animaux partout.",
+    openSource: "Code ouvert",
     impressum: "Mentions légales",
     privacy: "Politique de confidentialité",
     terms: "CGU",

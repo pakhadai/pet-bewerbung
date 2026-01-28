@@ -20,6 +20,8 @@ const INITIAL_DATA = {
   chipId: '',
   insuranceProvider: '',
   vetName: '',
+  vetPhone: '',
+  medicalConditions: '', // allergies/meds when "display medical conditions" is on
   isNeutered: false,
   hasVaccination: true,
   hasRegistration: true,
@@ -36,6 +38,7 @@ const INITIAL_DATA = {
   emergencyContactName: '',
   emergencyContactPhone: '',
   emergencyContactRelation: '',
+  secondaryEmergencyContact: '', // "Name & Phone" one line
   willingToPayDeposit: true,
   behaviorWithChildren: '', // good, neutral, avoid
   behaviorWithPets: '', // good, neutral, avoid

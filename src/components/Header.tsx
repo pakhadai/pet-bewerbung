@@ -36,14 +36,16 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode, lang, onLangC
         {/* Navigation & Actions */}
         <div className="flex items-center gap-3 lg:gap-6">
           
-          {/* Language Switcher */}
-          <div className={`hidden md:flex items-center gap-2 font-sans text-lg font-semibold ${darkMode ? 'text-gray-300' : 'text-text-main'}`}>
+          {/* Language Switcher – той самий шрифт, що й на головній (Quicksand) */}
+          <div className={`hidden md:flex items-center gap-2 text-lg font-semibold ${darkMode ? 'text-gray-300' : 'text-text-main'}`} style={{ fontFamily: '"Quicksand", sans-serif' }}>
             {languages.map((lng, index) => (
               <React.Fragment key={lng.code}>
                 {index > 0 && <span className="opacity-50">/</span>}
                 <button 
+                  type="button"
                   onClick={() => onLangChange(lng.code)}
                   className={`hover:text-primary transition-colors ${lang === lng.code ? 'border-b-2 border-primary' : 'opacity-70 hover:opacity-100'}`}
+                  style={{ fontFamily: 'inherit' }}
                 >
                   {lng.label}
                 </button>

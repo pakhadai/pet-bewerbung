@@ -131,15 +131,21 @@ const GlobalStyles = ({ theme = 'light' }) => {
     html {
       transition: background 300ms;
     }
+    /* Шрифт як на головній: Quicksand (підключено в index.html) */
     body {
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
+      font-family: "Quicksand", system-ui, -apple-system, "Segoe UI", sans-serif;
       color: var(--text);
       transition: background 300ms, color 300ms;
     }
-    select, button, input, textarea {
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", "Segoe UI Emoji", "Noto Color Emoji", "Twemoji Mozilla", sans-serif;
+    select, input, textarea {
+      font-family: "Quicksand", system-ui, -apple-system, "Segoe UI", sans-serif;
       color: var(--text);
       background: var(--bg);
+      transition: background 300ms, color 300ms;
+    }
+    button {
+      font-family: "Quicksand", system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: var(--text);
       transition: background 300ms, color 300ms;
     }
 

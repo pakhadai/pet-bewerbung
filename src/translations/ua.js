@@ -108,6 +108,12 @@ export default {
     vaccination: "Вакцинований",
     registration: "Реєстрація (AMICUS/ANIS)",
     aiPrompt: "Ключові слова (напр. тихий, чистий)",
+    tellUsAboutPet: "Розкажіть про вашу тваринку",
+    descriptionHint: "Характер, улюблені іграшки чи смішні звички.",
+    descriptionPlaceholder: "Бадді — енергійний голден-ретрівер, любить чіпати та ганяти білок...",
+    aiGenerateBtn: "Згенерувати опис ШІ (470 символів)",
+    localPrivacy: "Локальна генерація • Конфіденційність",
+    generating: "Генерація...",
     aiBtn: "Згенерувати опис",
     aiResult: "Текст для власника",
     aiError: "Генерація ШІ не вдалася. Використовується шаблон.",
@@ -174,7 +180,18 @@ export default {
   },
   thankYou: {
     title: "Дякуємо",
-    msg: "Дякуємо, що скористалися сервісом. Документ згенеровано локально."
+    msg: "Дякуємо, що скористалися сервісом. Документ згенеровано локально.",
+    allSet: "Все готово!",
+    subtitle: "Резюме вашої тварини згенеровано й готове.",
+    downloadPdf: "Завантажити PDF",
+    privacyLocal: "Ваші дані оброблено локально й вони ніколи не зберігаються на наших серверах.",
+    supportTitle: "Підтримати проєкт",
+    supportDesc: "Pet-Bewerbung — 100% безкоштовно. Якщо подобається — пригостіть команді каву!",
+    supportCta: "PayPal / TWINT",
+    everyTreat: "Кожна підтримка важлива! Гав і Мяу.",
+    createAnother: "← Створити ще один",
+    showSupport: "Показати варіанти підтримки",
+    purrPerfect: "PURR-FECT!"
   },
   paymentSuccess: {
     title: "Оплата успішна!",
@@ -182,6 +199,13 @@ export default {
     detailsTitle: "Деталі оплати",
     thankYouTitle: "Дякуємо!",
     thankYouMessage: "Ваша підтримка допомагає нам підтримувати та покращувати цей сервіс. Ми дуже цінуємо вашу щедрість!",
+    tailWagTitle: "Велике махання хвостом для вас!",
+    donationMade: "Ваша пожертва",
+    donationMadeSuffix: "щойно зробила велику різницю.",
+    downloadPdf: "Завантажити PDF",
+    returnHome: "На головну",
+    paymentConfirmed: "Оплату підтверджено",
+    secureTransaction: "Безпечна транзакція",
     amount: "Сума",
     email: "Електронна пошта",
     status: "Статус",
@@ -254,6 +278,29 @@ export default {
     ownerSection: "Інформація про власника",
     petSection: "Інформація про тварину"
   },
+  nav: {
+    nextStep: "Далі",
+    back: "Назад",
+    nextPhotos: "Далі: Фото",
+    nextTemplate: "Далі: Шаблон",
+    nextSummary: "Далі: Підсумок",
+    nextPreview: "Далі: Перегляд",
+    downloadPdf: "Завантажити PDF",
+    createAnother: "← Створити ще один",
+    previousStep: "← Попередній крок",
+    finalReview: "Фінальний огляд →"
+  },
+  step2Emergency: {
+    privacyText: "Приватно та безпечно: ваші контакти екстреної допомоги зберігаються лише локально в цій сесії.",
+    emergencyContacts: "Контакти екстреної допомоги",
+    vetName: "Ветеринар",
+    vetClinicPhone: "Телефон ветеринара",
+    secondaryContact: "Другий контакт (ім’я та тел., напр. сусід, родич)",
+    displayMedical: "Показувати медичні дані?",
+    medicalHint: "Увімкніть для розділу алергії/ліки.",
+    showMore: "Показати додаткові поля",
+    showMoreHint: "Страхування, чіп, поведінка, рекомендації тощо."
+  },
   stepsNew: {
     step1: {
       title: "Details",
@@ -264,17 +311,26 @@ export default {
       subtitle: "Ветеринар та контакти"
     },
     step3: {
+      title: "Опис тварини",
+      subtitle: "Характер та ШІ"
+    },
+    step4: {
       title: "Завантажити & Вибрати",
       subtitle: "Фото & Шаблон",
       badge: "Локально"
     },
-    step4: {
+    step5: {
+      title: "Перегляд",
+      subtitle: "Переглянути шаблон та перевірити інфу"
+    },
+    step6: {
       title: "Отримати PDF",
-      subtitle: "Завантажити резюме"
+      subtitle: "Завантажити"
     }
   },
   footer: {
     copyright: "© 2026 pet-bewerbung.ch. Зроблено з ❤️ для тварин скрізь.",
+    openSource: "Відкритий код",
     impressum: "Відомості",
     privacy: "Політика конфіденційності",
     terms: "Умови",

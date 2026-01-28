@@ -6,7 +6,6 @@ import API_ENDPOINTS from './config';
 import compressImage from './utils/imageCompression';
 import GlobalStyles from './components/GlobalStyles';
 import Header from './components/Header';
-import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import Hero from './components/Hero';
 import Steps from './components/Steps';
@@ -23,7 +22,7 @@ import {
   Step1Details,
   Step3HealthInsurance,
   Step3UploadSelect,
-  Step6Summary,
+  Step4Description,
   Step8Preview,
   Step9ThankYou
 } from './components/steps/index';
@@ -72,20 +71,33 @@ export default function App() {
   const butterVisible = useScrollVisibility(120);
   const { errors: validationErrors, isValid: canProceed } = useFormValidation(data, step);
 
-  // Dark mode state (changed from theme: 'light'/'dark'/'sepia' to boolean)
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  // Dark mode state — persist in localStorage so it survives refresh
+  const THEME_STORAGE_KEY = 'pet-bewerbung-theme';
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(THEME_STORAGE_KEY);
+      return saved === 'dark';
+    } catch {
+      return false;
+    }
+  });
   const [isGenerating, setIsGenerating] = useState(false);
   const [legalPage, setLegalPage] = useState<string | null>(null); // 'impressum', 'privacy', 'terms', or null
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentSessionId, setPaymentSessionId] = useState<string | null>(null);
   const [navigationVisible, setNavigationVisible] = useState(true); // Control navigation visibility for Step5Photo
 
-  // Apply dark mode class to document
+  // Apply dark mode class to document and persist theme
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
+    }
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, darkMode ? 'dark' : 'light');
+    } catch {
+      // ignore
     }
   }, [darkMode]);
 
@@ -126,9 +138,9 @@ export default function App() {
     prevLangRef.current = data.lang;
   }, [data.lang, data.generatedText, updateData, showToast]);
 
-  // Reset navigation visibility when step changes (except when on step 5 with cropper open)
+  // Reset navigation visibility when step changes (except when on step 4 = Upload with cropper open)
   useEffect(() => {
-    if (step !== 5) {
+    if (step !== 4) {
       setNavigationVisible(true);
     }
   }, [step]);
@@ -345,9 +357,7 @@ export default function App() {
       
       // Cleanup after delay
       setTimeout(() => URL.revokeObjectURL(url), 5000);
-      
-      // Go to thank you page
-      setTimeout(() => goToStep(6), 2000);
+      // Не перекидати — користувач залишається на сторінці подяки
     } catch (err: any) {
       // Better error handling for PDF generation
       const errorMessage = err.message || 'Unknown error';
@@ -474,10 +484,45 @@ export default function App() {
           </div>
         );
       case 1:
-        return <Step1Details data={data} updateData={updateData} t={t} animDir={animDir} errors={validationErrors} darkMode={darkMode} />;
+        return (
+          <Step1Details
+            data={data}
+            updateData={updateData}
+            t={t}
+            animDir={animDir}
+            errors={validationErrors}
+            darkMode={darkMode}
+            onNext={() => goToStep(2)}
+            canProceed={canProceed}
+          />
+        );
       case 2:
-        return <Step3HealthInsurance data={data} updateData={updateData} t={t} animDir={animDir} darkMode={darkMode} />;
+        return (
+          <Step3HealthInsurance
+            data={data}
+            updateData={updateData}
+            t={t}
+            animDir={animDir}
+            darkMode={darkMode}
+            onPrev={() => goToStep(1)}
+            onNext={() => goToStep(3)}
+          />
+        );
       case 3:
+        return (
+          <Step4Description
+            data={data}
+            updateData={updateData}
+            t={t}
+            animDir={animDir}
+            darkMode={darkMode}
+            isGenerating={isGenerating}
+            onGenerate={generateText}
+            onPrev={() => goToStep(2)}
+            onNext={() => goToStep(4)}
+          />
+        );
+      case 4:
         return (
           <Step3UploadSelect
             data={data}
@@ -490,67 +535,96 @@ export default function App() {
             showToast={showToast}
             onNavigationVisibilityChange={setNavigationVisible}
             darkMode={darkMode}
+            onPrev={() => goToStep(3)}
+            onNext={() => goToStep(5)}
           />
         );
-      case 4:
-        return <Step6Summary data={data} t={t} animDir={animDir} darkMode={darkMode} />;
       case 5:
-        return <Step8Preview data={data} t={t} animDir={animDir} selectedTemplate={selectedTemplate} darkMode={darkMode} />;
+        return (
+          <Step8Preview
+            data={data}
+            t={t}
+            animDir={animDir}
+            selectedTemplate={selectedTemplate}
+            darkMode={darkMode}
+            onPrev={() => goToStep(4)}
+            onNext={() => goToStep(6)}
+          />
+        );
       default:
         return null;
     }
   };
 
   // Payment Success Page (shown after successful Stripe Checkout)
+  // Hidden pdf-document rendered so Download PDF works on this page too.
   if (showPaymentSuccess) {
     return (
-      <PaymentSuccess
-        data={data}
-        t={t}
-        theme={theme}
-        onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
-        onLangChange={(v: string) => updateData('lang', v)}
-        onLogoClick={() => {
-          setShowPaymentSuccess(false);
-          goToStep(0);
-        }}
-        sessionId={paymentSessionId}
-        showToast={showToast}
-      />
+      <>
+        <div aria-hidden="true" className="fixed overflow-hidden" style={{ left: -9999, top: 0, width: '210mm', height: '292mm', zIndex: -1 }}>
+          <div id="pdf-document" style={{ width: '210mm', height: '292mm' }}>
+            <SwissDocument data={data} t={t} templateType={selectedTemplate} />
+          </div>
+        </div>
+        <PaymentSuccess
+          data={data}
+          t={t}
+          theme={theme}
+          onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
+          onLangChange={(v: string) => updateData('lang', v)}
+          onLogoClick={() => {
+            setShowPaymentSuccess(false);
+            goToStep(0);
+          }}
+          sessionId={paymentSessionId}
+          showToast={showToast}
+          onDownloadPDF={handleDownloadPDF}
+        />
+      </>
     );
   }
 
-  // Step 6: Thank You Page
+  // Step 6: Thank You Page (Summary step removed)
+  // Hidden pdf-document must exist in DOM for handleDownloadPDF to work when user clicks Download on thank-you page.
   if (step === 6) {
     return (
-      <Step9ThankYou
-        data={data}
-        t={t}
-        theme={theme}
-        onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
-        onLangChange={(v: string) => updateData('lang', v)}
-        onLogoClick={() => goToStep(0)}
-        donationAmount={donationAmount}
-        setDonationAmount={setDonationAmount}
-        donateOpen={donateOpen}
-        setDonateOpen={setDonateOpen}
-        paymentOpen={paymentOpen}
-        setPaymentOpen={setPaymentOpen}
-        onDonate={handleDonateMethod}
-        showToast={showToast}
-        toast={toast}
-        onPaymentSuccess={(paymentId: string) => {
-          if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
-            setShowPaymentSuccess(true);
-            setPaymentSessionId(paymentId);
-          }
-        }}
-      />
+      <>
+        <div aria-hidden="true" className="fixed overflow-hidden" style={{ left: -9999, top: 0, width: '210mm', height: '292mm', zIndex: -1 }}>
+          <div id="pdf-document" style={{ width: '210mm', height: '292mm' }}>
+            <SwissDocument data={data} t={t} templateType={selectedTemplate} />
+          </div>
+        </div>
+        <Step9ThankYou
+          data={data}
+          t={t}
+          theme={theme}
+          onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
+          onLangChange={(v: string) => updateData('lang', v)}
+          onLogoClick={() => goToStep(0)}
+          onDownloadPDF={handleDownloadPDF}
+          onCreateAnother={() => goToStep(0)}
+          donationAmount={donationAmount}
+          setDonationAmount={setDonationAmount}
+          donateOpen={donateOpen}
+          setDonateOpen={setDonateOpen}
+          paymentOpen={paymentOpen}
+          setPaymentOpen={setPaymentOpen}
+          onDonate={handleDonateMethod}
+          showToast={showToast}
+          toast={toast}
+          onPaymentSuccess={(paymentId: string) => {
+            if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
+              setShowPaymentSuccess(true);
+              setPaymentSessionId(paymentId);
+            }
+          }}
+        />
+      </>
     );
   }
 
   return (
-    <div className={`min-h-screen font-sans theme-text pb-6 print:bg-white print:p-0 ${step !== 0 ? 'theme-bg' : ''}`}>
+    <div className="min-h-screen font-sans theme-text theme-bg pb-6 print:bg-white print:p-0">
       <GlobalStyles theme={theme} />
       <Header
         darkMode={darkMode}
@@ -561,11 +635,13 @@ export default function App() {
         t={t}
       />
 
-      <main className="w-full print:w-full print:max-w-none print:p-0">
-        <div className={step === 0 ? "w-full" : "max-w-7xl mx-auto p-4 md:p-8 print:border-none print:shadow-none print:p-0"}>
-          {step >= 1 && step <= 5 && (
+      <main className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 5 ? 'pt-24 md:pt-28' : ''}`}>
+        {step >= 1 && step <= 5 && (
+          <div className={`sticky top-0 z-20 w-full p-0 print:hidden border-b ${darkMode ? 'bg-gray-900 border-transparent' : 'bg-white border-transparent'}`} style={{ borderBottomColor: 'transparent' }}>
             <StepProgress step={step} t={t} darkMode={darkMode} />
-          )}
+          </div>
+        )}
+        <div className={step === 0 ? "w-full" : "max-w-7xl mx-auto p-4 md:p-8 print:border-none print:shadow-none print:p-0"}>
           {renderStep()}
         </div>
       </main>
@@ -583,6 +659,7 @@ export default function App() {
         amount={donationAmount}
         lang={data.lang}
         t={t}
+        darkMode={darkMode}
         onSuccess={(paymentId: string) => {
           showToast(t.paymentSuccess?.thankYouMessage || 'Thank you — payment succeeded', 'success');
           // Show PaymentSuccess page
@@ -637,18 +714,6 @@ export default function App() {
           {toast.msg}
         </div>
       )}
-
-      <Navigation
-        step={step}
-        onPrev={() => goToStep(step - 1)}
-        onNext={() => goToStep(step + 1)}
-        onDownloadPDF={handleDownloadPDF}
-        showToast={showToast}
-        t={t}
-        canProceed={canProceed}
-        visible={navigationVisible}
-        darkMode={darkMode}
-      />
 
       <Footer darkMode={darkMode} t={t} onOpenLegal={setLegalPage} onFaqClick={() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info')} />
 

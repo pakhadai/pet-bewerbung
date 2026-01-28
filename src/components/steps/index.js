@@ -5,7 +5,6 @@ export { default as Step3HealthInsurance } from './Step3HealthInsurance';
 export { default as Step3UploadSelect } from './Step3UploadSelect';
 export { default as Step4Description } from './Step4Description';
 export { default as Step5Photo } from './Step5Photo';
-export { default as Step6Summary } from './Step6Summary';
 export { default as Step7TemplateSelect } from './Step7TemplateSelect';
 export { default as Step8Preview } from './Step8Preview';
 export { default as Step9ThankYou } from './Step9ThankYou';
