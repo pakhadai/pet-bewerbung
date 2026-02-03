@@ -1,0 +1,65 @@
+# Development override – hot reload, no rebuild
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# Site: https://pet.ohmyrevit.pp.ua (через tunnel)
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: pet-redis
+    restart: unless-stopped
+    networks:
+      - pet-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: pet-frontend-dev
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_TARGET=http://backend:4242
+    networks:
+      - pet-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    command: npm run dev
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    container_name: pet-backend-dev
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - AI_RATE_LIMIT_FREE=1
+    networks:
+      - pet-network
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  tunnel:
+    depends_on:
+      frontend:
+        condition: service_healthy
+    # ВАЖЛИВО: У Cloudflare Tunnel (Zero Trust) змініть Service на http://frontend:3000
+    # щоб tunnel вів на Vite dev server замість nginx

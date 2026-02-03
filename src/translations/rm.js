@@ -119,6 +119,8 @@ export default {
     aiError: "Generaziun IA betg reussida. Utilisar model.",
     aiNetworkError: "Errur da rait. Controllar la connexiun e provar danovamain.",
     recrop: "Cropir maletg",
+    useFullImage: "Utilisar maletg entir",
+    cropDone: "Cropir",
     photo: "Eleger foto",
     download: "Memorisar PDF",
     years: "onns",
@@ -185,10 +187,10 @@ export default {
     subtitle: "Il curriculum da voss animal è pront.",
     downloadPdf: "Telechargiar PDF",
     privacyLocal: "Vossas datas èn vegnidas elaboradas localmain e na vegnan mai memorisadas.",
-    supportTitle: "Sustegnair il project",
-    supportDesc: "Pet-Bewerbung è 100% gratuit. Sche Vus gugent, offri in café al team!",
+    supportTitle: "Tscherner voss contribuziun",
+    supportDesc: "Pet-Bewerbung è senza reclama e na memorisescha naginas datas. Utilisai gratis – sche il resultat Vus gugent, sustegnain nus cun in contribuziun gista.",
     supportCta: "PayPal / TWINT",
-    everyTreat: "Mintga donaziun conta! Wuff & Miau.",
+    everyTreat: "Pajar gist – mintga contribuziun conta! Wuff & Miau.",
     createAnother: "← Crear in auter",
     showSupport: "Mussar opziuns da sustegn",
     purrPerfect: "PURR-FECT!"
@@ -272,7 +274,16 @@ export default {
     privacyTitle: "Scut da Protecziun da Datas",
     privacyDesc: "Vossas datas na vegnan mai memorisadas. Tut succeda en voss navigatur.",
     subtitle: "Crei in curriculum professional per voss ami cun pail en minutas. Simpel, svelt e cumplettamain privat.",
-    cta: "Cumenzar segir"
+    problemTitle: "Tschertgar appartament cun animal?",
+    problemDesc: "En Svizra il martgà da logements è fitg cumpetitiv. Blers proprietaris èn sceptics vers animals.",
+    solutionTitle: "Vossa soluziun: il Dossier Pet",
+    solutionDesc: "In CV professional mussa responsabilitad, documentescha l'assiguraziun e ta distinguescha d'auters candidats. Augmentai vossas schanzas da chattar l'appartament da voss sogns.",
+    cta: "Cumenzar segir",
+    transparencyTitle: "Gist & Segir",
+    transparencyText: "Quest servetsch è senza reclama e na memorisescha naginas datas sin servers. Nagin pretsch fix – utilisai gratis. Sche il resultat Vus gugent, sustegnain nus cun in contribuziun gista.",
+    transparencyBadge1: "Datas localas",
+    transparencyBadge2: "Senza reclama",
+    transparencyBadge3: "Pajar sco che Vus vulais"
   },
   step1Details: {
     ownerSection: "Infurmaziuns proprietari",
@@ -336,5 +347,20 @@ export default {
     terms: "Cundiziuns",
     faq: "FAQ",
     faqComingSoon: "FAQ — en curt disponibel."
+  },
+  faq: {
+    title: "Dumondas frequentas",
+    searchPlaceholder: "Tschertgar rispostas...",
+    noResults: "Nagins resultats per",
+    categories: { all: "Tut", general: "General", privacy: "Protecziun da datas", payment: "Custs & Gistadad", tips: "Cussegls per tschertgar" },
+    items: [
+      { id: "q1", category: "general", q: "Garantescha quest dossier in'acceptaziun?", a: "Na, nagina garantia. Ma in dossier professiunal mussa al patrun che Vus prendais responsabilitad (assicuranza, educaziun). En Svizra tschernan patruns savens il candidat cun il pli pitschen risc." },
+      { id: "q2", category: "privacy", q: "Nua vegnan memorisadas mias datas?", a: "Da nagin lieu sin noss servers. Nus duvrain tecnologia 'Local-First'. Tut las datas vegnan elaboradas be en la memoria temporara da Voss navigatur." },
+      { id: "q3", category: "payment", q: "È il servetsch propi gratuit?", a: "Gea. Nus crein en il principi 'Fair-Pay'. Vus pudais utilisar l'instrument senza restricziuns. Sche il resultat gida da chattar in appartament, apprezain nus in contribuziun gista." },
+      { id: "q4", category: "privacy", q: "Vegnan mias datas duvradas per l'instrucziun da l'IA?", a: "Na. Nus tramettan be datas anonimisadas davart l'animal. Las datas persunalas dal possessur na bandunan mai Voss apparat." },
+      { id: "q5", category: "tips", q: "Tge assicuranzas èn impurtantas en Svizra?", a: "Per possessurs da chauns è ina assicuranza da responsabilitad privata cun cuvertura per donns da locatar essenziala. Savens è er la prova da registraziun AMICUS pretendida." },
+      { id: "q6", category: "general", q: "Poss jau modifitgar il dossier pli tard?", a: "Fin che Vus na serrais betg il navigatur, restan las datas. Suenter serrar ston Vus crear in nov dossier." }
+    ],
+    footerHint: "Dumondas davart la tecnica u il pajament? support@pet-bewerbung.ch"
   }
 };

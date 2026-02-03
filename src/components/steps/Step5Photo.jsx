@@ -100,6 +100,7 @@ const Step5Photo = React.memo(({ data, onFileChange, updateData, t, animDir, onN
           onCropComplete={handleCropComplete}
           onCancel={handleCropCancel}
           aspectRatio={1}
+          t={t}
         />
       )}
     </>

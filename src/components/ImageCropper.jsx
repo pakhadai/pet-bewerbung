@@ -3,7 +3,7 @@ import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { X, Check, RotateCcw } from 'lucide-react';
 
-const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1 }) => {
+const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }) => {
   const [crop, setCrop] = useState({
     unit: '%',
     width: 80,
@@ -13,6 +13,7 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1 }) =
   });
   const [completedCrop, setCompletedCrop] = useState(null);
   const imgRef = useRef(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const onImageLoad = useCallback((e) => {
     imgRef.current = e.currentTarget;
@@ -34,6 +35,7 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1 }) =
 
   const getCroppedImg = useCallback(() => {
     if (!completedCrop || !imgRef.current) return;
+    setIsProcessing(true);
 
     const image = imgRef.current;
     const canvas = document.createElement('canvas');
@@ -62,7 +64,35 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1 }) =
     // Convert to base64
     const base64Image = canvas.toDataURL('image/jpeg', 0.85);
     onCropComplete(base64Image);
+    setIsProcessing(false);
   }, [completedCrop, onCropComplete]);
+
+  const useFullImage = useCallback(() => {
+    if (!imageSrc) return;
+    setIsProcessing(true);
+
+    const img = new window.Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const maxSize = 800;
+      let { width, height } = img;
+      if (width > maxSize || height > maxSize) {
+        const ratio = Math.min(maxSize / width, maxSize / height);
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      const base64Image = canvas.toDataURL('image/jpeg', 0.85);
+      onCropComplete(base64Image);
+      setIsProcessing(false);
+    };
+    img.onerror = () => setIsProcessing(false);
+    img.src = imageSrc;
+  }, [imageSrc, onCropComplete]);
 
   const resetCrop = () => {
     if (imgRef.current) {
@@ -115,25 +145,35 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1 }) =
         <div className="flex items-center justify-between p-4 border-t theme-border">
           <button
             onClick={resetCrop}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg theme-bg hover:bg-opacity-80 transition-all theme-text-muted"
+            disabled={isProcessing}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg theme-bg hover:bg-opacity-80 transition-all theme-text-muted disabled:opacity-50"
           >
             <RotateCcw size={18} />
             Reset
+          </button>
+          <button
+            onClick={useFullImage}
+            disabled={isProcessing}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border theme-border theme-text hover:bg-opacity-80 transition-all disabled:opacity-50"
+          >
+            {t?.labels?.useFullImage ?? 'Use full image'}
           </button>
           
           <div className="flex gap-2">
             <button
               onClick={onCancel}
-              className="px-4 py-2 rounded-lg border theme-border theme-text hover:bg-opacity-80 transition-all"
+              disabled={isProcessing}
+              className="px-4 py-2 rounded-lg border theme-border theme-text hover:bg-opacity-80 transition-all disabled:opacity-50"
             >
               Abbrechen
             </button>
             <button
               onClick={getCroppedImg}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-all"
+              disabled={isProcessing || !completedCrop}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-all disabled:opacity-50"
             >
               <Check size={18} />
-              Fertig
+              {t?.labels?.cropDone ?? 'Crop'}
             </button>
           </div>
         </div>

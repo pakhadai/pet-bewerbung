@@ -19,7 +19,8 @@ const PaymentSuccess = ({
   onLogoClick,
   sessionId,
   showToast = () => {},
-  onDownloadPDF
+  onDownloadPDF,
+  onFaqClick
 }) => {
   const [legalPage, setLegalPage] = useState(null);
   const [paymentData, setPaymentData] = useState(null);
@@ -202,7 +203,7 @@ const PaymentSuccess = ({
         darkMode={darkMode}
         t={t}
         onOpenLegal={setLegalPage}
-        onFaqClick={() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info')}
+        onFaqClick={onFaqClick ?? (() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info'))}
       />
 
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />

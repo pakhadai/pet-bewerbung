@@ -23,30 +23,9 @@ const Step7TemplateSelect = React.memo(({
   const [visibleTemplates, setVisibleTemplates] = useState([]);
   const [hoveredTemplate, setHoveredTemplate] = useState(null);
 
-  // Progressive loading - load templates in batches
+  // Show all templates as soon as SwissDocument is available (no artificial delay)
   useEffect(() => {
-    let mounted = true;
-    const loadTemplates = async () => {
-      // Load first 3 immediately
-      if (mounted) {
-        setVisibleTemplates(TEMPLATE_OPTIONS.slice(0, 3).map(t => t.id));
-      }
-
-      // Load next 3 after short delay
-      await new Promise(resolve => setTimeout(resolve, 100));
-      if (mounted) {
-        setVisibleTemplates(TEMPLATE_OPTIONS.slice(0, 6).map(t => t.id));
-      }
-
-      // Load remaining after another delay
-      await new Promise(resolve => setTimeout(resolve, 100));
-      if (mounted) {
-        setVisibleTemplates(TEMPLATE_OPTIONS.map(t => t.id));
-      }
-    };
-
-    loadTemplates();
-    return () => { mounted = false; };
+    setVisibleTemplates(TEMPLATE_OPTIONS.map((t) => t.id));
   }, []);
 
   return (
@@ -76,13 +55,20 @@ const Step7TemplateSelect = React.memo(({
               onMouseEnter={() => setHoveredTemplate(tplOption.id)}
               onMouseLeave={() => setHoveredTemplate(null)}
             >
-              {/* Template Preview - A4 paper look (210mm x 297mm = 1:1.414) */}
+              {/* Template Preview - A4 paper look, entire block clickable */}
               <div 
                 className="relative w-full bg-white rounded-lg shadow-xl hover:shadow-2xl transition-all duration-500 group cursor-pointer p-2" 
                 style={{ 
                   aspectRatio: '210/297',
                   minHeight: 0
                 }}
+                onClick={() => {
+                  onSelectTemplate(tplOption.id);
+                  showToast('Template selected', 'info');
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectTemplate(tplOption.id); showToast('Template selected', 'info'); } }}
               >
                 <div className="w-full h-full flex items-center justify-center pointer-events-none overflow-hidden rounded" style={{ minHeight: 0 }}>
                   {visibleTemplates.includes(tplOption.id) ? (
@@ -110,24 +96,16 @@ const Step7TemplateSelect = React.memo(({
                   hoveredTemplate === tplOption.id ? 'opacity-30' : 'opacity-0'
                 }`} style={{ zIndex: 1 }}></div>
 
-                {/* Select Button - centered on preview, appears with animation */}
+                {/* Select Button - centered on preview, appears with animation (visual only, parent handles click) */}
                 <div 
-                  className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out ${
+                  className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out pointer-events-none ${
                     hoveredTemplate === tplOption.id 
-                      ? 'opacity-100 translate-y-0 pointer-events-auto' 
-                      : 'opacity-0 translate-y-4 pointer-events-none'
+                      ? 'opacity-100 translate-y-0' 
+                      : 'opacity-0 translate-y-4'
                   }`}
                   style={{ zIndex: 2 }}
                 >
-                  <Button
-                    variant="primary"
-                    className="px-6 py-2.5 text-sm shadow-xl"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelectTemplate(tplOption.id);
-                      showToast('Template selected', 'info');
-                    }}
-                  >
+                  <Button variant="primary" className="px-6 py-2.5 text-sm shadow-xl">
                     {t.ui.select}
                   </Button>
                 </div>

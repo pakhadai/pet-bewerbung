@@ -70,10 +70,12 @@ const LegalSection = ({ data, t, variant = 'classic' }) => {
           <span className={styles.fieldLabel}>{t.labels.insurance}</span>
           <span className={styles.fieldValueText}>{withFallback(data.insuranceProvider)}</span>
         </div>
-        {data.vetName && (
+        {(data.vetName || data.vetPhone) && (
           <div className="col-span-2">
             <span className={styles.fieldLabel}>{t.labels.vet}</span>
-            <span className={styles.fieldValueText}>{withFallback(data.vetName)}</span>
+            <span className={styles.fieldValueText}>
+              {[data.vetName, data.vetPhone].filter(Boolean).join(' · ') || '—'}
+            </span>
           </div>
         )}
         <div className={styles.statusContainer}>
@@ -81,6 +83,12 @@ const LegalSection = ({ data, t, variant = 'classic' }) => {
           <StatusItem label={t.labels.vaccination} active={data.hasVaccination} />
           <StatusItem label={t.labels.registration} active={data.hasRegistration} />
         </div>
+        {data.medicalConditions && (
+          <div className="col-span-2 mt-3 pt-3 border-t-2 border-slate-200">
+            <span className={styles.fieldLabel}>{t.step2Emergency?.displayMedical ?? t.labels?.medicalConditions ?? 'Medizinische Angaben'}</span>
+            <p className={styles.fieldValueText}>{data.medicalConditions}</p>
+          </div>
+        )}
       </div>
     </div>
   );

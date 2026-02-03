@@ -119,6 +119,8 @@ export default {
     aiError: "Generazione IA fallita. Uso del modello.",
     aiNetworkError: "Errore di rete. Controlla la connessione e riprova.",
     recrop: "Ritaglia immagine",
+    useFullImage: "Usa immagine intera",
+    cropDone: "Ritaglia",
     photo: "Scegli foto",
     download: "Salva PDF",
     years: "anni",
@@ -185,10 +187,10 @@ export default {
     subtitle: "Il CV del tuo animale è stato generato e pronto.",
     downloadPdf: "Scarica PDF",
     privacyLocal: "I tuoi dati sono stati elaborati localmente e non sono mai memorizzati sui nostri server.",
-    supportTitle: "Sostieni il progetto",
-    supportDesc: "Pet-Bewerbung è 100% gratuito. Se ti piace, offri un caffè al team!",
+    supportTitle: "Scegli il tuo contributo",
+    supportDesc: "Pet-Bewerbung è senza pubblicità e non memorizza dati. Usalo gratis – se il risultato ti piace, sostienici con un contributo equo.",
     supportCta: "PayPal / TWINT",
-    everyTreat: "Ogni donazione conta! Bau & Miao.",
+    everyTreat: "Paga equamente – ogni contributo conta! Bau & Miao.",
     createAnother: "← Crea un altro",
     showSupport: "Mostra opzioni di supporto",
     purrPerfect: "PURR-FECT!"
@@ -272,7 +274,16 @@ export default {
     privacyTitle: "Scudo Privacy Dati",
     privacyDesc: "I tuoi dati non vengono mai memorizzati. Tutto avviene nel tuo browser.",
     subtitle: "Crea un curriculum professionale per il tuo amico peloso in pochi minuti. Semplice, veloce e completamente privato.",
-    cta: "Inizia in sicurezza"
+    problemTitle: "Cerchi appartamento con animale?",
+    problemDesc: "In Svizzera il mercato degli affitti è molto competitivo. Molti proprietari sono scettici sugli animali.",
+    solutionTitle: "La tua soluzione: il Dossier Pet",
+    solutionDesc: "Un CV professionale dimostra responsabilità, attesta la copertura assicurativa e ti distingue dagli altri candidati. Aumenta le tue possibilità di ottenere l'appartamento dei tuoi sogni.",
+    cta: "Inizia in sicurezza",
+    transparencyTitle: "Equo & Sicuro",
+    transparencyText: "Questo servizio è senza pubblicità e non memorizza dati sui server. Nessun prezzo fisso – usalo gratis. Se il risultato ti piace, sostienici con un contributo equo.",
+    transparencyBadge1: "Dati locali",
+    transparencyBadge2: "Niente annunci",
+    transparencyBadge3: "Paga quanto vuoi"
   },
   step1Details: {
     ownerSection: "Informazioni proprietario",
@@ -336,5 +347,20 @@ export default {
     terms: "Termini",
     faq: "FAQ",
     faqComingSoon: "FAQ — disponibile a breve."
+  },
+  faq: {
+    title: "Domande frequenti",
+    searchPlaceholder: "Cerca risposte...",
+    noResults: "Nessun risultato per",
+    categories: { all: "Tutti", general: "Generale", privacy: "Privacy & Sicurezza", payment: "Costi & Equità", tips: "Consigli per la ricerca" },
+    items: [
+      { id: "q1", category: "general", q: "Questo dossier garantisce che otterrò l'appartamento?", a: "No, non c'è garanzia. Ma un dossier professionale mostra al proprietario che ti assumi le responsabilità (assicurazione, addestramento). In Svizzera i proprietari scelgono spesso il candidato a minor rischio – questo documento minimizza le preoccupazioni." },
+      { id: "q2", category: "privacy", q: "Dove vengono memorizzati i miei dati?", a: "Da nessuna parte sui nostri server. Usiamo tecnologia 'Local-First'. Tutti i dati vengono elaborati solo nella memoria temporanea del browser. Una volta scaricato il PDF e chiusa la scheda, i dati spariscono." },
+      { id: "q3", category: "payment", q: "Il servizio è davvero gratuito?", a: "Sì. Crediamo nel principio 'Fair-Pay'. Puoi usare lo strumento senza restrizioni. Se il risultato ti aiuta a trovare un appartamento, apprezziamo un contributo equo." },
+      { id: "q4", category: "privacy", q: "I miei dati sono usati per l'addestramento IA?", a: "No. Inviamo solo dati anonimizzati sull'animale (razza, età) all'IA. I dati personali del proprietario non lasciano mai il tuo dispositivo." },
+      { id: "q5", category: "tips", q: "Quali assicurazioni sono importanti in Svizzera?", a: "Per i proprietari di cani è essenziale un'assicurazione di responsabilità civile privata con copertura per danni da affitto. Spesso è richiesta anche la prova di registrazione AMICUS." },
+      { id: "q6", category: "general", q: "Posso modificare il dossier in seguito?", a: "Finché non chiudi il browser, i dati restano. Dopo la chiusura devi creare un nuovo dossier, poiché non memorizziamo account utente." }
+    ],
+    footerHint: "Domande su tecnica o pagamento? support@pet-bewerbung.ch"
   }
 };

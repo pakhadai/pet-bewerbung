@@ -80,8 +80,13 @@ const StepCard: React.FC<StepCardProps> = ({
 const Steps: React.FC<StepsProps> = ({ darkMode, t }) => {
   return (
     <div className="w-full mt-12 relative">
+      {/* Intro: Benefits of creating a Pet CV */}
+      <p className={`text-xl sm:text-2xl max-w-2xl mx-auto text-center leading-relaxed font-medium italic mb-12 ${darkMode ? 'text-gray-400' : 'text-text-secondary'}`}>
+        {t?.hero?.subtitle || 'Build a professional resume for your furry friend in minutes. Simple, fast, and completely private.'}
+      </p>
+
       {/* Decorative Dashed Line - Hidden on mobile, visible on lg */}
-      <svg className="hidden lg:block absolute top-12 left-0 w-full h-16 -z-10 opacity-20 pointer-events-none" fill="none" viewBox="0 0 1200 100" preserveAspectRatio="none">
+      <svg className="hidden lg:block absolute top-28 left-0 w-full h-16 -z-10 opacity-20 pointer-events-none" fill="none" viewBox="0 0 1200 100" preserveAspectRatio="none">
         <path d="M50,50 C300,20 900,80 1150,50" stroke={darkMode ? "#ffffff" : "#4a4a4a"} strokeDasharray="12 12" strokeLinecap="round" strokeWidth="3"></path>
       </svg>
 

@@ -24,6 +24,7 @@ const Step9ThankYou = React.memo(({
   onDonate,
   showToast,
   toast,
+  onFaqClick,
   onPaymentSuccess
 }) => {
   const [legalPage, setLegalPage] = useState(null);
@@ -213,7 +214,7 @@ const Step9ThankYou = React.memo(({
         </div>
       )}
 
-      <Footer darkMode={darkMode} t={t} onOpenLegal={setLegalPage} onFaqClick={() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info')} />
+      <Footer darkMode={darkMode} t={t} onOpenLegal={setLegalPage} onFaqClick={onFaqClick ?? (() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info'))} />
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
     </div>
   );

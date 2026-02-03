@@ -119,6 +119,8 @@ export default {
     aiError: "AI generation failed. Using template.",
     aiNetworkError: "Network error. Please check your connection and try again.",
     recrop: "Crop image",
+    useFullImage: "Use full image",
+    cropDone: "Crop",
     photo: "Select Photo",
     download: "Save PDF",
     years: "years",
@@ -185,10 +187,10 @@ export default {
     subtitle: "Your pet's professional resume has been generated and is ready.",
     downloadPdf: "Download PDF",
     privacyLocal: "Your data was processed locally and is never stored on our servers.",
-    supportTitle: "Support the Project",
-    supportDesc: "Pet-Bewerbung is 100% free. If you like it, consider buying a treat for our team!",
+    supportTitle: "Choose Your Contribution",
+    supportDesc: "Pet-Bewerbung is ad-free and stores no data. Use it for free – if you like the result, support us with a fair contribution.",
     supportCta: "PayPal / TWINT",
-    everyTreat: "Every treat counts! Woof & Meow.",
+    everyTreat: "Fair pay – every contribution counts! Woof & Meow.",
     createAnother: "← Create Another One",
     showSupport: "Show support options",
     purrPerfect: "PURR-FECT!"
@@ -294,7 +296,16 @@ export default {
     privacyTitle: "Data Privacy Shield",
     privacyDesc: "Your data is never stored. Everything happens in your browser.",
     subtitle: "Build a professional resume for your furry friend in minutes. Simple, fast, and completely private.",
-    cta: "Start Securely"
+    problemTitle: "Looking for a flat with a pet?",
+    problemDesc: "In Switzerland the rental market is highly competitive. Many landlords are skeptical about pets.",
+    solutionTitle: "Your solution: The Pet Dossier",
+    solutionDesc: "A professional CV shows responsibility, proves insurance coverage and sets you apart from other applicants. Increase your chances of getting your dream apartment.",
+    cta: "Start Securely",
+    transparencyTitle: "Fair & Secure",
+    transparencyText: "This service is ad-free and stores no data on servers. We skip a fixed price – use it for free. If you like the result, support us with a fair contribution.",
+    transparencyBadge1: "Local Data",
+    transparencyBadge2: "No Ads",
+    transparencyBadge3: "Pay What You Want"
   },
   step1Details: {
     ownerSection: "Owner Information",
@@ -358,5 +369,26 @@ export default {
     terms: "Terms",
     faq: "FAQ",
     faqComingSoon: "FAQ — coming soon."
+  },
+  faq: {
+    title: "Frequently Asked Questions",
+    searchPlaceholder: "Search for answers...",
+    noResults: "No results for",
+    categories: {
+      all: "All",
+      general: "General",
+      privacy: "Privacy & Security",
+      payment: "Cost & Fairness",
+      tips: "Tips for Finding Housing"
+    },
+    items: [
+      { id: "q1", category: "general", q: "Does this Pet Dossier guarantee I get the apartment?", a: "No, there is no guarantee. But a professional dossier shows the landlord that you take responsibility (insurance, training). In Switzerland, landlords often choose the candidate who poses the least risk – this document minimizes concerns." },
+      { id: "q2", category: "privacy", q: "Where are my data stored?", a: "Nowhere on our servers. We use 'Local-First' technology. All data (names, photos, addresses) is processed exclusively in your browser's temporary storage. Once you download the PDF and close the tab, the data is gone (unless you don't clear the browser cache)." },
+      { id: "q3", category: "payment", q: "Is the service really free?", a: "Yes. We believe in the 'Fair-Pay' principle. You can use the tool without restrictions. If the result helps you find an apartment, we appreciate a fair contribution to cover our server and development costs." },
+      { id: "q4", category: "privacy", q: "Are my data used for AI training?", a: "No. We only send anonymized pet data (breed, age, traits) to the AI to generate the text. Personal data of the owner (name, address) never leaves your device." },
+      { id: "q5", category: "tips", q: "Which insurances are important in Switzerland?", a: "For dog owners, private liability insurance (Privathaftpflicht) with coverage for tenant damage is essential. Proof of AMICUS registration is often also required. Our dossier highlights these points." },
+      { id: "q6", category: "general", q: "Can I edit the dossier later?", a: "As long as you don't close the browser or reload the page, your data remains. After closing, you must create a new dossier, as we don't store user accounts for privacy reasons." }
+    ],
+    footerHint: "Questions about tech or payment? Email support@pet-bewerbung.ch"
   }
 };

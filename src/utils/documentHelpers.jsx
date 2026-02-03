@@ -37,7 +37,8 @@ export const getPetTypeIcon = (petType, size = 20) => {
  * @returns {string} - Translated gender label
  */
 export const getGenderLabel = (gender, t) => {
-  return gender === 'm' ? t.labels.m : t.labels.f;
+  if (!t?.labels) return gender === 'm' ? 'M' : 'F';
+  return gender === 'm' ? (t.labels.m ?? 'M') : (t.labels.f ?? 'F');
 };
 
 /**
@@ -56,7 +57,7 @@ export const isEmptyText = (text) => {
  * @returns {string} - Formatted age
  */
 export const formatAge = (age, t) => {
-  return age ? `${age} ${t.labels.years}` : '—';
+  return age ? `${age} ${t?.labels?.years ?? 'years'}` : '—';
 };
 
 /**
@@ -66,7 +67,7 @@ export const formatAge = (age, t) => {
  * @returns {string} - Formatted weight
  */
 export const formatWeight = (weight, t) => {
-  return weight ? `${weight} ${t.labels.kg}` : '—';
+  return weight ? `${weight} ${t?.labels?.kg ?? 'kg'}` : '—';
 };
 
 /**
@@ -77,4 +78,18 @@ export const formatWeight = (weight, t) => {
  */
 export const withFallback = (value, fallback = '—') => {
   return value || fallback;
+};
+
+/**
+ * Sanitizes text for PDF rendering. Removes control characters and problematic
+ * Unicode that may cause garbled output in react-pdf with Helvetica.
+ * @param {string} text - Raw text
+ * @returns {string} - Sanitized text safe for PDF
+ */
+export const sanitizeForPdf = (text) => {
+  if (!text || typeof text !== 'string') return '';
+  return text
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Remove control chars
+    .replace(/\uFFFD/g, '') // Remove replacement char
+    .trim();
 };

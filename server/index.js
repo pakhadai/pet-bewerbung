@@ -3,54 +3,79 @@ const express = require('express');
 const Stripe = require('stripe');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Redis = require('ioredis');
 
 const app = express();
 const port = process.env.PORT || 4242;
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 const geminiKey = process.env.GEMINI_API_KEY;
 const isProduction = process.env.NODE_ENV === 'production';
+const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 
 // Initialize Gemini AI
 const genAI = geminiKey ? new GoogleGenerativeAI(geminiKey) : null;
 
 // ============================================
-// Rate Limiting for AI Generation (IP-based)
+// Redis (optional – fallback to memory)
 // ============================================
-// NOTE: Rate limits are stored in memory (Map).
-// - If server restarts, limits reset (acceptable for MVP)
-// - For multi-instance scaling, use Redis or database
-// - For production with high traffic, consider Redis-based rate limiting
-const AI_RATE_LIMIT = parseInt(process.env.AI_RATE_LIMIT) || 3; // requests per day
-const AI_RATE_WINDOW = 24 * 60 * 60 * 1000; // 24 hours in ms
-const aiRateLimits = new Map(); // IP -> { count, resetTime }
+let redis = null;
+const aiRateLimits = new Map();
 
-function checkAIRateLimit(ip) {
-  const now = Date.now();
-  const record = aiRateLimits.get(ip);
-  
-  if (!record || now > record.resetTime) {
-    // Reset or create new record
-    aiRateLimits.set(ip, { count: 1, resetTime: now + AI_RATE_WINDOW });
-    return { allowed: true, remaining: AI_RATE_LIMIT - 1, resetTime: now + AI_RATE_WINDOW };
+async function initRedis() {
+  try {
+    redis = new Redis(redisUrl, { maxRetriesPerRequest: 2 });
+    redis.on('error', (err) => {
+      if (!isProduction) console.warn('Redis error:', err.message);
+    });
+    await redis.ping();
+    if (!isProduction) console.log('✅ Redis connected');
+    return true;
+  } catch (err) {
+    if (!isProduction) console.warn('⚠️  Redis unavailable, using in-memory rate limiting:', err.message);
+    redis = null;
+    return false;
   }
-  
-  if (record.count >= AI_RATE_LIMIT) {
-    return { allowed: false, remaining: 0, resetTime: record.resetTime };
-  }
-  
-  record.count++;
-  return { allowed: true, remaining: AI_RATE_LIMIT - record.count, resetTime: record.resetTime };
 }
 
-// Clean up old rate limit records every hour
-setInterval(() => {
+// ============================================
+// Rate Limiting (Redis or memory)
+// ============================================
+const AI_RATE_LIMIT = parseInt(process.env.AI_RATE_LIMIT) || 3;
+const AI_RATE_LIMIT_FREE = parseInt(process.env.AI_RATE_LIMIT_FREE) || 1;
+const AI_RATE_WINDOW = 24 * 60 * 60; // seconds
+
+async function checkAIRateLimitRedis(ip, limit) {
+  const key = `ai:ratelimit:${ip}`;
+  const count = await redis.incr(key);
+  if (count === 1) await redis.expire(key, AI_RATE_WINDOW);
+  const ttl = await redis.ttl(key);
+  return {
+    allowed: count <= limit,
+    remaining: Math.max(0, limit - count),
+    resetTime: Date.now() + ttl * 1000,
+  };
+}
+
+function checkAIRateLimitMemory(ip, limit) {
   const now = Date.now();
-  for (const [ip, record] of aiRateLimits.entries()) {
-    if (now > record.resetTime) {
-      aiRateLimits.delete(ip);
-    }
+  const record = aiRateLimits.get(ip);
+  const resetTime = record?.resetTime || now + AI_RATE_WINDOW * 1000;
+  if (!record || now > record.resetTime) {
+    aiRateLimits.set(ip, { count: 1, resetTime });
+    return { allowed: true, remaining: limit - 1, resetTime };
   }
-}, 60 * 60 * 1000);
+  if (record.count >= limit) {
+    return { allowed: false, remaining: 0, resetTime: record.resetTime };
+  }
+  record.count++;
+  return { allowed: true, remaining: limit - record.count, resetTime: record.resetTime };
+}
+
+async function checkAIRateLimit(ip, premiumToken = null) {
+  const limit = premiumToken ? 9999 : AI_RATE_LIMIT_FREE;
+  if (redis) return checkAIRateLimitRedis(ip, limit);
+  return checkAIRateLimitMemory(ip, limit);
+}
 
 if (!stripeKey) {
   console.warn('⚠️  Warning: STRIPE_SECRET_KEY not set. Checkout requests will fail.');
@@ -65,23 +90,22 @@ const stripe = Stripe(stripeKey || '');
 // ============================================
 // SECURITY: CORS Configuration
 // ============================================
-// IMPORTANT: Update these domains if your production domain changes
-// If domain changes, API will reject requests from new domain
-// Add new production domains here before deploying
-const allowedOrigins = [
-  // Production domains
+// Set ALLOWED_ORIGINS in .env (comma-separated, no spaces after commas) to override.
+// Example: ALLOWED_ORIGINS=https://pet-bewerbung.ch,https://www.pet-bewerbung.ch,http://localhost:3000
+const defaultOrigins = [
   'https://pet.ohmyrevit.pp.ua',
   'https://pet-bewerbung.ch',
   'https://www.pet-bewerbung.ch',
-  // Development domains
   'http://localhost:3000',
   'http://localhost:5173',
   'http://127.0.0.1:3000',
 ];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean)
+  : defaultOrigins;
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (server-to-server, mobile apps)
     if (!origin) {
       return callback(null, true);
     }
@@ -423,17 +447,20 @@ Schreibe jetzt eine überzeugende, professionelle Beschreibung für dieses Haust
 }
 
 app.post('/generate-pet-description', async (req, res) => {
-  // Get client IP (considering proxies)
   const clientIP = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
                    req.headers['x-real-ip'] || 
                    req.socket.remoteAddress || 
                    'unknown';
   
-  // Check rate limit
-  const rateCheck = checkAIRateLimit(clientIP);
+  const { petData, lang = 'de', premiumToken } = req.body || {};
   
-  // Set rate limit headers
-  res.set('X-RateLimit-Limit', AI_RATE_LIMIT.toString());
+  if (!petData || !petData.petName) {
+    return res.status(400).json({ error: 'Pet data required' });
+  }
+  
+  const rateCheck = await checkAIRateLimit(clientIP, premiumToken);
+  
+  res.set('X-RateLimit-Limit', AI_RATE_LIMIT_FREE.toString());
   res.set('X-RateLimit-Remaining', rateCheck.remaining.toString());
   res.set('X-RateLimit-Reset', new Date(rateCheck.resetTime).toISOString());
   
@@ -441,21 +468,18 @@ app.post('/generate-pet-description', async (req, res) => {
     const resetDate = new Date(rateCheck.resetTime);
     return res.status(429).json({ 
       error: 'Rate limit exceeded', 
-      message: `Maximum ${AI_RATE_LIMIT} AI requests per day. Try again after ${resetDate.toLocaleTimeString()}.`,
+      message: `Maximum ${AI_RATE_LIMIT_FREE} AI request(s) per day on free tier.`,
       resetTime: rateCheck.resetTime,
       remaining: 0
     });
   }
   
-  // Check if Gemini is configured
   if (!genAI) {
     return res.status(503).json({ 
       error: 'AI service not configured',
       message: 'GEMINI_API_KEY not set on server'
     });
   }
-  
-  const { petData, lang = 'de' } = req.body || {};
   
   if (!petData || !petData.petName) {
     return res.status(400).json({ error: 'Pet data required' });
@@ -509,10 +533,13 @@ app.post('/generate-pet-description', async (req, res) => {
   } catch (err) {
     console.error('AI generation error:', err.message);
     
-    // Don't count failed requests against rate limit
-    const record = aiRateLimits.get(clientIP);
-    if (record && record.count > 0) {
-      record.count--;
+    if (redis) {
+      const key = `ai:ratelimit:${clientIP}`;
+      const count = await redis.get(key);
+      if (count && parseInt(count, 10) > 0) await redis.decr(key);
+    } else if (aiRateLimits.has(clientIP)) {
+      const record = aiRateLimits.get(clientIP);
+      if (record && record.count > 0) record.count--;
     }
     
     res.status(500).json({ 
@@ -524,27 +551,43 @@ app.post('/generate-pet-description', async (req, res) => {
 });
 
 // Check remaining AI requests
-app.get('/ai-rate-limit', (req, res) => {
+app.get('/ai-rate-limit', async (req, res) => {
   const clientIP = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
                    req.headers['x-real-ip'] || 
                    req.socket.remoteAddress || 
                    'unknown';
+  
+  if (redis) {
+    try {
+      const key = `ai:ratelimit:${clientIP}`;
+      const count = parseInt(await redis.get(key) || '0', 10);
+      const ttl = await redis.ttl(key);
+      return res.json({ 
+        limit: AI_RATE_LIMIT_FREE, 
+        remaining: Math.max(0, AI_RATE_LIMIT_FREE - count), 
+        resetTime: ttl > 0 ? Date.now() + ttl * 1000 : Date.now() + AI_RATE_WINDOW * 1000,
+        configured: !!genAI
+      });
+    } catch {
+      // fall through
+    }
+  }
   
   const now = Date.now();
   const record = aiRateLimits.get(clientIP);
   
   if (!record || now > record.resetTime) {
     return res.json({ 
-      limit: AI_RATE_LIMIT, 
-      remaining: AI_RATE_LIMIT, 
-      resetTime: now + AI_RATE_WINDOW,
+      limit: AI_RATE_LIMIT_FREE, 
+      remaining: AI_RATE_LIMIT_FREE, 
+      resetTime: now + AI_RATE_WINDOW * 1000,
       configured: !!genAI
     });
   }
   
   res.json({ 
-    limit: AI_RATE_LIMIT, 
-    remaining: Math.max(0, AI_RATE_LIMIT - record.count), 
+    limit: AI_RATE_LIMIT_FREE, 
+    remaining: Math.max(0, AI_RATE_LIMIT_FREE - record.count), 
     resetTime: record.resetTime,
     configured: !!genAI
   });
@@ -561,10 +604,12 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Pet-Bewerbung server running on http://localhost:${port}`);
-  console.log(`📍 Environment: ${isProduction ? 'PRODUCTION' : 'development'}`);
-  if (!isProduction) {
-    console.log(`📋 Allowed origins: ${allowedOrigins.join(', ')}`);
-  }
+initRedis().then(() => {
+  app.listen(port, () => {
+    console.log(`🚀 Pet-Bewerbung server running on http://localhost:${port}`);
+    console.log(`📍 Environment: ${isProduction ? 'PRODUCTION' : 'development'}`);
+    if (!isProduction) {
+      console.log(`📋 Allowed origins: ${allowedOrigins.join(', ')}`);
+    }
+  });
 });

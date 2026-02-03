@@ -1,0 +1,13 @@
+# Development: Node + nodemon (hot reload)
+FROM node:18-alpine
+
+RUN apk add --no-cache wget
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install && npm install -g nodemon
+
+# Source mounted as volume – no COPY
+EXPOSE 4242
+
+CMD ["nodemon", "index.js", "--ext", "js", "--delay", "500"]

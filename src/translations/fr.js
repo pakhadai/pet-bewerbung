@@ -119,6 +119,8 @@ export default {
     aiError: "Génération IA échouée. Utilisation du modèle.",
     aiNetworkError: "Erreur réseau. Veuillez vérifier votre connexion et réessayer.",
     recrop: "Recadrer l'image",
+    useFullImage: "Utiliser l'image complète",
+    cropDone: "Recadrer",
     photo: "Choisir une photo",
     download: "Télécharger PDF",
     years: "ans",
@@ -185,10 +187,10 @@ export default {
     subtitle: "Le CV de votre animal a été généré et est prêt.",
     downloadPdf: "Télécharger PDF",
     privacyLocal: "Vos données ont été traitées localement et ne sont jamais stockées sur nos serveurs.",
-    supportTitle: "Soutenir le projet",
-    supportDesc: "Pet-Bewerbung est 100% gratuit. Si cela vous plaît, offrez un café à l'équipe !",
+    supportTitle: "Choisir votre contribution",
+    supportDesc: "Pet-Bewerbung est sans publicité et ne stocke aucune donnée. Utilisez-le gratuitement – si le résultat vous plaît, soutenez-nous par une contribution équitable.",
     supportCta: "PayPal / TWINT",
-    everyTreat: "Chaque don compte ! Wouf & Miaou.",
+    everyTreat: "Prix équitable – chaque contribution compte ! Wouf & Miaou.",
     createAnother: "← Créer un autre",
     showSupport: "Afficher les options de soutien",
     purrPerfect: "PURR-FECT !"
@@ -272,7 +274,16 @@ export default {
     privacyTitle: "Bouclier de Confidentialité",
     privacyDesc: "Vos données ne sont jamais stockées. Tout se passe dans votre navigateur.",
     subtitle: "Créez un CV professionnel pour votre ami à fourrure en quelques minutes. Simple, rapide et entièrement privé.",
-    cta: "Commencer en toute sécurité"
+    problemTitle: "Recherche d'appartement avec animal?",
+    problemDesc: "En Suisse, le marché locatif est très concurrentiel. Beaucoup de propriétaires sont sceptiques face aux animaux.",
+    solutionTitle: "Votre solution: le Dossier Pet",
+    solutionDesc: "Un CV professionnel démontre votre responsabilité, prouve l'assurance et vous distingue des autres candidats. Augmentez vos chances d'obtenir l'appartement de vos rêves.",
+    cta: "Commencer en toute sécurité",
+    transparencyTitle: "Équitable & Sécurisé",
+    transparencyText: "Ce service est sans publicité et ne stocke aucune donnée sur des serveurs. Pas de prix fixe – utilisez-le gratuitement. Si le résultat vous plaît, soutenez-nous par une contribution équitable.",
+    transparencyBadge1: "Données locales",
+    transparencyBadge2: "Sans pub",
+    transparencyBadge3: "Prix libre"
   },
   step1Details: {
     ownerSection: "Informations propriétaire",
@@ -336,5 +347,20 @@ export default {
     terms: "CGU",
     faq: "FAQ",
     faqComingSoon: "FAQ — bientôt disponible."
+  },
+  faq: {
+    title: "Questions fréquentes",
+    searchPlaceholder: "Rechercher des réponses...",
+    noResults: "Aucun résultat pour",
+    categories: { all: "Tout", general: "Général", privacy: "Confidentialité & Sécurité", payment: "Coûts & Équité", tips: "Conseils pour la recherche" },
+    items: [
+      { id: "q1", category: "general", q: "Ce dossier garantit-il que j'obtiendrai l'appartement?", a: "Non, aucune garantie. Mais un dossier professionnel montre au propriétaire que vous prenez vos responsabilités (assurance, éducation). En Suisse, les propriétaires choisissent souvent le candidat à moindre risque – ce document minimise les inquiétudes." },
+      { id: "q2", category: "privacy", q: "Où sont stockées mes données?", a: "Nulle part sur nos serveurs. Nous utilisons une technologie 'Local-First'. Toutes les données sont traitées uniquement dans le stockage temporaire de votre navigateur. Une fois le PDF téléchargé et l'onglet fermé, les données disparaissent." },
+      { id: "q3", category: "payment", q: "Le service est-il vraiment gratuit?", a: "Oui. Nous croyons au principe 'Fair-Pay'. Vous pouvez utiliser l'outil sans restriction. Si le résultat vous aide à trouver un logement, nous apprécierons une contribution équitable." },
+      { id: "q4", category: "privacy", q: "Mes données sont-elles utilisées pour l'entraînement IA?", a: "Non. Nous n'envoyons que des données anonymisées sur l'animal (race, âge) à l'IA. Les données personnelles du propriétaire ne quittent jamais votre appareil." },
+      { id: "q5", category: "tips", q: "Quelles assurances sont importantes en Suisse?", a: "Pour les propriétaires de chiens, une assurance responsabilité civile privée avec couverture des dommages locatifs est essentielle. La preuve d'enregistrement AMICUS est souvent requise." },
+      { id: "q6", category: "general", q: "Puis-je modifier le dossier plus tard?", a: "Tant que vous ne fermez pas le navigateur, vos données restent. Après fermeture, vous devez créer un nouveau dossier, car nous ne stockons pas de comptes utilisateur." }
+    ],
+    footerHint: "Questions sur la technique ou le paiement? support@pet-bewerbung.ch"
   }
 };

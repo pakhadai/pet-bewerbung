@@ -119,6 +119,8 @@ export default {
     aiError: "KI-Generierung fehlgeschlagen. Verwende Vorlage.",
     aiNetworkError: "Netzwerkfehler. Bitte Verbindung prüfen und erneut versuchen.",
     recrop: "Bild zuschneiden",
+    useFullImage: "Vollbild verwenden",
+    cropDone: "Zuschneiden",
     photo: "Foto wählen",
     download: "PDF speichern",
     years: "Jahre",
@@ -146,7 +148,12 @@ export default {
     behaviorAvoid: "Sollte vermieden werden",
     behaviorTitle: "Verhalten & Routine",
     referenceTitle: "Referenzen & Notfallkontakt",
-    petType: "Tierart"
+    petType: "Tierart",
+    yes: "Ja",
+    no: "Nein",
+    low: "Ruhig",
+    medium: "Mittel",
+    high: "Laut"
   },
   validation: {
     required: "Pflichtfeld",
@@ -162,8 +169,11 @@ export default {
     subtitle: "Dokumentation zur Wohnungsbewerbung",
     sectionOwner: "Verantwortlicher Halter",
     sectionPet: "Angaben zum Tier",
+    sectionBehavior: "Verhalten",
     sectionLegal: "Versicherung & Status",
     sectionAbout: "Beschreibung & Wesen",
+    sectionReference: "Referenzen",
+    petPhoto: "Foto",
     footer: "Dokument generiert via Pet-Bewerbung.ch",
     date: "Ort, Datum",
     sign: "Unterschrift",
@@ -185,10 +195,10 @@ export default {
     subtitle: "Der Lebenslauf Ihres Tieres wurde erstellt und ist bereit.",
     downloadPdf: "PDF herunterladen",
     privacyLocal: "Ihre Daten wurden lokal verarbeitet und niemals auf unseren Servern gespeichert.",
-    supportTitle: "Projekt unterstützen",
-    supportDesc: "Pet-Bewerbung ist 100% kostenlos. Wenn es Ihnen gefällt, spenden Sie unserem Team einen Kaffee!",
+    supportTitle: "Beitrag wählen",
+    supportDesc: "Pet-Bewerbung ist werbefrei und speichert keine Daten. Nutzen Sie es gratis – wenn Ihnen das Ergebnis gefällt, unterstützen Sie uns mit einem fairen Beitrag.",
     supportCta: "PayPal / TWINT",
-    everyTreat: "Jede Gabe zählt! Wuff & Miau.",
+    everyTreat: "Fair bezahlen – jeder Beitrag zählt! Wuff & Miau.",
     createAnother: "← Noch eines erstellen",
     showSupport: "Unterstützungsoptionen anzeigen",
     purrPerfect: "PURR-FECT!"
@@ -281,7 +291,16 @@ export default {
     privacyTitle: "Datenschutz-Schild",
     privacyDesc: "Ihre Daten werden niemals gespeichert. Alles passiert in Ihrem Browser.",
     subtitle: "Erstellen Sie in Minuten einen professionellen Lebenslauf für Ihren vierbeinigen Freund. Einfach, schnell und völlig privat.",
-    cta: "Sicher starten"
+    problemTitle: "Wohnungssuche mit Haustier?",
+    problemDesc: "In der Schweiz ist der Wohnungsmarkt hart umkämpft. Viele Vermieter sind skeptisch gegenüber Haustieren.",
+    solutionTitle: "Ihre Lösung: Das Pet-Dossier",
+    solutionDesc: "Ein professioneller Lebenslauf zeigt Verantwortung, belegt Versicherungsschutz und hebt Sie von anderen Bewerbern ab. Erhöhen Sie Ihre Chancen auf Ihre Traumwohnung.",
+    cta: "Sicher starten",
+    transparencyTitle: "Fair & Sicher",
+    transparencyText: "Dieser Service ist werbefrei und speichert keine Daten auf Servern. Wir verzichten auf einen fixen Preis – nutzen Sie es gratis. Wenn Ihnen das Ergebnis gefällt, unterstützen Sie uns mit einem fairen Beitrag.",
+    transparencyBadge1: "Lokale Daten",
+    transparencyBadge2: "Keine Werbung",
+    transparencyBadge3: "Fair bezahlen"
   },
   step1Details: {
     ownerSection: "Halterangaben",
@@ -345,5 +364,26 @@ export default {
     terms: "AGB",
     faq: "FAQ",
     faqComingSoon: "FAQ — demnächst verfügbar."
+  },
+  faq: {
+    title: "Häufig gestellte Fragen",
+    searchPlaceholder: "Suchen Sie nach Antworten...",
+    noResults: "Keine Ergebnisse für",
+    categories: {
+      all: "Alle",
+      general: "Allgemein",
+      privacy: "Datenschutz & Sicherheit",
+      payment: "Kosten & Fairness",
+      tips: "Tipps für die Wohnungssuche"
+    },
+    items: [
+      { id: "q1", category: "general", q: "Garantiert dieses Pet-Dossier eine Wohnungszusage?", a: "Nein, eine Garantie gibt es nicht. Aber ein professionelles Dossier zeigt dem Vermieter, dass Sie Verantwortung übernehmen (Versicherung, Erziehung). In der Schweiz entscheiden sich Vermieter oft für den Kandidaten, der das geringste Risiko darstellt – dieses Dokument minimiert Bedenken." },
+      { id: "q2", category: "privacy", q: "Wo werden meine Daten gespeichert?", a: "Nirgendwo auf unseren Servern. Wir nutzen eine 'Local-First'-Technologie. Alle Daten (Namen, Fotos, Adressen) werden ausschliesslich im temporären Speicher Ihres Browsers verarbeitet. Sobald Sie das PDF herunterladen und den Tab schliessen, sind die Daten weg (ausser Sie löschen den Browser-Cache nicht)." },
+      { id: "q3", category: "payment", q: "Ist der Service wirklich kostenlos?", a: "Ja. Wir glauben an das 'Fair-Pay'-Prinzip. Sie können das Tool uneingeschränkt nutzen. Wenn Ihnen das Ergebnis hilft, eine Wohnung zu finden, freuen wir uns über einen fairen Beitrag zur Deckung unserer Server- und Entwicklungskosten." },
+      { id: "q4", category: "privacy", q: "Werden meine Daten für KI-Training genutzt?", a: "Nein. Wir senden nur anonymisierte Tierdaten (Rasse, Alter, Merkmale) an die KI, um den Text zu generieren. Persönliche Daten des Halters (Name, Adresse) verlassen niemals Ihr Gerät." },
+      { id: "q5", category: "tips", q: "Welche Versicherungen sind in der Schweiz wichtig?", a: "Für Hundehalter ist eine Privathaftpflichtversicherung (Privathaftpflicht) mit Deckung für Mieterschäden essenziell. Oft wird auch der Nachweis der AMICUS-Registrierung verlangt. Unser Dossier hebt diese Punkte hervor." },
+      { id: "q6", category: "general", q: "Kann ich das Dossier nachträglich bearbeiten?", a: "Solange Sie den Browser nicht schliessen oder die Seite neu laden, bleiben Ihre Daten erhalten. Nach dem Schliessen müssen Sie ein neues Dossier erstellen, da wir aus Datenschutzgründen keine Benutzerkonten speichern." }
+    ],
+    footerHint: "Fragen zur Technik oder Bezahlung? Schreiben Sie an support@pet-bewerbung.ch"
   }
 };

@@ -8,7 +8,7 @@ import { withFallback } from '../../utils/documentHelpers.jsx';
  */
 const ReferenceSection = ({ data, t, variant = 'classic' }) => {
   const hasLandlordInfo = data.previousLandlordName || data.previousLandlordPhone || data.previousLandlordEmail;
-  const hasEmergencyInfo = data.emergencyContactName || data.emergencyContactPhone;
+  const hasEmergencyInfo = data.emergencyContactName || data.emergencyContactPhone || data.secondaryEmergencyContact;
 
   if (!hasLandlordInfo && !hasEmergencyInfo) {
     return null;
@@ -129,6 +129,12 @@ const ReferenceSection = ({ data, t, variant = 'classic' }) => {
               <div className={styles.contactItem}>
                 <AlertCircle size={styles.iconSize} className="flex-shrink-0" />
                 <span className="break-words">{data.emergencyContactPhone}</span>
+              </div>
+            )}
+            {data.secondaryEmergencyContact && (
+              <div>
+                <span className={styles.fieldLabel}>{t.labels?.secondaryEmergencyContact ?? t.step2Emergency?.secondaryContact ?? 'Zweiter Kontakt'}: </span>
+                <span className={styles.fieldValue}>{data.secondaryEmergencyContact}</span>
               </div>
             )}
           </div>

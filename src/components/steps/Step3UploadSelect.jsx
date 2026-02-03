@@ -188,7 +188,6 @@ const Step3UploadSelect = React.memo(({
                 >
                   <div
                     className="aspect-[3/4] rounded-md overflow-hidden relative border border-white/10 bg-neutral-800"
-                    onClick={(e) => e.stopPropagation()}
                   >
                     {visibleTemplates.includes(opt.id) ? (
                       <div className="w-full h-full flex items-center justify-center bg-neutral-800 overflow-hidden">
@@ -258,7 +257,7 @@ const Step3UploadSelect = React.memo(({
       </div>
 
       {showCropper && tempImage && (
-        <ImageCropper imageSrc={tempImage} onCropComplete={handleCropComplete} onCancel={handleCropCancel} aspectRatio={1} />
+        <ImageCropper imageSrc={tempImage} onCropComplete={handleCropComplete} onCancel={handleCropCancel} aspectRatio={1} t={t} />
       )}
     </>
   );

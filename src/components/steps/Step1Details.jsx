@@ -2,8 +2,14 @@ import React from 'react';
 import { Dog, Cat, Bird } from 'lucide-react';
 import Label from '../Label';
 import Input from '../Input';
+import { useForm } from '../../contexts/FormContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useTranslation } from '../../contexts/TranslationContext';
 
-const Step1Details = React.memo(({ data, updateData, t, animDir, errors = {}, darkMode, onNext, canProceed = true }) => {
+const Step1Details = React.memo(({ animDir, errors = {}, onNext, canProceed = true }) => {
+  const { data, updateData } = useForm();
+  const { darkMode } = useTheme();
+  const { t } = useTranslation();
   const petTypes = [
     { id: 'dog', label: t.labels.dog, icon: Dog },
     { id: 'cat', label: t.labels.cat, icon: Cat },

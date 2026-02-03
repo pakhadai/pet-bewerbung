@@ -1,13 +1,6 @@
 // API Configuration
-// In production (Docker), requests go through nginx at /api/
-// In development, requests go directly to backend at localhost:4242
-
-const isDevelopment = import.meta.env.MODE === 'development' || import.meta.env.DEV;
-
-// Base URL for API
-const API_BASE = isDevelopment 
-  ? 'http://localhost:4242'  // Direct to backend in dev
-  : '/api';                   // Through nginx in production
+// Always use /api – Vite proxies to backend in dev, nginx proxies in production
+const API_BASE = '/api';
 
 export const API_ENDPOINTS = {
   // Stripe

@@ -36,8 +36,8 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode, lang, onLangC
         {/* Navigation & Actions */}
         <div className="flex items-center gap-3 lg:gap-6">
           
-          {/* Language Switcher – той самий шрифт, що й на головній (Quicksand) */}
-          <div className={`hidden md:flex items-center gap-2 text-lg font-semibold ${darkMode ? 'text-gray-300' : 'text-text-main'}`} style={{ fontFamily: '"Quicksand", sans-serif' }}>
+          {/* Language Switcher – font-display як на головній сторінці */}
+          <div className={`hidden md:flex items-center gap-2 text-lg font-bold font-display ${darkMode ? 'text-gray-300' : 'text-text-main'}`}>
             {languages.map((lng, index) => (
               <React.Fragment key={lng.code}>
                 {index > 0 && <span className="opacity-50">/</span>}
@@ -45,7 +45,6 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode, lang, onLangC
                   type="button"
                   onClick={() => onLangChange(lng.code)}
                   className={`hover:text-primary transition-colors ${lang === lng.code ? 'border-b-2 border-primary' : 'opacity-70 hover:opacity-100'}`}
-                  style={{ fontFamily: 'inherit' }}
                 >
                   {lng.label}
                 </button>
@@ -63,13 +62,6 @@ const Header: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode, lang, onLangC
             <span className="material-symbols-outlined">
               {darkMode ? 'light_mode' : 'dark_mode'}
             </span>
-          </button>
-
-          {/* Donate Button */}
-          <button className={`flex items-center justify-center gap-2 px-4 py-1.5 lg:px-6 lg:py-2 text-lg font-bold font-display hand-drawn-button border-2 border-text-main transition-colors
-            ${darkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-white text-text-main hover:bg-peach'}`}>
-            <span className="material-symbols-outlined sketch-icon-filled text-red-400 text-[20px]">favorite</span>
-            <span>{t?.header?.donate || 'Donate'}</span>
           </button>
         </div>
       </div>

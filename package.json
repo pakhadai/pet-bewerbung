@@ -5,14 +5,16 @@
   "scripts": {
     "dev": "vite",
     "dev:all": "concurrently \"npm run dev\" \"node server/index.js\"",
+    "dev:docker": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-pdf/renderer": "^4.3.2",
     "@stripe/react-stripe-js": "^2.9.0",
     "@stripe/stripe-js": "^1.54.0",
-    "html2pdf.js": "^0.13.0",
     "lucide-react": "^0.469.0",
+    "pako": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-image-crop": "^11.0.10"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import html2pdf from 'html2pdf.js';
+import { pdf } from '@react-pdf/renderer';
 import { MAX_DESCRIPTION_LENGTH, TRANSLATIONS, PAYMENT_SUCCESS_BEHAVIOR } from './constants';
 import PaymentSuccess from './components/PaymentSuccess';
 import API_ENDPOINTS from './config';
@@ -7,9 +7,11 @@ import compressImage from './utils/imageCompression';
 import GlobalStyles from './components/GlobalStyles';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import FaqModal from './components/FaqModal';
 import Hero from './components/Hero';
 import Steps from './components/Steps';
 import SwissDocument from './components/SwissDocument';
+import SwissDocumentPdf from './components/SwissDocumentPdf';
 import { X, Camera } from 'lucide-react';
 import DonateModal from './components/DonateModal';
 import PaymentModal from './components/PaymentModal';
@@ -37,6 +39,7 @@ import {
   useScrollVisibility,
   useFormValidation
 } from './hooks';
+import { FormProvider, ThemeProvider, TranslationProvider } from './contexts';
 
 export default function App() {
   // Custom hooks for state management
@@ -83,6 +86,7 @@ export default function App() {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [legalPage, setLegalPage] = useState<string | null>(null); // 'impressum', 'privacy', 'terms', or null
+  const [faqOpen, setFaqOpen] = useState(false);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentSessionId, setPaymentSessionId] = useState<string | null>(null);
   const [navigationVisible, setNavigationVisible] = useState(true); // Control navigation visibility for Step5Photo
@@ -252,89 +256,126 @@ export default function App() {
     updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
   };
 
-  // NOTE: html2pdf.js renders PDF as an image (screenshot), not as selectable text.
-  // This means:
-  // - Text cannot be selected or copied from the PDF
-  // - File size may be larger than text-based PDFs
-  // - Some document scanners may not recognize text
-  // For future improvements, consider server-side PDF generation (react-pdf, puppeteer)
-  // For MVP, this solution is acceptable and works well for the use case.
+  // Vector PDF via @react-pdf/renderer: selectable text, small file size, print quality.
+  const blobUrlToDataUrl = (blobUrl: string): Promise<string> => {
+    return fetch(blobUrl)
+      .then((r) => r.blob())
+      .then(
+        (blob) =>
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          })
+      );
+  };
+
+  const fetchLogoAsDataUrl = async (): Promise<string | null> => {
+    try {
+      const url = `${window.location.origin}/logo.png`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const blob = await res.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch {
+      return null;
+    }
+  };
+
   const handleDownloadPDF = async () => {
     try {
-      const element = document.getElementById('pdf-document');
-      if (!element) {
-        showToast(t?.ui?.error || 'Document not found', 'error');
-        return;
-      }
       const filename = `${data.name || 'Pet-CV'}-${new Date().getTime()}.pdf`;
-      const options = {
-        margin: 0,
-        filename: filename,
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { 
-          scale: 2, 
-          useCORS: true,
-          logging: false, // Disable console logs from html2canvas
-          height: 1104, // A4 height in pixels at 96 DPI (292mm = 1104px)
-          width: 794, // A4 width in pixels at 96 DPI (210mm = 794px)
-          windowWidth: 794,
-          windowHeight: 1104,
-          onclone: (clonedDoc: Document) => {
-            // Ensure all images are loaded in cloned document
-            const images = clonedDoc.querySelectorAll('img');
-            images.forEach(img => {
-              if (!(img as HTMLImageElement).complete) {
-                (img as HTMLImageElement).style.display = 'none';
-              }
-            });
-            // Force exact dimensions on cloned document to match preview
-            const pdfDoc = clonedDoc.getElementById('pdf-document');
-            if (pdfDoc) {
-              pdfDoc.style.width = '210mm';
-              pdfDoc.style.height = '292mm';
-              pdfDoc.style.maxWidth = '210mm';
-              pdfDoc.style.maxHeight = '292mm';
-              pdfDoc.style.minWidth = '210mm';
-              pdfDoc.style.minHeight = '292mm';
-              pdfDoc.style.overflow = 'hidden';
-              pdfDoc.style.boxSizing = 'border-box';
-              pdfDoc.style.flexShrink = '0';
-              
-              // Ensure inner document container also has correct dimensions
-              const innerDoc = pdfDoc.querySelector('[class*="w-\\[210mm\\]"]');
-              if (innerDoc) {
-                innerDoc.setAttribute('style', 'width: 210mm; height: 292mm; max-width: 210mm; max-height: 292mm; overflow: hidden; box-sizing: border-box;');
-              }
-            }
-          }
+      let pdfData = { ...data };
+      if (data.photo && typeof data.photo === 'string' && data.photo.startsWith('blob:')) {
+        try {
+          pdfData = { ...data, photo: await blobUrlToDataUrl(data.photo) };
+        } catch {
+          pdfData = { ...data, photo: null };
+        }
+      }
+      // Pre-resolve translations to a plain object for worker serialization (avoids placeholder/corruption in PDF)
+      const pdfT = {
+        doc: {
+          title: t?.doc?.title ?? 'Pet CV',
+          subtitle: t?.doc?.subtitle ?? 'Application document',
+          date: t?.doc?.date ?? 'Date',
+          sectionOwner: t?.doc?.sectionOwner ?? 'Owner',
+          sectionPet: t?.doc?.sectionPet ?? 'Pet',
+          sectionAbout: t?.doc?.sectionAbout ?? 'About',
+          sectionLegal: t?.doc?.sectionLegal ?? 'Insurance & Legal',
+          sectionBehavior: t?.doc?.sectionBehavior ?? 'Behavior',
+          sectionReference: t?.doc?.sectionReference ?? 'References',
+          petPhoto: t?.doc?.petPhoto ?? t?.ui?.petPhotoAlt ?? 'Photo',
+          sign: t?.doc?.sign ?? 'Signature',
+          footer: t?.doc?.footer ?? 'Dokument generiert via Pet-Bewerbung.ch',
         },
-        jsPDF: { 
-          orientation: 'portrait' as const, 
-          unit: 'mm' as const, 
-          format: 'a4' as const,
-          compress: true
+        labels: {
+          petName: t?.labels?.petName ?? 'Name',
+          breed: t?.labels?.breed ?? 'Breed',
+          gender: t?.labels?.gender ?? 'Gender',
+          age: t?.labels?.age ?? 'Age',
+          weight: t?.labels?.weight ?? 'Weight',
+          chipId: t?.labels?.chipId ?? 'Chip ID',
+          insurance: t?.labels?.insurance ?? 'Insurance',
+          vet: t?.labels?.vet ?? 'Vet',
+          neutered: t?.labels?.neutered ?? 'Neutered',
+          vaccination: t?.labels?.vaccination ?? 'Vaccinated',
+          registration: t?.labels?.registration ?? 'Registered',
+          noiseLevel: t?.labels?.noiseLevel ?? 'Noise',
+          behaviorTitle: t?.labels?.behaviorTitle ?? 'Behavior',
+          activeHours: t?.labels?.activeHours ?? 'Active hours',
+          behaviorWithChildren: t?.labels?.behaviorWithChildren ?? 'With children',
+          behaviorWithPets: t?.labels?.behaviorWithPets ?? 'With pets',
+          behaviorGood: t?.labels?.behaviorGood ?? 'Good',
+          behaviorNeutral: t?.labels?.behaviorNeutral ?? 'Neutral',
+          behaviorAvoid: t?.labels?.behaviorAvoid ?? 'Avoid',
+          noiseLow: t?.labels?.noiseLow ?? 'Low',
+          noiseMedium: t?.labels?.noiseMedium ?? 'Medium',
+          noiseHigh: t?.labels?.noiseHigh ?? 'High',
+          low: t?.labels?.low ?? 'Low',
+          medium: t?.labels?.medium ?? 'Medium',
+          high: t?.labels?.high ?? 'High',
+          aloneTime: t?.labels?.aloneTime ?? 'Alone',
+          yes: t?.labels?.yes ?? 'Yes',
+          no: t?.labels?.no ?? 'No',
+          years: t?.labels?.years ?? 'years',
+          kg: t?.labels?.kg ?? 'kg',
+          m: t?.labels?.m ?? 'M',
+          f: t?.labels?.f ?? 'F',
+          previousLandlord: t?.labels?.previousLandlord ?? 'Previous landlord',
+          previousDuration: t?.labels?.previousDuration ?? 'Duration',
+          emergencyContact: t?.labels?.emergencyContact ?? 'Emergency',
+          emergencyContactRelation: t?.labels?.emergencyContactRelation ?? 'Relation',
+          referenceTitle: t?.labels?.referenceTitle ?? 'References',
+          medicalConditions: t?.labels?.medicalConditions ?? t?.step2Emergency?.displayMedical ?? 'Medizinische Angaben',
+          secondaryEmergencyContact: t?.labels?.secondaryEmergencyContact ?? t?.step2Emergency?.secondaryContact ?? 'Zweiter Kontakt',
         },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        step2Emergency: {
+          displayMedical: t?.step2Emergency?.displayMedical ?? 'Medizinische Angaben',
+          secondaryContact: t?.step2Emergency?.secondaryContact ?? 'Zweiter Kontakt',
+        },
+        ui: { noDescription: t?.ui?.noDescription ?? '—' },
       };
-      
-      // Detect mobile
+      const logoUrl = await fetchLogoAsDataUrl();
+      const blob = await pdf(
+        <SwissDocumentPdf data={pdfData} t={pdfT} templateType={selectedTemplate} logoUrl={logoUrl} />
+      ).toBlob();
+      const url = URL.createObjectURL(blob);
+
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      
-      // Generate PDF as blob
-      const pdfBlob = await html2pdf().set(options).from(element).outputPdf('blob');
-      const url = URL.createObjectURL(pdfBlob);
-      
+
       if (isIOS) {
-        // iOS Safari: open in new tab (user can save from there)
         const newWindow = window.open(url, '_blank');
-        if (!newWindow) {
-          // If popup blocked, try direct navigation
-          window.location.href = url;
-        }
-        showToast(t.labels?.pdfSaveHint || 'Tippen Sie auf "Teilen" → "In Dateien sichern"', 'info');
+        if (!newWindow) window.location.href = url;
+        showToast(t?.labels?.pdfSaveHint || 'Tippen Sie auf "Teilen" → "In Dateien sichern"', 'info');
       } else if (isMobile) {
-        // Android: try download attribute
         const link = document.createElement('a');
         link.href = url;
         link.download = filename;
@@ -344,7 +385,6 @@ export default function App() {
         document.body.removeChild(link);
         showToast('PDF downloaded!', 'success');
       } else {
-        // Desktop: standard download
         const link = document.createElement('a');
         link.href = url;
         link.download = filename;
@@ -354,14 +394,10 @@ export default function App() {
         document.body.removeChild(link);
         showToast('PDF downloaded successfully!', 'success');
       }
-      
-      // Cleanup after delay
       setTimeout(() => URL.revokeObjectURL(url), 5000);
-      // Не перекидати — користувач залишається на сторінці подяки
-    } catch (err: any) {
-      // Better error handling for PDF generation
-      const errorMessage = err.message || 'Unknown error';
-      if (errorMessage.includes('canvas') || errorMessage.includes('memory')) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      if (errorMessage.includes('memory')) {
         showToast(
           t?.ui?.pdfMemoryError || 'PDF generation failed due to large image. Try reducing photo size.',
           'error'
@@ -486,12 +522,8 @@ export default function App() {
       case 1:
         return (
           <Step1Details
-            data={data}
-            updateData={updateData}
-            t={t}
             animDir={animDir}
             errors={validationErrors}
-            darkMode={darkMode}
             onNext={() => goToStep(2)}
             canProceed={canProceed}
           />
@@ -556,74 +588,47 @@ export default function App() {
     }
   };
 
-  // Payment Success Page (shown after successful Stripe Checkout)
-  // Hidden pdf-document rendered so Download PDF works on this page too.
-  if (showPaymentSuccess) {
-    return (
-      <>
-        <div aria-hidden="true" className="fixed overflow-hidden" style={{ left: -9999, top: 0, width: '210mm', height: '292mm', zIndex: -1 }}>
-          <div id="pdf-document" style={{ width: '210mm', height: '292mm' }}>
-            <SwissDocument data={data} t={t} templateType={selectedTemplate} />
-          </div>
-        </div>
-        <PaymentSuccess
-          data={data}
-          t={t}
-          theme={theme}
-          onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
-          onLangChange={(v: string) => updateData('lang', v)}
-          onLogoClick={() => {
-            setShowPaymentSuccess(false);
-            goToStep(0);
-          }}
-          sessionId={paymentSessionId}
-          showToast={showToast}
-          onDownloadPDF={handleDownloadPDF}
-        />
-      </>
-    );
-  }
-
-  // Step 6: Thank You Page (Summary step removed)
-  // Hidden pdf-document must exist in DOM for handleDownloadPDF to work when user clicks Download on thank-you page.
-  if (step === 6) {
-    return (
-      <>
-        <div aria-hidden="true" className="fixed overflow-hidden" style={{ left: -9999, top: 0, width: '210mm', height: '292mm', zIndex: -1 }}>
-          <div id="pdf-document" style={{ width: '210mm', height: '292mm' }}>
-            <SwissDocument data={data} t={t} templateType={selectedTemplate} />
-          </div>
-        </div>
-        <Step9ThankYou
-          data={data}
-          t={t}
-          theme={theme}
-          onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
-          onLangChange={(v: string) => updateData('lang', v)}
-          onLogoClick={() => goToStep(0)}
-          onDownloadPDF={handleDownloadPDF}
-          onCreateAnother={() => goToStep(0)}
-          donationAmount={donationAmount}
-          setDonationAmount={setDonationAmount}
-          donateOpen={donateOpen}
-          setDonateOpen={setDonateOpen}
-          paymentOpen={paymentOpen}
-          setPaymentOpen={setPaymentOpen}
-          onDonate={handleDonateMethod}
-          showToast={showToast}
-          toast={toast}
-          onPaymentSuccess={(paymentId: string) => {
-            if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
-              setShowPaymentSuccess(true);
-              setPaymentSessionId(paymentId);
-            }
-          }}
-        />
-      </>
-    );
-  }
-
-  return (
+  const appContent = showPaymentSuccess ? (
+    <PaymentSuccess
+      data={data}
+      t={t}
+      theme={theme}
+      onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
+      onLangChange={(v: string) => updateData('lang', v)}
+      onLogoClick={() => { setShowPaymentSuccess(false); goToStep(0); }}
+      sessionId={paymentSessionId}
+      showToast={showToast}
+      onDownloadPDF={handleDownloadPDF}
+      onFaqClick={() => setFaqOpen(true)}
+    />
+  ) : step === 6 ? (
+    <Step9ThankYou
+      data={data}
+      t={t}
+      theme={theme}
+      onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
+      onLangChange={(v: string) => updateData('lang', v)}
+      onLogoClick={() => goToStep(0)}
+      onDownloadPDF={handleDownloadPDF}
+      onCreateAnother={() => goToStep(0)}
+      donationAmount={donationAmount}
+      setDonationAmount={setDonationAmount}
+      donateOpen={donateOpen}
+      setDonateOpen={setDonateOpen}
+      paymentOpen={paymentOpen}
+      setPaymentOpen={setPaymentOpen}
+      onDonate={handleDonateMethod}
+      showToast={showToast}
+      toast={toast}
+      onFaqClick={() => setFaqOpen(true)}
+      onPaymentSuccess={(paymentId: string) => {
+        if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
+          setShowPaymentSuccess(true);
+          setPaymentSessionId(paymentId);
+        }
+      }}
+    />
+  ) : (
     <div className="min-h-screen font-sans theme-text theme-bg pb-6 print:bg-white print:p-0">
       <GlobalStyles theme={theme} />
       <Header
@@ -715,11 +720,22 @@ export default function App() {
         </div>
       )}
 
-      <Footer darkMode={darkMode} t={t} onOpenLegal={setLegalPage} onFaqClick={() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info')} />
+      <Footer darkMode={darkMode} t={t} onOpenLegal={setLegalPage} onFaqClick={() => setFaqOpen(true)} />
 
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
 
       <CookieBanner t={t} onOpenPrivacy={() => setLegalPage('privacy')} />
     </div>
+  );
+
+  return (
+    <FormProvider value={{ data, updateData }}>
+      <ThemeProvider value={{ darkMode, setDarkMode }}>
+        <TranslationProvider value={{ t }}>
+          {appContent}
+          <FaqModal isOpen={faqOpen} onClose={() => setFaqOpen(false)} t={t} darkMode={darkMode} />
+        </TranslationProvider>
+      </ThemeProvider>
+    </FormProvider>
   );
 }
