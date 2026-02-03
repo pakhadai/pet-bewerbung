@@ -234,8 +234,10 @@ export default {
     privacyIntroText: "Nus prendain la protecziun da vossas datas persunalas serius.",
     dataCollection: "Collecziun da datas",
     dataCollectionText: "Tuttas datas che vus dais vegnan elavuradas exclusivamain en voss navigatur. Naginas datas persunalas vegnan transmessas u memorisadas sin noss servers.",
+    aiProcessing: "Generaziun da text cun IA",
+    aiProcessingText: "Per la funcziun da descripziun cun IA vegnan mo datas anonimisadas davart l'animal (raza, vegliadetgna, caracteristicas) tramessas a noss server ed a Google Gemini AI. Las datas persunalas dal possessur na bandunan mai voss apparat.",
     thirdParty: "Servetschs da terzs",
-    stripeText: "Per elavurar donaziuns utilisain nus Stripe. Vossas datas da pajament vegnan elavuradas directamain da Stripe.",
+    stripeText: "Per elavurar contribuziuns da sustegn utilisain nus Stripe. Vossas datas da pajament vegnan elavuradas directamain da Stripe.",
     fontsText: "Nus utilisain scrittiras localas per evitar transferiments da datas a servers da Google.",
     cookies: "Cookies",
     cookiesText: "Nus utilisain mo cookies tecnicamain necessaris per memorisar vossas preferenzas da lingua e design.",
@@ -266,7 +268,7 @@ export default {
   },
   header: {
     title: "pet-bewerbung.ch",
-    donate: "Donar"
+    donate: "Sustegn"
   },
   hero: {
     badge: "100% Gratuit & Nagina Registraziun",

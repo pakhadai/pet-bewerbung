@@ -257,7 +257,7 @@ const Step3UploadSelect = React.memo(({
       </div>
 
       {showCropper && tempImage && (
-        <ImageCropper imageSrc={tempImage} onCropComplete={handleCropComplete} onCancel={handleCropCancel} aspectRatio={1} t={t} />
+        <ImageCropper imageSrc={tempImage} onCropComplete={handleCropComplete} onCancel={handleCropCancel} aspectRatio={3/4} t={t} />
       )}
     </>
   );

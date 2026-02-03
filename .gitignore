@@ -29,6 +29,9 @@ coverage/
 ehthumbs.db
 Desktop.ini
 
+# Server rate limit data (file-based fallback when Redis unavailable)
+server/data/
+
 # Temporary files
 tmpclaude-*
 *.old.jsx

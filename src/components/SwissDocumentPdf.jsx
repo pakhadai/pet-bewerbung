@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#0f172a',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
   },
   footerGenerated: {
     fontSize: 7,
@@ -143,23 +143,25 @@ const styles = StyleSheet.create({
     width: 120,
     borderTopWidth: 1,
     borderTopColor: '#94a3b8',
-    paddingTop: 6,
-    marginTop: 12,
+    paddingTop: 4,
     fontSize: 8,
     textTransform: 'uppercase',
     color: '#475569',
   },
+  photoContainer: {
+    width: '100%',
+    overflow: 'hidden',
+  },
   photoPlaceholder: {
     width: '100%',
-    height: 220,
     backgroundColor: '#e2e8f0',
     justifyContent: 'center',
     alignItems: 'center',
   },
   photoImg: {
     width: '100%',
-    height: 220,
-    objectFit: 'contain',
+    height: '100%',
+    objectFit: 'cover',
   },
 });
 
@@ -175,7 +177,7 @@ const TEMPLATE_COLORS = {
  * Vector PDF document (react-pdf). Selectable text, small file size, print quality.
  * Supports classic, modern, compact, swiss templates.
  */
-const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl }) => {
+const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl }) => {
   const today = new Date().toLocaleDateString(
     data?.lang === 'de' ? 'de-CH' : data?.lang === 'fr' ? 'fr-CH' : data?.lang === 'it' ? 'it-CH' : 'en-GB'
   );
@@ -204,7 +206,8 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl }) => {
   const footerStyle = [styles.footer, { borderTopColor: colors.primary }];
   const footerSignStyle = [styles.footerSign, isSwiss && { borderTopColor: '#f87171' }];
   const boxStyle = [styles.box, { borderColor: colors.light, backgroundColor: isSwiss ? '#fef2f2' : '#f8fafc' }];
-  const photoHeight = isCompact ? 180 : 220;
+  // 3:4 portrait aspect (matches preview PetPhoto aspect-[3/4])
+  const photoHeight = isCompact ? 220 : 240;
   const headerIconStyle = [
     styles.headerIcon,
     logoUrl && { backgroundColor: 'white', padding: 2 },
@@ -237,8 +240,8 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl }) => {
         {/* Main: sidebar + content */}
         <View style={styles.mainRow}>
           <View style={styles.sidebar}>
-            {/* Photo: fixed block, aspect ~3:4 to match preview */}
-            <View style={styles.sectionBlock}>
+            {/* Photo: 3:4 portrait rectangle (matches preview PetPhoto aspect-[3/4]) */}
+            <View style={[styles.sectionBlock, styles.photoContainer, { height: photoHeight }]}>
               {data?.photo && typeof data.photo === 'string' && data.photo.startsWith('data:') ? (
                 <Image src={data.photo} style={[styles.photoImg, { height: photoHeight }]} />
               ) : (
@@ -250,11 +253,18 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl }) => {
             {/* Owner */}
             <View style={styles.sectionBlock}>
               <Text style={headingStyle}>{t?.doc?.sectionOwner ?? 'Owner'}</Text>
-              <Text style={styles.textBold}>{withFallback(data?.ownerName)}</Text>
-              <Text style={styles.text}>{streetLine}</Text>
-              <Text style={styles.text}>{cityLine}</Text>
-              <Text style={[styles.text, { marginTop: 6 }]}>{withFallback(data?.email)}</Text>
-              <Text style={styles.text}>{withFallback(data?.phone)}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textBold}>{withFallback(data?.ownerName)}</Text>
+                  <Text style={styles.text}>{streetLine}</Text>
+                  <Text style={styles.text}>{cityLine}</Text>
+                  <Text style={[styles.text, { marginTop: 6 }]}>{withFallback(data?.email)}</Text>
+                  <Text style={styles.text}>{withFallback(data?.phone)}</Text>
+                </View>
+                {qrUrl && (
+                  <Image src={qrUrl} style={{ width: 110, height: 110, flexShrink: 0 }} />
+                )}
+              </View>
             </View>
             {/* Behavior */}
             <View style={styles.sectionBlock}>

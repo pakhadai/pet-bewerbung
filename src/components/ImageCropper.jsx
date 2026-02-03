@@ -17,21 +17,19 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
 
   const onImageLoad = useCallback((e) => {
     imgRef.current = e.currentTarget;
-    
-    // Center the crop
     const { width, height } = e.currentTarget;
-    const size = Math.min(width, height) * 0.8;
-    const x = (width - size) / 2;
-    const y = (height - size) / 2;
-    
+    const cropW = Math.min(width, height * aspectRatio) * 0.9;
+    const cropH = cropW / aspectRatio;
+    const x = (width - cropW) / 2;
+    const y = (height - cropH) / 2;
     setCrop({
       unit: 'px',
-      width: size,
-      height: size,
+      width: cropW,
+      height: cropH,
       x,
       y,
     });
-  }, []);
+  }, [aspectRatio]);
 
   const getCroppedImg = useCallback(() => {
     if (!completedCrop || !imgRef.current) return;
@@ -41,27 +39,33 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
     const canvas = document.createElement('canvas');
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-    
-    // Output size (max 800x800 for performance)
-    const outputSize = Math.min(800, completedCrop.width * scaleX);
-    canvas.width = outputSize;
-    canvas.height = outputSize;
-    
+
+    const srcW = completedCrop.width * scaleX;
+    const srcH = completedCrop.height * scaleY;
+    const maxDim = 800;
+    let outW = Math.min(maxDim, srcW);
+    let outH = Math.min(maxDim, srcH);
+    const cropAspect = srcW / srcH;
+    if (outW / outH !== cropAspect) {
+      if (cropAspect > 1) outH = outW / cropAspect;
+      else outW = outH * cropAspect;
+    }
+    canvas.width = Math.round(outW);
+    canvas.height = Math.round(outH);
+
     const ctx = canvas.getContext('2d');
-    
     ctx.drawImage(
       image,
       completedCrop.x * scaleX,
       completedCrop.y * scaleY,
-      completedCrop.width * scaleX,
-      completedCrop.height * scaleY,
+      srcW,
+      srcH,
       0,
       0,
-      outputSize,
-      outputSize
+      outW,
+      outH
     );
 
-    // Convert to base64
     const base64Image = canvas.toDataURL('image/jpeg', 0.85);
     onCropComplete(base64Image);
     setIsProcessing(false);
@@ -97,14 +101,14 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
   const resetCrop = () => {
     if (imgRef.current) {
       const { width, height } = imgRef.current;
-      const size = Math.min(width, height) * 0.8;
-      const x = (width - size) / 2;
-      const y = (height - size) / 2;
-      
+      const cropW = Math.min(width, height * aspectRatio) * 0.9;
+      const cropH = cropW / aspectRatio;
+      const x = (width - cropW) / 2;
+      const y = (height - cropH) / 2;
       setCrop({
         unit: 'px',
-        width: size,
-        height: size,
+        width: cropW,
+        height: cropH,
         x,
         y,
       });

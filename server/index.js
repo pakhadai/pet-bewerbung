@@ -1,5 +1,7 @@
 require('dotenv').config();
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const Stripe = require('stripe');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -16,10 +18,51 @@ const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 const genAI = geminiKey ? new GoogleGenerativeAI(geminiKey) : null;
 
 // ============================================
-// Redis (optional – fallback to memory)
+// Redis (optional – fallback: file in prod, memory in dev)
 // ============================================
 let redis = null;
 const aiRateLimits = new Map();
+const RATE_LIMIT_FILE = process.env.RATE_LIMIT_FILE || path.join(process.cwd(), 'data', 'ai-ratelimit.json');
+
+function readRateLimitFile() {
+  try {
+    const dir = path.dirname(RATE_LIMIT_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(RATE_LIMIT_FILE)) return {};
+    const data = fs.readFileSync(RATE_LIMIT_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch {
+    return {};
+  }
+}
+
+function writeRateLimitFile(data) {
+  try {
+    const dir = path.dirname(RATE_LIMIT_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(RATE_LIMIT_FILE, JSON.stringify(data), 'utf8');
+  } catch (err) {
+    if (!isProduction) console.warn('Rate limit file write failed:', err.message);
+  }
+}
+
+function checkAIRateLimitFile(ip, limit) {
+  const now = Date.now();
+  const data = readRateLimitFile();
+  const record = data[ip];
+  const resetTime = record?.resetTime || now + AI_RATE_WINDOW * 1000;
+  if (!record || now > record.resetTime) {
+    data[ip] = { count: 1, resetTime };
+    writeRateLimitFile(data);
+    return { allowed: true, remaining: limit - 1, resetTime };
+  }
+  if (record.count >= limit) {
+    return { allowed: false, remaining: 0, resetTime: record.resetTime };
+  }
+  record.count++;
+  writeRateLimitFile(data);
+  return { allowed: true, remaining: limit - record.count, resetTime: record.resetTime };
+}
 
 async function initRedis() {
   try {
@@ -31,14 +74,18 @@ async function initRedis() {
     if (!isProduction) console.log('✅ Redis connected');
     return true;
   } catch (err) {
-    if (!isProduction) console.warn('⚠️  Redis unavailable, using in-memory rate limiting:', err.message);
+    if (isProduction) {
+      console.warn('⚠️  Redis unavailable in production. Using file-based rate limiting:', RATE_LIMIT_FILE);
+    } else {
+      console.warn('⚠️  Redis unavailable, using in-memory rate limiting:', err.message);
+    }
     redis = null;
     return false;
   }
 }
 
 // ============================================
-// Rate Limiting (Redis or memory)
+// Rate Limiting (Redis > file > memory)
 // ============================================
 const AI_RATE_LIMIT = parseInt(process.env.AI_RATE_LIMIT) || 3;
 const AI_RATE_LIMIT_FREE = parseInt(process.env.AI_RATE_LIMIT_FREE) || 1;
@@ -74,6 +121,7 @@ function checkAIRateLimitMemory(ip, limit) {
 async function checkAIRateLimit(ip, premiumToken = null) {
   const limit = premiumToken ? 9999 : AI_RATE_LIMIT_FREE;
   if (redis) return checkAIRateLimitRedis(ip, limit);
+  if (isProduction) return checkAIRateLimitFile(ip, limit);
   return checkAIRateLimitMemory(ip, limit);
 }
 
@@ -90,19 +138,27 @@ const stripe = Stripe(stripeKey || '');
 // ============================================
 // SECURITY: CORS Configuration
 // ============================================
-// Set ALLOWED_ORIGINS in .env (comma-separated, no spaces after commas) to override.
-// Example: ALLOWED_ORIGINS=https://pet-bewerbung.ch,https://www.pet-bewerbung.ch,http://localhost:3000
-const defaultOrigins = [
-  'https://pet.ohmyrevit.pp.ua',
-  'https://pet-bewerbung.ch',
-  'https://www.pet-bewerbung.ch',
+// Set ALLOWED_ORIGINS in .env (comma-separated) to override.
+// In production: if ALLOWED_ORIGINS is empty/invalid, use strict defaults (no localhost).
+const defaultOriginsDev = [
   'http://localhost:3000',
   'http://localhost:5173',
   'http://127.0.0.1:3000',
+  'https://pet.ohmyrevit.pp.ua',
+  'https://pet-bewerbung.ch',
+  'https://www.pet-bewerbung.ch',
 ];
-const allowedOrigins = process.env.ALLOWED_ORIGINS
+const defaultOriginsProd = [
+  'https://pet-bewerbung.ch',
+  'https://www.pet-bewerbung.ch',
+  'https://pet.ohmyrevit.pp.ua',
+];
+const envOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean)
-  : defaultOrigins;
+  : [];
+const allowedOrigins = isProduction
+  ? (envOrigins.length > 0 ? envOrigins : defaultOriginsProd)
+  : (envOrigins.length > 0 ? envOrigins : defaultOriginsDev);
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -178,7 +234,7 @@ app.post('/create-checkout-session', async (req, res) => {
         {
           price_data: {
             currency: sessionCurrency,
-            product_data: { name: 'Donation — Pet CV' },
+            product_data: { name: 'Support contribution — Pet CV' },
             unit_amount: amount,
           },
           quantity: 1,

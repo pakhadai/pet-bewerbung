@@ -234,8 +234,10 @@ export default {
     privacyIntroText: "Nous prenons la protection de vos données personnelles au sérieux. Cette politique explique comment nous traitons vos informations.",
     dataCollection: "Collecte de données",
     dataCollectionText: "Toutes les données que vous saisissez sont traitées exclusivement dans votre navigateur. Aucune donnée personnelle n'est transmise ou stockée sur nos serveurs. La génération PDF se fait entièrement côté client.",
+    aiProcessing: "Génération de texte IA",
+    aiProcessingText: "Pour la fonction de description assistée par IA, seules les données anonymisées de l'animal (race, âge, traits de caractère) sont envoyées à notre serveur et à Google Gemini AI. Les données personnelles du propriétaire (nom, adresse, e-mail, téléphone) ne quittent jamais votre appareil.",
     thirdParty: "Services tiers",
-    stripeText: "Pour le traitement des dons, nous utilisons Stripe. Vos données de paiement sont traitées directement par Stripe selon leur politique de confidentialité.",
+    stripeText: "Pour le traitement des contributions de soutien, nous utilisons Stripe. Vos données de paiement sont traitées directement par Stripe selon leur politique de confidentialité.",
     fontsText: "Nous utilisons des polices hébergées localement pour éviter le transfert de données vers les serveurs Google.",
     cookies: "Cookies",
     cookiesText: "Nous utilisons uniquement des cookies techniquement nécessaires pour stocker vos préférences de langue et de thème. Aucun cookie de suivi n'est utilisé.",
@@ -266,7 +268,7 @@ export default {
   },
   header: {
     title: "pet-bewerbung.ch",
-    donate: "Faire un don"
+    donate: "Soutenir"
   },
   hero: {
     badge: "100% Gratuit & Sans Inscription",

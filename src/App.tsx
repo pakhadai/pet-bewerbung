@@ -3,7 +3,8 @@ import { pdf } from '@react-pdf/renderer';
 import { MAX_DESCRIPTION_LENGTH, TRANSLATIONS, PAYMENT_SUCCESS_BEHAVIOR } from './constants';
 import PaymentSuccess from './components/PaymentSuccess';
 import API_ENDPOINTS from './config';
-import compressImage from './utils/imageCompression';
+import compressImage, { toJpegDataUrl } from './utils/imageCompression';
+import { generateQrDataUrl, getQrContent } from './utils/qrCode';
 import GlobalStyles from './components/GlobalStyles';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -292,9 +293,17 @@ export default function App() {
     try {
       const filename = `${data.name || 'Pet-CV'}-${new Date().getTime()}.pdf`;
       let pdfData = { ...data };
-      if (data.photo && typeof data.photo === 'string' && data.photo.startsWith('blob:')) {
+      if (data.photo && typeof data.photo === 'string') {
         try {
-          pdfData = { ...data, photo: await blobUrlToDataUrl(data.photo) };
+          let photoUrl = data.photo;
+          if (data.photo.startsWith('blob:')) {
+            photoUrl = await blobUrlToDataUrl(data.photo);
+          }
+          // PDF renderer needs JPEG/PNG; convert WebP to JPEG if needed
+          if (photoUrl.startsWith('data:image/webp')) {
+            photoUrl = await toJpegDataUrl(photoUrl);
+          }
+          pdfData = { ...data, photo: photoUrl };
         } catch {
           pdfData = { ...data, photo: null };
         }
@@ -363,8 +372,10 @@ export default function App() {
         ui: { noDescription: t?.ui?.noDescription ?? '—' },
       };
       const logoUrl = await fetchLogoAsDataUrl();
+      const qrContent = getQrContent(pdfData);
+      const qrUrl = qrContent ? await generateQrDataUrl(qrContent, { size: 400, margin: 2 }) : null;
       const blob = await pdf(
-        <SwissDocumentPdf data={pdfData} t={pdfT} templateType={selectedTemplate} logoUrl={logoUrl} />
+        <SwissDocumentPdf data={pdfData} t={pdfT} templateType={selectedTemplate} logoUrl={logoUrl} qrUrl={qrUrl} />
       ).toBlob();
       const url = URL.createObjectURL(blob);
 

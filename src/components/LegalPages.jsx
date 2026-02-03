@@ -105,10 +105,18 @@ const PrivacyContent = ({ t }) => (
     </section>
 
     <section>
+      <h3 className="font-semibold text-base mb-2">{t.legal?.aiProcessing || 'AI Text Generation / KI-Textgenerierung'}</h3>
+      <p className="theme-text-muted">
+        {t.legal?.aiProcessingText ||
+          'For the AI-assisted description feature, anonymized pet data only (breed, age, character traits) is sent to our server and forwarded to Google Gemini AI for text generation. Personal data of the owner (name, address, email, phone) never leaves your device and is not transmitted to Google or any third party.'}
+      </p>
+    </section>
+
+    <section>
       <h3 className="font-semibold text-base mb-2">{t.legal?.paymentData || 'Payment Data Processing'}</h3>
       <p className="theme-text-muted">
         {t.legal?.paymentDataText ||
-          'When you make a voluntary donation, the following data is processed by our payment provider:'}
+          'When you make a voluntary support contribution (Unterstützungsbeitrag), the following data is processed by our payment provider:'}
       </p>
       <ul className="theme-text-muted space-y-2 mt-2 list-disc list-inside">
         <li>Email address (for payment receipt)</li>

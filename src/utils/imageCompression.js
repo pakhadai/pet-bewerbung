@@ -1,16 +1,32 @@
 /**
  * Image compression utility
- * Compresses images client-side before storing to state
+ * Compresses images client-side before storing to state.
+ * Uses WebP when supported for ~25–35% smaller size than JPEG.
  */
 
+/** Check if WebP is supported in canvas */
+function supportsWebP() {
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    return canvas.toDataURL('image/webp').startsWith('data:image/webp');
+  } catch {
+    return false;
+  }
+}
+
+const WEBP_SUPPORTED = typeof document !== 'undefined' && supportsWebP();
+
 /**
- * Compresses an image file and returns a base64 data URL
+ * Compresses an image file and returns a base64 data URL (WebP or JPEG)
  * @param {File} file - The image file to compress
  * @param {Object} options - Compression options
  * @param {number} options.maxWidth - Maximum width in pixels (default: 800)
  * @param {number} options.maxHeight - Maximum height in pixels (default: 800)
- * @param {number} options.quality - JPEG quality 0-1 (default: 0.8)
+ * @param {number} options.quality - Quality 0-1 (default: 0.8)
  * @param {number} options.maxSizeKB - Target max file size in KB (default: 500)
+ * @param {string} options.format - 'webp' | 'jpeg' (default: 'webp' if supported)
  * @returns {Promise<string>} - Base64 data URL of compressed image
  */
 export const compressImage = (file, options = {}) => {
@@ -18,11 +34,13 @@ export const compressImage = (file, options = {}) => {
     maxWidth = 800,
     maxHeight = 800,
     quality = 0.8,
-    maxSizeKB = 500
+    maxSizeKB = 500,
+    format = WEBP_SUPPORTED ? 'webp' : 'jpeg',
   } = options;
 
+  const mime = format === 'webp' ? 'image/webp' : 'image/jpeg';
+
   return new Promise((resolve, reject) => {
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       reject(new Error('File is not an image'));
       return;
@@ -36,9 +54,7 @@ export const compressImage = (file, options = {}) => {
       img.onerror = () => reject(new Error('Failed to load image'));
 
       img.onload = () => {
-        // Calculate new dimensions while maintaining aspect ratio
         let { width, height } = img;
-
         if (width > maxWidth) {
           height = (height * maxWidth) / width;
           width = maxWidth;
@@ -48,28 +64,33 @@ export const compressImage = (file, options = {}) => {
           height = maxHeight;
         }
 
-        // Create canvas and draw image
         const canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
-
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, width, height);
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Try different quality levels to meet size target
         let currentQuality = quality;
-        let result = canvas.toDataURL('image/jpeg', currentQuality);
+        let result;
+        try {
+          result = canvas.toDataURL(mime, currentQuality);
+        } catch {
+          result = canvas.toDataURL('image/jpeg', currentQuality);
+        }
 
-        // Iteratively reduce quality if file is still too large
         const maxSizeBytes = maxSizeKB * 1024;
         let iterations = 0;
         const maxIterations = 5;
 
         while (getBase64Size(result) > maxSizeBytes && currentQuality > 0.3 && iterations < maxIterations) {
           currentQuality -= 0.1;
-          result = canvas.toDataURL('image/jpeg', currentQuality);
+          try {
+            result = canvas.toDataURL(mime, currentQuality);
+          } catch {
+            result = canvas.toDataURL('image/jpeg', currentQuality);
+          }
           iterations++;
         }
 
@@ -82,6 +103,32 @@ export const compressImage = (file, options = {}) => {
     reader.readAsDataURL(file);
   });
 };
+
+/**
+ * Convert data URL to JPEG (for PDF compatibility when source is WebP)
+ * @param {string} dataUrl - data:image/webp;base64,... or data:image/jpeg;base64,...
+ * @returns {Promise<string>} - JPEG data URL
+ */
+export async function toJpegDataUrl(dataUrl) {
+  if (!dataUrl || !dataUrl.startsWith('data:image/')) return dataUrl;
+  if (dataUrl.startsWith('data:image/jpeg')) return dataUrl;
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.src = dataUrl;
+  });
+}
 
 /**
  * Gets the approximate size in bytes of a base64 string
