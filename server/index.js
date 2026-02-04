@@ -227,6 +227,16 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 
   try {
+    // Build success URL - handle existing query params
+    const baseSuccessUrl = successUrl || 'http://localhost:3000';
+    const successUrlSeparator = baseSuccessUrl.includes('?') ? '&' : '?';
+    const finalSuccessUrl = `${baseSuccessUrl}${successUrlSeparator}session_id={CHECKOUT_SESSION_ID}&payment_success=true`;
+    
+    // Build cancel URL - handle existing query params
+    const baseCancelUrl = cancelUrl || 'http://localhost:3000';
+    const cancelUrlSeparator = baseCancelUrl.includes('?') ? '&' : '?';
+    const finalCancelUrl = `${baseCancelUrl}${cancelUrlSeparator}payment_canceled=true`;
+    
     const session = await stripe.checkout.sessions.create({
       payment_method_types,
       mode: 'payment',
@@ -240,8 +250,8 @@ app.post('/create-checkout-session', async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: `${successUrl || 'http://localhost:3000'}?session_id={CHECKOUT_SESSION_ID}&payment_success=true`,
-      cancel_url: `${cancelUrl || 'http://localhost:3000'}?payment_canceled=true`,
+      success_url: finalSuccessUrl,
+      cancel_url: finalCancelUrl,
     });
 
     res.json({ url: session.url, sessionId: session.id });
@@ -465,41 +475,158 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
 // ============================================
 const AI_MAX_CHARS = 470;
 
+// Available models in order of preference (free tier)
+// Fallback chain: if one model hits rate limit, try next
+const AI_MODELS = [
+  'gemini-2.5-flash-preview-05-20',  // Primary: 10 RPM, 20 RPD
+  'gemini-2.0-flash',                 // Fallback 1
+  'gemini-1.5-flash',                 // Fallback 2
+  'gemini-2.0-flash-lite',            // Fallback 3: lighter model
+  'gemma-3-27b-it',                   // Fallback 4: Gemma 30 RPM, 14.4K RPD
+];
+
 // Strict prompt template - ONLY generates pet descriptions
 function buildPetPrompt(petData, lang) {
   const langInstructions = {
-    de: 'Antworte auf Deutsch.',
-    en: 'Respond in English.',
-    fr: 'Réponds en français.',
-    it: 'Rispondi in italiano.',
-    ua: 'Відповідай українською.',
-    rm: 'Antworte auf Deutsch.', // Romansh -> German
+    de: {
+      lang: 'Antworte auf Deutsch.',
+      context: 'Dies ist für eine Schweizer Mietbewerbung. Der Vermieter soll sehen, dass der Mieter verantwortungsvoll ist.'
+    },
+    en: {
+      lang: 'Respond in English.',
+      context: 'This is for a Swiss rental application. The landlord should see that the tenant is responsible.'
+    },
+    fr: {
+      lang: 'Réponds en français.',
+      context: 'Ceci est pour une demande de location en Suisse. Le propriétaire doit voir que le locataire est responsable.'
+    },
+    it: {
+      lang: 'Rispondi in italiano.',
+      context: 'Questo è per una domanda di affitto in Svizzera. Il proprietario deve vedere che l\'inquilino è responsabile.'
+    },
+    ua: {
+      lang: 'Відповідай українською.',
+      context: 'Це для заявки на оренду житла у Швейцарії. Орендодавець має побачити, що орендар відповідальний.'
+    },
+    rm: {
+      lang: 'Antworte auf Deutsch.',
+      context: 'Dies ist für eine Schweizer Mietbewerbung.'
+    },
   };
   
-  const langInstruction = langInstructions[lang] || langInstructions.de;
+  const instructions = langInstructions[lang] || langInstructions.de;
   
-  return `Du bist ein professioneller Texter für Mietbewerbungen mit Haustieren in der Schweiz.
+  // Calculate target length based on available data
+  const minChars = 420;
+  const maxChars = AI_MAX_CHARS; // 470
+  
+  return `Du bist ein erfahrener Texter, der Mietbewerbungen mit Haustieren in der Schweiz schreibt.
+
+KONTEXT: ${instructions.context}
+WICHTIG: Du schreibst NICHT, um das Tier zu verkaufen! Du schreibst, um den MIETER als verantwortungsvollen Tierhalter zu präsentieren.
 
 STRENGE REGELN:
-1. Schreibe NUR eine Beschreibung für das Haustier - KEINE anderen Themen
-2. Maximal ${AI_MAX_CHARS} Zeichen (inklusive Leerzeichen)
-3. Professioneller, freundlicher Ton
-4. Betone positive Eigenschaften für Vermieter (ruhig, stubenrein, gut erzogen)
-5. KEINE erfundenen Fakten - nutze nur die gegebenen Informationen
-6. ${langInstruction}
+1. Schreibe einen zusammenhängenden, professionellen Text über das Haustier
+2. MINDESTENS ${minChars} Zeichen, MAXIMAL ${maxChars} Zeichen (inklusive Leerzeichen) - NUTZE DEN PLATZ!
+3. Beschreibe das Verhalten im Alltag: Wie verhält sich das Tier in der Wohnung? Wann ist es aktiv? Wie reagiert es auf Nachbarn/Besucher?
+4. Betone Eigenschaften, die für Vermieter wichtig sind: ruhig, stubenrein, gut erzogen, keine Schäden, kein Lärm
+5. Erwähne die Verantwortung des Halters: regelmässige Spaziergänge, Pflege, Erziehung
+6. VERMEIDE Phrasen wie "wird eine tolle Ergänzung sein" oder "perfekt für Ihre Wohnung" - das klingt nach Verkauf!
+7. KEINE erfundenen Fakten - nutze nur die gegebenen Informationen
+8. ${instructions.lang}
 
-HAUSTIER-DATEN:
+HAUSTIER-DATEN (nicht alle im Text wiederholen, nur ergänzen):
 - Name: ${petData.petName || 'Unbekannt'}
 - Tierart: ${petData.petType || 'Haustier'}
 - Rasse: ${petData.breed || 'Unbekannt'}
-- Alter: ${petData.age || 'Unbekannt'}
-- Geschlecht: ${petData.gender || 'Unbekannt'}
-- Gewicht: ${petData.weight || 'Unbekannt'}
-- Eigenschaften: ${petData.traits || 'freundlich, ruhig'}
-- Kastriert/Sterilisiert: ${petData.neutered ? 'Ja' : 'Nein'}
+- Alter: ${petData.age || 'Unbekannt'} Jahre
+- Geschlecht: ${petData.gender === 'm' ? 'männlich' : petData.gender === 'f' ? 'weiblich' : 'Unbekannt'}
+- Gewicht: ${petData.weight || 'Unbekannt'} kg
+- Charakter: ${petData.traits || 'freundlich, ruhig'}
+- Kastriert: ${petData.neutered ? 'Ja' : 'Nein'}
 - Geimpft: ${petData.vaccinated ? 'Ja' : 'Nein'}
 
-Schreibe jetzt eine überzeugende, professionelle Beschreibung für dieses Haustier, die Vermieter anspricht:`;
+BEISPIEL-STRUKTUR (anpassen, nicht kopieren):
+1. Kurze Vorstellung des Charakters
+2. Verhalten im Wohnalltag (ruhig, kein Bellen/Miauen, stubenrein)
+3. Tagesablauf (wann aktiv, wann ruhig)
+4. Verhalten mit Nachbarn/Besuchern
+5. Verantwortungsvolle Haltung durch den Besitzer
+
+Schreibe jetzt einen professionellen, ausführlichen Text (${minChars}-${maxChars} Zeichen):`;
+}
+
+// Try to generate with fallback models
+async function generateWithFallback(prompt) {
+  let lastError = null;
+  
+  for (const modelName of AI_MODELS) {
+    try {
+      if (!isProduction) {
+        console.log(`Trying model: ${modelName}`);
+      }
+      
+      const model = genAI.getGenerativeModel({ 
+        model: modelName,
+        generationConfig: {
+          maxOutputTokens: 350,  // Increased for longer descriptions (420-470 chars)
+          temperature: 0.75,    // Slightly more creative
+        },
+        safetySettings: [
+          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        ],
+      });
+      
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      const text = response.text().trim();
+      
+      if (!isProduction) {
+        console.log(`✅ Success with model: ${modelName}`);
+      }
+      
+      return { text, model: modelName };
+      
+    } catch (err) {
+      lastError = err;
+      const errorMsg = err.message || '';
+      
+      // Check if it's a rate limit or quota error - try next model
+      if (errorMsg.includes('429') || 
+          errorMsg.includes('quota') || 
+          errorMsg.includes('rate') ||
+          errorMsg.includes('RESOURCE_EXHAUSTED') ||
+          errorMsg.includes('Too Many Requests')) {
+        if (!isProduction) {
+          console.warn(`⚠️ Rate limit on ${modelName}, trying next...`);
+        }
+        continue;
+      }
+      
+      // Check if model doesn't exist - try next
+      if (errorMsg.includes('404') || 
+          errorMsg.includes('not found') ||
+          errorMsg.includes('NOT_FOUND') ||
+          errorMsg.includes('does not exist')) {
+        if (!isProduction) {
+          console.warn(`⚠️ Model ${modelName} not found, trying next...`);
+        }
+        continue;
+      }
+      
+      // For other errors, still try next model but log it
+      if (!isProduction) {
+        console.warn(`⚠️ Error with ${modelName}: ${errorMsg}, trying next...`);
+      }
+      continue;
+    }
+  }
+  
+  // All models failed
+  throw lastError || new Error('All AI models failed');
 }
 
 app.post('/generate-pet-description', async (req, res) => {
@@ -542,26 +669,13 @@ app.post('/generate-pet-description', async (req, res) => {
   }
   
   try {
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-2.0-flash-exp',
-      generationConfig: {
-        maxOutputTokens: 200,
-        temperature: 0.7,
-      },
-      safetySettings: [
-        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-      ],
-    });
-    
     const prompt = buildPetPrompt(petData, lang);
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    let text = response.text().trim();
+    
+    // Use fallback system to try multiple models
+    const { text: rawText, model: usedModel } = await generateWithFallback(prompt);
     
     // Ensure max length
+    let text = rawText;
     if (text.length > AI_MAX_CHARS) {
       // Try to cut at sentence boundary
       const cutText = text.substring(0, AI_MAX_CHARS);
@@ -576,19 +690,21 @@ app.post('/generate-pet-description', async (req, res) => {
     }
     
     if (!isProduction) {
-      console.log(`AI generated description for ${petData.petName} (${text.length} chars), remaining: ${rateCheck.remaining}`);
+      console.log(`✅ AI generated for ${petData.petName} using ${usedModel} (${text.length} chars), remaining: ${rateCheck.remaining}`);
     }
     
     res.json({ 
       description: text, 
       length: text.length,
       remaining: rateCheck.remaining,
-      resetTime: rateCheck.resetTime
+      resetTime: rateCheck.resetTime,
+      model: !isProduction ? usedModel : undefined // Only show model in dev
     });
     
   } catch (err) {
-    console.error('AI generation error:', err.message);
+    console.error('AI generation error (all models failed):', err.message);
     
+    // Refund rate limit on error
     if (redis) {
       const key = `ai:ratelimit:${clientIP}`;
       const count = await redis.get(key);
@@ -600,7 +716,7 @@ app.post('/generate-pet-description', async (req, res) => {
     
     res.status(500).json({ 
       error: 'AI generation failed',
-      message: err.message || 'Unknown error',
+      message: err.message || 'All AI models unavailable. Please try again later.',
       remaining: rateCheck.remaining + 1 // Refund the request
     });
   }
@@ -647,6 +763,100 @@ app.get('/ai-rate-limit', async (req, res) => {
     resetTime: record.resetTime,
     configured: !!genAI
   });
+});
+
+// ============================================
+// Premium Purchase Restoration
+// ============================================
+// Generate a restore token for email after successful premium purchase
+function generateRestoreToken(sessionId) {
+  // Simple token: base64 of session ID + timestamp
+  const payload = JSON.stringify({ 
+    sid: sessionId, 
+    ts: Date.now(),
+    exp: Date.now() + 365 * 24 * 60 * 60 * 1000 // 1 year expiry
+  });
+  return Buffer.from(payload).toString('base64url');
+}
+
+// Verify restore token
+function verifyRestoreToken(token) {
+  try {
+    const payload = JSON.parse(Buffer.from(token, 'base64url').toString());
+    if (!payload.sid || !payload.exp) return null;
+    if (Date.now() > payload.exp) return null; // Expired
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+// Endpoint to verify restore token and return session info
+app.get('/verify-restore/:token', async (req, res) => {
+  const { token } = req.params;
+  
+  const payload = verifyRestoreToken(token);
+  if (!payload) {
+    return res.status(400).json({ valid: false, error: 'Invalid or expired token' });
+  }
+  
+  if (!stripeKey) {
+    return res.status(400).json({ valid: false, error: 'Stripe not configured' });
+  }
+  
+  try {
+    // Verify the session with Stripe
+    const session = await stripe.checkout.sessions.retrieve(payload.sid);
+    
+    if (session.payment_status === 'paid') {
+      return res.json({ 
+        valid: true, 
+        sessionId: session.id,
+        purchaseDate: new Date(session.created * 1000).toISOString()
+      });
+    } else {
+      return res.json({ valid: false, error: 'Payment not completed' });
+    }
+  } catch (err) {
+    console.error('Restore verification error:', err.message);
+    return res.status(404).json({ valid: false, error: 'Session not found' });
+  }
+});
+
+// Endpoint to generate restore link (called after successful payment)
+app.post('/generate-restore-link', async (req, res) => {
+  const { sessionId, email } = req.body || {};
+  
+  if (!sessionId) {
+    return res.status(400).json({ error: 'Session ID required' });
+  }
+  
+  if (!stripeKey) {
+    return res.status(400).json({ error: 'Stripe not configured' });
+  }
+  
+  try {
+    // Verify payment was successful
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    
+    if (session.payment_status !== 'paid') {
+      return res.status(400).json({ error: 'Payment not completed' });
+    }
+    
+    const token = generateRestoreToken(sessionId);
+    const restoreUrl = `${process.env.FRONTEND_URL || 'https://pet-bewerbung.ch'}?restore=${token}`;
+    
+    res.json({ 
+      success: true, 
+      token,
+      restoreUrl,
+      expiresIn: '1 year'
+    });
+    
+  } catch (err) {
+    console.error('Generate restore link error:', err.message);
+    res.status(500).json({ error: 'Failed to generate restore link' });
+  }
 });
 
 // ============================================

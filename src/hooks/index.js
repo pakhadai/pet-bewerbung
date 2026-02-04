@@ -4,5 +4,7 @@ export {
   usePaymentFlow,
   useToast,
   useScrollVisibility,
-  useFormValidation
+  useFormValidation,
+  usePremium,
+  useAIGenerations
 } from './useFormWizard';

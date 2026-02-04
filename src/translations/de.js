@@ -179,7 +179,9 @@ export default {
     sign: "Unterschrift",
     petDossier: "Haustier-Dossier",
     swissPetCV: "Schweizer Haustier-Lebenslauf",
-    insurancePrefix: "Versicherung:"
+    insurancePrefix: "Versicherung:",
+    qrLabel: "Kontakt scannen",
+    qrHint: "vCard hinzufügen"
   },
   monetization: {
     title: "Projekt unterstützen",
@@ -368,6 +370,53 @@ export default {
     terms: "AGB",
     faq: "FAQ",
     faqComingSoon: "FAQ — demnächst verfügbar."
+  },
+  // Affiliate links
+  affiliate: {
+    insuranceTitle: 'Noch keine Haftpflichtversicherung?',
+    insuranceDesc: 'Vermieter verlangen oft einen Nachweis. Schützen Sie sich und Ihr Tier ab 5 CHF/Monat.',
+    insuranceCta: 'Angebote vergleichen'
+  },
+  // Premium/Freemium features
+  premium: {
+    // AI limits
+    aiLimitReached: 'KI-Limit erreicht. Premium für unbegrenzte Generierungen freischalten.',
+    aiLimitBtn: 'Limit erreicht – Premium für mehr',
+    aiRemaining: 'KI-Generierung(en) übrig',
+    aiLimitInfo: 'Premium für unbegrenzte KI-Texte',
+    unlimitedAI: 'Premium – Unbegrenzte KI-Generierungen',
+    unlimitedAIShort: 'Unbegrenzt KI-Texte',
+    
+    // Template badges
+    unlocked: 'Freigeschaltet',
+    templateSelected: 'Premium-Vorlage gewählt – Zahlung vor Download nötig',
+    needsPayment: 'Zahlung nötig',
+    freeTemplate: 'Kostenlose Vorlage',
+    premiumTemplate: 'Premium-Vorlage',
+    
+    // Preview comparison
+    compareTitle: 'Was Sie erhalten:',
+    freeVersion: 'Kostenlos (Classic)',
+    basicDesign: 'Einfaches Design',
+    noWatermark: 'Kein Wasserzeichen',
+    proDesign: 'Professionelles Design',
+    allTemplates: 'Alle 4 Vorlagen',
+    supportProject: 'Projekt unterstützen',
+    oneTimePayment: 'Einmalige Zahlung',
+    
+    // Purchase
+    buyAndDownload: 'Kaufen & herunterladen',
+    securePayment: 'Sichere Zahlung via Stripe',
+    orUseFree: 'Oder',
+    useFreeTemplate: 'kostenlose Vorlage verwenden',
+    purchaseSuccess: '🎉 Premium freigeschaltet! Viel Spaß mit allen Templates.',
+    
+    // Restore
+    restoreTitle: 'Premium wiederherstellen',
+    restoreDesc: 'Geben Sie die E-Mail ein, mit der Sie gekauft haben',
+    restoreSuccess: 'Premium erfolgreich wiederhergestellt!',
+    restoreError: 'Wiederherstellung fehlgeschlagen. Token ungültig oder abgelaufen.',
+    restoreLoading: 'Wird wiederhergestellt...'
   },
   faq: {
     title: "Häufig gestellte Fragen",

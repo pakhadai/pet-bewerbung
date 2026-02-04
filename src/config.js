@@ -13,6 +13,10 @@ export const API_ENDPOINTS = {
   // AI
   generatePetDescription: `${API_BASE}/generate-pet-description`,
   aiRateLimit: `${API_BASE}/ai-rate-limit`,
+  
+  // Premium Restoration
+  verifyRestore: (token) => `${API_BASE}/verify-restore/${token}`,
+  generateRestoreLink: `${API_BASE}/generate-restore-link`,
 };
 
 // Legacy export

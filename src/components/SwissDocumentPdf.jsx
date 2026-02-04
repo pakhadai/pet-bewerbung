@@ -15,6 +15,37 @@ const styles = StyleSheet.create({
     padding: 40,
     fontSize: 10,
     fontFamily: 'Helvetica',
+    position: 'relative',
+  },
+  // Watermark overlay for unpaid premium templates
+  watermarkOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  watermarkText: {
+    fontSize: 72,
+    fontWeight: 'bold',
+    color: '#dc2626',
+    opacity: 0.15,
+    transform: 'rotate(-45deg)',
+    textTransform: 'uppercase',
+    letterSpacing: 8,
+  },
+  watermarkSubtext: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#dc2626',
+    opacity: 0.2,
+    marginTop: 20,
+    transform: 'rotate(-45deg)',
+    textTransform: 'uppercase',
+    letterSpacing: 2,
   },
   header: {
     flexDirection: 'row',
@@ -176,8 +207,9 @@ const TEMPLATE_COLORS = {
 /**
  * Vector PDF document (react-pdf). Selectable text, small file size, print quality.
  * Supports classic, modern, compact, swiss templates.
+ * @param {boolean} showWatermark - If true, shows PREVIEW watermark on document (for unpaid premium)
  */
-const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl }) => {
+const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, showWatermark = false }) => {
   const today = new Date().toLocaleDateString(
     data?.lang === 'de' ? 'de-CH' : data?.lang === 'fr' ? 'fr-CH' : data?.lang === 'it' ? 'it-CH' : 'en-GB'
   );
@@ -253,18 +285,36 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl })
             {/* Owner */}
             <View style={styles.sectionBlock}>
               <Text style={headingStyle}>{t?.doc?.sectionOwner ?? 'Owner'}</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.textBold}>{withFallback(data?.ownerName)}</Text>
-                  <Text style={styles.text}>{streetLine}</Text>
-                  <Text style={styles.text}>{cityLine}</Text>
-                  <Text style={[styles.text, { marginTop: 6 }]}>{withFallback(data?.email)}</Text>
-                  <Text style={styles.text}>{withFallback(data?.phone)}</Text>
-                </View>
-                {qrUrl && (
-                  <Image src={qrUrl} style={{ width: 110, height: 110, flexShrink: 0 }} />
-                )}
+              <View>
+                <Text style={styles.textBold}>{withFallback(data?.ownerName)}</Text>
+                <Text style={styles.text}>{streetLine}</Text>
+                <Text style={styles.text}>{cityLine}</Text>
+                <Text style={[styles.text, { marginTop: 6 }]}>{withFallback(data?.email)}</Text>
+                <Text style={styles.text}>{withFallback(data?.phone)}</Text>
               </View>
+              {/* QR Code with label - compact size for A4 readability */}
+              {qrUrl && (
+                <View style={{ 
+                  marginTop: 10, 
+                  flexDirection: 'row', 
+                  alignItems: 'center',
+                  gap: 8,
+                  paddingTop: 8,
+                  borderTopWidth: 1,
+                  borderTopColor: colors.light,
+                  borderTopStyle: 'dashed'
+                }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 7, color: colors.muted, textTransform: 'uppercase', letterSpacing: 0.3 }}>
+                      {t?.doc?.qrLabel ?? 'Kontakt scannen'}
+                    </Text>
+                    <Text style={{ fontSize: 6, color: colors.muted, marginTop: 2 }}>
+                      {t?.doc?.qrHint ?? 'vCard hinzufügen'}
+                    </Text>
+                  </View>
+                  <Image src={qrUrl} style={{ width: 75, height: 75 }} />
+                </View>
+              )}
             </View>
             {/* Behavior */}
             <View style={styles.sectionBlock}>
@@ -429,6 +479,14 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl })
             <Text>{t?.doc?.sign ?? 'Signature'}</Text>
           </View>
         </View>
+        
+        {/* Watermark overlay for unpaid premium templates */}
+        {showWatermark && (
+          <View style={styles.watermarkOverlay} fixed>
+            <Text style={styles.watermarkText}>PREVIEW</Text>
+            <Text style={styles.watermarkSubtext}>MUSTER - NICHT BEZAHLT</Text>
+          </View>
+        )}
       </Page>
     </Document>
   );

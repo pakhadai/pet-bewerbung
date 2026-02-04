@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Lock, Sparkles } from 'lucide-react';
 import { MAX_DESCRIPTION_LENGTH } from '../../constants';
 
 const Step4Description = React.memo(({
@@ -11,7 +11,10 @@ const Step4Description = React.memo(({
   isGenerating,
   onGenerate,
   onPrev,
-  onNext
+  onNext,
+  isPremium = false,
+  canGenerateAI = true,
+  remainingGenerations = 1
 }) => {
   const canGenerate = !isGenerating && (data.name || data.petType || data.keywords);
   const len = (data.generatedText || '').length;
@@ -70,6 +73,11 @@ const Step4Description = React.memo(({
                     <span className="material-symbols-outlined animate-spin text-2xl">progress_activity</span>
                     {t?.labels?.generating ?? 'Generating...'}
                   </>
+                ) : !canGenerateAI ? (
+                  <>
+                    <Lock size={24} className="text-amber-500" />
+                    {t?.premium?.aiLimitBtn ?? 'Limit erreicht – Premium für mehr'}
+                  </>
                 ) : (
                   <>
                     <span className="material-symbols-outlined text-2xl sketch-icon-filled text-primary-dark group-hover:text-white">auto_awesome</span>
@@ -78,6 +86,42 @@ const Step4Description = React.memo(({
                 )}
               </span>
             </button>
+            
+            {/* AI generations limit info for free users */}
+            {!isPremium && (
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+                canGenerateAI 
+                  ? (darkMode ? 'bg-blue-900/20 border border-blue-600/30' : 'bg-blue-50 border border-blue-200')
+                  : (darkMode ? 'bg-amber-900/20 border border-amber-600/30' : 'bg-amber-50 border border-amber-200')
+              }`}>
+                {canGenerateAI ? (
+                  <Sparkles size={16} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
+                ) : (
+                  <Lock size={16} className={darkMode ? 'text-amber-400' : 'text-amber-600'} />
+                )}
+                <span className={`text-xs font-medium ${
+                  canGenerateAI 
+                    ? (darkMode ? 'text-blue-300' : 'text-blue-700')
+                    : (darkMode ? 'text-amber-300' : 'text-amber-700')
+                }`}>
+                  {canGenerateAI 
+                    ? (t?.premium?.aiRemaining ?? `${remainingGenerations} KI-Generierung(en) übrig`)
+                    : (t?.premium?.aiLimitInfo ?? 'Premium für unbegrenzte KI-Texte')
+                  }
+                </span>
+              </div>
+            )}
+            
+            {/* Premium badge */}
+            {isPremium && (
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${darkMode ? 'bg-purple-900/30 border border-purple-500/30' : 'bg-purple-50 border border-purple-200'}`}>
+                <Sparkles size={16} className="text-purple-500" />
+                <span className={`text-xs font-bold ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>
+                  {t?.premium?.unlimitedAI ?? 'Premium – Unbegrenzte KI-Generierungen'}
+                </span>
+              </div>
+            )}
+            
             <div className={`flex items-center gap-3 px-6 py-2 rounded-full border-2 ${darkMode ? 'bg-green-900/20 border-green-600/30' : 'bg-mint/50 border-gray-300'}`}>
               <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-xl sketch-icon-filled">verified_user</span>
               <span className={`text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-green-300' : 'text-text-secondary'}`}>

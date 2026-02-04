@@ -1,303 +1,79 @@
-# НОВІ КЛЮЧІ ПЕРЕКЛАДІВ ДЛЯ ДОДАВАННЯ
+# Freemium Implementation Notes
 
-## 📝 ІНСТРУКЦІЯ
+## ✅ IMPLEMENTED
 
-Додайте ці ключі до КОЖНОГО файлу перекладів (`de.js`, `fr.js`, `it.js`, `rm.js`, `en.js`, `ua.js`) після існуючих ключів (наприклад, після `landing: { ... }`).
+### 1. 🔗 Партнерське посилання через .env
+- **File**: `src/components/steps/Step3HealthInsurance.jsx`
+- **Env variable**: `VITE_INSURANCE_AFFILIATE_LINK`
+- **Behavior**: Shows insurance recommendation when field is empty/short
+- To activate: Add affiliate link to `.env` file:
+  ```
+  VITE_INSURANCE_AFFILIATE_LINK=https://partner-link.com
+  ```
 
----
+### 2. 💎 Freemium Model
+- **Classic template**: FREE
+- **Modern, Compact, Swiss**: PREMIUM (10 CHF one-time)
+- **Premium benefits**:
+  - All 4 templates
+  - No watermark on premium templates
+  - Unlimited AI text generations
 
-## 🇩🇪 НІМЕЦЬКА (de.js)
+### 3. 📊 Files Modified
 
-```javascript
-header: {
-  title: "PetCV.io",
-  donate: "Spenden"
-},
-hero: {
-  badge: "100% Kostenlos & Keine Anmeldung",
-  title: "Kostenloser Pet CV Erstellen",
-  privacyTitle: "Datenschutz-Schild",
-  privacyDesc: "Ihre Daten werden niemals gespeichert. Alles passiert in Ihrem Browser.",
-  subtitle: "Erstellen Sie in Minuten einen professionellen Lebenslauf für Ihren vierbeinigen Freund. Einfach, schnell und völlig privat.",
-  cta: "Sicher starten"
-},
-steps: {
-  step1: {
-    title: "Details hinzufügen",
-    subtitle: "Halter & Tier Info"
-  },
-  step2: {
-    title: "Notfall-Info",
-    subtitle: "Tierarzt & Kontakte"
-  },
-  step3: {
-    title: "Hochladen & Auswählen",
-    subtitle: "Foto & Vorlage",
-    badge: "Lokal"
-  },
-  step4: {
-    title: "PDF erhalten",
-    subtitle: "Lebenslauf herunterladen"
-  }
-},
-footer: {
-  copyright: "© 2023 PetCV.io. Mit ❤️ für Haustiere überall gemacht.",
-  impressum: "Impressum",
-  privacy: "Datenschutz"
-}
+#### Frontend:
+- `src/constants.js` - Added `isPremium`, `price` to TEMPLATE_OPTIONS
+- `src/hooks/useFormWizard.js` - Added `usePremium`, `useAIGenerations` hooks
+- `src/hooks/index.js` - Exported new hooks
+- `src/App.tsx` - Integrated premium state and purchase flow
+- `src/config.js` - Added restore endpoints
+
+#### Step Components:
+- `Step3HealthInsurance.jsx` - Affiliate block
+- `Step4Description.jsx` - AI generation limits for free users
+- `Step3UploadSelect.jsx` - FREE/PREMIUM badges on templates
+- `Step8Preview.jsx` - Premium purchase flow with comparison
+
+#### PDF:
+- `SwissDocumentPdf.jsx` - Watermark for unpaid premium templates
+
+#### Backend:
+- `server/index.js` - Premium restoration endpoints
+
+#### Translations:
+- `src/translations/de.js` - Added `affiliate` and `premium` sections
+- `src/translations/en.js` - Added `affiliate` and `premium` sections
+
+### 4. 🔄 Premium Restoration Mechanism
+- After purchase, user can restore premium via URL: `?restore=<token>`
+- Token is verified with server
+- Premium status stored in localStorage
+
+### 5. 📝 Environment Variables to Add
+```env
+# Insurance affiliate link (optional)
+VITE_INSURANCE_AFFILIATE_LINK=
+
+# Frontend URL (for restore links)
+FRONTEND_URL=https://pet-bewerbung.ch
 ```
 
----
+## 🎨 UX Notes:
+- Users can SELECT premium templates even without paying
+- Watermark overlay shown on preview for unpaid premium
+- Payment button appears instead of download for premium templates
+- Free template (Classic) always available as fallback
 
-## 🇫🇷 ФРАНЦУЗЬКА (fr.js)
+## 💳 Payment Flow:
+1. User selects premium template
+2. Preview shows watermark overlay
+3. User clicks "Buy & Download" (10 CHF)
+4. Stripe Checkout opens
+5. On success: `?premium_success=true` → Premium activated → PDF downloads
+6. Premium status saved to localStorage
+7. Restore link generated for email
 
-```javascript
-header: {
-  title: "PetCV.io",
-  donate: "Faire un don"
-},
-hero: {
-  badge: "100% Gratuit & Sans Inscription",
-  title: "Créateur de CV pour Animaux Gratuit",
-  privacyTitle: "Bouclier de Confidentialité",
-  privacyDesc: "Vos données ne sont jamais stockées. Tout se passe dans votre navigateur.",
-  subtitle: "Créez un CV professionnel pour votre ami à fourrure en quelques minutes. Simple, rapide et entièrement privé.",
-  cta: "Commencer en toute sécurité"
-},
-steps: {
-  step1: {
-    title: "Ajouter des détails",
-    subtitle: "Info Propriétaire & Animal"
-  },
-  step2: {
-    title: "Info d'urgence",
-    subtitle: "Vétérinaire & Contacts"
-  },
-  step3: {
-    title: "Télécharger & Sélectionner",
-    subtitle: "Photo & Modèle",
-    badge: "Local"
-  },
-  step4: {
-    title: "Obtenir le PDF",
-    subtitle: "Télécharger le CV"
-  }
-},
-footer: {
-  copyright: "© 2023 PetCV.io. Fait avec ❤️ pour les animaux partout.",
-  impressum: "Mentions légales",
-  privacy: "Politique de confidentialité"
-}
-```
-
----
-
-## 🇮🇹 ІТАЛІЙСЬКА (it.js)
-
-```javascript
-header: {
-  title: "PetCV.io",
-  donate: "Dona"
-},
-hero: {
-  badge: "100% Gratuito & Nessuna Registrazione",
-  title: "Creatore CV per Animali Gratuito",
-  privacyTitle: "Scudo Privacy Dati",
-  privacyDesc: "I tuoi dati non vengono mai memorizzati. Tutto avviene nel tuo browser.",
-  subtitle: "Crea un curriculum professionale per il tuo amico peloso in pochi minuti. Semplice, veloce e completamente privato.",
-  cta: "Inizia in sicurezza"
-},
-steps: {
-  step1: {
-    title: "Aggiungi dettagli",
-    subtitle: "Info Proprietario & Animale"
-  },
-  step2: {
-    title: "Info emergenza",
-    subtitle: "Veterinario & Contatti"
-  },
-  step3: {
-    title: "Carica & Seleziona",
-    subtitle: "Foto & Modello",
-    badge: "Locale"
-  },
-  step4: {
-    title: "Ottieni PDF",
-    subtitle: "Scarica curriculum"
-  }
-},
-footer: {
-  copyright: "© 2023 PetCV.io. Fatto con ❤️ per gli animali ovunque.",
-  impressum: "Impressum",
-  privacy: "Informativa sulla privacy"
-}
-```
-
----
-
-## 🇬🇧 АНГЛІЙСЬКА (en.js)
-
-```javascript
-header: {
-  title: "PetCV.io",
-  donate: "Donate"
-},
-hero: {
-  badge: "100% Free & No Signup",
-  title: "Free Pet CV Creator",
-  privacyTitle: "Data Privacy Shield",
-  privacyDesc: "Your data is never stored. Everything happens in your browser.",
-  subtitle: "Build a professional resume for your furry friend in minutes. Simple, fast, and completely private.",
-  cta: "Start Securely"
-},
-steps: {
-  step1: {
-    title: "Add Details",
-    subtitle: "Owner & Pet Info"
-  },
-  step2: {
-    title: "Emergency Info",
-    subtitle: "Vet & Contacts"
-  },
-  step3: {
-    title: "Upload & Select",
-    subtitle: "Photo & Template",
-    badge: "Local"
-  },
-  step4: {
-    title: "Get PDF",
-    subtitle: "Download Resume"
-  }
-},
-footer: {
-  copyright: "© 2023 PetCV.io. Made with ❤️ for pets everywhere.",
-  impressum: "Impressum",
-  privacy: "Privacy Policy"
-}
-```
-
----
-
-## 🇺🇦 УКРАЇНСЬКА (ua.js)
-
-```javascript
-header: {
-  title: "PetCV.io",
-  donate: "Пожертвувати"
-},
-hero: {
-  badge: "100% Безкоштовно & Без Реєстрації",
-  title: "Безкоштовний Створювач CV для Тварин",
-  privacyTitle: "Щит Захисту Даних",
-  privacyDesc: "Ваші дані ніколи не зберігаються. Все відбувається у вашому браузері.",
-  subtitle: "Створіть професійне резюме для вашого пухнастого друга за кілька хвилин. Просто, швидко та повністю приватно.",
-  cta: "Почати безпечно"
-},
-steps: {
-  step1: {
-    title: "Додати деталі",
-    subtitle: "Інформація про власника та тварину"
-  },
-  step2: {
-    title: "Екстрена інформація",
-    subtitle: "Ветеринар та контакти"
-  },
-  step3: {
-    title: "Завантажити & Вибрати",
-    subtitle: "Фото & Шаблон",
-    badge: "Локально"
-  },
-  step4: {
-    title: "Отримати PDF",
-    subtitle: "Завантажити резюме"
-  }
-},
-footer: {
-  copyright: "© 2023 PetCV.io. Зроблено з ❤️ для тварин скрізь.",
-  impressum: "Відомості",
-  privacy: "Політика конфіденційності"
-}
-```
-
----
-
-## 🇷🇴 РЕТОРМАНСЬКА (rm.js)
-
-```javascript
-header: {
-  title: "PetCV.io",
-  donate: "Donar"
-},
-hero: {
-  badge: "100% Gratuit & Nagina Registraziun",
-  title: "Creatur CV per Animals Gratuit",
-  privacyTitle: "Scut da Protecziun da Datas",
-  privacyDesc: "Vossas datas na vegnan mai memorisadas. Tut succeda en voss navigatur.",
-  subtitle: "Crei in curriculum professional per voss ami cun pail en minutas. Simpel, svelt e cumplettamain privat.",
-  cta: "Cumenzar segir"
-},
-steps: {
-  step1: {
-    title: "Agiuntar detagls",
-    subtitle: "Infurmaziuns da proprietari & animal"
-  },
-  step2: {
-    title: "Infurmaziuns d'urgenza",
-    subtitle: "Veterinar & contacts"
-  },
-  step3: {
-    title: "Chargiar & tscherner",
-    subtitle: "Foto & model",
-    badge: "Local"
-  },
-  step4: {
-    title: "Obtener PDF",
-    subtitle: "Telechargiar curriculum"
-  }
-},
-footer: {
-  copyright: "© 2023 PetCV.io. Fatg cun ❤️ per animals dapertut.",
-  impressum: "Impressum",
-  privacy: "Politica da protecziun da datas"
-}
-```
-
----
-
-## 📍 ДЕ ДОДАТИ
-
-Відкрийте кожен файл перекладів (`src/translations/de.js`, `fr.js`, тощо) і додайте ці ключі після існуючого об'єкта, наприклад після `legal: { ... }`.
-
-**Приклад структури:**
-```javascript
-export default {
-  title: "...",
-  landing: { ... },
-  steps: [ ... ],
-  // ... інші існуючі ключі ...
-  legal: { ... },
-  
-  // 👇 ДОДАТИ ТУТ:
-  header: { ... },
-  hero: { ... },
-  steps: { ... },  // ⚠️ УВАГА: це НОВИЙ об'єкт steps, не плутати з масивом steps вище!
-  footer: { ... }
-};
-```
-
-**⚠️ ВАЖЛИВО:** 
-- Не плутайте новий об'єкт `steps: { step1: {...}, step2: {...} }` з існуючим масивом `steps: ["Start", "Halter", ...]`
-- Обидва можуть існувати разом, вони використовуються в різних місцях
-
----
-
-## ✅ ПЕРЕВІРКА
-
-Після додавання перекладів перевірте:
-1. ✅ Всі 6 файлів оновлені
-2. ✅ Синтаксис правильний (коми, дужки)
-3. ✅ Немає помилок при запуску проекту
-
----
-
-**ГОТОВО!** Тепер всі переклади готові для використання в нових компонентах! 🎉
+## 🔒 Premium Loss Protection:
+- Premium stored in localStorage (persists browser close)
+- Restore mechanism via token URL for device changes
+- Server verifies payment with Stripe before restoring

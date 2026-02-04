@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { pdf } from '@react-pdf/renderer';
-import { MAX_DESCRIPTION_LENGTH, TRANSLATIONS, PAYMENT_SUCCESS_BEHAVIOR } from './constants';
+import { MAX_DESCRIPTION_LENGTH, TRANSLATIONS, PAYMENT_SUCCESS_BEHAVIOR, TEMPLATE_OPTIONS, PREMIUM_PRICE_CENTS } from './constants';
 import PaymentSuccess from './components/PaymentSuccess';
 import API_ENDPOINTS from './config';
 import compressImage, { toJpegDataUrl } from './utils/imageCompression';
@@ -12,7 +11,6 @@ import FaqModal from './components/FaqModal';
 import Hero from './components/Hero';
 import Steps from './components/Steps';
 import SwissDocument from './components/SwissDocument';
-import SwissDocumentPdf from './components/SwissDocumentPdf';
 import { X, Camera } from 'lucide-react';
 import DonateModal from './components/DonateModal';
 import PaymentModal from './components/PaymentModal';
@@ -38,7 +36,9 @@ import {
   usePaymentFlow,
   useToast,
   useScrollVisibility,
-  useFormValidation
+  useFormValidation,
+  usePremium,
+  useAIGenerations
 } from './hooks';
 import { FormProvider, ThemeProvider, TranslationProvider } from './contexts';
 
@@ -74,6 +74,10 @@ export default function App() {
   const { toast, showToast } = useToast();
   const butterVisible = useScrollVisibility(120);
   const { errors: validationErrors, isValid: canProceed } = useFormValidation(data, step);
+  
+  // Premium state management
+  const { isPremium, activatePremium, isTemplateAccessible, getTemplateInfo, premiumPrice } = usePremium();
+  const { canGenerate: canGenerateAI, incrementGeneration, remainingGenerations } = useAIGenerations(isPremium);
 
   // Dark mode state — persist in localStorage so it survives refresh
   const THEME_STORAGE_KEY = 'pet-bewerbung-theme';
@@ -110,8 +114,29 @@ export default function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const paymentSuccess = params.get('payment_success');
+    const premiumSuccess = params.get('premium_success');
     const sessionId = params.get('session_id');
     const paymentCanceled = params.get('payment_canceled');
+
+    // Handle premium purchase success
+    if (premiumSuccess === 'true') {
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Verify session if available
+      const pendingSession = sessionStorage.getItem('pending_premium_session');
+      if (pendingSession) {
+        sessionStorage.removeItem('pending_premium_session');
+      }
+      
+      // Activate premium
+      activatePremium(pendingSession || sessionId || 'direct');
+      showToast(t?.premium?.purchaseSuccess || '🎉 Premium freigeschaltet! Viel Spaß mit allen Templates.', 'success');
+      
+      // Go to preview step to download the PDF
+      goToStep(5);
+      return;
+    }
 
     if (paymentSuccess === 'true' && sessionId) {
       // Clean URL
@@ -131,7 +156,7 @@ export default function App() {
       window.history.replaceState({}, document.title, window.location.pathname);
       showToast('Payment was canceled', 'info');
     }
-  }, [goToStep, showToast, t]);
+  }, [goToStep, showToast, t, activatePremium]);
 
   // Clear generated text when language changes
   const prevLangRef = useRef(data.lang);
@@ -173,26 +198,38 @@ export default function App() {
   };
 
   const generateText = async () => {
+    // Check local AI generation limit for free users
+    if (!canGenerateAI) {
+      showToast(
+        t?.premium?.aiLimitReached || 'AI limit erreicht. Premium für unbegrenzte Generierungen freischalten.',
+        'info'
+      );
+      // Still generate fallback text
+      generateFallbackText();
+      return;
+    }
+    
     setIsGenerating(true);
     
     try {
       // Prepare pet data for AI - include all relevant info
+      // Note: data.name is the pet name (not data.petName)
       const petData = {
-        petName: data.petName || '',
+        petName: data.name || '',
         petType: data.petType || '',
         breed: data.breed || '',
         age: data.age || '',
         gender: data.gender || '',
         weight: data.weight || '',
         traits: data.keywords || '',
-        neutered: data.neutered || false,
-        vaccinated: data.vaccinated || false,
+        neutered: data.isNeutered || false,
+        vaccinated: data.hasVaccination || false,
       };
       
       const res = await fetch(API_ENDPOINTS.generatePetDescription, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ petData, lang: data.lang }),
+        body: JSON.stringify({ petData, lang: data.lang, premiumToken: isPremium ? 'premium' : null }),
       });
       
       const json = await res.json();
@@ -214,11 +251,16 @@ export default function App() {
         throw new Error(json.error || 'AI generation failed');
       }
       
+      // Track local generation count for free users
+      incrementGeneration();
+      
       updateData('generatedText', json.description);
       
       // Show remaining requests
-      if (json.remaining !== undefined) {
+      if (json.remaining !== undefined && !isPremium) {
         showToast(`✨ ${json.remaining} AI requests remaining today.`, 'success');
+      } else if (isPremium) {
+        showToast('✨ AI text generated!', 'success');
       }
       
     } catch (err: any) {
@@ -374,6 +416,10 @@ export default function App() {
       const logoUrl = await fetchLogoAsDataUrl();
       const qrContent = getQrContent(pdfData);
       const qrUrl = qrContent ? await generateQrDataUrl(qrContent, { size: 400, margin: 2 }) : null;
+      const [{ pdf }, { default: SwissDocumentPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./components/SwissDocumentPdf'),
+      ]);
       const blob = await pdf(
         <SwissDocumentPdf data={pdfData} t={pdfT} templateType={selectedTemplate} logoUrl={logoUrl} qrUrl={qrUrl} />
       ).toBlob();
@@ -506,6 +552,55 @@ export default function App() {
     setSelectedTemplate(templateId);
   };
 
+  // Handle premium purchase - opens payment modal with fixed price
+  const handleBuyPremium = async () => {
+    try {
+      const res = await fetch(API_ENDPOINTS.createCheckoutSession, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          amount: PREMIUM_PRICE_CENTS, 
+          currency: 'chf', 
+          successUrl: `${window.location.origin}${window.location.pathname}?premium_success=true`, 
+          cancelUrl: window.location.href, 
+          payment_method: 'card',
+          metadata: { type: 'premium_purchase' }
+        }),
+      });
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        let errorMessage = `Server error (${res.status})`;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.error || errorJson.details || errorMessage;
+        } catch {
+          errorMessage = errorText.substring(0, 100) || errorMessage;
+        }
+        showToast(errorMessage || 'Failed to create checkout session', 'error');
+        return;
+      }
+      
+      const json = await res.json();
+      if (json.url) {
+        // Store session ID for verification after return
+        try {
+          sessionStorage.setItem('pending_premium_session', json.sessionId);
+        } catch {
+          // ignore
+        }
+        window.location.href = json.url;
+      } else {
+        showToast(json.error || 'Failed to create checkout session', 'error');
+      }
+    } catch (err: any) {
+      if (import.meta.env.DEV) {
+        console.error('Premium purchase error:', err);
+      }
+      showToast('Payment error: ' + (err.message || err), 'error');
+    }
+  };
+
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
@@ -563,6 +658,9 @@ export default function App() {
             onGenerate={generateText}
             onPrev={() => goToStep(2)}
             onNext={() => goToStep(4)}
+            isPremium={isPremium}
+            canGenerateAI={canGenerateAI}
+            remainingGenerations={remainingGenerations}
           />
         );
       case 4:
@@ -580,6 +678,8 @@ export default function App() {
             darkMode={darkMode}
             onPrev={() => goToStep(3)}
             onNext={() => goToStep(5)}
+            isPremium={isPremium}
+            getTemplateInfo={getTemplateInfo}
           />
         );
       case 5:
@@ -592,6 +692,11 @@ export default function App() {
             darkMode={darkMode}
             onPrev={() => goToStep(4)}
             onNext={() => goToStep(6)}
+            isPremium={isPremium}
+            getTemplateInfo={getTemplateInfo}
+            onDownloadPDF={handleDownloadPDF}
+            onBuyPremium={handleBuyPremium}
+            premiumPrice={premiumPrice}
           />
         );
       default:

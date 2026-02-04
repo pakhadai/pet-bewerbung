@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { Crop } from 'lucide-react';
+import { Crop, Lock, Crown, Sparkles } from 'lucide-react';
 import ImageCropper from '../ImageCropper';
 import { TEMPLATE_OPTIONS } from '../../constants';
 
@@ -29,7 +29,9 @@ const Step3UploadSelect = React.memo(({
   onNavigationVisibilityChange,
   darkMode,
   onPrev,
-  onNext
+  onNext,
+  isPremium = false,
+  getTemplateInfo = (id) => ({ isPremium: false, price: 0, accessible: true })
 }) => {
   const [showCropper, setShowCropper] = useState(false);
   const [tempImage, setTempImage] = useState(null);
@@ -177,50 +179,103 @@ const Step3UploadSelect = React.memo(({
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {TEMPLATE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => { onSelectTemplate(opt.id); showToast?.(t?.ui?.select ?? 'Selected', 'info'); }}
-                  className={`template-card p-4 flex flex-col gap-3 text-left ${selectedTemplate === opt.id ? 'active' : ''} ${
-                    darkMode ? 'bg-white/5 hover:border-white/30' : 'bg-white border-gray-200 hover:border-gray-400'
-                  }`}
-                >
-                  <div
-                    className="aspect-[3/4] rounded-md overflow-hidden relative border border-white/10 bg-neutral-800"
+              {TEMPLATE_OPTIONS.map((opt) => {
+                const templateInfo = getTemplateInfo(opt.id);
+                const isLocked = opt.isPremium && !isPremium;
+                
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => { 
+                      onSelectTemplate(opt.id); 
+                      if (isLocked) {
+                        showToast?.(t?.premium?.templateSelected ?? 'Premium-Vorlage gewählt – Zahlung vor Download nötig', 'info');
+                      } else {
+                        showToast?.(t?.ui?.select ?? 'Selected', 'info'); 
+                      }
+                    }}
+                    className={`template-card p-4 flex flex-col gap-3 text-left relative ${selectedTemplate === opt.id ? 'active' : ''} ${
+                      darkMode ? 'bg-white/5 hover:border-white/30' : 'bg-white border-gray-200 hover:border-gray-400'
+                    }`}
                   >
-                    {visibleTemplates.includes(opt.id) ? (
-                      <div className="w-full h-full flex items-center justify-center bg-neutral-800 overflow-hidden">
-                        <Suspense fallback={<TemplateSkeleton />}>
-                          <div
-                            style={{ width: '210mm', height: '297mm', transform: 'scale(0.38)', transformOrigin: 'center', flexShrink: 0 }}
-                            className="shadow"
-                          >
-                            <SwissDocument data={data} t={t} templateType={opt.id} />
+                    {/* FREE / PREMIUM Badge */}
+                    <div className="absolute top-2 left-2 z-10">
+                      {opt.isPremium ? (
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+                          isPremium 
+                            ? 'bg-purple-500/90 text-white' 
+                            : 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white'
+                        }`}>
+                          {isPremium ? (
+                            <>
+                              <Sparkles size={10} />
+                              {t?.premium?.unlocked ?? 'Freigeschaltet'}
+                            </>
+                          ) : (
+                            <>
+                              <Crown size={10} />
+                              PREMIUM
+                            </>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-green-500/90 text-white">
+                          FREE
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div
+                      className="aspect-[3/4] rounded-md overflow-hidden relative border border-white/10 bg-neutral-800"
+                    >
+                      {visibleTemplates.includes(opt.id) ? (
+                        <div className="w-full h-full flex items-center justify-center bg-neutral-800 overflow-hidden">
+                          <Suspense fallback={<TemplateSkeleton />}>
+                            <div
+                              style={{ width: '210mm', height: '297mm', transform: 'scale(0.38)', transformOrigin: 'center', flexShrink: 0 }}
+                              className="shadow"
+                            >
+                              <SwissDocument data={data} t={t} templateType={opt.id} />
+                            </div>
+                          </Suspense>
+                        </div>
+                      ) : (
+                        <TemplateSkeleton />
+                      )}
+                      
+                      {/* Lock overlay for premium templates when not purchased */}
+                      {isLocked && (
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
+                          <div className="bg-black/60 rounded-full p-3">
+                            <Lock size={24} className="text-white/80" />
                           </div>
-                        </Suspense>
-                      </div>
-                    ) : (
-                      <TemplateSkeleton />
-                    )}
-                    {selectedTemplate === opt.id && (
-                      <div className="absolute bottom-2 right-2">
-                        <span className="material-symbols-outlined text-primary sketch-icon-filled">check_circle</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex justify-between items-center px-1">
-                    <span className={`text-xl font-display font-bold ${textMain}`}>
-                      {STEP3_TEMPLATE_LABELS[opt.id] ?? opt.label}
-                    </span>
-                    {selectedTemplate === opt.id && (
-                      <span className="text-[10px] uppercase tracking-widest font-bold text-primary">
-                        {t?.ui?.select ?? 'Selected'}
+                        </div>
+                      )}
+                      
+                      {selectedTemplate === opt.id && (
+                        <div className="absolute bottom-2 right-2">
+                          <span className="material-symbols-outlined text-primary sketch-icon-filled">check_circle</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center px-1">
+                      <span className={`text-xl font-display font-bold ${textMain}`}>
+                        {STEP3_TEMPLATE_LABELS[opt.id] ?? opt.label}
                       </span>
-                    )}
-                  </div>
-                </button>
-              ))}
+                      {selectedTemplate === opt.id ? (
+                        <span className={`text-[10px] uppercase tracking-widest font-bold ${isLocked ? 'text-amber-500' : 'text-primary'}`}>
+                          {isLocked ? (t?.premium?.needsPayment ?? 'Zahlung nötig') : (t?.ui?.select ?? 'Selected')}
+                        </span>
+                      ) : opt.isPremium && !isPremium && (
+                        <span className="text-[10px] uppercase tracking-widest font-bold text-amber-500">
+                          {opt.price} CHF
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

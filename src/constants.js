@@ -47,16 +47,21 @@ const INITIAL_DATA = {
 const MAX_DESCRIPTION_LENGTH = 470; // limit for generated / manual descriptions
 
 // Simplified Swiss-style templates for 2026
-// Only 4 professional templates: Classic, Modern, Compact, Swiss
+// Only 4 professional templates: Classic (FREE), Modern, Compact, Swiss (Premium)
+// Premium templates require one-time payment of 10 CHF
 const TEMPLATE_OPTIONS = [
-  { id: 'classic', label: 'Classic' },
-  { id: 'modern', label: 'Modern' },
-  { id: 'compact', label: 'Compact' },
-  { id: 'swiss', label: 'Swiss' }
+  { id: 'classic', label: 'Classic', isPremium: false, price: 0 },
+  { id: 'modern', label: 'Modern', isPremium: true, price: 10 },
+  { id: 'compact', label: 'Compact', isPremium: true, price: 10 },
+  { id: 'swiss', label: 'Swiss', isPremium: true, price: 10 }
 ];
+
+// Premium price in CHF (cents for Stripe)
+const PREMIUM_PRICE_CHF = 10;
+const PREMIUM_PRICE_CENTS = PREMIUM_PRICE_CHF * 100;
 
 // Payment success behavior configuration
 // Options: 'show_page' - show PaymentSuccess page, 'redirect_home' - redirect to landing page, 'show_toast' - show toast and stay
 const PAYMENT_SUCCESS_BEHAVIOR = import.meta.env.VITE_PAYMENT_SUCCESS_BEHAVIOR || 'show_page';
 
-export { TRANSLATIONS, INITIAL_DATA, MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS, PAYMENT_SUCCESS_BEHAVIOR };
+export { TRANSLATIONS, INITIAL_DATA, MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS, PAYMENT_SUCCESS_BEHAVIOR, PREMIUM_PRICE_CHF, PREMIUM_PRICE_CENTS };

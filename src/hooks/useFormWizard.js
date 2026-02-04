@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { TEMPLATE_OPTIONS, TRANSLATIONS, INITIAL_DATA } from '../constants';
+import { TEMPLATE_OPTIONS, TRANSLATIONS, INITIAL_DATA, PREMIUM_PRICE_CHF } from '../constants';
 import { validateSwissPhone, validateSwissPostal, validateEmail } from '../utils/swissValidation';
+
+const PREMIUM_STORAGE_KEY = 'pet-bewerbung-premium';
+const AI_GENERATIONS_KEY = 'pet-bewerbung-ai-generations';
 
 const STORAGE_KEY = 'pet-bewerbung-form-data';
 const STORAGE_STEP_KEY = 'pet-bewerbung-step';
@@ -320,4 +323,163 @@ export const useFormValidation = (data, step) => {
   }, [data, step]);
 
   return validation;
+};
+
+/**
+ * Premium state management hook
+ * Handles premium status with localStorage persistence and restoration via token
+ * @returns {Object} - Premium state and handlers
+ */
+export const usePremium = () => {
+  const [isPremium, setIsPremiumState] = useState(() => {
+    try {
+      const saved = localStorage.getItem(PREMIUM_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Check if premium hasn't expired (optional: add expiry logic if needed)
+        return parsed.active === true;
+      }
+    } catch (e) {
+      if (import.meta.env.DEV) {
+        console.warn('Could not load premium status:', e);
+      }
+    }
+    return false;
+  });
+  
+  const [restoreStatus, setRestoreStatus] = useState(null); // 'loading', 'success', 'error', null
+
+  // Check URL for premium restoration token on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const restoreToken = params.get('restore');
+    
+    if (restoreToken) {
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Verify token with server
+      verifyAndRestorePremium(restoreToken);
+    }
+  }, []);
+  
+  // Verify restore token with server
+  const verifyAndRestorePremium = async (token) => {
+    setRestoreStatus('loading');
+    try {
+      const response = await fetch(`/api/verify-restore/${token}`);
+      const data = await response.json();
+      
+      if (data.valid) {
+        activatePremium(data.sessionId);
+        setRestoreStatus('success');
+      } else {
+        setRestoreStatus('error');
+        if (import.meta.env.DEV) {
+          console.warn('Premium restore failed:', data.error);
+        }
+      }
+    } catch (e) {
+      setRestoreStatus('error');
+      if (import.meta.env.DEV) {
+        console.warn('Premium restore error:', e);
+      }
+    }
+  };
+
+  // Save premium status to localStorage
+  const activatePremium = useCallback((paymentId = null) => {
+    const premiumData = {
+      active: true,
+      activatedAt: new Date().toISOString(),
+      paymentId: paymentId
+    };
+    try {
+      localStorage.setItem(PREMIUM_STORAGE_KEY, JSON.stringify(premiumData));
+    } catch (e) {
+      if (import.meta.env.DEV) {
+        console.warn('Could not save premium status:', e);
+      }
+    }
+    setIsPremiumState(true);
+  }, []);
+
+  // Check if selected template requires premium
+  const isTemplateAccessible = useCallback((templateId) => {
+    const template = TEMPLATE_OPTIONS.find(t => t.id === templateId);
+    if (!template) return true;
+    if (!template.isPremium) return true;
+    return isPremium;
+  }, [isPremium]);
+
+  // Get template info with premium status
+  const getTemplateInfo = useCallback((templateId) => {
+    const template = TEMPLATE_OPTIONS.find(t => t.id === templateId);
+    if (!template) return { isPremium: false, price: 0, accessible: true };
+    return {
+      ...template,
+      accessible: !template.isPremium || isPremium
+    };
+  }, [isPremium]);
+
+  return {
+    isPremium,
+    activatePremium,
+    isTemplateAccessible,
+    getTemplateInfo,
+    premiumPrice: PREMIUM_PRICE_CHF,
+    restoreStatus
+  };
+};
+
+/**
+ * AI generation limits hook for free users
+ * Tracks local AI generation count (complementary to server-side rate limiting)
+ * @returns {Object} - Generation state and handlers
+ */
+export const useAIGenerations = (isPremium = false) => {
+  const FREE_LIMIT = 1; // Free users get 1 generation per session
+  
+  const [generationCount, setGenerationCount] = useState(() => {
+    try {
+      const saved = localStorage.getItem(AI_GENERATIONS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Reset if from a different day
+        const today = new Date().toDateString();
+        if (parsed.date === today) {
+          return parsed.count;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    return 0;
+  });
+
+  // Save generation count
+  const incrementGeneration = useCallback(() => {
+    const newCount = generationCount + 1;
+    try {
+      localStorage.setItem(AI_GENERATIONS_KEY, JSON.stringify({
+        count: newCount,
+        date: new Date().toDateString()
+      }));
+    } catch (e) {
+      // ignore
+    }
+    setGenerationCount(newCount);
+    return newCount;
+  }, [generationCount]);
+
+  const canGenerate = isPremium || generationCount < FREE_LIMIT;
+  const remainingGenerations = isPremium ? Infinity : Math.max(0, FREE_LIMIT - generationCount);
+
+  return {
+    generationCount,
+    incrementGeneration,
+    canGenerate,
+    remainingGenerations,
+    freeLimit: FREE_LIMIT
+  };
 };

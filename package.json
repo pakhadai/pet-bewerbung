@@ -26,6 +26,7 @@
     "concurrently": "^8.2.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "vite-plugin-vsharp": "^1.9.1"
   }
 }

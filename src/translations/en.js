@@ -171,7 +171,9 @@ export default {
     sign: "Signature",
     petDossier: "Pet Dossier",
     swissPetCV: "Swiss Pet CV",
-    insurancePrefix: "Insurance:"
+    insurancePrefix: "Insurance:",
+    qrLabel: "Scan contact",
+    qrHint: "Add vCard"
   },
   monetization: {
     title: "Support Us",
@@ -373,6 +375,53 @@ export default {
     terms: "Terms",
     faq: "FAQ",
     faqComingSoon: "FAQ — coming soon."
+  },
+  // Affiliate links
+  affiliate: {
+    insuranceTitle: 'No liability insurance yet?',
+    insuranceDesc: 'Landlords often require proof. Protect yourself and your pet from 5 CHF/month.',
+    insuranceCta: 'Compare offers'
+  },
+  // Premium/Freemium features
+  premium: {
+    // AI limits
+    aiLimitReached: 'AI limit reached. Unlock Premium for unlimited generations.',
+    aiLimitBtn: 'Limit reached – Get Premium',
+    aiRemaining: 'AI generation(s) remaining',
+    aiLimitInfo: 'Premium for unlimited AI texts',
+    unlimitedAI: 'Premium – Unlimited AI generations',
+    unlimitedAIShort: 'Unlimited AI texts',
+    
+    // Template badges
+    unlocked: 'Unlocked',
+    templateSelected: 'Premium template selected – Payment required before download',
+    needsPayment: 'Payment required',
+    freeTemplate: 'Free template',
+    premiumTemplate: 'Premium template',
+    
+    // Preview comparison
+    compareTitle: 'What you get:',
+    freeVersion: 'Free (Classic)',
+    basicDesign: 'Basic design',
+    noWatermark: 'No watermark',
+    proDesign: 'Professional design',
+    allTemplates: 'All 4 templates',
+    supportProject: 'Support the project',
+    oneTimePayment: 'One-time payment',
+    
+    // Purchase
+    buyAndDownload: 'Buy & download',
+    securePayment: 'Secure payment via Stripe',
+    orUseFree: 'Or',
+    useFreeTemplate: 'use free template',
+    purchaseSuccess: '🎉 Premium unlocked! Enjoy all templates.',
+    
+    // Restore
+    restoreTitle: 'Restore Premium',
+    restoreDesc: 'Enter the email you used for purchase',
+    restoreSuccess: 'Premium successfully restored!',
+    restoreError: 'Restore failed. Token invalid or expired.',
+    restoreLoading: 'Restoring...'
   },
   faq: {
     title: "Frequently Asked Questions",

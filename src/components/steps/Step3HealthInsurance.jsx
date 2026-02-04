@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShieldCheck, ExternalLink } from 'lucide-react';
 import Label from '../Label';
 import Input from '../Input';
+
+// Insurance affiliate link from environment variable
+const INSURANCE_AFFILIATE_LINK = import.meta.env.VITE_INSURANCE_AFFILIATE_LINK || '';
 
 const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMode, onPrev, onNext }) => {
   const [showMore, setShowMore] = useState(
@@ -84,6 +87,31 @@ const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
               <div className="space-y-3">
                 <h4 className={`font-display font-bold text-base ${titleCl}`}>{t?.labels?.insurance ?? 'Versicherung'}</h4>
                 <Input value={data.insuranceProvider ?? ''} onChange={(e) => updateData('insuranceProvider', e.target.value)} placeholder="z.B. AXA, Mobiliar" />
+                
+                {/* AFFILIATE BLOCK - Show only if link exists AND insurance field is empty/short */}
+                {INSURANCE_AFFILIATE_LINK && (!data.insuranceProvider || data.insuranceProvider.length < 3) && (
+                  <div className={`mt-2 p-3 rounded-xl flex items-start gap-3 ${darkMode ? 'bg-blue-900/30 border border-blue-700/50' : 'bg-blue-50 border border-blue-200'}`}>
+                    <div className={`p-2 rounded-full ${darkMode ? 'bg-blue-800 text-blue-300' : 'bg-white text-blue-600'}`}>
+                      <ShieldCheck size={20} />
+                    </div>
+                    <div className="flex-1">
+                      <p className={`text-sm font-bold ${darkMode ? 'text-blue-200' : 'text-blue-900'}`}>
+                        {t?.affiliate?.insuranceTitle ?? 'Noch keine Haftpflichtversicherung?'}
+                      </p>
+                      <p className={`text-xs mt-1 ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>
+                        {t?.affiliate?.insuranceDesc ?? 'Vermieter verlangen oft einen Nachweis. Schützen Sie sich und Ihr Tier ab 5 CHF/Monat.'}
+                      </p>
+                      <a 
+                        href={INSURANCE_AFFILIATE_LINK}
+                        target="_blank" 
+                        rel="noopener noreferrer sponsored"
+                        className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-white bg-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        {t?.affiliate?.insuranceCta ?? 'Angebote vergleichen'} <ExternalLink size={12} />
+                      </a>
+                    </div>
+                  </div>
+                )}
                 <div>
                   <Label>{t?.labels?.chipId ?? 'Chip-Nr.'}</Label>
                   <Input value={data.chipId ?? ''} onChange={(e) => updateData('chipId', e.target.value)} />
