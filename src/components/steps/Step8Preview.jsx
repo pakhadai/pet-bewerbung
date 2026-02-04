@@ -1,5 +1,5 @@
-import React from 'react';
-import { ChevronLeft, ChevronRight, Download, Lock, Crown, CreditCard, Check, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight, Download, Lock, Crown, CreditCard, Check, X, FileArchive, Maximize2, Minimize2, Settings2, Wand2, Layout, Sparkles } from 'lucide-react';
 import SwissDocument from '../SwissDocument';
 import ErrorBoundary from '../ErrorBoundary';
 import { TEMPLATE_OPTIONS } from '../../constants';
@@ -16,10 +16,17 @@ const Step8Preview = React.memo(({
   getTemplateInfo = () => ({ isPremium: false, price: 0, accessible: true }),
   onDownloadPDF,
   onBuyPremium,
-  premiumPrice = 10
+  premiumPrice = 10,
+  onDownloadAllTemplates,
+  onSelectFreeTemplate,
+  updateData,
+  onOpenBuilder
 }) => {
   const titleCl = darkMode ? 'text-white' : 'text-text-main';
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary';
+  
+  // Preview size state - enlarged view
+  const [isEnlarged, setIsEnlarged] = useState(false);
   
   // Check if selected template requires payment
   const templateInfo = getTemplateInfo(selectedTemplate);
@@ -37,8 +44,11 @@ const Step8Preview = React.memo(({
     }
   };
   
+  // Preview scale calculation for better visibility
+  const previewScale = isEnlarged ? 1 : 0.48;
+  
   return (
-    <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 max-w-5xl mx-auto pb-24`}>
+    <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 ${isEnlarged ? 'max-w-7xl' : 'max-w-6xl'} mx-auto pb-24 transition-all duration-300`}>
       <div className="mb-4 text-center">
         <h2 className={`font-display font-bold text-2xl md:text-3xl ${titleCl}`}>
           {t?.stepsNew?.step5?.title ?? 'Preview'}
@@ -48,37 +58,93 @@ const Step8Preview = React.memo(({
         </p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Document Preview */}
-        <div className="lg:col-span-2">
-          <div className="relative w-full flex justify-center overflow-auto py-4 border-2 rounded-2xl hand-drawn-border theme-bg-secondary theme-border p-4 shadow-lg">
-            <div
-              id="pdf-document"
-              className="overflow-hidden border-2 rounded-lg shadow-2xl theme-card relative"
-              style={{ width: '210mm', height: '292mm', flexShrink: 0 }}
-            >
-              <ErrorBoundary
-                fallbackTitle={t.ui?.previewError || "Document Error"}
-                fallbackMessage={t.ui?.previewErrorMessage || "Failed to render the document. Please try selecting a different template or check your data."}
-              >
-                <SwissDocument data={data} t={t} templateType={selectedTemplate} />
-              </ErrorBoundary>
-              
-              {/* Watermark overlay for unpaid premium templates */}
-              {needsPayment && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="transform -rotate-45 select-none">
-                    <p className="text-7xl font-bold text-red-500/20 tracking-wider">PREVIEW</p>
-                    <p className="text-xl font-bold text-red-500/25 tracking-wide text-center mt-2">MUSTER – NICHT BEZAHLT</p>
-                  </div>
-                </div>
+      <div className={`grid gap-6 ${isEnlarged ? 'grid-cols-1' : 'grid-cols-1 xl:grid-cols-5'}`}>
+        {/* Document Preview - Larger */}
+        <div className={isEnlarged ? 'col-span-1' : 'xl:col-span-3'}>
+          <div className={`relative w-full border-2 rounded-2xl hand-drawn-border theme-bg-secondary theme-border shadow-lg transition-all duration-300 ${isEnlarged ? 'p-6' : 'p-4'}`}>
+            {/* Preview controls */}
+            <div className="absolute top-2 right-2 z-10 flex gap-2">
+              {/* Visual Editor button - Premium feature */}
+              {onOpenBuilder && (
+                <button
+                  type="button"
+                  onClick={onOpenBuilder}
+                  className={`px-3 py-2 rounded-lg border-2 transition-all flex items-center gap-2 font-medium text-sm ${
+                    isPremium 
+                      ? darkMode 
+                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 border-purple-400/50 text-white hover:from-purple-500 hover:to-indigo-500 shadow-lg shadow-purple-500/20' 
+                        : 'bg-gradient-to-r from-purple-500 to-indigo-500 border-purple-300 text-white hover:from-purple-600 hover:to-indigo-600 shadow-lg shadow-purple-500/30'
+                      : darkMode 
+                        ? 'bg-gray-700 border-gray-500 text-gray-300 hover:bg-gray-600' 
+                        : 'bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  title={t?.premium?.openBuilder ?? 'Visueller Editor'}
+                >
+                  <Layout size={16} />
+                  <span className="hidden sm:inline">
+                    {isPremium 
+                      ? (t?.builder?.title ?? 'Visual Editor') 
+                      : (t?.premium?.openBuilder ?? 'Editor')
+                    }
+                  </span>
+                  {!isPremium && <Lock size={14} className="text-amber-500" />}
+                  {isPremium && <Sparkles size={14} className="text-amber-300" />}
+                </button>
               )}
+              <button
+                type="button"
+                onClick={() => setIsEnlarged(!isEnlarged)}
+                className={`p-2 rounded-lg border-2 transition-all ${darkMode 
+                  ? 'bg-gray-700 border-gray-500 text-gray-300 hover:bg-gray-600' 
+                  : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'}`}
+                title={isEnlarged ? 'Verkleinern' : 'Vergrößern'}
+              >
+                {isEnlarged ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+              </button>
+            </div>
+            
+            {/* Scrollable container for the document */}
+            <div className={`overflow-auto flex justify-center ${isEnlarged ? 'py-6' : 'py-4'}`} 
+                 style={{ maxHeight: isEnlarged ? '85vh' : '70vh' }}>
+              <div
+                id="pdf-document"
+                className="overflow-hidden border-2 rounded-lg shadow-2xl theme-card relative bg-white"
+                style={{ 
+                  width: '210mm', 
+                  height: '297mm', 
+                  flexShrink: 0,
+                  transform: `scale(${previewScale})`,
+                  transformOrigin: 'top center'
+                }}
+              >
+                <ErrorBoundary
+                  fallbackTitle={t.ui?.previewError || "Document Error"}
+                  fallbackMessage={t.ui?.previewErrorMessage || "Failed to render the document. Please try selecting a different template or check your data."}
+                >
+                  <SwissDocument data={data} t={t} templateType={selectedTemplate} />
+                </ErrorBoundary>
+                
+                {/* Watermark overlay for unpaid premium templates */}
+                {needsPayment && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="transform -rotate-45 select-none">
+                      <p className="text-7xl font-bold text-red-500/20 tracking-wider">PREVIEW</p>
+                      <p className="text-xl font-bold text-red-500/25 tracking-wide text-center mt-2">MUSTER – NICHT BEZAHLT</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Zoom indicator */}
+            <div className={`text-center mt-2 text-xs ${mutedCl}`}>
+              {isEnlarged ? '100%' : '48%'} – {isEnlarged ? t?.ui?.clickToShrink ?? 'Klicken zum Verkleinern' : t?.ui?.clickToEnlarge ?? 'Klicken zum Vergrößern'}
             </div>
           </div>
         </div>
         
         {/* Pricing/Download Panel */}
-        <div className="lg:col-span-1">
+        <div className={isEnlarged ? 'hidden' : 'xl:col-span-2'}>
           <div className={`sticky top-24 p-6 rounded-2xl border-2 hand-drawn-border ${darkMode ? 'bg-gray-800/80 border-gray-600' : 'bg-white border-gray-200'} shadow-xl`}>
             {/* Template info */}
             <div className="flex items-center gap-3 mb-4">
@@ -190,6 +256,22 @@ const Step8Preview = React.memo(({
               )}
             </button>
             
+            {/* ZIP Download - Premium Feature */}
+            {isPremium && onDownloadAllTemplates && (
+              <button
+                type="button"
+                onClick={onDownloadAllTemplates}
+                className={`w-full mt-3 font-display font-bold hand-drawn-button border-2 px-6 py-3 rounded-xl flex items-center justify-center gap-3 text-base transition-all
+                  ${darkMode 
+                    ? 'border-purple-500/50 bg-purple-900/30 text-purple-300 hover:bg-purple-800/40' 
+                    : 'border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100'
+                  }`}
+              >
+                <FileArchive size={20} />
+                {t?.premium?.downloadAll ?? 'Alle Vorlagen als ZIP'}
+              </button>
+            )}
+            
             {/* Security badge */}
             <div className={`mt-4 flex items-center justify-center gap-2 ${mutedCl}`}>
               <Lock size={14} />
@@ -197,13 +279,13 @@ const Step8Preview = React.memo(({
             </div>
             
             {/* Alternative: use free template */}
-            {needsPayment && (
+            {needsPayment && onSelectFreeTemplate && (
               <div className="mt-4 pt-4 border-t border-dashed border-gray-300 dark:border-gray-600 text-center">
                 <p className={`text-sm ${mutedCl}`}>
                   {t?.premium?.orUseFree ?? 'Oder'}{' '}
                   <button 
                     type="button"
-                    onClick={() => window.history.back()}
+                    onClick={onSelectFreeTemplate}
                     className="text-primary hover:underline font-medium"
                   >
                     {t?.premium?.useFreeTemplate ?? 'kostenlose Vorlage verwenden'}

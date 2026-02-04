@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PetPhoto from './document/PetPhoto';
 import OwnerInfo from './document/OwnerInfo';
 import PetDetails from './document/PetDetails';
@@ -6,8 +6,27 @@ import LegalSection from './document/LegalSection';
 import DescriptionSection from './document/DescriptionSection';
 import BehaviorSection from './document/BehaviorSection';
 import ReferenceSection from './document/ReferenceSection';
+import { INITIAL_DATA } from '../constants';
+
+// Section component mapping for custom template
+const SECTION_COMPONENTS = {
+  photo: ({ data, t, variant, customColors }) => <PetPhoto photo={data.photo} petType={data.petType} t={t} variant={variant} customColors={customColors} />,
+  owner: ({ data, t, variant, customColors }) => <OwnerInfo data={data} t={t} variant={variant} customColors={customColors} />,
+  details: ({ data, t, variant, customColors }) => <PetDetails data={data} t={t} variant={variant} customColors={customColors} />,
+  behavior: ({ data, t, variant, customColors }) => <BehaviorSection data={data} t={t} variant={variant} customColors={customColors} />,
+  description: ({ data, t, variant, customColors }) => <DescriptionSection text={data.generatedText} t={t} variant={variant} customColors={customColors} />,
+  legal: ({ data, t, variant, customColors }) => <LegalSection data={data} t={t} variant={variant} customColors={customColors} />,
+  reference: ({ data, t, variant, customColors }) => <ReferenceSection data={data} t={t} variant={variant} customColors={customColors} />
+};
+
+// Sidebar sections (left column)
+const SIDEBAR_SECTIONS = ['photo', 'owner', 'behavior'];
+// Main sections (right column)
+const MAIN_SECTIONS = ['details', 'description', 'legal', 'reference'];
 
 const SwissDocument = ({ data, t, templateType = 'classic' }) => {
+  // Get custom design settings
+  const customDesign = data.customDesign || INITIAL_DATA.customDesign;
   const getLocale = (lang) => {
     switch(lang) {
       case 'de': return 'de-CH';
@@ -115,16 +134,76 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         footerSignContainer: 'w-40 border-t border-red-400 pt-2 mt-4',
         footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600',
         badge: null
+      },
+
+      // Custom template - uses customDesign settings from data
+      custom: {
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[14mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        headerContainer: 'mb-5 pb-3 border-b-2',
+        headerFlex: 'flex items-start justify-between',
+        headerIconContainer: 'flex items-center gap-3',
+        headerIconBg: 'bg-white p-2 rounded-sm border-2',
+        headerIconSize: 16,
+        titleText: 'text-xl font-bold uppercase tracking-tight text-slate-900',
+        subtitleText: 'text-[10px] uppercase tracking-wider mt-1 font-semibold',
+        dateText: 'text-[10px] text-slate-500 text-right',
+        dateLabel: today,
+        mainLayout: 'flex gap-6 flex-1 min-h-0 overflow-hidden',
+        sidebarWidth: 'w-[35%] flex-shrink-0',
+        sidebarSpace: 'space-y-4',
+        mainWidth: 'flex-1 min-w-0',
+        mainSpace: 'space-y-4',
+        footerContainer: 'mt-auto pt-2 border-t-2 flex-shrink-0 pb-[3mm]',
+        footerText: 'text-[9px] text-slate-500 text-center mb-2',
+        footerSignContainer: 'w-40 border-t pt-2 mt-4',
+        footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600',
+        badge: null,
+        isCustom: true
       }
     };
 
     return configs[templateType] || configs.classic;
   };
 
+  // Custom colors for the custom template
+  const customColors = useMemo(() => {
+    if (templateType !== 'custom') return null;
+    return {
+      primary: customDesign.primaryColor || '#b39ddb',
+      secondary: customDesign.secondaryColor || '#f5f5f5',
+      accentStyle: customDesign.accentStyle || 'modern'
+    };
+  }, [templateType, customDesign]);
+
   const config = getTemplateConfig();
 
   // Render header based on template
   const renderHeader = () => {
+    // Custom template header with dynamic colors
+    if (templateType === 'custom' && customColors) {
+      return (
+        <div className={config.headerContainer} style={{ borderBottomColor: customColors.primary }}>
+          <div className={config.headerFlex}>
+            <div className={config.headerIconContainer}>
+              <div 
+                className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}
+                style={{ borderColor: customColors.primary }}
+              >
+                <img src="/logo.png" alt="" className="w-full h-full object-contain" style={{ width: config.headerIconSize + 8, height: config.headerIconSize + 8 }} />
+              </div>
+              <div className="flex flex-col">
+                <h1 className={config.titleText}>{t.doc.title}</h1>
+                <p className={config.subtitleText} style={{ color: customColors.primary }}>{t.doc.subtitle}</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className={config.dateText}>{config.dateLabel}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     if (templateType === 'swiss') {
       return (
         <div className={config.headerContainer}>
@@ -171,6 +250,24 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
   const renderFooter = () => {
     if (!config.footerContainer) return null;
 
+    // Custom footer with dynamic colors
+    if (templateType === 'custom' && customColors) {
+      return (
+        <div className={config.footerContainer} style={{ borderTopColor: customColors.primary }}>
+          <div className="flex justify-between items-end">
+            <p className="text-[8px] text-slate-500 uppercase tracking-wider">
+              {t.doc.footer ?? 'Dokument generiert via Pet-Bewerbung.ch'}
+            </p>
+            {config.footerSignContainer && (
+              <div className={config.footerSignContainer} style={{ borderTopColor: customColors.primary }}>
+                <p className={config.footerSignText}>{t.doc.sign}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className={config.footerContainer}>
         <div className="flex justify-between items-end">
@@ -189,6 +286,44 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
 
   // Render main content layout
   const renderContent = () => {
+    // Custom template with dynamic section ordering
+    if (templateType === 'custom' && customDesign) {
+      const layoutOrder = customDesign.layoutOrder || INITIAL_DATA.customDesign.layoutOrder;
+      const hiddenSections = customDesign.hiddenSections || [];
+      
+      // Filter out hidden sections
+      const visibleSections = layoutOrder.filter(id => !hiddenSections.includes(id));
+      
+      // Separate into sidebar and main sections while maintaining order
+      const sidebarSections = visibleSections.filter(id => SIDEBAR_SECTIONS.includes(id));
+      const mainSections = visibleSections.filter(id => MAIN_SECTIONS.includes(id));
+      
+      return (
+        <div className={config.mainLayout}>
+          <div className={`${config.sidebarWidth} ${config.sidebarSpace}`}>
+            {sidebarSections.map(sectionId => {
+              const Component = SECTION_COMPONENTS[sectionId];
+              return Component ? (
+                <div key={sectionId}>
+                  {Component({ data, t, variant: 'custom', customColors })}
+                </div>
+              ) : null;
+            })}
+          </div>
+          <div className={`${config.mainWidth} ${config.mainSpace}`}>
+            {mainSections.map(sectionId => {
+              const Component = SECTION_COMPONENTS[sectionId];
+              return Component ? (
+                <div key={sectionId}>
+                  {Component({ data, t, variant: 'custom', customColors })}
+                </div>
+              ) : null;
+            })}
+          </div>
+        </div>
+      );
+    }
+    
     // Standard two-column layout with proper flex constraints
     return (
       <div className={config.mainLayout}>
@@ -230,8 +365,16 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     </div>
   );
 
+  // Dynamic style for custom template colors
+  const customStyle = templateType === 'custom' && customColors ? {
+    '--custom-primary': customColors.primary,
+    '--custom-secondary': customColors.secondary,
+    borderTopColor: customColors.primary,
+    borderTopWidth: '4px'
+  } : {};
+
   return (
-    <div className={config.container}>
+    <div className={config.container} style={customStyle}>
       <Watermark />
       <div className="relative z-10 flex flex-col h-full">
         {renderHeader()}

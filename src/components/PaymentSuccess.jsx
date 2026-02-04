@@ -157,6 +157,20 @@ const PaymentSuccess = ({
                   </p>
                 )}
               </div>
+              
+              {/* Premium Access Info Box */}
+              <div className="mb-6 p-4 rounded-xl border-2 border-dashed theme-border bg-purple-500/10">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="material-symbols-outlined text-2xl text-purple-500">workspace_premium</span>
+                  <span className="font-display font-bold text-lg theme-text">
+                    {t?.paymentSuccess?.premiumUnlocked ?? 'Premium freigeschaltet!'}
+                  </span>
+                </div>
+                <p className="text-sm theme-text-muted">
+                  {t?.paymentSuccess?.premiumAccessInfo ?? 'Sie haben 2 Stunden vollen Zugang zu allen Funktionen: KI-Textgenerierung, alle Vorlagen, Charakter-Konstruktor. Nutzen Sie die Zeit!'}
+                </p>
+              </div>
+              
               <p className="text-lg mb-8 font-sans leading-relaxed theme-text-muted">
                 {t?.paymentSuccess?.generosityQuote ?? t?.paymentSuccess?.thankYouMessage ?? "Thank you for supporting PetCV.io. Your generosity helps us provide secure, loving digital identities for pets everywhere. We've sent a receipt to your email."}
               </p>

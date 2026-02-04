@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Cookie, X } from 'lucide-react';
 
-const COOKIE_CONSENT_KEY = 'pet-cv-cookie-consent';
+export const COOKIE_CONSENT_KEY = 'pet-cv-cookie-consent';
 
-const CookieBanner = ({ t, onOpenPrivacy }) => {
+// Helper to check if cookies are accepted
+export const isCookieConsentGiven = () => {
+  try {
+    return localStorage.getItem(COOKIE_CONSENT_KEY) === 'accepted';
+  } catch {
+    return false;
+  }
+};
+
+const CookieBanner = ({ t, onOpenPrivacy, onConsentChange, forceShow = false }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Force show if requested (e.g., when trying to pay with cookies declined)
+    if (forceShow) {
+      setIsVisible(true);
+      return;
+    }
+    
     // Check if user has already consented
     const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!consent) {
@@ -14,16 +29,18 @@ const CookieBanner = ({ t, onOpenPrivacy }) => {
       const timer = setTimeout(() => setIsVisible(true), 1000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [forceShow]);
 
   const handleAccept = () => {
     localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
     setIsVisible(false);
+    onConsentChange?.('accepted');
   };
 
   const handleDecline = () => {
     localStorage.setItem(COOKIE_CONSENT_KEY, 'declined');
     setIsVisible(false);
+    onConsentChange?.('declined');
   };
 
   if (!isVisible) return null;

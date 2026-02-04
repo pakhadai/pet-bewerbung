@@ -14,13 +14,13 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
       <div className={`inline-flex items-center gap-2 px-4 py-1 text-sm font-bold font-display uppercase tracking-widest hand-drawn-border border-2 border-text-main rotate-1 select-none
         ${darkMode ? 'bg-gray-800 text-primary-300' : 'bg-mint/50 text-primary-dark'}`}>
         <span className="size-2 rounded-full bg-primary-dark animate-pulse"></span>
-        {t?.hero?.badge || '100% Free & No Signup'}
+        {t?.hero?.badge || 'Free Start & No Signup'}
       </div>
 
       {/* Main Title */}
       <h2 className={`text-6xl sm:text-7xl lg:text-9xl font-bold font-display leading-none mt-2 transition-colors
          ${darkMode ? 'text-white' : 'text-text-main'}`}>
-        {t?.hero?.title || 'Free Pet CV Creator'}
+        {t?.hero?.title || 'Pet CV Creator'}
       </h2>
 
       {/* Value Proposition: Problem & Solution */}
@@ -69,33 +69,69 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
         </button>
       </div>
 
-      {/* Transparency Card – Fair & Sicher */}
-      <div className={`mt-8 max-w-2xl w-full p-6 border-2 border-dashed hand-drawn-border text-center relative
-        transition-transform duration-500 ease-in-out hover:scale-[1.02]
-        ${darkMode ? 'border-green-600/60 bg-green-900/30' : 'border-green-400/60 bg-green-50'}`}>
-        <div className={`absolute -top-5 left-1/2 -translate-x-1/2 p-2 rounded-full border-2 
-          ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'}`}>
-          <span className="material-symbols-outlined text-red-400 text-2xl sketch-icon-filled">volunteer_activism</span>
-        </div>
-        <h3 className={`font-display font-bold text-xl mb-2 pt-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-          {t?.hero?.transparencyTitle || 'Fair & Sicher'}
+      {/* Free vs Premium Comparison */}
+      <div className={`mt-8 max-w-2xl w-full border-2 border-dashed hand-drawn-border overflow-hidden
+        ${darkMode ? 'border-gray-600 bg-gray-800/50' : 'border-gray-300 bg-white/80'}`}>
+        <h3 className={`font-display font-bold text-xl text-center py-3 ${darkMode ? 'text-white bg-gray-700/50' : 'text-gray-800 bg-gray-100'}`}>
+          {t?.hero?.transparencyTitle || 'Kostenlos vs Premium'}
         </h3>
-        <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-          {t?.hero?.transparencyText || 'Dieser Service ist werbefrei und speichert keine Daten auf Servern. Nutzen Sie es gratis – unterstützen Sie uns mit einem fairen Beitrag, wenn Ihnen das Ergebnis gefällt.'}
+        <div className="grid grid-cols-2 gap-0">
+          {/* Free Column */}
+          <div className={`p-4 ${darkMode ? 'bg-gray-800/30' : 'bg-gray-50/50'}`}>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className={`material-symbols-outlined text-2xl ${darkMode ? 'text-green-400' : 'text-green-600'}`}>check_circle</span>
+              <span className={`font-display font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                {t?.hero?.freeTitle || 'Kostenlos'}
+              </span>
+            </div>
+            <ul className={`space-y-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              {(t?.hero?.freeFeatures || ['Classic-Vorlage', 'Manuelle Eingabe', 'PDF-Download']).map((feature: string, i: number) => (
+                <li key={i} className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-green-500 text-base">check</span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </div>
+          {/* Premium Column */}
+          <div className={`p-4 border-l-2 ${darkMode ? 'border-purple-500/50 bg-purple-900/20' : 'border-purple-200 bg-purple-50/50'}`}>
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-2xl text-purple-500">workspace_premium</span>
+              <span className={`font-display font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                {t?.hero?.premiumTitle || 'Premium (2h)'}
+              </span>
+            </div>
+            <ul className={`space-y-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              {(t?.hero?.premiumFeatures || ['Alle 4 Profi-Vorlagen', 'Unbegrenzte KI', 'Charakter-Konstruktor', 'ZIP mit allen Designs']).map((feature: string, i: number) => (
+                <li key={i} className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-purple-500 text-base">star</span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+            <div className={`mt-3 text-center py-1 px-2 rounded-full text-xs font-bold ${darkMode ? 'bg-purple-600/50 text-purple-200' : 'bg-purple-100 text-purple-700'}`}>
+              10 CHF
+            </div>
+          </div>
+        </div>
+        <p className={`text-xs text-center py-2 ${darkMode ? 'text-gray-400 bg-gray-700/30' : 'text-gray-500 bg-gray-100/50'}`}>
+          {t?.hero?.transparencyText || 'Keine Daten werden gespeichert. Premium-Zugang gilt für 2 Stunden.'}
         </p>
-        <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs font-bold uppercase tracking-widest opacity-70">
-          <div className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-sm">lock</span>
-            {t?.hero?.transparencyBadge1 || 'Lokale Daten'}
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-sm">block</span>
-            {t?.hero?.transparencyBadge2 || 'Keine Werbung'}
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-sm">payments</span>
-            {t?.hero?.transparencyBadge3 || 'Fair bezahlen'}
-          </div>
+      </div>
+
+      {/* Trust Badges */}
+      <div className="flex flex-wrap justify-center gap-4 mt-4 text-xs font-bold uppercase tracking-widest opacity-70">
+        <div className="flex items-center gap-1">
+          <span className="material-symbols-outlined text-sm">lock</span>
+          {t?.hero?.transparencyBadge1 || 'Lokale Daten'}
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="material-symbols-outlined text-sm">block</span>
+          {t?.hero?.transparencyBadge2 || 'Keine Werbung'}
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="material-symbols-outlined text-sm">verified</span>
+          {t?.hero?.transparencyBadge3 || 'Premium: 10 CHF'}
         </div>
       </div>
     </div>

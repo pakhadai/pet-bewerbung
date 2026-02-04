@@ -2,8 +2,25 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { TEMPLATE_OPTIONS, TRANSLATIONS, INITIAL_DATA, PREMIUM_PRICE_CHF } from '../constants';
 import { validateSwissPhone, validateSwissPostal, validateEmail } from '../utils/swissValidation';
 
-const PREMIUM_STORAGE_KEY = 'pet-bewerbung-premium';
+const PREMIUM_TOKEN_KEY = 'pet-bewerbung-premium-token';
+const PREMIUM_EXPIRY_KEY = 'pet-bewerbung-premium-expiry';
+const DEVICE_ID_KEY = 'pet-bewerbung-device-id';
 const AI_GENERATIONS_KEY = 'pet-bewerbung-ai-generations';
+
+// Generate or retrieve a stable device ID
+const getDeviceId = () => {
+  try {
+    let id = localStorage.getItem(DEVICE_ID_KEY);
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem(DEVICE_ID_KEY, id);
+    }
+    return id;
+  } catch (e) {
+    // Fallback for browsers without crypto.randomUUID
+    return 'device-' + Math.random().toString(36).substring(2, 15);
+  }
+};
 
 const STORAGE_KEY = 'pet-bewerbung-form-data';
 const STORAGE_STEP_KEY = 'pet-bewerbung-step';
@@ -326,84 +343,169 @@ export const useFormValidation = (data, step) => {
 };
 
 /**
- * Premium state management hook
- * Handles premium status with localStorage persistence and restoration via token
+ * Premium state management hook with JWT tokens and device binding
+ * - 2-hour session duration
+ * - Device-bound tokens (can't share with friends)
+ * - Server-side verification
  * @returns {Object} - Premium state and handlers
  */
 export const usePremium = () => {
-  const [isPremium, setIsPremiumState] = useState(() => {
+  // Stable device ID for token binding
+  const deviceId = useMemo(() => getDeviceId(), []);
+  
+  // Load token and expiry from localStorage
+  const [premiumToken, setPremiumToken] = useState(() => {
     try {
-      const saved = localStorage.getItem(PREMIUM_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Check if premium hasn't expired (optional: add expiry logic if needed)
-        return parsed.active === true;
-      }
+      return localStorage.getItem(PREMIUM_TOKEN_KEY) || null;
     } catch (e) {
-      if (import.meta.env.DEV) {
-        console.warn('Could not load premium status:', e);
-      }
+      return null;
     }
-    return false;
   });
   
-  const [restoreStatus, setRestoreStatus] = useState(null); // 'loading', 'success', 'error', null
-
-  // Check URL for premium restoration token on mount
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const restoreToken = params.get('restore');
-    
-    if (restoreToken) {
-      // Clean URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-      
-      // Verify token with server
-      verifyAndRestorePremium(restoreToken);
+  const [tokenExpiry, setTokenExpiry] = useState(() => {
+    try {
+      const saved = localStorage.getItem(PREMIUM_EXPIRY_KEY);
+      return saved ? parseInt(saved, 10) : null;
+    } catch (e) {
+      return null;
     }
+  });
+  
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [restoreStatus, setRestoreStatus] = useState(null);
+  
+  // Calculate if premium is active (has token and not expired)
+  const isPremium = useMemo(() => {
+    if (!premiumToken) return false;
+    if (tokenExpiry && Date.now() > tokenExpiry) return false;
+    return true;
+  }, [premiumToken, tokenExpiry]);
+  
+  // Time remaining in milliseconds
+  const timeRemaining = useMemo(() => {
+    if (!isPremium || !tokenExpiry) return 0;
+    return Math.max(0, tokenExpiry - Date.now());
+  }, [isPremium, tokenExpiry]);
+  
+  // Clear expired token on mount and periodically
+  useEffect(() => {
+    const checkExpiry = () => {
+      if (tokenExpiry && Date.now() > tokenExpiry) {
+        clearPremium();
+      }
+    };
+    
+    checkExpiry();
+    const interval = setInterval(checkExpiry, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, [tokenExpiry]);
+  
+  // Clear premium data
+  const clearPremium = useCallback(() => {
+    try {
+      localStorage.removeItem(PREMIUM_TOKEN_KEY);
+      localStorage.removeItem(PREMIUM_EXPIRY_KEY);
+    } catch (e) {
+      // ignore
+    }
+    setPremiumToken(null);
+    setTokenExpiry(null);
   }, []);
   
-  // Verify restore token with server
-  const verifyAndRestorePremium = async (token) => {
-    setRestoreStatus('loading');
+  // Activate premium after successful payment
+  // Accepts either sessionId (Checkout) or paymentIntentId (Payment Elements)
+  const activatePremium = useCallback(async (paymentId) => {
+    setIsVerifying(true);
     try {
-      const response = await fetch(`/api/verify-restore/${token}`);
+      // Determine the type of ID and send appropriately
+      const body = { deviceId };
+      if (paymentId?.startsWith('cs_')) {
+        body.sessionId = paymentId;
+      } else if (paymentId?.startsWith('pi_')) {
+        body.paymentIntentId = paymentId;
+      } else {
+        // Fallback - try both names
+        body.sessionId = paymentId;
+        body.paymentIntentId = paymentId;
+      }
+      
+      const response = await fetch('/api/activate-premium', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
       const data = await response.json();
       
-      if (data.valid) {
-        activatePremium(data.sessionId);
-        setRestoreStatus('success');
-      } else {
-        setRestoreStatus('error');
+      if (response.ok && data.token) {
+        const expiry = data.expiresAt || (Date.now() + data.expiresIn * 1000);
+        
+        try {
+          localStorage.setItem(PREMIUM_TOKEN_KEY, data.token);
+          localStorage.setItem(PREMIUM_EXPIRY_KEY, String(expiry));
+        } catch (e) {
+          // ignore
+        }
+        
+        setPremiumToken(data.token);
+        setTokenExpiry(expiry);
+        
         if (import.meta.env.DEV) {
-          console.warn('Premium restore failed:', data.error);
+          console.log('✅ Premium activated, expires in:', Math.round(data.expiresIn / 60), 'minutes');
+        }
+        
+        return true;
+      } else {
+        if (import.meta.env.DEV) {
+          console.warn('Premium activation failed:', data.error);
+        }
+        return false;
+      }
+    } catch (e) {
+      if (import.meta.env.DEV) {
+        console.warn('Premium activation error:', e);
+      }
+      return false;
+    } finally {
+      setIsVerifying(false);
+    }
+  }, [deviceId]);
+  
+  // Verify current token with server
+  const verifyToken = useCallback(async () => {
+    if (!premiumToken) return false;
+    
+    try {
+      const response = await fetch('/api/verify-premium', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: premiumToken, deviceId })
+      });
+      
+      const data = await response.json();
+      
+      if (!data.valid) {
+        clearPremium();
+        return false;
+      }
+      
+      // Update expiry if server provides it
+      if (data.timeRemaining) {
+        const newExpiry = Date.now() + data.timeRemaining;
+        setTokenExpiry(newExpiry);
+        try {
+          localStorage.setItem(PREMIUM_EXPIRY_KEY, String(newExpiry));
+        } catch (e) {
+          // ignore
         }
       }
+      
+      return true;
     } catch (e) {
-      setRestoreStatus('error');
-      if (import.meta.env.DEV) {
-        console.warn('Premium restore error:', e);
-      }
+      return false;
     }
-  };
-
-  // Save premium status to localStorage
-  const activatePremium = useCallback((paymentId = null) => {
-    const premiumData = {
-      active: true,
-      activatedAt: new Date().toISOString(),
-      paymentId: paymentId
-    };
-    try {
-      localStorage.setItem(PREMIUM_STORAGE_KEY, JSON.stringify(premiumData));
-    } catch (e) {
-      if (import.meta.env.DEV) {
-        console.warn('Could not save premium status:', e);
-      }
-    }
-    setIsPremiumState(true);
-  }, []);
-
+  }, [premiumToken, deviceId, clearPremium]);
+  
   // Check if selected template requires premium
   const isTemplateAccessible = useCallback((templateId) => {
     const template = TEMPLATE_OPTIONS.find(t => t.id === templateId);
@@ -424,10 +526,16 @@ export const usePremium = () => {
 
   return {
     isPremium,
+    premiumToken,
+    deviceId,
     activatePremium,
+    clearPremium,
+    verifyToken,
+    isVerifying,
     isTemplateAccessible,
     getTemplateInfo,
     premiumPrice: PREMIUM_PRICE_CHF,
+    timeRemaining,
     restoreStatus
   };
 };

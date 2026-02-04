@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "mit einem Pet CV.",
     heroSub: "Ein unterhaltsamer Service, um Ihren Vermieter zu überraschen und sich von der Masse abzuheben. Erstellen Sie ein professionelles Dossier für Ihren Vierbeiner mit allen wichtigen Informationen – vielleicht erhöht es Ihre Chancen auf eine Wohnung mit Haustier.",
     cta: "Jetzt Pet CV erstellen",
-    trust: "100% kostenlos • Keine Registrierung",
+    trust: "Kostenlos starten • Keine Registrierung",
     features: [
       { title: "Vom Rest abheben", desc: "Überraschen Sie Vermieter mit einem einzigartigen, professionellen Pet CV." },
       { title: "Vollständige Informationen", desc: "Präsentieren Sie alle wichtigen Details über Ihren Vierbeiner auf einen Blick." },
@@ -65,6 +65,8 @@ export default {
     petPhotoAlt: "Haustierfoto",
     noImage: "Kein Bild",
     noDescription: "Keine Beschreibung verfügbar",
+    clickToEnlarge: "Klicken zum Vergrößern",
+    clickToShrink: "Klicken zum Verkleinern",
     owner: "Halter",
     about: "Über",
     details: "Details",
@@ -222,7 +224,10 @@ export default {
     email: "E-Mail",
     status: "Status",
     completed: "Abgeschlossen",
-    goHome: "Zur Startseite"
+    goHome: "Zur Startseite",
+    // Premium 2-hour access
+    premiumUnlocked: "Premium freigeschaltet!",
+    premiumAccessInfo: "Sie haben 2 Stunden vollen Zugang zu allen Funktionen: KI-Textgenerierung, alle Vorlagen, Charakter-Konstruktor. Nutzen Sie die Zeit!"
   },
   paymentCheckout: {
     secureCheckout: "Sicherer Checkout",
@@ -292,21 +297,26 @@ export default {
     donate: "Unterstützen"
   },
   hero: {
-    badge: "100% Kostenlos & Keine Anmeldung",
-    title: "Kostenloser Pet CV Erstellen",
+    badge: "Kostenlos starten • Keine Anmeldung",
+    title: "Pet CV Erstellen",
     privacyTitle: "Datenschutz-Schild",
     privacyDesc: "Ihre Daten werden niemals gespeichert. Alles passiert in Ihrem Browser.",
-    subtitle: "Erstellen Sie in Minuten einen professionellen Lebenslauf für Ihren vierbeinigen Freund. Einfach, schnell und völlig privat.",
+    subtitle: "4 einfache Schritte zu Ihrem professionellen Tier-Dossier",
     problemTitle: "Wohnungssuche mit Haustier?",
     problemDesc: "In der Schweiz ist der Wohnungsmarkt hart umkämpft. Viele Vermieter sind skeptisch gegenüber Haustieren.",
     solutionTitle: "Ihre Lösung: Das Pet-Dossier",
     solutionDesc: "Ein professioneller Lebenslauf zeigt Verantwortung, belegt Versicherungsschutz und hebt Sie von anderen Bewerbern ab. Erhöhen Sie Ihre Chancen auf Ihre Traumwohnung.",
-    cta: "Sicher starten",
-    transparencyTitle: "Fair & Sicher",
-    transparencyText: "Dieser Service ist werbefrei und speichert keine Daten auf Servern. Wir verzichten auf einen fixen Preis – nutzen Sie es gratis. Wenn Ihnen das Ergebnis gefällt, unterstützen Sie uns mit einem fairen Beitrag.",
+    cta: "Jetzt erstellen",
+    transparencyTitle: "Kostenlos vs Premium",
+    transparencyText: "Die Classic-Vorlage ist kostenlos. Premium schaltet den Visual Editor, KI-Texte und alle Designs frei (10 CHF / 2 Stunden).",
     transparencyBadge1: "Lokale Daten",
     transparencyBadge2: "Keine Werbung",
-    transparencyBadge3: "Fair bezahlen"
+    transparencyBadge3: "Premium: 10 CHF",
+    // Free vs Premium comparison
+    freeTitle: "Kostenlos",
+    freeFeatures: ["Classic-Vorlage", "Manuelle Eingabe", "PDF-Download"],
+    premiumTitle: "Premium (2 Stunden)",
+    premiumFeatures: ["Visual Editor", "Alle 4 Profi-Vorlagen", "KI-Textgenerierung", "ZIP mit allen Designs"]
   },
   step1Details: {
     ownerSection: "Halterangaben",
@@ -337,21 +347,22 @@ export default {
   },
   stepsNew: {
     step1: {
-      title: "Details",
-      subtitle: "Halter & Tier Info"
+      title: "Daten eingeben",
+      subtitle: "Halter & Tier"
     },
     step2: {
-      title: "Notfall-Info",
-      subtitle: "Tierarzt & Kontakte"
+      title: "Beschreibung",
+      subtitle: "Charakter & KI-Text"
     },
     step3: {
-      title: "Tierbeschreibung",
-      subtitle: "Charakter & KI"
+      title: "Foto & Design",
+      subtitle: "Foto hochladen & Vorlage",
+      badge: "KI"
     },
     step4: {
-      title: "Hochladen & Auswählen",
-      subtitle: "Foto & Vorlage",
-      badge: "Lokal"
+      title: "Editor & Export",
+      subtitle: "Anpassen & PDF",
+      badge: "Premium"
     },
     step5: {
       title: "Vorschau",
@@ -416,7 +427,91 @@ export default {
     restoreDesc: 'Geben Sie die E-Mail ein, mit der Sie gekauft haben',
     restoreSuccess: 'Premium erfolgreich wiederhergestellt!',
     restoreError: 'Wiederherstellung fehlgeschlagen. Token ungültig oder abgelaufen.',
-    restoreLoading: 'Wird wiederhergestellt...'
+    restoreLoading: 'Wird wiederhergestellt...',
+    
+    // JWT Session (2-hour access)
+    sessionInfo: 'Premium-Zugang für 2 Stunden',
+    timeRemaining: 'Verbleibend',
+    sessionExpired: 'Premium-Sitzung abgelaufen',
+    deviceMismatch: 'Dieser Token ist an ein anderes Gerät gebunden',
+    activationError: 'Premium konnte nicht aktiviert werden',
+    
+    // Character Builder (Sliders)
+    characterBuilder: 'Premium: Charakter-Konstruktor',
+    toneLabel: 'Schreibstil',
+    sliders: {
+      energy: 'Energie',
+      energyLow: 'Gemütlich',
+      energyHigh: 'Energiegeladen',
+      noise: 'Lautstärke',
+      noiseLow: 'Leise',
+      noiseHigh: 'Bellfreudig',
+      sociability: 'Geselligkeit',
+      sociabilityLow: 'Einzelgänger',
+      sociabilityHigh: 'Liebt alle'
+    },
+    tones: {
+      formal: 'Offiziell',
+      humorous: 'Mit Humor',
+      cute: 'Niedlich'
+    },
+    
+    // Magic Rewrite
+    magicRewrite: 'Text verbessern',
+    rewriting: 'Verbessere...',
+    rewriteSuccess: 'Text wurde verbessert!',
+    
+    // ZIP Download
+    downloadAll: 'Alle Vorlagen als ZIP',
+    generatingZip: 'Generiere alle Vorlagen...',
+    zipDownloaded: 'ZIP mit allen Vorlagen heruntergeladen!',
+    zipError: 'Fehler beim Erstellen des ZIP-Archivs',
+    zipRequiresPremium: 'ZIP-Download nur für Premium',
+    
+    // Template Builder / Visual Editor
+    openBuilder: 'Visual Editor öffnen',
+    builderRequiresPremium: 'Visual Editor benötigt Premium'
+  },
+  // Template Builder / Visual Editor
+  builder: {
+    title: 'Visual Editor',
+    subtitle: 'Gestalten Sie Ihr Dokument professionell',
+    colorScheme: 'Farbschema',
+    primaryColor: 'Akzentfarbe',
+    secondaryColor: 'Hintergrundfarbe',
+    sectionOrder: 'Sektionen',
+    dragHint: 'Ziehen Sie Sektionen zum Neuanordnen',
+    required: 'Pflicht',
+    style: 'Stil',
+    styles: {
+      classic: 'Klassisch',
+      modern: 'Modern',
+      minimal: 'Minimal'
+    },
+    sections: {
+      photo: 'Foto',
+      owner: 'Besitzer Info',
+      details: 'Tier Details',
+      behavior: 'Verhalten',
+      description: 'Beschreibung',
+      legal: 'Rechtliches',
+      reference: 'Referenzen'
+    },
+    reset: 'Zurücksetzen',
+    apply: 'Anwenden',
+    applied: 'Änderungen angewendet!',
+    tips: 'Tipps',
+    tipSelect: 'Klicken Sie auf eine Sektion, um sie auszuwählen',
+    tipDrag: 'Ziehen Sie Sektionen in der linken Liste neu',
+    tipHide: 'Blenden Sie optionale Sektionen aus',
+    tipColors: 'Verwenden Sie professionelle Farben',
+    colorPreview: 'Farbvorschau',
+    colorPreviewDesc: 'So werden Ihre Farben im Dokument aussehen.',
+    hidden: 'Ausgeblendet'
+  },
+  // Legal/Cookie
+  legal: {
+    cookieRequiredForPayment: 'Bitte akzeptieren Sie Cookies für Zahlungen'
   },
   faq: {
     title: "Häufig gestellte Fragen",
@@ -426,16 +521,18 @@ export default {
       all: "Alle",
       general: "Allgemein",
       privacy: "Datenschutz & Sicherheit",
-      payment: "Kosten & Fairness",
+      payment: "Kosten & Premium",
       tips: "Tipps für die Wohnungssuche"
     },
     items: [
       { id: "q1", category: "general", q: "Garantiert dieses Pet-Dossier eine Wohnungszusage?", a: "Nein, eine Garantie gibt es nicht. Aber ein professionelles Dossier zeigt dem Vermieter, dass Sie Verantwortung übernehmen (Versicherung, Erziehung). In der Schweiz entscheiden sich Vermieter oft für den Kandidaten, der das geringste Risiko darstellt – dieses Dokument minimiert Bedenken." },
       { id: "q2", category: "privacy", q: "Wo werden meine Daten gespeichert?", a: "Nirgendwo auf unseren Servern. Wir nutzen eine 'Local-First'-Technologie. Alle Daten (Namen, Fotos, Adressen) werden ausschliesslich im temporären Speicher Ihres Browsers verarbeitet. Sobald Sie das PDF herunterladen und den Tab schliessen, sind die Daten weg (ausser Sie löschen den Browser-Cache nicht)." },
-      { id: "q3", category: "payment", q: "Ist der Service wirklich kostenlos?", a: "Ja. Wir glauben an das 'Fair-Pay'-Prinzip. Sie können das Tool uneingeschränkt nutzen. Wenn Ihnen das Ergebnis hilft, eine Wohnung zu finden, freuen wir uns über einen fairen Beitrag zur Deckung unserer Server- und Entwicklungskosten." },
-      { id: "q4", category: "privacy", q: "Werden meine Daten für KI-Training genutzt?", a: "Nein. Wir senden nur anonymisierte Tierdaten (Rasse, Alter, Merkmale) an die KI, um den Text zu generieren. Persönliche Daten des Halters (Name, Adresse) verlassen niemals Ihr Gerät." },
-      { id: "q5", category: "tips", q: "Welche Versicherungen sind in der Schweiz wichtig?", a: "Für Hundehalter ist eine Privathaftpflichtversicherung (Privathaftpflicht) mit Deckung für Mieterschäden essenziell. Oft wird auch der Nachweis der AMICUS-Registrierung verlangt. Unser Dossier hebt diese Punkte hervor." },
-      { id: "q6", category: "general", q: "Kann ich das Dossier nachträglich bearbeiten?", a: "Solange Sie den Browser nicht schliessen oder die Seite neu laden, bleiben Ihre Daten erhalten. Nach dem Schliessen müssen Sie ein neues Dossier erstellen, da wir aus Datenschutzgründen keine Benutzerkonten speichern." }
+      { id: "q3", category: "payment", q: "Was kostet der Service?", a: "Der Classic-Vorlage ist kostenlos und voll funktionsfähig. Für 10 CHF erhalten Sie 2 Stunden Premium-Zugang: alle 4 professionellen Vorlagen, unbegrenzte KI-Textgenerierung und den Charakter-Konstruktor. Ideal, wenn Sie mehrere Bewerbungen vorbereiten." },
+      { id: "q4", category: "payment", q: "Was ist im Premium enthalten?", a: "Premium (10 CHF, 2 Stunden) enthält: alle 4 Vorlagendesigns (Classic, Modern, Compact, Swiss), unbegrenzte KI-Textgenerierung, den Charakter-Konstruktor mit Schiebereglern, Magic Rewrite für Textverbesserung und ZIP-Download aller Vorlagen auf einmal." },
+      { id: "q5", category: "payment", q: "Warum nur 2 Stunden?", a: "Wir speichern keine Benutzerkonten aus Datenschutzgründen. 2 Stunden reichen, um Ihr Dossier zu perfektionieren und alle Versionen herunterzuladen. Sie können unbegrenzt bearbeiten und herunterladen in dieser Zeit." },
+      { id: "q6", category: "privacy", q: "Werden meine Daten für KI-Training genutzt?", a: "Nein. Wir senden nur anonymisierte Tierdaten (Rasse, Alter, Merkmale) an die KI, um den Text zu generieren. Persönliche Daten des Halters (Name, Adresse) verlassen niemals Ihr Gerät." },
+      { id: "q7", category: "tips", q: "Welche Versicherungen sind in der Schweiz wichtig?", a: "Für Hundehalter ist eine Privathaftpflichtversicherung (Privathaftpflicht) mit Deckung für Mieterschäden essenziell. Oft wird auch der Nachweis der AMICUS-Registrierung verlangt. Unser Dossier hebt diese Punkte hervor." },
+      { id: "q8", category: "general", q: "Kann ich das Dossier nachträglich bearbeiten?", a: "Solange Sie den Browser nicht schliessen oder die Seite neu laden, bleiben Ihre Daten erhalten. Mit Premium können Sie 2 Stunden lang unbegrenzt bearbeiten. Nach dem Schliessen müssen Sie ein neues Dossier erstellen." }
     ],
     footerHint: "Fragen zur Technik oder Bezahlung? Schreiben Sie an support@pet-bewerbung.ch"
   }

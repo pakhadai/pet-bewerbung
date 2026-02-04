@@ -127,7 +127,7 @@ const Step9ThankYou = React.memo(({
                 </h3>
                 <p className={`text-lg max-w-md ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                   {t?.thankYou?.supportDesc ?? t?.monetization?.desc ?? (
-                    <>PetCV.io is <span className="text-primary font-bold">100% free</span>. If you like it, consider buying a treat for our development team!</>
+                    <>PetCV.io offers a <span className="text-primary font-bold">free Classic template</span>. Premium unlocks all designs and AI features. Your support helps us improve!</>
                   )}
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 mt-2">

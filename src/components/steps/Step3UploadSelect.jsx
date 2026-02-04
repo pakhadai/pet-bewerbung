@@ -195,9 +195,16 @@ const Step3UploadSelect = React.memo(({
                         showToast?.(t?.ui?.select ?? 'Selected', 'info'); 
                       }
                     }}
-                    className={`template-card p-4 flex flex-col gap-3 text-left relative ${selectedTemplate === opt.id ? 'active' : ''} ${
-                      darkMode ? 'bg-white/5 hover:border-white/30' : 'bg-white border-gray-200 hover:border-gray-400'
-                    }`}
+                    className={`template-card p-4 flex flex-col gap-3 text-left relative transition-all duration-300 
+                      ${selectedTemplate === opt.id ? 'active' : ''} 
+                      ${darkMode ? 'bg-white/5 hover:border-white/30' : 'bg-white border-gray-200 hover:border-gray-400'}
+                      ${opt.isPremium && !isPremium 
+                        ? 'hover:shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:border-amber-400/50' 
+                        : opt.isPremium && isPremium 
+                          ? 'hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:border-purple-400/50'
+                          : ''
+                      }
+                    `}
                   >
                     {/* FREE / PREMIUM Badge */}
                     <div className="absolute top-2 left-2 z-10">

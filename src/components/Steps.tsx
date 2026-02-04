@@ -93,9 +93,9 @@ const Steps: React.FC<StepsProps> = ({ darkMode, t }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 [--stagger:0.12s]">
         <StepCard 
           number="1"
-          title={t?.stepsNew?.step1?.title || "Add Details"}
-          subtitle={t?.stepsNew?.step1?.subtitle || "Owner & Pet Info"}
-          iconPrimary="person"
+          title={t?.stepsNew?.step1?.title || "Enter Data"}
+          subtitle={t?.stepsNew?.step1?.subtitle || "Owner & Pet"}
+          iconPrimary="edit_note"
           iconSecondary="pets"
           bgColorClass="bg-mint"
           darkModeBgClass="bg-mint/80"
@@ -106,23 +106,27 @@ const Steps: React.FC<StepsProps> = ({ darkMode, t }) => {
         />
         <StepCard 
           number="2"
-          title={t?.stepsNew?.step2?.title || "Emergency Info"}
-          subtitle={t?.stepsNew?.step2?.subtitle || "Vet & Contacts"}
-          iconPrimary="call"
-          iconSecondary="local_hospital"
+          title={t?.stepsNew?.step2?.title || "Description"}
+          subtitle={t?.stepsNew?.step2?.subtitle || "Character & AI"}
+          iconPrimary="psychology"
+          iconSecondary="auto_awesome"
           bgColorClass="bg-peach"
           darkModeBgClass="bg-peach/80"
           rotation="rotate-[3deg]"
           hoverRotation="rotate-0"
+          badge={{
+            text: t?.stepsNew?.step3?.badge || "AI",
+            icon: 'smart_toy'
+          }}
           darkMode={darkMode}
           animDelay="0.15s"
         />
         <StepCard 
           number="3"
-          title={t?.stepsNew?.step3?.title || "Pet Description"}
-          subtitle={t?.stepsNew?.step3?.subtitle || "Character & AI"}
-          iconPrimary="stylus"
-          iconSecondary="auto_awesome"
+          title={t?.stepsNew?.step3?.title || "Photo & Design"}
+          subtitle={t?.stepsNew?.step3?.subtitle || "Upload & Template"}
+          iconPrimary="photo_camera"
+          iconSecondary="palette"
           bgColorClass="bg-lavender"
           darkModeBgClass="bg-lavender/80"
           rotation="rotate-[-1deg]"
@@ -132,17 +136,17 @@ const Steps: React.FC<StepsProps> = ({ darkMode, t }) => {
         />
         <StepCard 
           number="4"
-          title={t?.stepsNew?.step4?.title || "Upload & Select"}
-          subtitle={t?.stepsNew?.step4?.subtitle || "Photo & Template"}
-          iconPrimary="photo_camera"
-          iconSecondary="dashboard"
+          title={t?.stepsNew?.step4?.title || "Editor & Export"}
+          subtitle={t?.stepsNew?.step4?.subtitle || "Customize & PDF"}
+          iconPrimary="tune"
+          iconSecondary="picture_as_pdf"
           bgColorClass="bg-accent-pink"
           darkModeBgClass="bg-accent-pink/80"
           rotation="rotate-[2deg]"
           hoverRotation="rotate-[-1deg]"
           badge={{
-            text: t?.stepsNew?.step4?.badge || "Local",
-            icon: 'lock'
+            text: t?.stepsNew?.step4?.badge || "Premium",
+            icon: 'workspace_premium'
           }}
           darkMode={darkMode}
           animDelay="0.35s"

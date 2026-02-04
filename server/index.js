@@ -6,6 +6,7 @@ const Stripe = require('stripe');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Redis = require('ioredis');
+const { SignJWT, jwtVerify } = require('jose');
 
 const app = express();
 const port = process.env.PORT || 4242;
@@ -13,6 +14,14 @@ const stripeKey = process.env.STRIPE_SECRET_KEY;
 const geminiKey = process.env.GEMINI_API_KEY;
 const isProduction = process.env.NODE_ENV === 'production';
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+
+// ============================================
+// JWT Configuration for Premium Sessions
+// ============================================
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'dev-secret-change-in-production-min-32-chars!'
+);
+const PREMIUM_DURATION_HOURS = parseInt(process.env.PREMIUM_DURATION_HOURS) || 2;
 
 // Initialize Gemini AI
 const genAI = geminiKey ? new GoogleGenerativeAI(geminiKey) : null;
@@ -485,8 +494,47 @@ const AI_MODELS = [
   'gemma-3-27b-it',                   // Fallback 4: Gemma 30 RPM, 14.4K RPD
 ];
 
+// ============================================
+// AI Input Sanitization (Prompt Injection Protection)
+// ============================================
+function sanitizePetData(petData) {
+  const MAX_FIELD_LENGTH = 100;
+  const MAX_TRAITS_LENGTH = 300;
+  // Patterns that could be used for prompt injection
+  const SUSPICIOUS_PATTERNS = /(\bignore\b|\bforget\b|\bpretend\b|\bact as\b|\bsystem\b|\bprompt\b|\binstructions?\b|\bdisregard\b|\boverride\b|\byou are\b|\bnew role\b)/gi;
+  
+  const sanitize = (str, maxLen) => {
+    if (!str) return '';
+    return String(str)
+      .slice(0, maxLen)
+      .replace(SUSPICIOUS_PATTERNS, '')
+      .replace(/[<>{}\\]/g, '') // Remove potentially dangerous characters
+      .replace(/\n+/g, ' ')     // Replace newlines with spaces
+      .trim();
+  };
+  
+  return {
+    petName: sanitize(petData.petName, MAX_FIELD_LENGTH),
+    petType: sanitize(petData.petType, 50),
+    breed: sanitize(petData.breed, MAX_FIELD_LENGTH),
+    age: sanitize(petData.age, 10),
+    gender: ['m', 'f'].includes(petData.gender) ? petData.gender : '',
+    weight: sanitize(petData.weight, 10),
+    traits: sanitize(petData.traits, MAX_TRAITS_LENGTH),
+    neutered: Boolean(petData.neutered),
+    vaccinated: Boolean(petData.vaccinated),
+  };
+}
+
+// Tone instructions for different writing styles
+const TONE_INSTRUCTIONS = {
+  formal: 'Schreibe in einem professionellen, sachlichen Ton.',
+  humorous: 'Schreibe mit leichtem Humor und Charme, aber bleibe professionell.',
+  cute: 'Schreibe in einem liebevollen, herzlichen Ton.',
+};
+
 // Strict prompt template - ONLY generates pet descriptions
-function buildPetPrompt(petData, lang) {
+function buildPetPrompt(petData, lang, tone = 'formal') {
   const langInstructions = {
     de: {
       lang: 'Antworte auf Deutsch.',
@@ -515,6 +563,7 @@ function buildPetPrompt(petData, lang) {
   };
   
   const instructions = langInstructions[lang] || langInstructions.de;
+  const toneInstruction = TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.formal;
   
   // Calculate target length based on available data
   const minChars = 420;
@@ -523,6 +572,7 @@ function buildPetPrompt(petData, lang) {
   return `Du bist ein erfahrener Texter, der Mietbewerbungen mit Haustieren in der Schweiz schreibt.
 
 KONTEXT: ${instructions.context}
+TON: ${toneInstruction}
 WICHTIG: Du schreibst NICHT, um das Tier zu verkaufen! Du schreibst, um den MIETER als verantwortungsvollen Tierhalter zu präsentieren.
 
 STRENGE REGELN:
@@ -553,6 +603,13 @@ BEISPIEL-STRUKTUR (anpassen, nicht kopieren):
 4. Verhalten mit Nachbarn/Besuchern
 5. Verantwortungsvolle Haltung durch den Besitzer
 
+WICHTIG: Jede Generierung muss EINZIGARTIG sein! Verwende unterschiedliche:
+- Satzanfänge und Formulierungen
+- Reihenfolge der Informationen
+- Beschreibende Adjektive und Verben
+- Struktur und Absätze
+Variation-Seed: ${Date.now()}-${Math.random().toString(36).substring(2, 8)}
+
 Schreibe jetzt einen professionellen, ausführlichen Text (${minChars}-${maxChars} Zeichen):`;
 }
 
@@ -570,7 +627,9 @@ async function generateWithFallback(prompt) {
         model: modelName,
         generationConfig: {
           maxOutputTokens: 350,  // Increased for longer descriptions (420-470 chars)
-          temperature: 0.75,    // Slightly more creative
+          temperature: 0.9,     // Higher for unique outputs on each generation
+          topP: 0.95,           // More diverse word choices
+          topK: 40,             // Consider more token options
         },
         safetySettings: [
           { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
@@ -635,10 +694,18 @@ app.post('/generate-pet-description', async (req, res) => {
                    req.socket.remoteAddress || 
                    'unknown';
   
-  const { petData, lang = 'de', premiumToken } = req.body || {};
+  const { petData: rawPetData, lang = 'de', premiumToken, tone = 'formal' } = req.body || {};
   
-  if (!petData || !petData.petName) {
+  if (!rawPetData || !rawPetData.petName) {
     return res.status(400).json({ error: 'Pet data required' });
+  }
+  
+  // SECURITY: Sanitize all input data before processing
+  const petData = sanitizePetData(rawPetData);
+  
+  // Validate sanitized data still has required fields
+  if (!petData.petName) {
+    return res.status(400).json({ error: 'Invalid pet name after sanitization' });
   }
   
   const rateCheck = await checkAIRateLimit(clientIP, premiumToken);
@@ -664,12 +731,10 @@ app.post('/generate-pet-description', async (req, res) => {
     });
   }
   
-  if (!petData || !petData.petName) {
-    return res.status(400).json({ error: 'Pet data required' });
-  }
-  
   try {
-    const prompt = buildPetPrompt(petData, lang);
+    // Sanitize tone to prevent injection
+    const safeTone = ['formal', 'humorous', 'cute'].includes(tone) ? tone : 'formal';
+    const prompt = buildPetPrompt(petData, lang, safeTone);
     
     // Use fallback system to try multiple models
     const { text: rawText, model: usedModel } = await generateWithFallback(prompt);
@@ -766,6 +831,100 @@ app.get('/ai-rate-limit', async (req, res) => {
 });
 
 // ============================================
+// Magic Rewrite - Premium Feature
+// Improves user-written text with AI
+// ============================================
+app.post('/improve-text', async (req, res) => {
+  const { text, tone = 'formal', premiumToken, deviceId } = req.body || {};
+  
+  // Require premium token for this endpoint
+  if (!premiumToken || !deviceId) {
+    return res.status(401).json({ error: 'Premium token required', code: 'NO_TOKEN' });
+  }
+  
+  // Verify premium token
+  const verification = await verifyPremiumToken(premiumToken, deviceId);
+  if (!verification.valid) {
+    return res.status(401).json({ 
+      error: verification.error === 'expired' ? 'Premium session expired' : 
+             verification.error === 'device_mismatch' ? 'Token bound to different device' : 
+             'Invalid premium token',
+      code: verification.error?.toUpperCase() || 'INVALID'
+    });
+  }
+  
+  if (!text || text.trim().length < 20) {
+    return res.status(400).json({ error: 'Text too short (minimum 20 characters)' });
+  }
+  
+  if (!genAI) {
+    return res.status(503).json({ error: 'AI service not configured' });
+  }
+  
+  try {
+    const safeTone = ['formal', 'humorous', 'cute'].includes(tone) ? tone : 'formal';
+    const toneInstruction = TONE_INSTRUCTIONS[safeTone] || TONE_INSTRUCTIONS.formal;
+    
+    // Sanitize input text
+    const sanitizedText = text
+      .slice(0, 1000)
+      .replace(/[<>{}]/g, '')
+      .trim();
+    
+    const prompt = `Du bist ein erfahrener Texter für Schweizer Mietbewerbungen mit Haustieren.
+
+AUFGABE: Verbessere den folgenden Text professionell.
+TON: ${toneInstruction}
+
+REGELN:
+1. Behalte alle wichtigen Informationen bei
+2. Verbessere Grammatik und Stil
+3. Mache den Text professioneller und überzeugender
+4. Maximal 470 Zeichen (inklusive Leerzeichen)
+5. Keine neuen Informationen hinzufügen
+6. Vermeide Marketing-Sprache ("perfekt", "ideal", "beste Wahl")
+
+ORIGINALTEXT:
+"${sanitizedText}"
+
+Verbesserter Text:`;
+
+    const { text: improvedText, model } = await generateWithFallback(prompt);
+    
+    // Clean up the response
+    let finalText = improvedText
+      .replace(/^["']|["']$/g, '') // Remove surrounding quotes
+      .trim();
+    
+    if (finalText.length > AI_MAX_CHARS) {
+      const cutText = finalText.substring(0, AI_MAX_CHARS);
+      const lastSentenceEnd = Math.max(
+        cutText.lastIndexOf('.'),
+        cutText.lastIndexOf('!'),
+        cutText.lastIndexOf('?')
+      );
+      finalText = lastSentenceEnd > AI_MAX_CHARS * 0.6 
+        ? cutText.substring(0, lastSentenceEnd + 1) 
+        : cutText.substring(0, AI_MAX_CHARS - 3) + '...';
+    }
+    
+    if (!isProduction) {
+      console.log(`✅ Text improved using ${model} (${finalText.length} chars)`);
+    }
+    
+    res.json({ 
+      improvedText: finalText,
+      length: finalText.length,
+      model: !isProduction ? model : undefined
+    });
+    
+  } catch (err) {
+    console.error('Text improvement error:', err.message);
+    res.status(500).json({ error: 'Failed to improve text' });
+  }
+});
+
+// ============================================
 // Premium Purchase Restoration
 // ============================================
 // Generate a restore token for email after successful premium purchase
@@ -858,6 +1017,168 @@ app.post('/generate-restore-link', async (req, res) => {
     res.status(500).json({ error: 'Failed to generate restore link' });
   }
 });
+
+// ============================================
+// JWT Premium Session Management
+// ============================================
+
+/**
+ * Create a premium JWT token with device binding
+ * @param {string} sessionId - Stripe session ID
+ * @param {string} deviceId - Client device UUID
+ * @returns {Promise<string>} JWT token
+ */
+async function createPremiumToken(sessionId, deviceId) {
+  return new SignJWT({ 
+    sid: sessionId, 
+    did: deviceId,
+    type: 'premium'
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(`${PREMIUM_DURATION_HOURS}h`)
+    .sign(JWT_SECRET);
+}
+
+/**
+ * Verify premium JWT token and check device binding
+ * @param {string} token - JWT token
+ * @param {string} deviceId - Client device UUID
+ * @returns {Promise<{valid: boolean, payload?: object, error?: string, timeRemaining?: number}>}
+ */
+async function verifyPremiumToken(token, deviceId) {
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    
+    // Check device binding
+    if (payload.did !== deviceId) {
+      return { valid: false, error: 'device_mismatch' };
+    }
+    
+    // Calculate time remaining
+    const exp = payload.exp * 1000; // Convert to milliseconds
+    const timeRemaining = Math.max(0, exp - Date.now());
+    
+    return { valid: true, payload, timeRemaining };
+  } catch (err) {
+    if (err.code === 'ERR_JWT_EXPIRED') {
+      return { valid: false, error: 'expired' };
+    }
+    return { valid: false, error: 'invalid' };
+  }
+}
+
+// POST /activate-premium - Called after successful Stripe payment to get JWT
+// Accepts either sessionId (Checkout Session) or paymentIntentId (Payment Intent)
+app.post('/activate-premium', async (req, res) => {
+  const { sessionId, paymentIntentId, deviceId } = req.body || {};
+  
+  const paymentId = sessionId || paymentIntentId;
+  
+  if (!paymentId || !deviceId) {
+    return res.status(400).json({ error: 'Payment ID and Device ID required' });
+  }
+  
+  if (!stripeKey) {
+    return res.status(400).json({ error: 'Stripe not configured' });
+  }
+  
+  try {
+    let paymentVerified = false;
+    let verifiedId = paymentId;
+    
+    // Try to verify as Checkout Session first (starts with cs_)
+    if (paymentId.startsWith('cs_')) {
+      const session = await stripe.checkout.sessions.retrieve(paymentId);
+      paymentVerified = session.payment_status === 'paid';
+      verifiedId = paymentId;
+    } 
+    // Otherwise try as Payment Intent (starts with pi_)
+    else if (paymentId.startsWith('pi_')) {
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentId);
+      paymentVerified = paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing';
+      verifiedId = paymentId;
+    }
+    // Fallback: try both
+    else {
+      try {
+        const session = await stripe.checkout.sessions.retrieve(paymentId);
+        paymentVerified = session.payment_status === 'paid';
+      } catch {
+        try {
+          const paymentIntent = await stripe.paymentIntents.retrieve(paymentId);
+          paymentVerified = paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing';
+        } catch {
+          paymentVerified = false;
+        }
+      }
+    }
+    
+    if (!paymentVerified) {
+      return res.status(400).json({ error: 'Payment not completed' });
+    }
+    
+    // Create JWT token with device binding
+    const token = await createPremiumToken(verifiedId, deviceId);
+    const expiresIn = PREMIUM_DURATION_HOURS * 3600; // seconds
+    
+    if (!isProduction) {
+      console.log(`✅ Premium activated for device ${deviceId.substring(0, 8)}... (${PREMIUM_DURATION_HOURS}h)`);
+    }
+    
+    res.json({ 
+      token, 
+      expiresIn,
+      expiresAt: Date.now() + expiresIn * 1000
+    });
+    
+  } catch (err) {
+    console.error('Premium activation error:', err.message);
+    res.status(500).json({ error: 'Failed to activate premium' });
+  }
+});
+
+// POST /verify-premium - Verify token for premium actions
+app.post('/verify-premium', async (req, res) => {
+  const { token, deviceId } = req.body || {};
+  
+  if (!token || !deviceId) {
+    return res.status(400).json({ valid: false, error: 'Token and Device ID required' });
+  }
+  
+  const result = await verifyPremiumToken(token, deviceId);
+  
+  if (!isProduction && !result.valid) {
+    console.log(`❌ Premium verification failed: ${result.error}`);
+  }
+  
+  res.json(result);
+});
+
+// Middleware to check premium token (for protected endpoints)
+const requirePremium = async (req, res, next) => {
+  const token = req.headers['x-premium-token'];
+  const deviceId = req.headers['x-device-id'];
+  
+  if (!token || !deviceId) {
+    return res.status(401).json({ error: 'Premium token required', code: 'NO_TOKEN' });
+  }
+  
+  const result = await verifyPremiumToken(token, deviceId);
+  
+  if (!result.valid) {
+    return res.status(401).json({ 
+      error: result.error === 'expired' ? 'Premium session expired' : 
+             result.error === 'device_mismatch' ? 'Token bound to different device' : 
+             'Invalid premium token',
+      code: result.error?.toUpperCase() || 'INVALID'
+    });
+  }
+  
+  req.premium = result.payload;
+  req.premiumTimeRemaining = result.timeRemaining;
+  next();
+};
 
 // ============================================
 // Error handling middleware

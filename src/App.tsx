@@ -16,7 +16,9 @@ import DonateModal from './components/DonateModal';
 import PaymentModal from './components/PaymentModal';
 import LegalPages from './components/LegalPages';
 import ErrorBoundary from './components/ErrorBoundary';
-import CookieBanner from './components/CookieBanner';
+import CookieBanner, { COOKIE_CONSENT_KEY, isCookieConsentGiven } from './components/CookieBanner';
+import TemplateBuilder from './components/TemplateBuilder';
+import DocumentEditor from './components/DocumentEditor';
 
 // Import step components
 import {
@@ -75,8 +77,17 @@ export default function App() {
   const butterVisible = useScrollVisibility(120);
   const { errors: validationErrors, isValid: canProceed } = useFormValidation(data, step);
   
-  // Premium state management
-  const { isPremium, activatePremium, isTemplateAccessible, getTemplateInfo, premiumPrice } = usePremium();
+  // Premium state management with JWT sessions
+  const { 
+    isPremium, 
+    activatePremium, 
+    isTemplateAccessible, 
+    getTemplateInfo, 
+    premiumPrice,
+    timeRemaining: premiumTimeRemaining,
+    deviceId,
+    premiumToken
+  } = usePremium();
   const { canGenerate: canGenerateAI, incrementGeneration, remainingGenerations } = useAIGenerations(isPremium);
 
   // Dark mode state — persist in localStorage so it survives refresh
@@ -95,6 +106,23 @@ export default function App() {
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentSessionId, setPaymentSessionId] = useState<string | null>(null);
   const [navigationVisible, setNavigationVisible] = useState(true); // Control navigation visibility for Step5Photo
+  
+  // Cookie consent state - required for Stripe/payment operations
+  const [cookieConsent, setCookieConsent] = useState<'accepted' | 'declined' | null>(() => {
+    try {
+      const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+      return consent as 'accepted' | 'declined' | null;
+    } catch {
+      return null;
+    }
+  });
+  const [forceCookieBanner, setForceCookieBanner] = useState(false);
+  
+  // Handler for cookie consent change - reset force flag
+  const handleCookieConsentChange = (consent: 'accepted' | 'declined') => {
+    setCookieConsent(consent);
+    setForceCookieBanner(false); // Hide banner after choice
+  };
 
   // Apply dark mode class to document and persist theme
   useEffect(() => {
@@ -129,9 +157,17 @@ export default function App() {
         sessionStorage.removeItem('pending_premium_session');
       }
       
-      // Activate premium
-      activatePremium(pendingSession || sessionId || 'direct');
-      showToast(t?.premium?.purchaseSuccess || '🎉 Premium freigeschaltet! Viel Spaß mit allen Templates.', 'success');
+      // Activate premium with JWT token (async)
+      const sessionToActivate = pendingSession || sessionId;
+      if (sessionToActivate) {
+        activatePremium(sessionToActivate).then((success) => {
+          if (success) {
+            showToast(t?.premium?.purchaseSuccess || '🎉 Premium freigeschaltet! 2 Stunden Zugang.', 'success');
+          } else {
+            showToast(t?.premium?.activationError || 'Premium konnte nicht aktiviert werden.', 'error');
+          }
+        });
+      }
       
       // Go to preview step to download the PDF
       goToStep(5);
@@ -477,7 +513,158 @@ export default function App() {
     }
   };
 
+  // Generate PDF blob for a specific template (used for ZIP download)
+  const generatePdfBlob = async (templateType: string): Promise<Blob> => {
+    let pdfData = { ...data };
+    if (data.photo && typeof data.photo === 'string') {
+      try {
+        let photoUrl = data.photo;
+        if (data.photo.startsWith('blob:')) {
+          photoUrl = await blobUrlToDataUrl(data.photo);
+        }
+        if (photoUrl.startsWith('data:image/webp')) {
+          photoUrl = await toJpegDataUrl(photoUrl);
+        }
+        pdfData = { ...data, photo: photoUrl };
+      } catch {
+        pdfData = { ...data, photo: null };
+      }
+    }
+    
+    const pdfT = {
+      doc: {
+        title: t?.doc?.title ?? 'Pet CV',
+        subtitle: t?.doc?.subtitle ?? 'Application document',
+        date: t?.doc?.date ?? 'Date',
+        sectionOwner: t?.doc?.sectionOwner ?? 'Owner',
+        sectionPet: t?.doc?.sectionPet ?? 'Pet',
+        sectionAbout: t?.doc?.sectionAbout ?? 'About',
+        sectionLegal: t?.doc?.sectionLegal ?? 'Insurance & Legal',
+        sectionBehavior: t?.doc?.sectionBehavior ?? 'Behavior',
+        sectionReference: t?.doc?.sectionReference ?? 'References',
+        petPhoto: t?.doc?.petPhoto ?? t?.ui?.petPhotoAlt ?? 'Photo',
+        sign: t?.doc?.sign ?? 'Signature',
+        footer: t?.doc?.footer ?? 'Dokument generiert via Pet-Bewerbung.ch',
+      },
+      labels: {
+        petName: t?.labels?.petName ?? 'Name',
+        breed: t?.labels?.breed ?? 'Breed',
+        gender: t?.labels?.gender ?? 'Gender',
+        age: t?.labels?.age ?? 'Age',
+        weight: t?.labels?.weight ?? 'Weight',
+        chipId: t?.labels?.chipId ?? 'Chip ID',
+        insurance: t?.labels?.insurance ?? 'Insurance',
+        vet: t?.labels?.vet ?? 'Vet',
+        neutered: t?.labels?.neutered ?? 'Neutered',
+        vaccination: t?.labels?.vaccination ?? 'Vaccinated',
+        registration: t?.labels?.registration ?? 'Registered',
+        noiseLevel: t?.labels?.noiseLevel ?? 'Noise',
+        behaviorTitle: t?.labels?.behaviorTitle ?? 'Behavior',
+        activeHours: t?.labels?.activeHours ?? 'Active hours',
+        behaviorWithChildren: t?.labels?.behaviorWithChildren ?? 'With children',
+        behaviorWithPets: t?.labels?.behaviorWithPets ?? 'With pets',
+        behaviorGood: t?.labels?.behaviorGood ?? 'Good',
+        behaviorNeutral: t?.labels?.behaviorNeutral ?? 'Neutral',
+        behaviorAvoid: t?.labels?.behaviorAvoid ?? 'Avoid',
+        noiseLow: t?.labels?.noiseLow ?? 'Low',
+        noiseMedium: t?.labels?.noiseMedium ?? 'Medium',
+        noiseHigh: t?.labels?.noiseHigh ?? 'High',
+        low: t?.labels?.low ?? 'Low',
+        medium: t?.labels?.medium ?? 'Medium',
+        high: t?.labels?.high ?? 'High',
+        aloneTime: t?.labels?.aloneTime ?? 'Alone',
+        yes: t?.labels?.yes ?? 'Yes',
+        no: t?.labels?.no ?? 'No',
+        years: t?.labels?.years ?? 'years',
+        kg: t?.labels?.kg ?? 'kg',
+        m: t?.labels?.m ?? 'M',
+        f: t?.labels?.f ?? 'F',
+        previousLandlord: t?.labels?.previousLandlord ?? 'Previous landlord',
+        previousDuration: t?.labels?.previousDuration ?? 'Duration',
+        emergencyContact: t?.labels?.emergencyContact ?? 'Emergency',
+        emergencyContactRelation: t?.labels?.emergencyContactRelation ?? 'Relation',
+        referenceTitle: t?.labels?.referenceTitle ?? 'References',
+        medicalConditions: t?.labels?.medicalConditions ?? 'Medizinische Angaben',
+        secondaryEmergencyContact: t?.labels?.secondaryEmergencyContact ?? 'Zweiter Kontakt',
+      },
+      step2Emergency: {
+        displayMedical: t?.step2Emergency?.displayMedical ?? 'Medizinische Angaben',
+        secondaryContact: t?.step2Emergency?.secondaryContact ?? 'Zweiter Kontakt',
+      },
+      ui: { noDescription: t?.ui?.noDescription ?? '—' },
+    };
+    
+    const logoUrl = await fetchLogoAsDataUrl();
+    const qrContent = getQrContent(pdfData);
+    const qrUrl = qrContent ? await generateQrDataUrl(qrContent, { size: 400, margin: 2 }) : null;
+    
+    const [{ pdf }, { default: SwissDocumentPdf }] = await Promise.all([
+      import('@react-pdf/renderer'),
+      import('./components/SwissDocumentPdf'),
+    ]);
+    
+    return await pdf(
+      <SwissDocumentPdf data={pdfData} t={pdfT} templateType={templateType} logoUrl={logoUrl} qrUrl={qrUrl} />
+    ).toBlob();
+  };
+
+  // Download all templates as ZIP (Premium feature)
+  const handleDownloadAllTemplates = async () => {
+    if (!isPremium) {
+      showToast(t?.premium?.zipRequiresPremium || 'ZIP-Download nur für Premium', 'error');
+      return;
+    }
+    
+    showToast(t?.premium?.generatingZip || 'Generiere alle Vorlagen...', 'info');
+    
+    try {
+      const JSZip = (await import('jszip')).default;
+      const zip = new JSZip();
+      const petName = data.name || 'Pet-CV';
+      
+      // Generate PDF for each template
+      for (const template of TEMPLATE_OPTIONS) {
+        try {
+          const blob = await generatePdfBlob(template.id);
+          zip.file(`${petName}-${template.id}.pdf`, blob);
+        } catch (err) {
+          if (import.meta.env.DEV) {
+            console.error(`Failed to generate ${template.id}:`, err);
+          }
+        }
+      }
+      
+      // Generate ZIP
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(zipBlob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${petName}-alle-vorlagen.zip`;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      showToast(t?.premium?.zipDownloaded || 'ZIP mit allen Vorlagen heruntergeladen!', 'success');
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        console.error('ZIP generation error:', err);
+      }
+      showToast(t?.premium?.zipError || 'Fehler beim Erstellen des ZIP-Archivs', 'error');
+    }
+  };
+
   const handleDonateMethod = async (method: string) => {
+    // Check cookie consent before loading Stripe
+    if (cookieConsent !== 'accepted') {
+      // Show cookie banner again so user can accept
+      setForceCookieBanner(true);
+      showToast(t?.legal?.cookieRequiredForPayment || 'Bitte akzeptieren Sie Cookies für Zahlungen', 'info');
+      return;
+    }
+    
     const parsed = parseFloat(donationAmount || '5');
     const amount = Math.max(1, Math.round(parsed));
     const cents = amount * 100;
@@ -552,52 +739,57 @@ export default function App() {
     setSelectedTemplate(templateId);
   };
 
+  // Premium payment modal state
+  const [premiumPaymentOpen, setPremiumPaymentOpen] = useState(false);
+  
+  // Template builder modal state (Premium feature)
+  const [builderOpen, setBuilderOpen] = useState(false);
+  
+  // Handle opening the template builder / visual editor
+  const handleOpenBuilder = () => {
+    if (!isPremium) {
+      // For non-premium users, show toast and offer to buy premium
+      showToast(t?.premium?.builderRequiresPremium ?? 'Visual Editor benötigt Premium', 'info');
+      handleBuyPremium(); // Open payment modal
+      return;
+    }
+    // Switch to custom template when opening builder
+    setSelectedTemplate('custom');
+    setBuilderOpen(true);
+  };
+  
+  // Handle applying builder changes
+  const handleApplyBuilder = () => {
+    setBuilderOpen(false);
+    showToast(t?.builder?.applied ?? 'Änderungen angewendet!', 'success');
+  };
+  
   // Handle premium purchase - opens payment modal with fixed price
-  const handleBuyPremium = async () => {
-    try {
-      const res = await fetch(API_ENDPOINTS.createCheckoutSession, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          amount: PREMIUM_PRICE_CENTS, 
-          currency: 'chf', 
-          successUrl: `${window.location.origin}${window.location.pathname}?premium_success=true`, 
-          cancelUrl: window.location.href, 
-          payment_method: 'card',
-          metadata: { type: 'premium_purchase' }
-        }),
-      });
-      
-      if (!res.ok) {
-        const errorText = await res.text();
-        let errorMessage = `Server error (${res.status})`;
-        try {
-          const errorJson = JSON.parse(errorText);
-          errorMessage = errorJson.error || errorJson.details || errorMessage;
-        } catch {
-          errorMessage = errorText.substring(0, 100) || errorMessage;
-        }
-        showToast(errorMessage || 'Failed to create checkout session', 'error');
-        return;
-      }
-      
-      const json = await res.json();
-      if (json.url) {
-        // Store session ID for verification after return
-        try {
-          sessionStorage.setItem('pending_premium_session', json.sessionId);
-        } catch {
-          // ignore
-        }
-        window.location.href = json.url;
-      } else {
-        showToast(json.error || 'Failed to create checkout session', 'error');
-      }
-    } catch (err: any) {
-      if (import.meta.env.DEV) {
-        console.error('Premium purchase error:', err);
-      }
-      showToast('Payment error: ' + (err.message || err), 'error');
+  const handleBuyPremium = () => {
+    // Check cookie consent before loading Stripe
+    if (cookieConsent !== 'accepted') {
+      // Show cookie banner again so user can accept
+      setForceCookieBanner(true);
+      showToast(t?.legal?.cookieRequiredForPayment || 'Bitte akzeptieren Sie Cookies für Zahlungen', 'info');
+      return;
+    }
+    
+    // Open the payment modal with premium price
+    setPremiumPaymentOpen(true);
+  };
+  
+  // Handle premium payment success (from modal)
+  const handlePremiumPaymentSuccess = async (paymentId: string) => {
+    setPremiumPaymentOpen(false);
+    
+    // Activate premium with JWT token
+    const success = await activatePremium(paymentId);
+    
+    if (success) {
+      showToast(t?.premium?.purchaseSuccess || '🎉 Premium freigeschaltet! 2 Stunden Zugang.', 'success');
+    } else {
+      // Even if JWT activation fails, treat as success since payment went through
+      showToast(t?.premium?.purchaseSuccess || '🎉 Premium freigeschaltet!', 'success');
     }
   };
 
@@ -661,6 +853,15 @@ export default function App() {
             isPremium={isPremium}
             canGenerateAI={canGenerateAI}
             remainingGenerations={remainingGenerations}
+            premiumToken={premiumToken}
+            deviceId={deviceId}
+            onMagicRewrite={(status: string, error?: string) => {
+              if (status === 'success') {
+                showToast(t?.premium?.rewriteSuccess || 'Text verbessert!', 'success');
+              } else if (error) {
+                showToast(error, 'error');
+              }
+            }}
           />
         );
       case 4:
@@ -697,6 +898,10 @@ export default function App() {
             onDownloadPDF={handleDownloadPDF}
             onBuyPremium={handleBuyPremium}
             premiumPrice={premiumPrice}
+            onDownloadAllTemplates={handleDownloadAllTemplates}
+            onSelectFreeTemplate={() => setSelectedTemplate('classic')}
+            updateData={updateData}
+            onOpenBuilder={handleOpenBuilder}
           />
         );
       default:
@@ -754,6 +959,9 @@ export default function App() {
         onLangChange={(v: string) => updateData('lang', v)}
         onLogoClick={() => goToStep(0)}
         t={t}
+        isPremium={isPremium}
+        premiumTimeRemaining={premiumTimeRemaining}
+        onPremiumExpired={() => showToast(t?.premium?.sessionExpired || 'Premium-Sitzung abgelaufen', 'info')}
       />
 
       <main className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 5 ? 'pt-24 md:pt-28' : ''}`}>
@@ -791,6 +999,40 @@ export default function App() {
         }}
         onFailure={(msg: string) => showToast(`${t.ui?.error || 'Payment failed'}: ${msg}`, 'error')}
       />
+      
+      {/* Premium Payment Modal - fixed 10 CHF price */}
+      <PaymentModal
+        open={premiumPaymentOpen}
+        onClose={() => setPremiumPaymentOpen(false)}
+        amount={String(premiumPrice)}
+        lang={data.lang}
+        t={{
+          ...t,
+          paymentCheckout: {
+            ...t?.paymentCheckout,
+            secureCheckout: t?.premium?.securePayment || 'Sichere Zahlung',
+            completeDonation: t?.premium?.completePurchase || 'Premium freischalten',
+            youreDonating: t?.premium?.yourePayingFor || 'Premium-Zugang für 2 Stunden:',
+            toSupport: ''
+          }
+        }}
+        darkMode={darkMode}
+        onSuccess={handlePremiumPaymentSuccess}
+        onFailure={(msg: string) => showToast(`${t.ui?.error || 'Payment failed'}: ${msg}`, 'error')}
+      />
+      
+      {/* Visual Document Editor - Premium feature */}
+      {builderOpen && (
+        <DocumentEditor
+          data={data}
+          updateData={updateData}
+          t={t}
+          darkMode={darkMode}
+          selectedTemplate={selectedTemplate}
+          onClose={() => setBuilderOpen(false)}
+          onApply={handleApplyBuilder}
+        />
+      )}
 
       {/* Preview Modal */}
       {previewOpen && (
@@ -840,7 +1082,7 @@ export default function App() {
 
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
 
-      <CookieBanner t={t} onOpenPrivacy={() => setLegalPage('privacy')} />
+      <CookieBanner t={t} onOpenPrivacy={() => setLegalPage('privacy')} onConsentChange={handleCookieConsentChange} forceShow={forceCookieBanner} />
     </div>
   );
 

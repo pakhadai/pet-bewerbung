@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "cun in Pet CV.",
     heroSub: "In servetsch divertent per surprender voss patrun e s'extrar da la concurrenza. Creei in dossier professiunal per voss animal cun tut las infurmaziuns impurtantas – quai pudess augmentar vossas chanzas dad obtegnair in affit cun voss amit a quatter peis.",
     cta: "Crear Pet CV",
-    trust: "100% gratuit • Senza registraziun",
+    trust: "Cumenzar gratuit • Senza registraziun",
     features: [
       { title: "S'extrar", desc: "Surprender ils patruns cun in Pet CV unic e professiunal." },
       { title: "Infurmaziuns cumplettas", desc: "Preschentar tut ils detagls impurtants davart voss animal in in'egliada." },
@@ -65,6 +65,8 @@ export default {
     petPhotoAlt: "Maletg dal animal",
     noImage: "Nagin maletg",
     noDescription: "Nagina descripziun disponibla",
+    clickToEnlarge: "Cliccar per engrondisschar",
+    clickToShrink: "Cliccar per pitschen",
     owner: "Possessur",
     about: "Davart",
     details: "Detagls",
@@ -271,21 +273,25 @@ export default {
     donate: "Sustegn"
   },
   hero: {
-    badge: "100% Gratuit & Nagina Registraziun",
-    title: "Creatur CV per Animals Gratuit",
+    badge: "Cumenzar gratuit • Nagina registraziun",
+    title: "Creatur CV per Animals",
     privacyTitle: "Scut da Protecziun da Datas",
     privacyDesc: "Vossas datas na vegnan mai memorisadas. Tut succeda en voss navigatur.",
-    subtitle: "Crei in curriculum professional per voss ami cun pail en minutas. Simpel, svelt e cumplettamain privat.",
+    subtitle: "4 pass simpels per voss dossier pet professional",
     problemTitle: "Tschertgar appartament cun animal?",
     problemDesc: "En Svizra il martgà da logements è fitg cumpetitiv. Blers proprietaris èn sceptics vers animals.",
     solutionTitle: "Vossa soluziun: il Dossier Pet",
     solutionDesc: "In CV professional mussa responsabilitad, documentescha l'assiguraziun e ta distinguescha d'auters candidats. Augmentai vossas schanzas da chattar l'appartament da voss sogns.",
-    cta: "Cumenzar segir",
-    transparencyTitle: "Gist & Segir",
-    transparencyText: "Quest servetsch è senza reclama e na memorisescha naginas datas sin servers. Nagin pretsch fix – utilisai gratis. Sche il resultat Vus gugent, sustegnain nus cun in contribuziun gista.",
+    cta: "Crear ussa",
+    transparencyTitle: "Gratuit vs Premium",
+    transparencyText: "Il model Classic è gratuit. Premium deblochescha l'Editur Visual, texts IA e tut ils designs (10 CHF / 2 uras).",
     transparencyBadge1: "Datas localas",
     transparencyBadge2: "Senza reclama",
-    transparencyBadge3: "Pajar sco che Vus vulais"
+    transparencyBadge3: "Premium: 10 CHF",
+    freeTitle: "Gratuit",
+    freeFeatures: ["Model Classic", "Input manual", "Download PDF"],
+    premiumTitle: "Premium (2 uras)",
+    premiumFeatures: ["Editur Visual", "Tut ils 4 models pro", "Generaziun IA", "ZIP cun tut ils designs"]
   },
   step1Details: {
     ownerSection: "Infurmaziuns proprietari",
@@ -316,21 +322,22 @@ export default {
   },
   stepsNew: {
     step1: {
-      title: "Details",
-      subtitle: "Infurmaziuns da proprietari & animal"
+      title: "Endatar datas",
+      subtitle: "Proprietari e animal"
     },
     step2: {
-      title: "Infurmaziuns d'urgenza",
-      subtitle: "Veterinar & contacts"
+      title: "Descripziun",
+      subtitle: "Caracter e text IA"
     },
     step3: {
-      title: "Descripziun da l'animal",
-      subtitle: "Caracter & IA"
+      title: "Foto e design",
+      subtitle: "Chargiar e model",
+      badge: "IA"
     },
     step4: {
-      title: "Chargiar & tscherner",
-      subtitle: "Foto & model",
-      badge: "Local"
+      title: "Editur e export",
+      subtitle: "Persunalisar e PDF",
+      badge: "Premium"
     },
     step5: {
       title: "Prevista",
@@ -350,18 +357,74 @@ export default {
     faq: "FAQ",
     faqComingSoon: "FAQ — en curt disponibel."
   },
+  premium: {
+    title: 'Premium',
+    price: '10 CHF',
+    badge: 'PREMIUM',
+    freeBadge: 'GRATUIT',
+    features: ['Tut ils models', 'IA illimitada', 'Senza filigrana', 'Download ZIP'],
+    buyPremium: 'Cumprar Premium',
+    useFreeTemplate: 'Utilisar model gratuit',
+    premiumTemplate: 'Model Premium',
+    freeTemplate: 'Model Gratuit',
+    unlockAll: 'Debloccar tut',
+    unlockAllDesc: 'Survegnir access cumplettà per 2 uras',
+    sessionInfo: 'Access 2 uras',
+    sessionExpired: 'Sessiun expirà',
+    sessionActive: 'Premium activ',
+    sessionRemaining: 'Temp restant',
+    sessionEnded: 'Vossa sessiun Premium è terminada. Cumprà danovamain per cuntinuar.',
+    previewWatermark: 'PREVISTA',
+    downloadAll: 'Telechargiar tut ils models sco ZIP',
+    generatingZip: 'Generaziun da tut ils models...',
+    zipDownloaded: 'ZIP cun tut ils models telechargia!',
+    zipError: 'Errur tar la creaziun dal ZIP',
+    zipRequiresPremium: 'Download ZIP be per Premium',
+    openBuilder: 'Avrir constructor',
+    builderRequiresPremium: 'Il constructor da models pretenda Premium'
+  },
+  builder: {
+    title: 'Constructor da models',
+    subtitle: 'Adattai Voss document',
+    colorScheme: 'Schema da colurs',
+    primaryColor: 'Colur d\'accent',
+    secondaryColor: 'Colur da fund',
+    sectionOrder: 'Successiun da las secziuns',
+    dragHint: 'Srenai las secziuns per reordinar',
+    required: 'Obligatori',
+    style: 'Stil',
+    styles: {
+      classic: 'Classic',
+      modern: 'Modern',
+      minimal: 'Minimalistic'
+    },
+    sections: {
+      photo: 'Foto',
+      owner: 'Info possessur',
+      details: 'Detagls animal',
+      behavior: 'Cumportament',
+      description: 'Descripziun',
+      legal: 'Legal',
+      reference: 'Referenzas'
+    },
+    reset: 'Restituir',
+    apply: 'Applitgar',
+    applied: 'Midadas applitgadas!'
+  },
   faq: {
     title: "Dumondas frequentas",
     searchPlaceholder: "Tschertgar rispostas...",
     noResults: "Nagins resultats per",
-    categories: { all: "Tut", general: "General", privacy: "Protecziun da datas", payment: "Custs & Gistadad", tips: "Cussegls per tschertgar" },
+    categories: { all: "Tut", general: "General", privacy: "Protecziun da datas", payment: "Custs & Premium", tips: "Cussegls per tschertgar" },
     items: [
       { id: "q1", category: "general", q: "Garantescha quest dossier in'acceptaziun?", a: "Na, nagina garantia. Ma in dossier professiunal mussa al patrun che Vus prendais responsabilitad (assicuranza, educaziun). En Svizra tschernan patruns savens il candidat cun il pli pitschen risc." },
       { id: "q2", category: "privacy", q: "Nua vegnan memorisadas mias datas?", a: "Da nagin lieu sin noss servers. Nus duvrain tecnologia 'Local-First'. Tut las datas vegnan elaboradas be en la memoria temporara da Voss navigatur." },
-      { id: "q3", category: "payment", q: "È il servetsch propi gratuit?", a: "Gea. Nus crein en il principi 'Fair-Pay'. Vus pudais utilisar l'instrument senza restricziuns. Sche il resultat gida da chattar in appartament, apprezain nus in contribuziun gista." },
-      { id: "q4", category: "privacy", q: "Vegnan mias datas duvradas per l'instrucziun da l'IA?", a: "Na. Nus tramettan be datas anonimisadas davart l'animal. Las datas persunalas dal possessur na bandunan mai Voss apparat." },
-      { id: "q5", category: "tips", q: "Tge assicuranzas èn impurtantas en Svizra?", a: "Per possessurs da chauns è ina assicuranza da responsabilitad privata cun cuvertura per donns da locatar essenziala. Savens è er la prova da registraziun AMICUS pretendida." },
-      { id: "q6", category: "general", q: "Poss jau modifitgar il dossier pli tard?", a: "Fin che Vus na serrais betg il navigatur, restan las datas. Suenter serrar ston Vus crear in nov dossier." }
+      { id: "q3", category: "payment", q: "Quant costa il servetsch?", a: "Il model Classic è gratuit e cumplettamain funcziuanel. Per 10 CHF survegnis Vus 2 uras access Premium: tut ils 4 models professiunals, generaziun IA illimitada ed il Constructor da caracter. Ideal sche Vus preparais pliras candidaturas." },
+      { id: "q4", category: "payment", q: "Tge è inclus en Premium?", a: "Premium (10 CHF, 2 uras) includa: tut ils 4 designs da models (Classic, Modern, Compact, Swiss), generaziun IA illimitada, il Constructor da caracter cun sliders, Magic Rewrite per meglierar il text e download ZIP da tut ils models." },
+      { id: "q5", category: "payment", q: "Pertge be 2 uras?", a: "Nus na memorisain nagins contos d'utilisaders per motivs da protecziun da datas. 2 uras bastan per perfecziunar il dossier e telechargiar tut las versiuns. Vus pudais editar e telechargiar illimitadamain durant quest temp." },
+      { id: "q6", category: "privacy", q: "Vegnan mias datas duvradas per l'instrucziun da l'IA?", a: "Na. Nus tramettan be datas anonimisadas davart l'animal. Las datas persunalas dal possessur na bandunan mai Voss apparat." },
+      { id: "q7", category: "tips", q: "Tge assicuranzas èn impurtantas en Svizra?", a: "Per possessurs da chauns è ina assicuranza da responsabilitad privata cun cuvertura per donns da locatar essenziala. Savens è er la prova da registraziun AMICUS pretendida." },
+      { id: "q8", category: "general", q: "Poss jau modifitgar il dossier pli tard?", a: "Fin che Vus na serrais betg il navigatur, restan las datas. Cun Premium pudais Vus editar illimitadamain per 2 uras. Suenter serrar ston Vus crear in nov dossier." }
     ],
     footerHint: "Dumondas davart la tecnica u il pajament? support@pet-bewerbung.ch"
   }

@@ -202,6 +202,21 @@ const TEMPLATE_COLORS = {
   modern: { primary: '#334155', border: '#e2e8f0', muted: '#64748b', light: '#f1f5f9' },
   compact: { primary: '#334155', border: '#cbd5e1', muted: '#64748b', light: '#e2e8f0' },
   swiss: { primary: '#dc2626', border: '#dc2626', muted: '#64748b', light: '#fef2f2' },
+  // custom template - colors will be overridden from customDesign
+  custom: { primary: '#b39ddb', border: '#b39ddb', muted: '#64748b', light: '#f5f5f5' },
+};
+
+// Helper to get custom colors from data.customDesign
+const getCustomColors = (customDesign) => {
+  if (!customDesign) return TEMPLATE_COLORS.custom;
+  const primary = customDesign.primaryColor || '#b39ddb';
+  const secondary = customDesign.secondaryColor || '#f5f5f5';
+  return {
+    primary,
+    border: primary,
+    muted: '#64748b',
+    light: secondary
+  };
 };
 
 /**
@@ -219,7 +234,11 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
     data?.postal,
     data?.city
   );
-  const colors = TEMPLATE_COLORS[templateType] || TEMPLATE_COLORS.classic;
+  // For custom template, use customDesign colors from data
+  const isCustom = templateType === 'custom';
+  const colors = isCustom 
+    ? getCustomColors(data?.customDesign) 
+    : (TEMPLATE_COLORS[templateType] || TEMPLATE_COLORS.classic);
   const isSwiss = templateType === 'swiss';
   const isCompact = templateType === 'compact';
   const isModern = templateType === 'modern';
@@ -228,6 +247,7 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
     styles.page,
     isCompact && { padding: 32, fontSize: 9 },
     isSwiss && { borderTopWidth: 4, borderTopColor: '#dc2626' },
+    isCustom && { borderTopWidth: 4, borderTopColor: colors.primary },
   ];
   const headerStyle = [styles.header, { borderBottomColor: colors.primary }];
   const headingStyle = [

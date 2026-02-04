@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "con un Pet CV.",
     heroSub: "Un servizio divertente per sorprendere il tuo proprietario e distinguerti dalla concorrenza. Crea un dossier professionale per il tuo animale con tutte le informazioni importanti – potrebbe aumentare le tue possibilità di ottenere un affitto con il tuo amico a quattro zampe.",
     cta: "Crea Pet CV",
-    trust: "100% gratuito • Senza registrazione",
+    trust: "Inizia gratis • Senza registrazione",
     features: [
       { title: "Distinguiti", desc: "Sorprendi i proprietari con un Pet CV unico e professionale." },
       { title: "Informazioni complete", desc: "Presenta tutti i dettagli importanti sul tuo animale a colpo d'occhio." },
@@ -65,6 +65,8 @@ export default {
     petPhotoAlt: "Foto dell'animale",
     noImage: "Nessuna immagine",
     noDescription: "Nessuna descrizione disponibile",
+    clickToEnlarge: "Clicca per ingrandire",
+    clickToShrink: "Clicca per rimpicciolire",
     owner: "Proprietario",
     about: "Informazioni",
     details: "Dettagli",
@@ -271,21 +273,25 @@ export default {
     donate: "Sostieni"
   },
   hero: {
-    badge: "100% Gratuito & Nessuna Registrazione",
-    title: "Creatore CV per Animali Gratuito",
+    badge: "Inizio gratuito • Nessuna registrazione",
+    title: "Creatore CV per Animali",
     privacyTitle: "Scudo Privacy Dati",
     privacyDesc: "I tuoi dati non vengono mai memorizzati. Tutto avviene nel tuo browser.",
-    subtitle: "Crea un curriculum professionale per il tuo amico peloso in pochi minuti. Semplice, veloce e completamente privato.",
+    subtitle: "4 semplici passaggi per il tuo dossier pet professionale",
     problemTitle: "Cerchi appartamento con animale?",
     problemDesc: "In Svizzera il mercato degli affitti è molto competitivo. Molti proprietari sono scettici sugli animali.",
     solutionTitle: "La tua soluzione: il Dossier Pet",
     solutionDesc: "Un CV professionale dimostra responsabilità, attesta la copertura assicurativa e ti distingue dagli altri candidati. Aumenta le tue possibilità di ottenere l'appartamento dei tuoi sogni.",
-    cta: "Inizia in sicurezza",
-    transparencyTitle: "Equo & Sicuro",
-    transparencyText: "Questo servizio è senza pubblicità e non memorizza dati sui server. Nessun prezzo fisso – usalo gratis. Se il risultato ti piace, sostienici con un contributo equo.",
+    cta: "Crea ora",
+    transparencyTitle: "Gratis vs Premium",
+    transparencyText: "Il modello Classic è gratis. Premium sblocca l'Editor Visuale, testi IA e tutti i design (10 CHF / 2 ore).",
     transparencyBadge1: "Dati locali",
     transparencyBadge2: "Niente annunci",
-    transparencyBadge3: "Paga quanto vuoi"
+    transparencyBadge3: "Premium: 10 CHF",
+    freeTitle: "Gratis",
+    freeFeatures: ["Modello Classic", "Inserimento manuale", "Download PDF"],
+    premiumTitle: "Premium (2 ore)",
+    premiumFeatures: ["Editor Visuale", "Tutti i 4 modelli pro", "Generazione IA", "ZIP con tutti i design"]
   },
   step1Details: {
     ownerSection: "Informazioni proprietario",
@@ -316,21 +322,22 @@ export default {
   },
   stepsNew: {
     step1: {
-      title: "Details",
-      subtitle: "Info Proprietario & Animale"
+      title: "Inserisci dati",
+      subtitle: "Proprietario e animale"
     },
     step2: {
-      title: "Info emergenza",
-      subtitle: "Veterinario & Contatti"
+      title: "Descrizione",
+      subtitle: "Carattere e testo IA"
     },
     step3: {
-      title: "Descrizione animale",
-      subtitle: "Carattere & IA"
+      title: "Foto e design",
+      subtitle: "Carica e modello",
+      badge: "IA"
     },
     step4: {
-      title: "Carica & Seleziona",
-      subtitle: "Foto & Modello",
-      badge: "Locale"
+      title: "Editor ed export",
+      subtitle: "Personalizza e PDF",
+      badge: "Premium"
     },
     step5: {
       title: "Anteprima",
@@ -350,18 +357,74 @@ export default {
     faq: "FAQ",
     faqComingSoon: "FAQ — disponibile a breve."
   },
+  premium: {
+    title: 'Premium',
+    price: '10 CHF',
+    badge: 'PREMIUM',
+    freeBadge: 'GRATIS',
+    features: ['Tutti i modelli', 'IA illimitata', 'Senza filigrana', 'Download ZIP'],
+    buyPremium: 'Acquista Premium',
+    useFreeTemplate: 'Usa modello gratuito',
+    premiumTemplate: 'Modello Premium',
+    freeTemplate: 'Modello Gratuito',
+    unlockAll: 'Sblocca tutto',
+    unlockAllDesc: 'Ottieni accesso completo per 2 ore',
+    sessionInfo: 'Accesso 2 ore',
+    sessionExpired: 'Sessione scaduta',
+    sessionActive: 'Premium attivo',
+    sessionRemaining: 'Tempo rimanente',
+    sessionEnded: 'La tua sessione Premium è terminata. Acquista di nuovo per continuare.',
+    previewWatermark: 'ANTEPRIMA',
+    downloadAll: 'Scarica tutti i modelli come ZIP',
+    generatingZip: 'Generazione di tutti i modelli...',
+    zipDownloaded: 'ZIP con tutti i modelli scaricato!',
+    zipError: 'Errore nella creazione dello ZIP',
+    zipRequiresPremium: 'Download ZIP solo per Premium',
+    openBuilder: 'Apri costruttore',
+    builderRequiresPremium: 'Il costruttore di modelli richiede Premium'
+  },
+  builder: {
+    title: 'Costruttore di modelli',
+    subtitle: 'Personalizza il tuo documento',
+    colorScheme: 'Schema colori',
+    primaryColor: 'Colore di accento',
+    secondaryColor: 'Colore di sfondo',
+    sectionOrder: 'Ordine sezioni',
+    dragHint: 'Trascina le sezioni per riordinarle',
+    required: 'Obbligatorio',
+    style: 'Stile',
+    styles: {
+      classic: 'Classico',
+      modern: 'Moderno',
+      minimal: 'Minimalista'
+    },
+    sections: {
+      photo: 'Foto',
+      owner: 'Info proprietario',
+      details: 'Dettagli animale',
+      behavior: 'Comportamento',
+      description: 'Descrizione',
+      legal: 'Legale',
+      reference: 'Referenze'
+    },
+    reset: 'Ripristina',
+    apply: 'Applica',
+    applied: 'Modifiche applicate!'
+  },
   faq: {
     title: "Domande frequenti",
     searchPlaceholder: "Cerca risposte...",
     noResults: "Nessun risultato per",
-    categories: { all: "Tutti", general: "Generale", privacy: "Privacy & Sicurezza", payment: "Costi & Equità", tips: "Consigli per la ricerca" },
+    categories: { all: "Tutti", general: "Generale", privacy: "Privacy & Sicurezza", payment: "Costi & Premium", tips: "Consigli per la ricerca" },
     items: [
       { id: "q1", category: "general", q: "Questo dossier garantisce che otterrò l'appartamento?", a: "No, non c'è garanzia. Ma un dossier professionale mostra al proprietario che ti assumi le responsabilità (assicurazione, addestramento). In Svizzera i proprietari scelgono spesso il candidato a minor rischio – questo documento minimizza le preoccupazioni." },
       { id: "q2", category: "privacy", q: "Dove vengono memorizzati i miei dati?", a: "Da nessuna parte sui nostri server. Usiamo tecnologia 'Local-First'. Tutti i dati vengono elaborati solo nella memoria temporanea del browser. Una volta scaricato il PDF e chiusa la scheda, i dati spariscono." },
-      { id: "q3", category: "payment", q: "Il servizio è davvero gratuito?", a: "Sì. Crediamo nel principio 'Fair-Pay'. Puoi usare lo strumento senza restrizioni. Se il risultato ti aiuta a trovare un appartamento, apprezziamo un contributo equo." },
-      { id: "q4", category: "privacy", q: "I miei dati sono usati per l'addestramento IA?", a: "No. Inviamo solo dati anonimizzati sull'animale (razza, età) all'IA. I dati personali del proprietario non lasciano mai il tuo dispositivo." },
-      { id: "q5", category: "tips", q: "Quali assicurazioni sono importanti in Svizzera?", a: "Per i proprietari di cani è essenziale un'assicurazione di responsabilità civile privata con copertura per danni da affitto. Spesso è richiesta anche la prova di registrazione AMICUS." },
-      { id: "q6", category: "general", q: "Posso modificare il dossier in seguito?", a: "Finché non chiudi il browser, i dati restano. Dopo la chiusura devi creare un nuovo dossier, poiché non memorizziamo account utente." }
+      { id: "q3", category: "payment", q: "Quanto costa il servizio?", a: "Il modello Classic è gratuito e completamente funzionale. Per 10 CHF ottieni 2 ore di accesso Premium: tutti i 4 modelli professionali, generazione IA illimitata e il Costruttore di carattere. Ideale se prepari più candidature." },
+      { id: "q4", category: "payment", q: "Cosa include Premium?", a: "Premium (10 CHF, 2 ore) include: tutti i 4 design dei modelli (Classic, Modern, Compact, Swiss), generazione IA illimitata, il Costruttore di carattere con cursori, Magic Rewrite per migliorare il testo e download ZIP di tutti i modelli." },
+      { id: "q5", category: "payment", q: "Perché solo 2 ore?", a: "Non memorizziamo account utente per motivi di privacy. 2 ore sono sufficienti per perfezionare il dossier e scaricare tutte le versioni. Puoi modificare e scaricare senza limiti durante questo periodo." },
+      { id: "q6", category: "privacy", q: "I miei dati sono usati per l'addestramento IA?", a: "No. Inviamo solo dati anonimizzati sull'animale (razza, età) all'IA. I dati personali del proprietario non lasciano mai il tuo dispositivo." },
+      { id: "q7", category: "tips", q: "Quali assicurazioni sono importanti in Svizzera?", a: "Per i proprietari di cani è essenziale un'assicurazione di responsabilità civile privata con copertura per danni da affitto. Spesso è richiesta anche la prova di registrazione AMICUS." },
+      { id: "q8", category: "general", q: "Posso modificare il dossier in seguito?", a: "Finché non chiudi il browser, i dati restano. Con Premium puoi modificare senza limiti per 2 ore. Dopo la chiusura devi creare un nuovo dossier." }
     ],
     footerHint: "Domande su tecnica o pagamento? support@pet-bewerbung.ch"
   }

@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "with a Pet CV.",
     heroSub: "An entertaining service to surprise your landlord and stand out from the competition. Create a professional dossier for your pet with all important information – it might increase your chances of getting a rental with your furry friend.",
     cta: "Create Pet CV Now",
-    trust: "100% Free • No Registration",
+    trust: "Free Start • No Registration",
     features: [
       { title: "Stand Out", desc: "Surprise landlords with a unique, professional Pet CV." },
       { title: "Complete Information", desc: "Present all important details about your pet at a glance." },
@@ -65,6 +65,8 @@ export default {
     petPhotoAlt: "Pet photo",
     noImage: "No image",
     noDescription: "No description available",
+    clickToEnlarge: "Click to enlarge",
+    clickToShrink: "Click to shrink",
     owner: "Owner",
     about: "About",
     details: "Details",
@@ -218,6 +220,9 @@ export default {
     pawsome: "You're Pawsome!",
     supportFuels: "Your support fuels our mission",
     thankYouBanner: "THANK YOU!",
+    // Premium 2-hour access
+    premiumUnlocked: "Premium Unlocked!",
+    premiumAccessInfo: "You have 2 hours of full access to all features: AI text generation, all templates, character builder. Make the most of it!",
     generosityQuote: '"Your generosity helps us keep PetCV.io free and private for pet owners worldwide. From the whiskers of our cats to the wags of our dogs, we thank you!"',
     lifetimeBadge: "Lifetime Supporter Badge Earned",
     shareLove: "Share Love",
@@ -297,21 +302,26 @@ export default {
     donate: "Support"
   },
   hero: {
-    badge: "100% Free & No Signup",
-    title: "Free Pet CV Creator",
+    badge: "Free Start • No Signup",
+    title: "Pet CV Creator",
     privacyTitle: "Data Privacy Shield",
     privacyDesc: "Your data is never stored. Everything happens in your browser.",
-    subtitle: "Build a professional resume for your furry friend in minutes. Simple, fast, and completely private.",
+    subtitle: "4 simple steps to your professional pet dossier",
     problemTitle: "Looking for a flat with a pet?",
     problemDesc: "In Switzerland the rental market is highly competitive. Many landlords are skeptical about pets.",
     solutionTitle: "Your solution: The Pet Dossier",
     solutionDesc: "A professional CV shows responsibility, proves insurance coverage and sets you apart from other applicants. Increase your chances of getting your dream apartment.",
-    cta: "Start Securely",
-    transparencyTitle: "Fair & Secure",
-    transparencyText: "This service is ad-free and stores no data on servers. We skip a fixed price – use it for free. If you like the result, support us with a fair contribution.",
+    cta: "Create Now",
+    transparencyTitle: "Free vs Premium",
+    transparencyText: "Classic template is free. Premium unlocks Visual Editor, AI text and all designs (10 CHF / 2 hours).",
     transparencyBadge1: "Local Data",
     transparencyBadge2: "No Ads",
-    transparencyBadge3: "Pay What You Want"
+    transparencyBadge3: "Premium: 10 CHF",
+    // Free vs Premium comparison
+    freeTitle: "Free",
+    freeFeatures: ["Classic template", "Manual input", "PDF download"],
+    premiumTitle: "Premium (2 hours)",
+    premiumFeatures: ["Visual Editor", "All 4 pro templates", "AI text generation", "ZIP with all designs"]
   },
   step1Details: {
     ownerSection: "Owner Information",
@@ -342,21 +352,22 @@ export default {
   },
   stepsNew: {
     step1: {
-      title: "Details",
-      subtitle: "Owner & Pet Info"
+      title: "Enter Data",
+      subtitle: "Owner & Pet"
     },
     step2: {
-      title: "Emergency Info",
-      subtitle: "Vet & Contacts"
+      title: "Description",
+      subtitle: "Character & AI Text"
     },
     step3: {
-      title: "Pet Description",
-      subtitle: "Character & AI"
+      title: "Photo & Design",
+      subtitle: "Upload & Template",
+      badge: "AI"
     },
     step4: {
-      title: "Upload & Select",
-      subtitle: "Photo & Template",
-      badge: "Processing stays local"
+      title: "Editor & Export",
+      subtitle: "Customize & PDF",
+      badge: "Premium"
     },
     step5: {
       title: "Preview",
@@ -421,7 +432,91 @@ export default {
     restoreDesc: 'Enter the email you used for purchase',
     restoreSuccess: 'Premium successfully restored!',
     restoreError: 'Restore failed. Token invalid or expired.',
-    restoreLoading: 'Restoring...'
+    restoreLoading: 'Restoring...',
+    
+    // JWT Session (2-hour access)
+    sessionInfo: 'Premium access for 2 hours',
+    timeRemaining: 'Remaining',
+    sessionExpired: 'Premium session expired',
+    deviceMismatch: 'This token is bound to a different device',
+    activationError: 'Could not activate Premium',
+    
+    // Character Builder (Sliders)
+    characterBuilder: 'Premium: Character Builder',
+    toneLabel: 'Writing style',
+    sliders: {
+      energy: 'Energy',
+      energyLow: 'Relaxed',
+      energyHigh: 'Energetic',
+      noise: 'Noise level',
+      noiseLow: 'Quiet',
+      noiseHigh: 'Barks at doorbell',
+      sociability: 'Sociability',
+      sociabilityLow: 'Loner',
+      sociabilityHigh: 'Loves everyone'
+    },
+    tones: {
+      formal: 'Formal',
+      humorous: 'Humorous',
+      cute: 'Cute'
+    },
+    
+    // Magic Rewrite
+    magicRewrite: 'Improve text',
+    rewriting: 'Improving...',
+    rewriteSuccess: 'Text improved!',
+    
+    // ZIP Download
+    downloadAll: 'Download all templates as ZIP',
+    generatingZip: 'Generating all templates...',
+    zipDownloaded: 'ZIP with all templates downloaded!',
+    zipError: 'Error creating ZIP archive',
+    zipRequiresPremium: 'ZIP download only for Premium',
+    
+    // Template Builder / Visual Editor
+    openBuilder: 'Open Visual Editor',
+    builderRequiresPremium: 'Visual Editor requires Premium'
+  },
+  // Template Builder / Visual Editor
+  builder: {
+    title: 'Visual Editor',
+    subtitle: 'Design your document professionally',
+    colorScheme: 'Color Scheme',
+    primaryColor: 'Accent Color',
+    secondaryColor: 'Background Color',
+    sectionOrder: 'Sections',
+    dragHint: 'Drag sections to reorder',
+    required: 'Required',
+    style: 'Style',
+    styles: {
+      classic: 'Classic',
+      modern: 'Modern',
+      minimal: 'Minimal'
+    },
+    sections: {
+      photo: 'Photo',
+      owner: 'Owner Info',
+      details: 'Pet Details',
+      behavior: 'Behavior',
+      description: 'Description',
+      legal: 'Legal',
+      reference: 'References'
+    },
+    reset: 'Reset',
+    apply: 'Apply',
+    applied: 'Changes applied!',
+    tips: 'Tips',
+    tipSelect: 'Click on a section to select it',
+    tipDrag: 'Drag sections in the left panel to reorder',
+    tipHide: 'Hide optional sections',
+    tipColors: 'Use professional colors',
+    colorPreview: 'Color Preview',
+    colorPreviewDesc: 'This is how your colors will look in the document.',
+    hidden: 'Hidden'
+  },
+  // Legal/Cookie
+  legal: {
+    cookieRequiredForPayment: 'Please accept cookies for payments'
   },
   faq: {
     title: "Frequently Asked Questions",
@@ -431,16 +526,18 @@ export default {
       all: "All",
       general: "General",
       privacy: "Privacy & Security",
-      payment: "Cost & Fairness",
+      payment: "Cost & Premium",
       tips: "Tips for Finding Housing"
     },
     items: [
       { id: "q1", category: "general", q: "Does this Pet Dossier guarantee I get the apartment?", a: "No, there is no guarantee. But a professional dossier shows the landlord that you take responsibility (insurance, training). In Switzerland, landlords often choose the candidate who poses the least risk – this document minimizes concerns." },
       { id: "q2", category: "privacy", q: "Where are my data stored?", a: "Nowhere on our servers. We use 'Local-First' technology. All data (names, photos, addresses) is processed exclusively in your browser's temporary storage. Once you download the PDF and close the tab, the data is gone (unless you don't clear the browser cache)." },
-      { id: "q3", category: "payment", q: "Is the service really free?", a: "Yes. We believe in the 'Fair-Pay' principle. You can use the tool without restrictions. If the result helps you find an apartment, we appreciate a fair contribution to cover our server and development costs." },
-      { id: "q4", category: "privacy", q: "Are my data used for AI training?", a: "No. We only send anonymized pet data (breed, age, traits) to the AI to generate the text. Personal data of the owner (name, address) never leaves your device." },
-      { id: "q5", category: "tips", q: "Which insurances are important in Switzerland?", a: "For dog owners, private liability insurance (Privathaftpflicht) with coverage for tenant damage is essential. Proof of AMICUS registration is often also required. Our dossier highlights these points." },
-      { id: "q6", category: "general", q: "Can I edit the dossier later?", a: "As long as you don't close the browser or reload the page, your data remains. After closing, you must create a new dossier, as we don't store user accounts for privacy reasons." }
+      { id: "q3", category: "payment", q: "How much does the service cost?", a: "The Classic template is free and fully functional. For 10 CHF you get 2 hours of Premium access: all 4 professional templates, unlimited AI text generation, and the Character Constructor. Ideal if you're preparing multiple applications." },
+      { id: "q4", category: "payment", q: "What's included in Premium?", a: "Premium (10 CHF, 2 hours) includes: all 4 template designs (Classic, Modern, Compact, Swiss), unlimited AI text generation, the Character Constructor with sliders, Magic Rewrite for text improvement, and ZIP download of all templates at once." },
+      { id: "q5", category: "payment", q: "Why only 2 hours?", a: "We don't store user accounts for privacy reasons. 2 hours is enough to perfect your dossier and download all versions. You can edit and download unlimited times during this period." },
+      { id: "q6", category: "privacy", q: "Are my data used for AI training?", a: "No. We only send anonymized pet data (breed, age, traits) to the AI to generate the text. Personal data of the owner (name, address) never leaves your device." },
+      { id: "q7", category: "tips", q: "Which insurances are important in Switzerland?", a: "For dog owners, private liability insurance (Privathaftpflicht) with coverage for tenant damage is essential. Proof of AMICUS registration is often also required. Our dossier highlights these points." },
+      { id: "q8", category: "general", q: "Can I edit the dossier later?", a: "As long as you don't close the browser or reload the page, your data remains. With Premium, you can edit unlimited times for 2 hours. After closing, you must create a new dossier." }
     ],
     footerHint: "Questions about tech or payment? Email support@pet-bewerbung.ch"
   }
