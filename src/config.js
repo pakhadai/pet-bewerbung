@@ -19,7 +19,4 @@ export const API_ENDPOINTS = {
   generateRestoreLink: `${API_BASE}/generate-restore-link`,
 };
 
-// Legacy export
-export const STRIPE_API_URL = API_BASE;
-
 export default API_ENDPOINTS;

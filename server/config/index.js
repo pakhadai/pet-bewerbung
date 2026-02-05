@@ -5,7 +5,16 @@
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// JWT Configuration
+// JWT Configuration - CRITICAL: Must be set in production
+if (isProduction && !process.env.JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is required in production!');
+  process.exit(1);
+}
+if (isProduction && !process.env.STRIPE_WEBHOOK_SECRET) {
+  console.error('❌ CRITICAL: STRIPE_WEBHOOK_SECRET environment variable is required in production!');
+  process.exit(1);
+}
+
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'dev-secret-change-in-production-min-32-chars!'
 );

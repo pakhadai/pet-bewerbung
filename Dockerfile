@@ -2,7 +2,7 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 
 # ВАЖЛИВО: Вказуємо, що API буде доступне по шляху /api
