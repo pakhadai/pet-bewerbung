@@ -514,6 +514,39 @@ export default {
     colorPreviewDesc: 'This is how your colors will look in the document.',
     hidden: 'Hidden'
   },
+  // Visual Editor (new style editor translations)
+  editor: {
+    title: 'Customize Document',
+    subtitle: 'Colors, fonts & visibility',
+    palettes: 'Color Palettes',
+    colors: 'Custom Colors',
+    headerColor: 'Headers',
+    textColor: 'Text Color',
+    accentColor: 'Accent Color',
+    bgColor: 'Background',
+    typography: 'Typography',
+    headerFont: 'Headers',
+    bodyFont: 'Body Text',
+    headerStyle: 'Header Style',
+    bodyStyle: 'Text Style',
+    visibility: 'Visibility',
+    reset: 'Reset',
+    close: 'Close',
+    apply: 'Apply',
+    unsaved: 'Unsaved',
+    saved: 'Saved',
+    bold: 'Bold',
+    italic: 'Italic',
+    sections: {
+      photo: 'Photo',
+      owner: 'Owner Info',
+      details: 'Pet Details',
+      behavior: 'Behavior',
+      description: 'Description',
+      legal: 'Legal',
+      reference: 'References'
+    }
+  },
   // Legal/Cookie
   legal: {
     cookieRequiredForPayment: 'Please accept cookies for payments'

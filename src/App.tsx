@@ -932,6 +932,7 @@ export default function App() {
       onLogoClick={() => goToStep(0)}
       onDownloadPDF={handleDownloadPDF}
       onCreateAnother={() => goToStep(0)}
+      onPrev={() => goToStep(5)}
       donationAmount={donationAmount}
       setDonationAmount={setDonationAmount}
       donateOpen={donateOpen}

@@ -311,7 +311,9 @@ export default {
     downloadPdf: "Завантажити PDF",
     createAnother: "← Створити ще один",
     previousStep: "← Попередній крок",
-    finalReview: "Фінальний огляд →"
+    finalReview: "Фінальний огляд →",
+    backToPreview: "← Назад до перегляду",
+    backToTemplates: "← Змінити шаблон"
   },
   step2Emergency: {
     privacyText: "Приватно та безпечно: ваші контакти екстреної допомоги зберігаються лише локально в цій сесії.",
@@ -474,6 +476,39 @@ export default {
     colorPreview: 'Попередній перегляд кольорів',
     colorPreviewDesc: 'Так виглядатимуть ваші кольори в документі.',
     hidden: 'Приховано'
+  },
+  // Visual Editor (новий редактор стилів)
+  editor: {
+    title: 'Налаштувати документ',
+    subtitle: 'Кольори, шрифти та видимість',
+    palettes: 'Кольорові палітри',
+    colors: 'Власні кольори',
+    headerColor: 'Заголовки',
+    textColor: 'Колір тексту',
+    accentColor: 'Акцентний колір',
+    bgColor: 'Фон',
+    typography: 'Шрифти',
+    headerFont: 'Заголовки',
+    bodyFont: 'Основний текст',
+    headerStyle: 'Стиль заголовків',
+    bodyStyle: 'Стиль тексту',
+    visibility: 'Видимість',
+    reset: 'Скинути',
+    close: 'Закрити',
+    apply: 'Застосувати',
+    unsaved: 'Не збережено',
+    saved: 'Збережено',
+    bold: 'Жирний',
+    italic: 'Курсив',
+    sections: {
+      photo: 'Фото',
+      owner: 'Інформація власника',
+      details: 'Деталі тварини',
+      behavior: 'Поведінка',
+      description: 'Опис',
+      legal: 'Юридичне',
+      reference: 'Рекомендації'
+    }
   },
   // Legal/Cookie
   legal: {

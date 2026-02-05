@@ -43,15 +43,24 @@ const INITIAL_DATA = {
   behaviorWithChildren: '', // good, neutral, avoid
   behaviorWithPets: '', // good, neutral, avoid
   // Custom design settings (Premium feature - Visual Editor)
+  // Stored in browser localStorage, not in project
   customDesign: {
     isEdited: false,              // Flag set to true when user applies changes in editor
-    primaryColor: '#b39ddb',      // Accent color
-    secondaryColor: '#f5f5f5',    // Background color
-    fontFamily: 'Helvetica',      // Font choice
-    layoutOrder: ['photo', 'owner', 'details', 'behavior', 'description', 'legal', 'reference'], // Block order
-    hiddenSections: [],           // Sections to hide
-    borderStyle: 'solid',         // solid, dashed, none
-    accentStyle: 'modern'         // classic, modern, minimal
+    // Colors
+    primaryColor: '#4a148c',      // Header/title color (Midnight Purple default)
+    secondaryColor: '#f3e5f5',    // Accent/highlight color
+    backgroundColor: '#ffffff',   // Document background
+    textColor: '#1f2937',         // Body text color
+    // Fonts
+    headerFont: 'helvetica',      // Heading font family
+    bodyFont: 'helvetica',        // Body text font family
+    // Text styles
+    headerBold: true,             // Bold headers
+    headerItalic: false,          // Italic headers
+    bodyBold: false,              // Bold body text
+    bodyItalic: false,            // Italic body text
+    // Visibility
+    hiddenSections: []            // Sections to hide
   }
 };
 
@@ -65,7 +74,9 @@ const TEMPLATE_OPTIONS = [
   { id: 'classic', label: 'Classic', isPremium: false, price: 0 },
   { id: 'modern', label: 'Modern', isPremium: true, price: 10 },
   { id: 'compact', label: 'Compact', isPremium: true, price: 10 },
-  { id: 'swiss', label: 'Swiss', isPremium: true, price: 10 }
+  { id: 'swiss', label: 'Swiss', isPremium: true, price: 10 },
+  { id: 'professional', label: 'Professional', isPremium: true, price: 10 },
+  { id: 'emergency', label: 'Emergency', isPremium: true, price: 10 }
 ];
 
 // Section definitions for the Template Builder

@@ -205,13 +205,19 @@ const TEMPLATE_COLORS = {
   swiss: { primary: '#dc2626', border: '#dc2626', muted: '#64748b', light: '#fef2f2' },
 };
 
-// Default customDesign values for comparison
-const DEFAULT_COLORS = {
-  primaryColor: '#b39ddb',
-  secondaryColor: '#f5f5f5'
+// Default customDesign values (Midnight Purple theme)
+const DEFAULT_STYLE = {
+  primaryColor: '#4a148c',
+  secondaryColor: '#f3e5f5',
+  backgroundColor: '#ffffff',
+  textColor: '#1f2937',
+  headerBold: true,
+  headerItalic: false,
+  bodyBold: false,
+  bodyItalic: false,
 };
 
-// Default layout order
+// Default layout order (fixed - no drag & drop)
 const DEFAULT_LAYOUT_ORDER = ['photo', 'owner', 'details', 'behavior', 'description', 'legal', 'reference'];
 
 // Sidebar sections (left column)
@@ -219,25 +225,28 @@ const SIDEBAR_SECTION_IDS = ['photo', 'owner', 'behavior'];
 // Main sections (right column)
 const MAIN_SECTION_IDS = ['details', 'description', 'legal', 'reference'];
 
-// Check if customDesign has been modified (either via isEdited flag or by comparing values)
+// Check if customDesign has been modified (isEdited flag from Visual Editor)
 const hasCustomDesign = (customDesign) => {
   if (!customDesign) return false;
-  // isEdited flag is set when user applies changes in the Visual Editor
-  if (customDesign.isEdited) return true;
-  return customDesign.primaryColor !== DEFAULT_COLORS.primaryColor || 
-         customDesign.secondaryColor !== DEFAULT_COLORS.secondaryColor;
+  return customDesign.isEdited === true;
 };
 
-// Helper to get custom colors from data.customDesign
-const getCustomColors = (customDesign) => {
+// Helper to get custom style from data.customDesign
+const getCustomStyle = (customDesign) => {
   if (!customDesign) return null;
-  const primary = customDesign.primaryColor || DEFAULT_COLORS.primaryColor;
-  const secondary = customDesign.secondaryColor || DEFAULT_COLORS.secondaryColor;
   return {
-    primary,
-    border: primary,
+    // Colors
+    primary: customDesign.primaryColor || DEFAULT_STYLE.primaryColor,
+    border: customDesign.primaryColor || DEFAULT_STYLE.primaryColor,
     muted: '#64748b',
-    light: secondary
+    light: customDesign.secondaryColor || DEFAULT_STYLE.secondaryColor,
+    text: customDesign.textColor || DEFAULT_STYLE.textColor,
+    background: customDesign.backgroundColor || DEFAULT_STYLE.backgroundColor,
+    // Text styles
+    headerBold: customDesign.headerBold ?? DEFAULT_STYLE.headerBold,
+    headerItalic: customDesign.headerItalic ?? DEFAULT_STYLE.headerItalic,
+    bodyBold: customDesign.bodyBold ?? DEFAULT_STYLE.bodyBold,
+    bodyItalic: customDesign.bodyItalic ?? DEFAULT_STYLE.bodyItalic,
   };
 };
 
@@ -248,8 +257,11 @@ const getCustomColors = (customDesign) => {
  */
 const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, showWatermark = false }) => {
   const today = new Date().toLocaleDateString(data?.lang === 'de' ? 'de-CH' : data?.lang === 'fr' ? 'fr-CH' : 'en-GB');
-  const streetLine = formatAddress(data?.street, data?.houseNumber);
-  const cityLine = formatAddress(
+  
+  // formatAddress returns { streetLine, cityLine } - destructure correctly
+  const { streetLine, cityLine } = formatAddress(
+    data?.street,
+    data?.houseNumber,
     data?.postal,
     data?.city
   );
@@ -257,10 +269,20 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
   // Check if user has customized design (applies to any template)
   const customDesign = data?.customDesign || INITIAL_DATA.customDesign;
   const isCustomized = hasCustomDesign(customDesign);
-  const customColors = isCustomized ? getCustomColors(customDesign) : null;
+  const customStyle = isCustomized ? getCustomStyle(customDesign) : null;
   
-  // Use custom colors if available, otherwise use template default colors
-  const colors = customColors || (TEMPLATE_COLORS[templateType] || TEMPLATE_COLORS.classic);
+  // Use custom style if available, otherwise use template default colors
+  const colors = customStyle || (TEMPLATE_COLORS[templateType] || TEMPLATE_COLORS.classic);
+  
+  // Text color (custom or default)
+  const textColor = customStyle?.text || '#334155';
+  const backgroundColor = customStyle?.background || '#ffffff';
+  
+  // Font weights (react-pdf uses 'bold' or 'normal')
+  const headerFontWeight = customStyle?.headerBold ? 'bold' : 'normal';
+  const headerFontStyle = customStyle?.headerItalic ? 'italic' : 'normal';
+  const bodyFontWeight = customStyle?.bodyBold ? 'bold' : 'normal';
+  const bodyFontStyle = customStyle?.bodyItalic ? 'italic' : 'normal';
   const isSwiss = templateType === 'swiss';
   const isCompact = templateType === 'compact';
   const isModern = templateType === 'modern';
@@ -276,6 +298,7 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
 
   const pageStyle = [
     styles.page,
+    { backgroundColor: backgroundColor, color: textColor },
     isCompact && { padding: 32, fontSize: 9 },
     isSwiss && !isCustomized && { borderTopWidth: 4, borderTopColor: '#dc2626' },
     isCustomized && { borderTopWidth: 4, borderTopColor: colors.primary },
@@ -284,11 +307,26 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
   const headingStyle = [
     styles.sectionHeading,
     isModern && styles.sectionHeadingModern,
-    { borderBottomColor: isModern ? colors.border : colors.primary, color: colors.primary },
+    { 
+      borderBottomColor: isModern ? colors.border : colors.primary, 
+      color: colors.primary,
+      fontWeight: headerFontWeight,
+      fontStyle: headerFontStyle,
+    },
+  ];
+  const textStyle = [
+    styles.text,
+    { color: textColor, fontWeight: bodyFontWeight, fontStyle: bodyFontStyle },
   ];
   const footerStyle = [styles.footer, { borderTopColor: colors.primary }];
   const footerSignStyle = [styles.footerSign, isSwiss && { borderTopColor: '#f87171' }];
-  const boxStyle = [styles.box, { borderColor: colors.light, backgroundColor: isSwiss ? '#fef2f2' : '#f8fafc' }];
+  const boxStyle = [
+    styles.box, 
+    { 
+      borderColor: colors.light, 
+      backgroundColor: isCustomized ? colors.light : (isSwiss ? '#fef2f2' : '#f8fafc') 
+    }
+  ];
   // 3:4 portrait aspect (matches preview PetPhoto aspect-[3/4])
   const photoHeight = isCompact ? 220 : 240;
   const headerIconStyle = [

@@ -332,7 +332,9 @@ export default {
     downloadPdf: "PDF herunterladen",
     createAnother: "← Noch eines erstellen",
     previousStep: "← Vorheriger Schritt",
-    finalReview: "Abschlussprüfung →"
+    finalReview: "Abschlussprüfung →",
+    backToPreview: "← Zurück zur Vorschau",
+    backToTemplates: "← Vorlagen ändern"
   },
   step2Emergency: {
     privacyText: "Privat & sicher: Ihre Notfallkontakte werden nur lokal in dieser Browsersitzung gespeichert.",
@@ -508,6 +510,39 @@ export default {
     colorPreview: 'Farbvorschau',
     colorPreviewDesc: 'So werden Ihre Farben im Dokument aussehen.',
     hidden: 'Ausgeblendet'
+  },
+  // Visual Editor (new style editor translations)
+  editor: {
+    title: 'Dokument anpassen',
+    subtitle: 'Farben, Schriften & Sichtbarkeit',
+    palettes: 'Farbpaletten',
+    colors: 'Eigene Farben',
+    headerColor: 'Überschriften',
+    textColor: 'Textfarbe',
+    accentColor: 'Akzentfarbe',
+    bgColor: 'Hintergrund',
+    typography: 'Schriftarten',
+    headerFont: 'Überschriften',
+    bodyFont: 'Fließtext',
+    headerStyle: 'Überschriften-Stil',
+    bodyStyle: 'Text-Stil',
+    visibility: 'Sichtbarkeit',
+    reset: 'Zurücksetzen',
+    close: 'Schließen',
+    apply: 'Anwenden',
+    unsaved: 'Nicht gespeichert',
+    saved: 'Gespeichert',
+    bold: 'Fett',
+    italic: 'Kursiv',
+    sections: {
+      photo: 'Foto',
+      owner: 'Besitzer Info',
+      details: 'Tier Details',
+      behavior: 'Verhalten',
+      description: 'Beschreibung',
+      legal: 'Rechtliches',
+      reference: 'Referenzen'
+    }
   },
   // Legal/Cookie
   legal: {

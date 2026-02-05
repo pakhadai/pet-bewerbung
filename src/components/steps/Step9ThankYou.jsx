@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ChevronLeft, ArrowLeft } from 'lucide-react';
 import GlobalStyles from '../GlobalStyles';
 import Header from '../Header';
 import Footer from '../Footer';
@@ -15,6 +16,7 @@ const Step9ThankYou = React.memo(({
   onLogoClick,
   onDownloadPDF,
   onCreateAnother,
+  onPrev, // Back to preview
   donationAmount,
   setDonationAmount,
   donateOpen,
@@ -168,18 +170,35 @@ const Step9ThankYou = React.memo(({
             </div>
           )}
 
-          {/* Create another one – as in HTML */}
-          {onCreateAnother && (
-            <div className="mt-8">
-                <button
-                  type="button"
-                  onClick={onCreateAnother}
-                  className={`text-primary transition-colors font-display text-2xl ${darkMode ? 'hover:text-white' : 'hover:text-gray-900'}`}
-                >
+          {/* Navigation buttons */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            {/* Back to Preview */}
+            {onPrev && (
+              <button
+                type="button"
+                onClick={onPrev}
+                className={`flex items-center gap-2 px-6 py-3 text-lg font-bold font-display hand-drawn-button border-2 transition-all ${
+                  darkMode 
+                    ? 'border-gray-500 text-gray-300 hover:bg-gray-700' 
+                    : 'border-gray-400 text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <ArrowLeft size={20} />
+                {t?.nav?.backToPreview ?? 'Zurück zur Vorschau'}
+              </button>
+            )}
+            
+            {/* Create another one */}
+            {onCreateAnother && (
+              <button
+                type="button"
+                onClick={onCreateAnother}
+                className={`text-primary transition-colors font-display text-xl ${darkMode ? 'hover:text-white' : 'hover:text-gray-900'}`}
+              >
                 {t?.thankYou?.createAnother ?? t?.nav?.createAnother ?? 'Create another one'}
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </main>
 

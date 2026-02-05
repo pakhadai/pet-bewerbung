@@ -411,6 +411,39 @@ export default {
     apply: 'Appliquer',
     applied: 'Modifications appliquées!'
   },
+  // Visual Editor (nouvelles traductions de l'éditeur de style)
+  editor: {
+    title: 'Personnaliser le document',
+    subtitle: 'Couleurs, polices & visibilité',
+    palettes: 'Palettes de couleurs',
+    colors: 'Couleurs personnalisées',
+    headerColor: 'En-têtes',
+    textColor: 'Couleur du texte',
+    accentColor: 'Couleur d\'accent',
+    bgColor: 'Arrière-plan',
+    typography: 'Typographie',
+    headerFont: 'En-têtes',
+    bodyFont: 'Corps du texte',
+    headerStyle: 'Style des en-têtes',
+    bodyStyle: 'Style du texte',
+    visibility: 'Visibilité',
+    reset: 'Réinitialiser',
+    close: 'Fermer',
+    apply: 'Appliquer',
+    unsaved: 'Non enregistré',
+    saved: 'Enregistré',
+    bold: 'Gras',
+    italic: 'Italique',
+    sections: {
+      photo: 'Photo',
+      owner: 'Info propriétaire',
+      details: 'Détails animal',
+      behavior: 'Comportement',
+      description: 'Description',
+      legal: 'Juridique',
+      reference: 'Références'
+    }
+  },
   faq: {
     title: "Questions fréquentes",
     searchPlaceholder: "Rechercher des réponses...",

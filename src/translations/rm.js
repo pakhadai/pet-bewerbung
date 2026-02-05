@@ -411,6 +411,39 @@ export default {
     apply: 'Applitgar',
     applied: 'Midadas applitgadas!'
   },
+  // Visual Editor (novas translaziuns da l'editur da stil)
+  editor: {
+    title: 'Adattar document',
+    subtitle: 'Colurs, scrituras & visibilitad',
+    palettes: 'Palettas da colurs',
+    colors: 'Colurs persunals',
+    headerColor: 'Titels',
+    textColor: 'Colur dal text',
+    accentColor: 'Colur d\'accent',
+    bgColor: 'Fund',
+    typography: 'Tipografia',
+    headerFont: 'Titels',
+    bodyFont: 'Text principal',
+    headerStyle: 'Stil dals titels',
+    bodyStyle: 'Stil dal text',
+    visibility: 'Visibilitad',
+    reset: 'Restituir',
+    close: 'Serrar',
+    apply: 'Applitgar',
+    unsaved: 'Betg memorisà',
+    saved: 'Memorisà',
+    bold: 'Grass',
+    italic: 'Cursiv',
+    sections: {
+      photo: 'Foto',
+      owner: 'Info possessur',
+      details: 'Detagls animal',
+      behavior: 'Cumportament',
+      description: 'Descripziun',
+      legal: 'Legal',
+      reference: 'Referenzas'
+    }
+  },
   faq: {
     title: "Dumondas frequentas",
     searchPlaceholder: "Tschertgar rispostas...",

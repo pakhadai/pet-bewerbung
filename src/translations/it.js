@@ -411,6 +411,39 @@ export default {
     apply: 'Applica',
     applied: 'Modifiche applicate!'
   },
+  // Visual Editor (nuove traduzioni dell'editor di stile)
+  editor: {
+    title: 'Personalizza documento',
+    subtitle: 'Colori, font e visibilità',
+    palettes: 'Palette colori',
+    colors: 'Colori personalizzati',
+    headerColor: 'Intestazioni',
+    textColor: 'Colore testo',
+    accentColor: 'Colore accento',
+    bgColor: 'Sfondo',
+    typography: 'Tipografia',
+    headerFont: 'Intestazioni',
+    bodyFont: 'Corpo del testo',
+    headerStyle: 'Stile intestazioni',
+    bodyStyle: 'Stile testo',
+    visibility: 'Visibilità',
+    reset: 'Ripristina',
+    close: 'Chiudi',
+    apply: 'Applica',
+    unsaved: 'Non salvato',
+    saved: 'Salvato',
+    bold: 'Grassetto',
+    italic: 'Corsivo',
+    sections: {
+      photo: 'Foto',
+      owner: 'Info proprietario',
+      details: 'Dettagli animale',
+      behavior: 'Comportamento',
+      description: 'Descrizione',
+      legal: 'Legale',
+      reference: 'Referenze'
+    }
+  },
   faq: {
     title: "Domande frequenti",
     searchPlaceholder: "Cerca risposte...",
