@@ -202,15 +202,26 @@ const TEMPLATE_COLORS = {
   modern: { primary: '#334155', border: '#e2e8f0', muted: '#64748b', light: '#f1f5f9' },
   compact: { primary: '#334155', border: '#cbd5e1', muted: '#64748b', light: '#e2e8f0' },
   swiss: { primary: '#dc2626', border: '#dc2626', muted: '#64748b', light: '#fef2f2' },
-  // custom template - colors will be overridden from customDesign
-  custom: { primary: '#b39ddb', border: '#b39ddb', muted: '#64748b', light: '#f5f5f5' },
+};
+
+// Default customDesign values for comparison
+const DEFAULT_COLORS = {
+  primaryColor: '#b39ddb',
+  secondaryColor: '#f5f5f5'
+};
+
+// Check if customDesign has been modified from defaults
+const hasCustomDesign = (customDesign) => {
+  if (!customDesign) return false;
+  return customDesign.primaryColor !== DEFAULT_COLORS.primaryColor || 
+         customDesign.secondaryColor !== DEFAULT_COLORS.secondaryColor;
 };
 
 // Helper to get custom colors from data.customDesign
 const getCustomColors = (customDesign) => {
-  if (!customDesign) return TEMPLATE_COLORS.custom;
-  const primary = customDesign.primaryColor || '#b39ddb';
-  const secondary = customDesign.secondaryColor || '#f5f5f5';
+  if (!customDesign) return null;
+  const primary = customDesign.primaryColor || DEFAULT_COLORS.primaryColor;
+  const secondary = customDesign.secondaryColor || DEFAULT_COLORS.secondaryColor;
   return {
     primary,
     border: primary,
@@ -234,11 +245,12 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
     data?.postal,
     data?.city
   );
-  // For custom template, use customDesign colors from data
-  const isCustom = templateType === 'custom';
-  const colors = isCustom 
-    ? getCustomColors(data?.customDesign) 
-    : (TEMPLATE_COLORS[templateType] || TEMPLATE_COLORS.classic);
+  // Check if user has customized colors (applies to any template)
+  const isCustomized = hasCustomDesign(data?.customDesign);
+  const customColors = isCustomized ? getCustomColors(data?.customDesign) : null;
+  
+  // Use custom colors if available, otherwise use template default colors
+  const colors = customColors || (TEMPLATE_COLORS[templateType] || TEMPLATE_COLORS.classic);
   const isSwiss = templateType === 'swiss';
   const isCompact = templateType === 'compact';
   const isModern = templateType === 'modern';
@@ -246,8 +258,8 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
   const pageStyle = [
     styles.page,
     isCompact && { padding: 32, fontSize: 9 },
-    isSwiss && { borderTopWidth: 4, borderTopColor: '#dc2626' },
-    isCustom && { borderTopWidth: 4, borderTopColor: colors.primary },
+    isSwiss && !isCustomized && { borderTopWidth: 4, borderTopColor: '#dc2626' },
+    isCustomized && { borderTopWidth: 4, borderTopColor: colors.primary },
   ];
   const headerStyle = [styles.header, { borderBottomColor: colors.primary }];
   const headingStyle = [

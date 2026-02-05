@@ -746,6 +746,7 @@ export default function App() {
   const [builderOpen, setBuilderOpen] = useState(false);
   
   // Handle opening the template builder / visual editor
+  // Premium users can customize ANY template (not just a separate "custom" template)
   const handleOpenBuilder = () => {
     if (!isPremium) {
       // For non-premium users, show toast and offer to buy premium
@@ -753,8 +754,7 @@ export default function App() {
       handleBuyPremium(); // Open payment modal
       return;
     }
-    // Switch to custom template when opening builder
-    setSelectedTemplate('custom');
+    // Open builder for the currently selected template
     setBuilderOpen(true);
   };
   

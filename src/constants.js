@@ -58,14 +58,13 @@ const MAX_DESCRIPTION_LENGTH = 470; // limit for generated / manual descriptions
 
 // Simplified Swiss-style templates for 2026
 // 4 professional templates: Classic (FREE), Modern, Compact, Swiss (Premium)
-// Plus Custom template for Premium users with Section Builder
-// Premium templates require one-time payment of 10 CHF
+// Premium users can customize ANY template with the Visual Editor (colors, section order)
+// Premium access: 10 CHF for 2 hours
 const TEMPLATE_OPTIONS = [
   { id: 'classic', label: 'Classic', isPremium: false, price: 0 },
   { id: 'modern', label: 'Modern', isPremium: true, price: 10 },
   { id: 'compact', label: 'Compact', isPremium: true, price: 10 },
-  { id: 'swiss', label: 'Swiss', isPremium: true, price: 10 },
-  { id: 'custom', label: 'Custom', isPremium: true, price: 10, isBuilder: true }
+  { id: 'swiss', label: 'Swiss', isPremium: true, price: 10 }
 ];
 
 // Section definitions for the Template Builder
