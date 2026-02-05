@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from '@react-pdf/renderer';
 import { formatAddress, getGenderLabel, formatAge, formatWeight, withFallback, sanitizeForPdf } from '../utils/documentHelpers';
+import { INITIAL_DATA } from '../constants';
 
 // Use system fonts so no network required (Helvetica is built-in in react-pdf)
 const styles = StyleSheet.create({
@@ -210,6 +211,14 @@ const DEFAULT_COLORS = {
   secondaryColor: '#f5f5f5'
 };
 
+// Default layout order
+const DEFAULT_LAYOUT_ORDER = ['photo', 'owner', 'details', 'behavior', 'description', 'legal', 'reference'];
+
+// Sidebar sections (left column)
+const SIDEBAR_SECTION_IDS = ['photo', 'owner', 'behavior'];
+// Main sections (right column)
+const MAIN_SECTION_IDS = ['details', 'description', 'legal', 'reference'];
+
 // Check if customDesign has been modified (either via isEdited flag or by comparing values)
 const hasCustomDesign = (customDesign) => {
   if (!customDesign) return false;
@@ -234,28 +243,36 @@ const getCustomColors = (customDesign) => {
 
 /**
  * Vector PDF document (react-pdf). Selectable text, small file size, print quality.
- * Supports classic, modern, compact, swiss templates.
+ * Supports classic, modern, compact, swiss templates with dynamic section ordering.
  * @param {boolean} showWatermark - If true, shows PREVIEW watermark on document (for unpaid premium)
  */
 const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, showWatermark = false }) => {
-  const today = new Date().toLocaleDateString(
-    data?.lang === 'de' ? 'de-CH' : data?.lang === 'fr' ? 'fr-CH' : data?.lang === 'it' ? 'it-CH' : 'en-GB'
-  );
-  const { streetLine, cityLine } = formatAddress(
-    data?.street,
-    data?.houseNumber,
+  const today = new Date().toLocaleDateString(data?.lang === 'de' ? 'de-CH' : data?.lang === 'fr' ? 'fr-CH' : 'en-GB');
+  const streetLine = formatAddress(data?.street, data?.houseNumber);
+  const cityLine = formatAddress(
     data?.postal,
     data?.city
   );
-  // Check if user has customized colors (applies to any template)
-  const isCustomized = hasCustomDesign(data?.customDesign);
-  const customColors = isCustomized ? getCustomColors(data?.customDesign) : null;
+  
+  // Check if user has customized design (applies to any template)
+  const customDesign = data?.customDesign || INITIAL_DATA.customDesign;
+  const isCustomized = hasCustomDesign(customDesign);
+  const customColors = isCustomized ? getCustomColors(customDesign) : null;
   
   // Use custom colors if available, otherwise use template default colors
   const colors = customColors || (TEMPLATE_COLORS[templateType] || TEMPLATE_COLORS.classic);
   const isSwiss = templateType === 'swiss';
   const isCompact = templateType === 'compact';
   const isModern = templateType === 'modern';
+
+  // Get layout order and hidden sections from customDesign
+  const layoutOrder = customDesign?.layoutOrder || DEFAULT_LAYOUT_ORDER;
+  const hiddenSections = customDesign?.hiddenSections || [];
+  
+  // Filter visible sections and split into sidebar/main
+  const visibleSections = layoutOrder.filter(id => !hiddenSections.includes(id));
+  const sidebarSections = visibleSections.filter(id => SIDEBAR_SECTION_IDS.includes(id));
+  const mainSections = visibleSections.filter(id => MAIN_SECTION_IDS.includes(id));
 
   const pageStyle = [
     styles.page,
@@ -280,6 +297,240 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
     isSwiss && { borderWidth: 1, borderColor: colors.primary },
   ];
 
+  // ============= SECTION RENDER FUNCTIONS =============
+  
+  // Photo Section
+  const renderPhotoSection = () => (
+    <View style={[styles.sectionBlock, styles.photoContainer, { height: photoHeight }]} key="photo">
+      {data?.photo && typeof data.photo === 'string' && data.photo.startsWith('data:') ? (
+        <Image src={data.photo} style={[styles.photoImg, { height: photoHeight }]} />
+      ) : (
+        <View style={[styles.photoPlaceholder, { height: photoHeight }]}>
+          <Text style={styles.label}>{t?.doc?.petPhoto ?? 'Photo'}</Text>
+        </View>
+      )}
+    </View>
+  );
+
+  // Owner Section
+  const renderOwnerSection = () => (
+    <View style={styles.sectionBlock} key="owner">
+      <Text style={headingStyle}>{t?.doc?.sectionOwner ?? 'Owner'}</Text>
+      <View>
+        <Text style={styles.textBold}>{withFallback(data?.ownerName)}</Text>
+        <Text style={styles.text}>{streetLine}</Text>
+        <Text style={styles.text}>{cityLine}</Text>
+        <Text style={[styles.text, { marginTop: 6 }]}>{withFallback(data?.email)}</Text>
+        <Text style={styles.text}>{withFallback(data?.phone)}</Text>
+      </View>
+      {/* QR Code with label - compact size for A4 readability */}
+      {qrUrl && (
+        <View style={{ 
+          marginTop: 10, 
+          flexDirection: 'row', 
+          alignItems: 'center',
+          gap: 8,
+          paddingTop: 8,
+          borderTopWidth: 1,
+          borderTopColor: colors.light,
+          borderTopStyle: 'dashed'
+        }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 7, color: colors.muted, textTransform: 'uppercase', letterSpacing: 0.3 }}>
+              {t?.doc?.qrLabel ?? 'Kontakt scannen'}
+            </Text>
+            <Text style={{ fontSize: 6, color: colors.muted, marginTop: 2 }}>
+              {t?.doc?.qrHint ?? 'vCard hinzufügen'}
+            </Text>
+          </View>
+          <Image src={qrUrl} style={{ width: 75, height: 75 }} />
+        </View>
+      )}
+    </View>
+  );
+
+  // Behavior Section
+  const renderBehaviorSection = () => (
+    <View style={styles.sectionBlock} key="behavior">
+      <Text style={headingStyle}>{t?.labels?.behaviorTitle ?? t?.doc?.sectionBehavior ?? 'Behavior'}</Text>
+      <View style={styles.gridRow}>
+        <View style={styles.gridHalf}>
+          <Text style={styles.label}>{t?.labels?.noiseLevel ?? 'Noise'}</Text>
+          <Text style={styles.text}>
+            {data?.noiseLevel === 'low' ? (t?.labels?.noiseLow ?? t?.labels?.low ?? 'Low') : data?.noiseLevel === 'high' ? (t?.labels?.noiseHigh ?? t?.labels?.high ?? 'High') : (t?.labels?.noiseMedium ?? t?.labels?.medium ?? 'Medium')}
+          </Text>
+        </View>
+        <View style={styles.gridHalf}>
+          <Text style={styles.label}>{t?.labels?.aloneTime ?? 'Alone'}</Text>
+          <Text style={styles.text}>{data?.aloneTime ? `${data.aloneTime}h` : '—'}</Text>
+        </View>
+      </View>
+      {data?.activeHours ? (
+        <View style={[styles.gridRow, { marginTop: 4 }]}>
+          <View style={styles.gridHalf}>
+            <Text style={styles.label}>{t?.labels?.activeHours ?? 'Active hours'}</Text>
+            <Text style={styles.text}>{data.activeHours}</Text>
+          </View>
+        </View>
+      ) : null}
+      {(data?.behaviorWithChildren || data?.behaviorWithPets) && (
+        <View style={[styles.gridRow, { marginTop: 4 }]}>
+          {data?.behaviorWithChildren && (
+            <View style={styles.gridHalf}>
+              <Text style={styles.label}>{t?.labels?.behaviorWithChildren ?? 'With children'}</Text>
+              <Text style={styles.text}>
+                {data.behaviorWithChildren === 'good' ? (t?.labels?.behaviorGood ?? 'Good') : data.behaviorWithChildren === 'neutral' ? (t?.labels?.behaviorNeutral ?? 'Neutral') : (t?.labels?.behaviorAvoid ?? 'Avoid')}
+              </Text>
+            </View>
+          )}
+          {data?.behaviorWithPets && (
+            <View style={styles.gridHalf}>
+              <Text style={styles.label}>{t?.labels?.behaviorWithPets ?? 'With pets'}</Text>
+              <Text style={styles.text}>
+                {data.behaviorWithPets === 'good' ? (t?.labels?.behaviorGood ?? 'Good') : data.behaviorWithPets === 'neutral' ? (t?.labels?.behaviorNeutral ?? 'Neutral') : (t?.labels?.behaviorAvoid ?? 'Avoid')}
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
+    </View>
+  );
+
+  // Pet Details Section
+  const renderDetailsSection = () => (
+    <View style={styles.sectionBlock} key="details">
+      <Text style={headingStyle}>{t?.doc?.sectionPet ?? 'Pet'}</Text>
+      <View style={styles.gridRow}>
+        <View style={styles.gridHalf}>
+          <Text style={styles.label}>{t?.labels?.petName ?? 'Name'}</Text>
+          <Text style={styles.textBold}>{withFallback(data?.name)}</Text>
+        </View>
+        <View style={styles.gridHalf}>
+          <Text style={styles.label}>{t?.labels?.breed ?? 'Breed'}</Text>
+          <Text style={styles.text}>{withFallback(data?.breed)}</Text>
+        </View>
+      </View>
+      <View style={styles.gridRow}>
+        <View style={styles.gridHalf}>
+          <Text style={styles.label}>{t?.labels?.gender ?? 'Gender'} / {t?.labels?.age ?? 'Age'}</Text>
+          <Text style={styles.text}>
+            {getGenderLabel(data?.gender, t)} / {formatAge(data?.age, t)}
+          </Text>
+        </View>
+        <View style={styles.gridHalf}>
+          <Text style={styles.label}>{t?.labels?.weight ?? 'Weight'}</Text>
+          <Text style={styles.text}>{formatWeight(data?.weight, t)}</Text>
+        </View>
+      </View>
+    </View>
+  );
+
+  // Description Section
+  const renderDescriptionSection = () => (
+    <View style={styles.descriptionBlock} key="description">
+      <Text style={headingStyle}>{t?.doc?.sectionAbout ?? 'About'}</Text>
+      <Text style={styles.text}>
+        {sanitizeForPdf(data?.generatedText) || (t?.ui?.noDescription ?? '—')}
+      </Text>
+    </View>
+  );
+
+  // Legal/Insurance Section
+  const renderLegalSection = () => (
+    <View style={styles.sectionBlock} key="legal">
+      <View style={boxStyle}>
+        <Text style={[headingStyle, { marginBottom: 8 }]}>{t?.doc?.sectionLegal ?? 'Insurance & Legal'}</Text>
+        <View style={styles.gridRow}>
+          <View style={styles.gridHalf}>
+            <Text style={styles.label}>{t?.labels?.chipId ?? 'Chip ID'}</Text>
+            <Text style={styles.text}>{withFallback(data?.chipId)}</Text>
+          </View>
+          <View style={styles.gridHalf}>
+            <Text style={styles.label}>{t?.labels?.insurance ?? 'Insurance'}</Text>
+            <Text style={styles.text}>{withFallback(data?.insuranceProvider)}</Text>
+          </View>
+        </View>
+        <View style={styles.gridRow}>
+          <View style={styles.gridHalf}>
+            <Text style={styles.label}>{t?.labels?.vet ?? 'Vet'}</Text>
+            <Text style={styles.text}>
+              {[data?.vetName, data?.vetPhone].filter(Boolean).join(' · ') || '—'}
+            </Text>
+          </View>
+          <View style={styles.gridHalf}>
+            <Text style={styles.label}>{t?.labels?.neutered ?? 'Neutered'}</Text>
+            <Text style={styles.text}>{data?.isNeutered ? (t?.labels?.yes ?? 'Yes') : (t?.labels?.no ?? 'No')}</Text>
+          </View>
+        </View>
+        <View style={[styles.gridRow, { marginTop: 6 }]}>
+          <View style={styles.gridHalf}>
+            <Text style={styles.label}>{t?.labels?.vaccination ?? 'Vaccinated'}</Text>
+            <Text style={styles.text}>{data?.hasVaccination ? (t?.labels?.yes ?? 'Yes') : (t?.labels?.no ?? 'No')}</Text>
+          </View>
+          <View style={styles.gridHalf}>
+            <Text style={styles.label}>{t?.labels?.registration ?? 'Registered'}</Text>
+            <Text style={styles.text}>{data?.hasRegistration ? (t?.labels?.yes ?? 'Yes') : (t?.labels?.no ?? 'No')}</Text>
+          </View>
+        </View>
+        {data?.medicalConditions ? (
+          <View style={{ marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.light }}>
+            <Text style={styles.label}>{t?.labels?.medicalConditions ?? t?.step2Emergency?.displayMedical ?? 'Medizinische Angaben'}</Text>
+            <Text style={styles.text}>{sanitizeForPdf(data.medicalConditions)}</Text>
+          </View>
+        ) : null}
+      </View>
+    </View>
+  );
+
+  // Reference Section
+  const renderReferenceSection = () => {
+    const hasReferenceData = data?.previousLandlordName || data?.previousLandlordPhone || data?.previousLandlordEmail || 
+                             data?.emergencyContactName || data?.emergencyContactPhone || data?.secondaryEmergencyContact;
+    
+    if (!hasReferenceData) return null;
+    
+    return (
+      <View style={[styles.sectionBlock, ...boxStyle]} key="reference">
+        <Text style={headingStyle}>{t?.labels?.referenceTitle ?? t?.doc?.sectionReference ?? 'References'}</Text>
+        {(data?.previousLandlordName || data?.previousLandlordPhone || data?.previousLandlordEmail) && (
+          <View style={{ marginBottom: 8 }}>
+            <Text style={[styles.label, { marginBottom: 4 }]}>{t?.labels?.previousLandlord ?? 'Previous landlord'}</Text>
+            {data?.previousLandlordName && <Text style={styles.text}>{data.previousLandlordName}</Text>}
+            {data?.previousDuration && <Text style={styles.text}>{t?.labels?.previousDuration ?? 'Duration'}: {data.previousDuration}</Text>}
+            {data?.previousLandlordPhone && <Text style={styles.text}>{data.previousLandlordPhone}</Text>}
+            {data?.previousLandlordEmail && <Text style={styles.text}>{data.previousLandlordEmail}</Text>}
+          </View>
+        )}
+        {(data?.emergencyContactName || data?.emergencyContactPhone || data?.secondaryEmergencyContact) && (
+          <View>
+            <Text style={[styles.label, { marginBottom: 4 }]}>{t?.labels?.emergencyContact ?? 'Emergency contact'}</Text>
+            {data?.emergencyContactName && <Text style={styles.text}>{data.emergencyContactName}</Text>}
+            {data?.emergencyContactRelation && <Text style={styles.text}>{t?.labels?.emergencyContactRelation ?? 'Relation'}: {data.emergencyContactRelation}</Text>}
+            {data?.emergencyContactPhone && <Text style={styles.text}>{data.emergencyContactPhone}</Text>}
+            {data?.secondaryEmergencyContact && <Text style={[styles.text, { marginTop: 4 }]}>{t?.labels?.secondaryEmergencyContact ?? 'Zweiter Kontakt'}: {data.secondaryEmergencyContact}</Text>}
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  // Section renderer map
+  const SECTION_RENDERERS = {
+    photo: renderPhotoSection,
+    owner: renderOwnerSection,
+    behavior: renderBehaviorSection,
+    details: renderDetailsSection,
+    description: renderDescriptionSection,
+    legal: renderLegalSection,
+    reference: renderReferenceSection,
+  };
+
+  // Render a section by ID
+  const renderSection = (sectionId) => {
+    const renderer = SECTION_RENDERERS[sectionId];
+    return renderer ? renderer() : null;
+  };
+
   return (
     <Document title={t?.doc?.title ?? 'Pet CV'}>
       <Page size="A4" style={pageStyle} wrap>
@@ -303,204 +554,14 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
           </Text>
         </View>
 
-        {/* Main: sidebar + content */}
+        {/* Main: sidebar + content - Dynamic section rendering */}
         <View style={styles.mainRow}>
           <View style={styles.sidebar}>
-            {/* Photo: 3:4 portrait rectangle (matches preview PetPhoto aspect-[3/4]) */}
-            <View style={[styles.sectionBlock, styles.photoContainer, { height: photoHeight }]}>
-              {data?.photo && typeof data.photo === 'string' && data.photo.startsWith('data:') ? (
-                <Image src={data.photo} style={[styles.photoImg, { height: photoHeight }]} />
-              ) : (
-                <View style={[styles.photoPlaceholder, { height: photoHeight }]}>
-                  <Text style={styles.label}>{t?.doc?.petPhoto ?? 'Photo'}</Text>
-                </View>
-              )}
-            </View>
-            {/* Owner */}
-            <View style={styles.sectionBlock}>
-              <Text style={headingStyle}>{t?.doc?.sectionOwner ?? 'Owner'}</Text>
-              <View>
-                <Text style={styles.textBold}>{withFallback(data?.ownerName)}</Text>
-                <Text style={styles.text}>{streetLine}</Text>
-                <Text style={styles.text}>{cityLine}</Text>
-                <Text style={[styles.text, { marginTop: 6 }]}>{withFallback(data?.email)}</Text>
-                <Text style={styles.text}>{withFallback(data?.phone)}</Text>
-              </View>
-              {/* QR Code with label - compact size for A4 readability */}
-              {qrUrl && (
-                <View style={{ 
-                  marginTop: 10, 
-                  flexDirection: 'row', 
-                  alignItems: 'center',
-                  gap: 8,
-                  paddingTop: 8,
-                  borderTopWidth: 1,
-                  borderTopColor: colors.light,
-                  borderTopStyle: 'dashed'
-                }}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 7, color: colors.muted, textTransform: 'uppercase', letterSpacing: 0.3 }}>
-                      {t?.doc?.qrLabel ?? 'Kontakt scannen'}
-                    </Text>
-                    <Text style={{ fontSize: 6, color: colors.muted, marginTop: 2 }}>
-                      {t?.doc?.qrHint ?? 'vCard hinzufügen'}
-                    </Text>
-                  </View>
-                  <Image src={qrUrl} style={{ width: 75, height: 75 }} />
-                </View>
-              )}
-            </View>
-            {/* Behavior */}
-            <View style={styles.sectionBlock}>
-              <Text style={headingStyle}>{t?.labels?.behaviorTitle ?? t?.doc?.sectionBehavior ?? 'Behavior'}</Text>
-              <View style={styles.gridRow}>
-                <View style={styles.gridHalf}>
-                  <Text style={styles.label}>{t?.labels?.noiseLevel ?? 'Noise'}</Text>
-                  <Text style={styles.text}>
-                    {data?.noiseLevel === 'low' ? (t?.labels?.noiseLow ?? t?.labels?.low ?? 'Low') : data?.noiseLevel === 'high' ? (t?.labels?.noiseHigh ?? t?.labels?.high ?? 'High') : (t?.labels?.noiseMedium ?? t?.labels?.medium ?? 'Medium')}
-                  </Text>
-                </View>
-                <View style={styles.gridHalf}>
-                  <Text style={styles.label}>{t?.labels?.aloneTime ?? 'Alone'}</Text>
-                  <Text style={styles.text}>{data?.aloneTime ? `${data.aloneTime}h` : '—'}</Text>
-                </View>
-              </View>
-              {data?.activeHours ? (
-                <View style={[styles.gridRow, { marginTop: 4 }]}>
-                  <View style={styles.gridHalf}>
-                    <Text style={styles.label}>{t?.labels?.activeHours ?? 'Active hours'}</Text>
-                    <Text style={styles.text}>{data.activeHours}</Text>
-                  </View>
-                </View>
-              ) : null}
-              {(data?.behaviorWithChildren || data?.behaviorWithPets) && (
-                <View style={[styles.gridRow, { marginTop: 4 }]}>
-                  {data?.behaviorWithChildren && (
-                    <View style={styles.gridHalf}>
-                      <Text style={styles.label}>{t?.labels?.behaviorWithChildren ?? 'With children'}</Text>
-                      <Text style={styles.text}>
-                        {data.behaviorWithChildren === 'good' ? (t?.labels?.behaviorGood ?? 'Good') : data.behaviorWithChildren === 'neutral' ? (t?.labels?.behaviorNeutral ?? 'Neutral') : (t?.labels?.behaviorAvoid ?? 'Avoid')}
-                      </Text>
-                    </View>
-                  )}
-                  {data?.behaviorWithPets && (
-                    <View style={styles.gridHalf}>
-                      <Text style={styles.label}>{t?.labels?.behaviorWithPets ?? 'With pets'}</Text>
-                      <Text style={styles.text}>
-                        {data.behaviorWithPets === 'good' ? (t?.labels?.behaviorGood ?? 'Good') : data.behaviorWithPets === 'neutral' ? (t?.labels?.behaviorNeutral ?? 'Neutral') : (t?.labels?.behaviorAvoid ?? 'Avoid')}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              )}
-            </View>
+            {sidebarSections.map(sectionId => renderSection(sectionId))}
           </View>
 
           <View style={styles.main}>
-            {/* Pet details */}
-            <View style={styles.sectionBlock}>
-              <Text style={headingStyle}>{t?.doc?.sectionPet ?? 'Pet'}</Text>
-              <View style={styles.gridRow}>
-                <View style={styles.gridHalf}>
-                  <Text style={styles.label}>{t?.labels?.petName ?? 'Name'}</Text>
-                  <Text style={styles.textBold}>{withFallback(data?.name)}</Text>
-                </View>
-                <View style={styles.gridHalf}>
-                  <Text style={styles.label}>{t?.labels?.breed ?? 'Breed'}</Text>
-                  <Text style={styles.text}>{withFallback(data?.breed)}</Text>
-                </View>
-              </View>
-              <View style={styles.gridRow}>
-                <View style={styles.gridHalf}>
-                  <Text style={styles.label}>{t?.labels?.gender ?? 'Gender'} / {t?.labels?.age ?? 'Age'}</Text>
-                  <Text style={styles.text}>
-                    {getGenderLabel(data?.gender, t)} / {formatAge(data?.age, t)}
-                  </Text>
-                </View>
-                <View style={styles.gridHalf}>
-                  <Text style={styles.label}>{t?.labels?.weight ?? 'Weight'}</Text>
-                  <Text style={styles.text}>{formatWeight(data?.weight, t)}</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Description – fixed block for 470 chars */}
-            <View style={styles.descriptionBlock}>
-              <Text style={headingStyle}>{t?.doc?.sectionAbout ?? 'About'}</Text>
-              <Text style={styles.text}>
-                {sanitizeForPdf(data?.generatedText) || (t?.ui?.noDescription ?? '—')}
-              </Text>
-            </View>
-
-            {/* Legal / Insurance */}
-            <View style={styles.sectionBlock}>
-              <View style={boxStyle}>
-                <Text style={[headingStyle, { marginBottom: 8 }]}>{t?.doc?.sectionLegal ?? 'Insurance & Legal'}</Text>
-                <View style={styles.gridRow}>
-                  <View style={styles.gridHalf}>
-                    <Text style={styles.label}>{t?.labels?.chipId ?? 'Chip ID'}</Text>
-                    <Text style={styles.text}>{withFallback(data?.chipId)}</Text>
-                  </View>
-                  <View style={styles.gridHalf}>
-                    <Text style={styles.label}>{t?.labels?.insurance ?? 'Insurance'}</Text>
-                    <Text style={styles.text}>{withFallback(data?.insuranceProvider)}</Text>
-                  </View>
-                </View>
-                <View style={styles.gridRow}>
-                  <View style={styles.gridHalf}>
-                    <Text style={styles.label}>{t?.labels?.vet ?? 'Vet'}</Text>
-                    <Text style={styles.text}>
-                      {[data?.vetName, data?.vetPhone].filter(Boolean).join(' · ') || '—'}
-                    </Text>
-                  </View>
-                  <View style={styles.gridHalf}>
-                    <Text style={styles.label}>{t?.labels?.neutered ?? 'Neutered'}</Text>
-                    <Text style={styles.text}>{data?.isNeutered ? (t?.labels?.yes ?? 'Yes') : (t?.labels?.no ?? 'No')}</Text>
-                  </View>
-                </View>
-                <View style={[styles.gridRow, { marginTop: 6 }]}>
-                  <View style={styles.gridHalf}>
-                    <Text style={styles.label}>{t?.labels?.vaccination ?? 'Vaccinated'}</Text>
-                    <Text style={styles.text}>{data?.hasVaccination ? (t?.labels?.yes ?? 'Yes') : (t?.labels?.no ?? 'No')}</Text>
-                  </View>
-                  <View style={styles.gridHalf}>
-                    <Text style={styles.label}>{t?.labels?.registration ?? 'Registered'}</Text>
-                    <Text style={styles.text}>{data?.hasRegistration ? (t?.labels?.yes ?? 'Yes') : (t?.labels?.no ?? 'No')}</Text>
-                  </View>
-                </View>
-                {data?.medicalConditions ? (
-                  <View style={{ marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.light }}>
-                    <Text style={styles.label}>{t?.labels?.medicalConditions ?? t?.step2Emergency?.displayMedical ?? 'Medizinische Angaben'}</Text>
-                    <Text style={styles.text}>{sanitizeForPdf(data.medicalConditions)}</Text>
-                  </View>
-                ) : null}
-              </View>
-            </View>
-
-            {/* Reference (if any) – matches preview structure */}
-            {(data?.previousLandlordName || data?.previousLandlordPhone || data?.previousLandlordEmail || data?.emergencyContactName || data?.emergencyContactPhone || data?.secondaryEmergencyContact) && (
-              <View style={[styles.sectionBlock, ...boxStyle]}>
-                <Text style={headingStyle}>{t?.labels?.referenceTitle ?? t?.doc?.sectionReference ?? 'References'}</Text>
-                {(data?.previousLandlordName || data?.previousLandlordPhone || data?.previousLandlordEmail) && (
-                  <View style={{ marginBottom: 8 }}>
-                    <Text style={[styles.label, { marginBottom: 4 }]}>{t?.labels?.previousLandlord ?? 'Previous landlord'}</Text>
-                    {data?.previousLandlordName && <Text style={styles.text}>{data.previousLandlordName}</Text>}
-                    {data?.previousDuration && <Text style={styles.text}>{t?.labels?.previousDuration ?? 'Duration'}: {data.previousDuration}</Text>}
-                    {data?.previousLandlordPhone && <Text style={styles.text}>{data.previousLandlordPhone}</Text>}
-                    {data?.previousLandlordEmail && <Text style={styles.text}>{data.previousLandlordEmail}</Text>}
-                  </View>
-                )}
-                {(data?.emergencyContactName || data?.emergencyContactPhone || data?.secondaryEmergencyContact) && (
-                  <View>
-                    <Text style={[styles.label, { marginBottom: 4 }]}>{t?.labels?.emergencyContact ?? 'Emergency contact'}</Text>
-                    {data?.emergencyContactName && <Text style={styles.text}>{data.emergencyContactName}</Text>}
-                    {data?.emergencyContactRelation && <Text style={styles.text}>{t?.labels?.emergencyContactRelation ?? 'Relation'}: {data.emergencyContactRelation}</Text>}
-                    {data?.emergencyContactPhone && <Text style={styles.text}>{data.emergencyContactPhone}</Text>}
-                    {data?.secondaryEmergencyContact && <Text style={[styles.text, { marginTop: 4 }]}>{t?.labels?.secondaryEmergencyContact ?? 'Zweiter Kontakt'}: {data.secondaryEmergencyContact}</Text>}
-                  </View>
-                )}
-              </View>
-            )}
+            {mainSections.map(sectionId => renderSection(sectionId))}
           </View>
         </View>
 
@@ -517,8 +578,8 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
         {/* Watermark overlay for unpaid premium templates */}
         {showWatermark && (
           <View style={styles.watermarkOverlay} fixed>
-            <Text style={styles.watermarkText}>PREVIEW</Text>
-            <Text style={styles.watermarkSubtext}>MUSTER - NICHT BEZAHLT</Text>
+            <Text style={styles.watermarkText}>MUSTER</Text>
+            <Text style={styles.watermarkSubtext}>PREVIEW</Text>
           </View>
         )}
       </Page>
