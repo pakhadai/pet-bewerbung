@@ -1,6 +1,6 @@
 /**
  * Rate Limiting Middleware
- * Supports Redis (production) and in-memory (fallback) rate limiting
+ * Uses Redis for rate limiting. No fallback - Redis is required for production.
  */
 
 const Redis = require('ioredis');
@@ -11,9 +11,9 @@ const {
   AI_RATE_WINDOW 
 } = require('../config');
 
-// Rate limit storage
+// Redis client
 let redis = null;
-const aiRateLimits = new Map();
+let redisAvailable = false;
 
 /**
  * Initialize Redis connection
@@ -22,29 +22,52 @@ const aiRateLimits = new Map();
 async function initRedis() {
   try {
     redis = new Redis(REDIS_URL, { 
-      maxRetriesPerRequest: 2,
-      retryDelayOnFailover: 100,
+      maxRetriesPerRequest: 3,
+      retryStrategy: (times) => {
+        if (times > 3) {
+          console.error('❌ Redis connection failed after 3 retries');
+          return null; // Stop retrying
+        }
+        return Math.min(times * 200, 1000);
+      },
       lazyConnect: true,
     });
     
     redis.on('error', (err) => {
-      if (!isProduction) console.warn('Redis error:', err.message);
+      if (redisAvailable) {
+        console.error('❌ Redis connection lost:', err.message);
+        redisAvailable = false;
+      }
+    });
+    
+    redis.on('connect', () => {
+      if (!redisAvailable) {
+        console.log('✅ Redis reconnected');
+        redisAvailable = true;
+      }
     });
     
     await redis.connect();
     await redis.ping();
     
-    if (!isProduction) console.log('✅ Redis connected');
+    redisAvailable = true;
+    console.log('✅ Redis connected');
     return true;
   } catch (err) {
-    const fallbackMsg = 'Using in-memory rate limiting (data lost on restart)';
+    redisAvailable = false;
+    
     if (isProduction) {
-      console.warn(`⚠️  Redis unavailable in production. ${fallbackMsg}`);
-      console.warn('   Consider configuring REDIS_URL for persistent rate limiting.');
+      console.error('❌ CRITICAL: Redis is required in production!');
+      console.error('   Please configure REDIS_URL environment variable.');
+      console.error('   Error:', err.message);
+      // In production, exit if Redis is not available
+      process.exit(1);
     } else {
-      console.warn(`⚠️  Redis unavailable. ${fallbackMsg}`);
+      console.warn('⚠️  Redis unavailable in development mode.');
+      console.warn('   Rate limiting will be DISABLED until Redis is connected.');
+      console.warn('   Start Redis: docker run -d -p 6379:6379 redis:7-alpine');
     }
-    redis = null;
+    
     return false;
   }
 }
@@ -68,39 +91,42 @@ async function checkRateLimitRedis(ip, limit) {
 }
 
 /**
- * Check rate limit using in-memory storage
- * @param {string} ip - Client IP
- * @param {number} limit - Request limit
- * @returns {Object} Rate limit status
- */
-function checkRateLimitMemory(ip, limit) {
-  const now = Date.now();
-  const record = aiRateLimits.get(ip);
-  const resetTime = record?.resetTime || now + AI_RATE_WINDOW * 1000;
-  
-  if (!record || now > record.resetTime) {
-    aiRateLimits.set(ip, { count: 1, resetTime });
-    return { allowed: true, remaining: limit - 1, resetTime };
-  }
-  
-  if (record.count >= limit) {
-    return { allowed: false, remaining: 0, resetTime: record.resetTime };
-  }
-  
-  record.count++;
-  return { allowed: true, remaining: limit - record.count, resetTime: record.resetTime };
-}
-
-/**
- * Check AI rate limit (auto-selects storage backend)
+ * Check AI rate limit
  * @param {string} ip - Client IP
  * @param {string|null} premiumToken - Premium token (unlimited if provided)
  * @returns {Promise<Object>} Rate limit status
  */
 async function checkAIRateLimit(ip, premiumToken = null) {
-  const limit = premiumToken ? 9999 : AI_RATE_LIMIT_FREE;
-  if (redis) return checkRateLimitRedis(ip, limit);
-  return checkRateLimitMemory(ip, limit);
+  // Premium users have unlimited requests
+  if (premiumToken) {
+    return { 
+      allowed: true, 
+      remaining: 9999, 
+      resetTime: Date.now() + AI_RATE_WINDOW * 1000 
+    };
+  }
+  
+  // If Redis is not available, allow request but warn
+  if (!redisAvailable || !redis) {
+    if (!isProduction) {
+      // In dev mode without Redis, allow requests but log warning
+      return { 
+        allowed: true, 
+        remaining: AI_RATE_LIMIT_FREE, 
+        resetTime: Date.now() + AI_RATE_WINDOW * 1000,
+        warning: 'Rate limiting disabled - Redis not available'
+      };
+    }
+    // This should not happen in production (server exits if no Redis)
+    return { 
+      allowed: false, 
+      remaining: 0, 
+      resetTime: Date.now(),
+      error: 'Rate limiting service unavailable'
+    };
+  }
+  
+  return checkRateLimitRedis(ip, AI_RATE_LIMIT_FREE);
 }
 
 /**
@@ -108,13 +134,16 @@ async function checkAIRateLimit(ip, premiumToken = null) {
  * @param {string} ip - Client IP
  */
 async function refundRateLimit(ip) {
-  if (redis) {
+  if (!redisAvailable || !redis) return;
+  
+  try {
     const key = `ai:ratelimit:${ip}`;
     const count = await redis.get(key);
-    if (count && parseInt(count, 10) > 0) await redis.decr(key);
-  } else if (aiRateLimits.has(ip)) {
-    const record = aiRateLimits.get(ip);
-    if (record && record.count > 0) record.count--;
+    if (count && parseInt(count, 10) > 0) {
+      await redis.decr(key);
+    }
+  } catch (err) {
+    console.error('Rate limit refund error:', err.message);
   }
 }
 
@@ -124,37 +153,34 @@ async function refundRateLimit(ip) {
  * @returns {Promise<Object>} Current rate limit info
  */
 async function getRateLimitStatus(ip) {
-  if (redis) {
-    try {
-      const key = `ai:ratelimit:${ip}`;
-      const count = parseInt(await redis.get(key) || '0', 10);
-      const ttl = await redis.ttl(key);
-      return { 
-        limit: AI_RATE_LIMIT_FREE, 
-        remaining: Math.max(0, AI_RATE_LIMIT_FREE - count), 
-        resetTime: ttl > 0 ? Date.now() + ttl * 1000 : Date.now() + AI_RATE_WINDOW * 1000,
-      };
-    } catch {
-      // fall through to memory
-    }
-  }
-  
-  const now = Date.now();
-  const record = aiRateLimits.get(ip);
-  
-  if (!record || now > record.resetTime) {
+  if (!redisAvailable || !redis) {
     return { 
       limit: AI_RATE_LIMIT_FREE, 
       remaining: AI_RATE_LIMIT_FREE, 
-      resetTime: now + AI_RATE_WINDOW * 1000,
+      resetTime: Date.now() + AI_RATE_WINDOW * 1000,
+      redisAvailable: false
     };
   }
   
-  return { 
-    limit: AI_RATE_LIMIT_FREE, 
-    remaining: Math.max(0, AI_RATE_LIMIT_FREE - record.count), 
-    resetTime: record.resetTime,
-  };
+  try {
+    const key = `ai:ratelimit:${ip}`;
+    const count = parseInt(await redis.get(key) || '0', 10);
+    const ttl = await redis.ttl(key);
+    return { 
+      limit: AI_RATE_LIMIT_FREE, 
+      remaining: Math.max(0, AI_RATE_LIMIT_FREE - count), 
+      resetTime: ttl > 0 ? Date.now() + ttl * 1000 : Date.now() + AI_RATE_WINDOW * 1000,
+      redisAvailable: true
+    };
+  } catch (err) {
+    console.error('Get rate limit status error:', err.message);
+    return { 
+      limit: AI_RATE_LIMIT_FREE, 
+      remaining: AI_RATE_LIMIT_FREE, 
+      resetTime: Date.now() + AI_RATE_WINDOW * 1000,
+      redisAvailable: false
+    };
+  }
 }
 
 /**
@@ -169,10 +195,19 @@ function getClientIP(req) {
          'unknown';
 }
 
+/**
+ * Check if Redis is currently available
+ * @returns {boolean}
+ */
+function isRedisAvailable() {
+  return redisAvailable;
+}
+
 module.exports = {
   initRedis,
   checkAIRateLimit,
   refundRateLimit,
   getRateLimitStatus,
   getClientIP,
+  isRedisAvailable,
 };
