@@ -42,8 +42,9 @@ const INITIAL_DATA = {
   willingToPayDeposit: true,
   behaviorWithChildren: '', // good, neutral, avoid
   behaviorWithPets: '', // good, neutral, avoid
-  // Custom design settings (Premium feature - Section Builder)
+  // Custom design settings (Premium feature - Visual Editor)
   customDesign: {
+    isEdited: false,              // Flag set to true when user applies changes in editor
     primaryColor: '#b39ddb',      // Accent color
     secondaryColor: '#f5f5f5',    // Background color
     fontFamily: 'Helvetica',      // Font choice

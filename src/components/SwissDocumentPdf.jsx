@@ -210,9 +210,11 @@ const DEFAULT_COLORS = {
   secondaryColor: '#f5f5f5'
 };
 
-// Check if customDesign has been modified from defaults
+// Check if customDesign has been modified (either via isEdited flag or by comparing values)
 const hasCustomDesign = (customDesign) => {
   if (!customDesign) return false;
+  // isEdited flag is set when user applies changes in the Visual Editor
+  if (customDesign.isEdited) return true;
   return customDesign.primaryColor !== DEFAULT_COLORS.primaryColor || 
          customDesign.secondaryColor !== DEFAULT_COLORS.secondaryColor;
 };

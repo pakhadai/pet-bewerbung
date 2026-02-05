@@ -146,12 +146,13 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     return configs[templateType] || configs.classic;
   };
 
-  // Check if customDesign has been modified from defaults
+  // Check if customDesign has been modified (either via isEdited flag or by comparing values)
   const hasCustomColors = customDesign.primaryColor !== DEFAULT_COLORS.primaryColor || 
                           customDesign.secondaryColor !== DEFAULT_COLORS.secondaryColor;
   const hasCustomLayout = customDesign.hiddenSections?.length > 0 ||
                           JSON.stringify(customDesign.layoutOrder) !== JSON.stringify(INITIAL_DATA.customDesign.layoutOrder);
-  const isCustomized = hasCustomColors || hasCustomLayout;
+  // isEdited flag is set when user applies changes in the Visual Editor
+  const isCustomized = customDesign.isEdited || hasCustomColors || hasCustomLayout;
   
   // Custom colors - available for ANY template when user has customized
   const customColors = useMemo(() => {

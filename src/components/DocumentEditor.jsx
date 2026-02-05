@@ -423,6 +423,7 @@ const DocumentEditor = ({
   const handleApply = useCallback(() => {
     const newCustomDesign = {
       ...customDesign,
+      isEdited: true, // Mark as edited so it's always applied
       layoutOrder,
       hiddenSections,
       primaryColor,
