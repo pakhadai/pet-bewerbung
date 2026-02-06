@@ -1,3 +1,15 @@
+/**
+ * Step6ThankYou.jsx
+ * 
+ * STEP: 6 (in App.tsx: step === 6)
+ * 
+ * This component displays:
+ * - Thank you message after document creation
+ * - Download PDF button
+ * - Donation/support options
+ * - "Create another" button to restart the wizard
+ * - "Back to preview" button to edit template selection
+ */
 import React, { useState } from 'react';
 import { ChevronLeft, ArrowLeft } from 'lucide-react';
 import GlobalStyles from '../GlobalStyles';
@@ -7,7 +19,7 @@ import DonateModal from '../DonateModal';
 import PaymentModal from '../PaymentModal';
 import LegalPages from '../LegalPages';
 
-const Step9ThankYou = React.memo(({
+const Step6ThankYou = React.memo(({
   data,
   t,
   theme,
@@ -239,6 +251,6 @@ const Step9ThankYou = React.memo(({
   );
 });
 
-Step9ThankYou.displayName = 'Step9ThankYou';
+Step6ThankYou.displayName = 'Step6ThankYou';
 
-export default Step9ThankYou;
+export default Step6ThankYou;

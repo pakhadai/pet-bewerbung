@@ -1,12 +1,26 @@
+/**
+ * Step2HealthInsurance.jsx
+ * 
+ * STEP: 2 (in App.tsx: step === 2)
+ * 
+ * This component handles:
+ * - Emergency contacts (vet, secondary contact)
+ * - Insurance & chip information
+ * - Pet status (neutered, vaccinated, registered)
+ * - Behavior & routine
+ * - References (previous landlord, emergency contacts)
+ * - Medical conditions
+ * - Deposit willingness
+ */
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, ShieldCheck, ExternalLink } from 'lucide-react';
+import { ShieldCheck, ExternalLink } from 'lucide-react';
 import Label from '../Label';
 import Input from '../Input';
 
 // Insurance affiliate link from environment variable
 const INSURANCE_AFFILIATE_LINK = import.meta.env.VITE_INSURANCE_AFFILIATE_LINK || '';
 
-const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMode, onPrev, onNext }) => {
+const Step2HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMode }) => {
   const [showMore, setShowMore] = useState(
     !!(data.insuranceProvider || data.chipId || data.medicalConditions || data.previousLandlordName || data.emergencyContactName)
   );
@@ -17,18 +31,12 @@ const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
   const statusOptions = [
     { id: 'isNeutered', label: t?.labels?.neutered ?? 'Kastriert' },
     { id: 'hasVaccination', label: t?.labels?.vaccination ?? 'Geimpft' },
-    { id: 'hasRegistration', label: t?.labels?.registration ?? 'Registriert' }
+    { id: 'hasRegistration', label: t?.labels?.registration ?? 'Registriert' },
+    { id: 'willingToPayDeposit', label: t?.labels?.willingToPayDeposit ?? 'Bereit für Tierkaution' }
   ];
 
   return (
-    <div className={`page page-enter-${animDir} reveal fade-enter max-w-3xl mx-auto pb-24`}>
-      <div className={`mb-4 flex items-center gap-3 px-4 py-3 rounded-xl border-2 hand-drawn-border ${darkMode ? 'bg-primary/10 border-primary/50' : 'bg-primary/5 border-primary/30'}`}>
-        <span className="material-symbols-outlined text-primary sketch-icon-filled">lock</span>
-        <span className={`text-sm font-semibold ${darkMode ? 'text-gray-200' : 'text-text-main'}`}>
-          {t?.step2Emergency?.privacyText ?? 'Private & Secure: Your emergency contacts are only stored locally in this browser session.'}
-        </span>
-      </div>
-
+    <div className={`page page-enter-${animDir} reveal fade-enter max-w-3xl mx-auto pb-32`}>
       <div className={`hand-drawn-border border-2 rounded-2xl p-6 md:p-8 ${cardCl} shadow-lg`}>
         <h2 className={`font-display font-bold text-2xl md:text-3xl mb-1 ${titleCl}`}>
           {t?.stepsNew?.step2?.title ?? 'Emergency Info'}
@@ -37,7 +45,7 @@ const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
           {t?.stepsNew?.step2?.subtitle ?? 'Vet & contacts'}
         </p>
 
-        {/* Emergency contacts – завжди видно */}
+        {/* Emergency contacts */}
         <div className="space-y-4">
           <h3 className={`font-display font-bold text-lg flex items-center gap-2 ${titleCl}`}>
             <span className="material-symbols-outlined text-primary">medical_services</span>
@@ -51,13 +59,9 @@ const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
             <Label>{t?.step2Emergency?.vetClinicPhone ?? 'Telefon Tierarzt'}</Label>
             <Input value={data.vetPhone ?? ''} onChange={(e) => updateData('vetPhone', e.target.value)} placeholder="+41 79 123 45 67" type="tel" />
           </div>
-          <div>
-            <Label>{t?.step2Emergency?.secondaryContact ?? 'Zweiter Notfallkontakt'}</Label>
-            <Input value={data.secondaryEmergencyContact ?? ''} onChange={(e) => updateData('secondaryEmergencyContact', e.target.value)} placeholder={t?.step2Emergency?.secondaryContact ?? 'Name & Tel. (z.B. Nachbar, Familie)'} />
-          </div>
         </div>
 
-        {/* Перемикач: показувати додаткові поля */}
+        {/* Toggle: show additional fields */}
         <div className="mt-6 pt-6 border-t-2 border-dashed border-gray-400/50 dark:border-gray-500/50">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
@@ -83,12 +87,12 @@ const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
 
           {showMore && (
             <div className="mt-6 space-y-6 animate-in fade-in slide-in-from-top-2 duration-200">
-              {/* Versicherung & Chip */}
+              {/* Insurance & Chip */}
               <div className="space-y-3">
                 <h4 className={`font-display font-bold text-base ${titleCl}`}>{t?.labels?.insurance ?? 'Versicherung'}</h4>
                 <Input value={data.insuranceProvider ?? ''} onChange={(e) => updateData('insuranceProvider', e.target.value)} placeholder="z.B. AXA, Mobiliar" />
                 
-                {/* AFFILIATE BLOCK - Show only if link exists AND insurance field is empty/short */}
+                {/* AFFILIATE BLOCK */}
                 {INSURANCE_AFFILIATE_LINK && (!data.insuranceProvider || data.insuranceProvider.length < 3) && (
                   <div className={`mt-2 p-3 rounded-xl flex items-start gap-3 ${darkMode ? 'bg-blue-900/30 border border-blue-700/50' : 'bg-blue-50 border border-blue-200'}`}>
                     <div className={`p-2 rounded-full ${darkMode ? 'bg-blue-800 text-blue-300' : 'bg-white text-blue-600'}`}>
@@ -126,7 +130,7 @@ const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
                 </div>
               </div>
 
-              {/* Verhalten & Routine */}
+              {/* Behavior & Routine */}
               <div className="space-y-3">
                 <h4 className={`font-display font-bold text-base ${titleCl}`}>{t?.labels?.behaviorTitle ?? 'Verhalten & Routine'}</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -167,7 +171,7 @@ const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
                 </div>
               </div>
 
-              {/* Referenzen & Notfallkontakt */}
+              {/* References & Emergency Contact */}
               <div className="space-y-3">
                 <h4 className={`font-display font-bold text-base ${titleCl}`}>{t?.labels?.referenceTitle ?? 'Referenzen & Notfallkontakt'}</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -202,7 +206,7 @@ const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
                 </div>
               </div>
 
-              {/* Medizinische Angaben (Allergien/Medikamente) */}
+              {/* Medical Conditions */}
               <div>
                 <Label>{t?.step2Emergency?.displayMedical ?? 'Allergien / Medikamente'}</Label>
                 <textarea
@@ -217,21 +221,18 @@ const Step3HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
           )}
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-          <button type="button" onClick={onPrev} className={`font-display font-bold hand-drawn-button border-2 px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all ${darkMode ? 'border-gray-400 text-gray-200 hover:bg-gray-700' : 'border-gray-500 text-text-main hover:bg-gray-100'}`}>
-            <ChevronLeft size={20} strokeWidth={2.5} />
-            {t?.nav?.back ?? 'Back'}
-          </button>
-          <button type="button" onClick={onNext} className="font-display font-bold hand-drawn-button border-2 px-6 py-2.5 rounded-xl flex items-center gap-2 border-primary bg-primary text-white hover:bg-primary-dark transition-all">
-            {t?.nav?.nextPhotos ?? 'Weiter: Fotos'}
-            <ChevronRight size={20} strokeWidth={2.5} />
-          </button>
+        {/* Privacy badge */}
+        <div className={`mt-6 flex items-center gap-3 px-4 py-3 rounded-xl border-2 hand-drawn-border ${darkMode ? 'bg-green-900/20 border-green-600/50' : 'bg-green-50 border-green-200'}`}>
+          <span className="material-symbols-outlined text-green-600 dark:text-green-400 sketch-icon-filled">verified_user</span>
+          <span className={`text-sm font-semibold ${darkMode ? 'text-green-300' : 'text-green-800'}`}>
+            {t?.hero?.privacyDesc ?? 'Ihre Daten werden niemals gespeichert. Alles passiert in Ihrem Browser.'}
+          </span>
         </div>
       </div>
     </div>
   );
 });
 
-Step3HealthInsurance.displayName = 'Step3HealthInsurance';
+Step2HealthInsurance.displayName = 'Step2HealthInsurance';
 
-export default Step3HealthInsurance;
+export default Step2HealthInsurance;

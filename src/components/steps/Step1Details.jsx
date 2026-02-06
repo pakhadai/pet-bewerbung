@@ -1,3 +1,14 @@
+/**
+ * Step1Details.jsx
+ * 
+ * ACTUAL STEP: 1 (in App.tsx: step === 1)
+ * 
+ * This component combines Owner and Pet information into a single form:
+ * - Owner: name, address (street, house number, postal, city), email, phone
+ * - Pet: type (dog/cat/other), name, breed, age, weight, gender
+ * 
+ * Note: The file name is correct - this is the first step in the wizard.
+ */
 import React from 'react';
 import { Dog, Cat, Bird } from 'lucide-react';
 import Label from '../Label';
@@ -6,7 +17,7 @@ import { useForm } from '../../contexts/FormContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTranslation } from '../../contexts/TranslationContext';
 
-const Step1Details = React.memo(({ animDir, errors = {}, onNext, canProceed = true }) => {
+const Step1Details = React.memo(({ animDir, errors = {} }) => {
   const { data, updateData } = useForm();
   const { darkMode } = useTheme();
   const { t } = useTranslation();
@@ -23,7 +34,7 @@ const Step1Details = React.memo(({ animDir, errors = {}, onNext, canProceed = tr
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary';
 
   return (
-    <div className={`page page-enter-${animDir} reveal fade-enter max-w-4xl mx-auto pb-24`}>
+    <div className={`page page-enter-${animDir} reveal fade-enter max-w-4xl mx-auto pb-32`}>
       <div className={`hand-drawn-border border-2 rounded-2xl p-6 md:p-8 ${cardCl} shadow-lg`}>
         <h2 className={`font-display font-bold text-2xl md:text-3xl mb-1 ${titleCl}`}>
           {t?.stepsNew?.step1?.title ?? 'Pet Owner & Pet Details'}
@@ -157,6 +168,36 @@ const Step1Details = React.memo(({ animDir, errors = {}, onNext, canProceed = tr
                 />
               </div>
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>{t.labels.weight ?? 'Gewicht (kg)'}</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  max="200"
+                  step="0.1"
+                  value={data.weight}
+                  onChange={e => updateData('weight', e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <Label>{t.labels.gender ?? 'Geschlecht'}</Label>
+                <select
+                  value={data.gender || ''}
+                  onChange={e => updateData('gender', e.target.value)}
+                  className={`w-full px-4 py-3 rounded-xl border-2 hand-drawn-border text-sm transition-colors ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-500 text-white' 
+                      : 'bg-white border-gray-300 text-text-main'
+                  }`}
+                >
+                  <option value="">{t?.placeholders?.selectGender ?? 'Auswählen...'}</option>
+                  <option value="male">{t?.labels?.male ?? 'Männlich'}</option>
+                  <option value="female">{t?.labels?.female ?? 'Weiblich'}</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -167,23 +208,6 @@ const Step1Details = React.memo(({ animDir, errors = {}, onNext, canProceed = tr
           </span>
         </div>
 
-        {onNext && (
-          <div className="mt-8 flex justify-center">
-            <button
-              type="button"
-              onClick={canProceed ? onNext : undefined}
-              disabled={!canProceed}
-              className={`font-display font-bold text-xl hand-drawn-button border-2 px-8 py-3 rounded-xl transition-all flex items-center gap-2 ${
-                darkMode
-                  ? 'border-primary bg-primary text-white hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed'
-                  : 'border-primary bg-primary text-white hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed'
-              }`}
-            >
-              {t?.nav?.nextStep ?? t?.ui?.next ?? 'Next'}
-              <span className="material-symbols-outlined">arrow_forward</span>
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

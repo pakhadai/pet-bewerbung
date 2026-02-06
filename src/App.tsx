@@ -19,15 +19,17 @@ import ErrorBoundary from './components/ErrorBoundary';
 import CookieBanner, { COOKIE_CONSENT_KEY, isCookieConsentGiven } from './components/CookieBanner';
 import TemplateBuilder from './components/TemplateBuilder';
 import DocumentEditor from './components/DocumentEditor';
+import FloatingNavigation from './components/FloatingNavigation';
 
 // Import step components
 import {
   Step1Details,
-  Step3HealthInsurance,
-  Step3UploadSelect,
-  Step4Description,
-  Step8Preview,
-  Step9ThankYou
+  Step2HealthInsurance,
+  Step3Description,
+  Step4Photo,
+  Step5TemplateSelect,
+  Step5Preview,
+  Step6ThankYou
 } from './components/steps/index';
 import StepProgress from './components/StepProgress';
 
@@ -822,25 +824,21 @@ export default function App() {
           <Step1Details
             animDir={animDir}
             errors={validationErrors}
-            onNext={() => goToStep(2)}
-            canProceed={canProceed}
           />
         );
       case 2:
         return (
-          <Step3HealthInsurance
+          <Step2HealthInsurance
             data={data}
             updateData={updateData}
             t={t}
             animDir={animDir}
             darkMode={darkMode}
-            onPrev={() => goToStep(1)}
-            onNext={() => goToStep(3)}
           />
         );
       case 3:
         return (
-          <Step4Description
+          <Step3Description
             data={data}
             updateData={updateData}
             t={t}
@@ -848,8 +846,6 @@ export default function App() {
             darkMode={darkMode}
             isGenerating={isGenerating}
             onGenerate={generateText}
-            onPrev={() => goToStep(2)}
-            onNext={() => goToStep(4)}
             isPremium={isPremium}
             canGenerateAI={canGenerateAI}
             remainingGenerations={remainingGenerations}
@@ -866,33 +862,37 @@ export default function App() {
         );
       case 4:
         return (
-          <Step3UploadSelect
+          <Step4Photo
             data={data}
             updateData={updateData}
             t={t}
             animDir={animDir}
-            selectedTemplate={selectedTemplate}
-            onSelectTemplate={handleSelectTemplate}
-            onPreview={openPreview}
-            showToast={showToast}
             onNavigationVisibilityChange={setNavigationVisible}
             darkMode={darkMode}
-            onPrev={() => goToStep(3)}
-            onNext={() => goToStep(5)}
-            isPremium={isPremium}
-            getTemplateInfo={getTemplateInfo}
           />
         );
       case 5:
         return (
-          <Step8Preview
+          <Step5TemplateSelect
+            data={data}
+            t={t}
+            animDir={animDir}
+            selectedTemplate={selectedTemplate}
+            onSelectTemplate={handleSelectTemplate}
+            showToast={showToast}
+            darkMode={darkMode}
+            isPremium={isPremium}
+            getTemplateInfo={getTemplateInfo}
+          />
+        );
+      case 6:
+        return (
+          <Step5Preview
             data={data}
             t={t}
             animDir={animDir}
             selectedTemplate={selectedTemplate}
             darkMode={darkMode}
-            onPrev={() => goToStep(4)}
-            onNext={() => goToStep(6)}
             isPremium={isPremium}
             getTemplateInfo={getTemplateInfo}
             onDownloadPDF={handleDownloadPDF}
@@ -922,8 +922,8 @@ export default function App() {
       onDownloadPDF={handleDownloadPDF}
       onFaqClick={() => setFaqOpen(true)}
     />
-  ) : step === 6 ? (
-    <Step9ThankYou
+  ) : step === 7 ? (
+    <Step6ThankYou
       data={data}
       t={t}
       theme={theme}
@@ -932,7 +932,7 @@ export default function App() {
       onLogoClick={() => goToStep(0)}
       onDownloadPDF={handleDownloadPDF}
       onCreateAnother={() => goToStep(0)}
-      onPrev={() => goToStep(5)}
+      onPrev={() => goToStep(6)}
       donationAmount={donationAmount}
       setDonationAmount={setDonationAmount}
       donateOpen={donateOpen}
@@ -965,16 +965,31 @@ export default function App() {
         onPremiumExpired={() => showToast(t?.premium?.sessionExpired || 'Premium-Sitzung abgelaufen', 'info')}
       />
 
-      <main className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 5 ? 'pt-24 md:pt-28' : ''}`}>
-        {step >= 1 && step <= 5 && (
+      <main className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 6 ? 'pt-24 md:pt-28' : ''}`}>
+        {step >= 1 && step <= 6 && (
           <div className={`sticky top-0 z-20 w-full p-0 print:hidden border-b ${darkMode ? 'bg-gray-900 border-transparent' : 'bg-white border-transparent'}`} style={{ borderBottomColor: 'transparent' }}>
-            <StepProgress step={step} t={t} darkMode={darkMode} />
+            <StepProgress step={step} t={t} darkMode={darkMode} onStepClick={goToStep} />
           </div>
         )}
         <div className={step === 0 ? "w-full" : "max-w-7xl mx-auto p-4 md:p-8 print:border-none print:shadow-none print:p-0"}>
           {renderStep()}
         </div>
       </main>
+
+      {/* Floating Navigation Bar */}
+      <FloatingNavigation
+        step={step}
+        onPrev={() => goToStep(step - 1)}
+        onNext={() => goToStep(step + 1)}
+        onDownloadPDF={handleDownloadPDF}
+        onBuyPremium={handleBuyPremium}
+        t={t}
+        darkMode={darkMode}
+        canProceed={canProceed}
+        needsPayment={getTemplateInfo(selectedTemplate).isPremium && !isPremium}
+        premiumPrice={premiumPrice}
+        visible={navigationVisible}
+      />
 
       <DonateModal
         open={donateOpen}

@@ -109,6 +109,7 @@ export default {
     neutered: "Стерилізований",
     vaccination: "Вакцинований",
     registration: "Реєстрація (AMICUS/ANIS)",
+    willingToPayDeposit: "Готовий сплатити заставу за тварину",
     aiPrompt: "Ключові слова (напр. тихий, чистий)",
     tellUsAboutPet: "Розкажіть про вашу тваринку",
     descriptionHint: "Характер, улюблені іграшки чи смішні звички.",
@@ -280,22 +281,21 @@ export default {
     title: "Створювач Pet CV",
     privacyTitle: "Щит Захисту Даних",
     privacyDesc: "Ваші дані ніколи не зберігаються. Все відбувається у вашому браузері.",
-    subtitle: "4 простих кроки до професійного пет-досьє",
     problemTitle: "Шукаєте квартиру з твариною?",
     problemDesc: "У Швейцарії ринок оренди дуже конкурентний. Багато орендодавців скептично ставляться до тварин.",
     solutionTitle: "Ваше рішення: Пет-Досьє",
-    solutionDesc: "Професійне досьє показує відповідальність, підтверджує страховку та виділяє вас серед інших претендентів. Збільште шанси отримати квартиру мрії.",
+    solutionDesc: "Професійне досьє показує відповідальність та виділяє вас серед інших претендентів.",
     cta: "Створити зараз",
+    // Free vs Premium comparison
     transparencyTitle: "Безкоштовно vs Premium",
-    transparencyText: "Базовий шаблон безкоштовний. Premium відкриває Візуальний Редактор, AI-тексти та всі дизайни (10 CHF / 2 години).",
     transparencyBadge1: "Локальні дані",
     transparencyBadge2: "Без реклами",
     transparencyBadge3: "Premium: 10 CHF",
-    // Free vs Premium comparison
     freeTitle: "Безкоштовно",
-    freeFeatures: ["Базовий шаблон (Classic)", "Введення даних вручну", "Завантаження PDF"],
+    freeFeatures: ["Шаблон Classic", "Введення вручну", "Завантаження PDF"],
     premiumTitle: "Premium (2 години)",
-    premiumFeatures: ["Візуальний Редактор", "Всі 4 проф. шаблони", "AI-генерація тексту", "ZIP з усіма дизайнами"]
+    premiumFeatures: ["8 Проф. шаблонів", "Візуальний Редактор", "AI-тексти без обмежень", "ZIP з усіма дизайнами"],
+    popularBadge: "Популярно"
   },
   step1Details: {
     ownerSection: "Інформація про власника",

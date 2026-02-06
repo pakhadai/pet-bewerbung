@@ -1,3 +1,13 @@
+/**
+ * Step4UploadSelect.jsx
+ * 
+ * STEP: 4 (in App.tsx: step === 4)
+ * 
+ * This component handles:
+ * - Photo upload with cropping functionality
+ * - Template selection (Classic, Modern, Compact, Swiss, Professional, Emergency)
+ * - Shows template previews with Premium badges
+ */
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Crop, Lock, Crown, Sparkles } from 'lucide-react';
 import ImageCropper from '../ImageCropper';
@@ -17,7 +27,7 @@ const TemplateSkeleton = () => (
   <div className="w-full h-full bg-neutral-800 animate-pulse flex items-center justify-center rounded-md" />
 );
 
-const Step3UploadSelect = React.memo(({
+const Step4UploadSelect = React.memo(({
   data,
   updateData,
   t,
@@ -28,8 +38,6 @@ const Step3UploadSelect = React.memo(({
   showToast,
   onNavigationVisibilityChange,
   darkMode,
-  onPrev,
-  onNext,
   isPremium = false,
   getTemplateInfo = (id) => ({ isPremium: false, price: 0, accessible: true })
 }) => {
@@ -107,7 +115,7 @@ const Step3UploadSelect = React.memo(({
 
   return (
     <>
-      <div className={`page page-enter-${animDir} reveal fade-enter w-full max-w-6xl mx-auto pb-24`}>
+      <div className={`page page-enter-${animDir} reveal fade-enter w-full max-w-6xl mx-auto pb-32`}>
         {/* Progress bar — глобальний StepProgress у App, тут лише контент */}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -159,12 +167,14 @@ const Step3UploadSelect = React.memo(({
                   <p className={`text-sm ${textMuted} mt-1`}>PNG, JPG up to 10MB</p>
                 </>
               )}
-              <div className={`mt-6 px-4 py-2 flex items-center gap-2 rounded-full border text-xs font-bold ${
-                darkMode ? 'bg-green-900/20 text-green-400 border-green-500/30' : 'bg-green-50 text-green-800 border-green-200'
-              }`}>
-                <span className="material-symbols-outlined text-sm">lock</span>
-                {t?.stepsNew?.step4?.badge ?? 'Processing stays local'}
-              </div>
+            </div>
+            
+            {/* Privacy badge */}
+            <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 hand-drawn-border ${darkMode ? 'bg-green-900/20 border-green-600/50' : 'bg-green-50 border-green-200'}`}>
+              <span className="material-symbols-outlined text-green-600 dark:text-green-400 sketch-icon-filled">verified_user</span>
+              <span className={`text-sm font-semibold ${darkMode ? 'text-green-300' : 'text-green-800'}`}>
+                {t?.step4?.photoPrivacy ?? 'Ihr Foto wird niemals hochgeladen. Alles passiert lokal in Ihrem Browser.'}
+              </span>
             </div>
           </div>
 
@@ -287,35 +297,6 @@ const Step3UploadSelect = React.memo(({
           </div>
         </div>
 
-        {/* Bottom nav – as in HTML */}
-        {(onPrev != null || onNext != null) && (
-          <div className="w-full max-w-6xl mt-16 flex flex-col sm:flex-row justify-between gap-4 border-t border-white/10 dark:border-gray-600 pt-8">
-            {onPrev && (
-              <button
-                type="button"
-                onClick={onPrev}
-                className={`px-8 py-3 text-xl font-bold font-display hand-drawn-button transition-all flex items-center gap-2 ${
-                  darkMode
-                    ? 'text-gray-300 hover:bg-white/5 border-white/20'
-                    : 'text-gray-600 hover:bg-gray-100 border-gray-300'
-                }`}
-              >
-                <span className="material-symbols-outlined">arrow_back</span>
-                {t?.nav?.previousStep ?? 'Previous Step'}
-              </button>
-            )}
-            {onNext && (
-              <button
-                type="button"
-                onClick={onNext}
-                className="px-12 py-4 text-2xl font-bold font-display hand-drawn-button bg-primary text-black hover:scale-[1.02] active:scale-95 transition-all shadow-[0_4px_0_0_rgba(149,117,205,1)] flex items-center gap-2 ml-auto"
-              >
-                {t?.nav?.finalReview ?? 'Final Review'}
-                <span className="material-symbols-outlined">arrow_forward</span>
-              </button>
-            )}
-          </div>
-        )}
       </div>
 
       {showCropper && tempImage && (
@@ -325,6 +306,6 @@ const Step3UploadSelect = React.memo(({
   );
 });
 
-Step3UploadSelect.displayName = 'Step3UploadSelect';
+Step4UploadSelect.displayName = 'Step4UploadSelect';
 
-export default Step3UploadSelect;
+export default Step4UploadSelect;

@@ -1,5 +1,17 @@
+/**
+ * Step3Description.jsx
+ * 
+ * STEP: 3 (in App.tsx: step === 3)
+ * 
+ * This component handles:
+ * - AI-powered pet description generation
+ * - Manual text editing
+ * - Premium "Character Constructor" with sliders (Energy, Noise, Sociability)
+ * - Premium tone selection (Official, Friendly, Cute)
+ * - "Magic Rewrite" button for text improvement (Premium feature)
+ */
 import React, { useState, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Lock, Sparkles, Zap, Volume2, Users, Crown } from 'lucide-react';
+import { Lock, Sparkles, Zap, Volume2, Users, Crown, Info, X } from 'lucide-react';
 import { MAX_DESCRIPTION_LENGTH } from '../../constants';
 
 // Convert slider values to trait descriptions
@@ -24,7 +36,7 @@ const slidersToTraits = (sliders, t) => {
   return traits.join(', ');
 };
 
-const Step4Description = React.memo(({
+const Step3Description = React.memo(({
   data,
   updateData,
   t,
@@ -32,8 +44,6 @@ const Step4Description = React.memo(({
   darkMode,
   isGenerating,
   onGenerate,
-  onPrev,
-  onNext,
   isPremium = false,
   canGenerateAI = true,
   remainingGenerations = 1,
@@ -50,6 +60,7 @@ const Step4Description = React.memo(({
   const [tone, setTone] = useState('formal');
   const [showSliders, setShowSliders] = useState(isPremium);
   const [isRewriting, setIsRewriting] = useState(false);
+  const [showAiDataInfo, setShowAiDataInfo] = useState(false);
   
   // Handle slider change
   const handleSliderChange = useCallback((name, value) => {
@@ -143,7 +154,7 @@ const Step4Description = React.memo(({
   );
 
   return (
-    <div className={`page page-enter-${animDir} reveal fade-enter w-full max-w-2xl mx-auto pb-24`}>
+    <div className={`page page-enter-${animDir} reveal fade-enter w-full max-w-2xl mx-auto pb-32`}>
       <div className={`p-8 lg:p-12 hand-drawn-border border-2 rounded-2xl ${cardCl} shadow-lg relative`}>
         <div className="flex flex-col gap-6">
           {/* Tell us about your pet */}
@@ -349,43 +360,102 @@ const Step4Description = React.memo(({
               </div>
             )}
             
-            <div className={`flex items-center gap-3 px-6 py-2 rounded-full border-2 ${darkMode ? 'bg-green-900/20 border-green-600/30' : 'bg-mint/50 border-gray-300'}`}>
-              <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-xl sketch-icon-filled">verified_user</span>
-              <span className={`text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-green-300' : 'text-text-secondary'}`}>
-                {t?.labels?.localPrivacy ?? 'Local Generation • Privacy Focused'}
+            {/* AI Data Info - shows what data is sent */}
+            <button
+              type="button"
+              onClick={() => setShowAiDataInfo(true)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                darkMode 
+                  ? 'bg-blue-900/20 border border-blue-600/30 hover:bg-blue-900/40' 
+                  : 'bg-blue-50 border border-blue-200 hover:bg-blue-100'
+              }`}
+            >
+              <Info size={16} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
+              <span className={`text-xs font-medium ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>
+                {t?.ai?.dataInfoButton ?? 'Welche Daten werden bei KI-Generierung gesendet?'}
               </span>
-            </div>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Back / Continue */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mt-10">
-        {onPrev && (
-          <button
-            type="button"
-            onClick={onPrev}
-            className={`flex items-center gap-2 px-6 py-2 font-display font-bold text-xl hand-drawn-button transition-colors ${mutedCl} hover:opacity-100`}
+      {/* AI Data Info Modal */}
+      {showAiDataInfo && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowAiDataInfo(false)}>
+          <div 
+            className={`relative max-w-md w-full rounded-2xl p-6 shadow-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+            onClick={e => e.stopPropagation()}
           >
-            <ChevronLeft size={22} strokeWidth={2.5} />
-            {t?.nav?.previousStep ?? t?.nav?.back ?? 'Back'}
-          </button>
-        )}
-        {onNext && (
-          <button
-            type="button"
-            onClick={onNext}
-            className={`flex items-center gap-2 px-10 py-2 font-display font-bold text-xl hand-drawn-button ml-auto ${darkMode ? 'bg-gray-700 text-white hover:bg-gray-600 border-gray-500' : 'bg-text-main text-white hover:bg-gray-800 border-text-main'}`}
-          >
-            {t?.nav?.next ?? 'Continue'}
-            <ChevronRight size={22} strokeWidth={2.5} />
-          </button>
-        )}
-      </div>
+            <button
+              type="button"
+              onClick={() => setShowAiDataInfo(false)}
+              className={`absolute top-4 right-4 p-1 rounded-full transition-colors ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+            >
+              <X size={20} className={darkMode ? 'text-gray-400' : 'text-gray-500'} />
+            </button>
+            
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`p-2 rounded-full ${darkMode ? 'bg-blue-900/50' : 'bg-blue-100'}`}>
+                <Info size={24} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
+              </div>
+              <h3 className={`font-display font-bold text-xl ${darkMode ? 'text-white' : 'text-text-main'}`}>
+                {t?.ai?.dataInfoTitle ?? 'KI-Datenschutz'}
+              </h3>
+            </div>
+            
+            <p className={`text-sm mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              {t?.ai?.dataInfoDesc ?? 'Bei der KI-Textgenerierung werden folgende Daten an unseren Server gesendet:'}
+            </p>
+            
+            <ul className={`space-y-2 mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              <li className="flex items-start gap-2 text-sm">
+                <span className="material-symbols-outlined text-base text-primary mt-0.5">pets</span>
+                <span>{t?.ai?.dataPetName ?? 'Name des Tieres'}</span>
+              </li>
+              <li className="flex items-start gap-2 text-sm">
+                <span className="material-symbols-outlined text-base text-primary mt-0.5">category</span>
+                <span>{t?.ai?.dataPetType ?? 'Tierart (Hund/Katze/Andere)'}</span>
+              </li>
+              <li className="flex items-start gap-2 text-sm">
+                <span className="material-symbols-outlined text-base text-primary mt-0.5">genetics</span>
+                <span>{t?.ai?.dataBreed ?? 'Rasse'}</span>
+              </li>
+              <li className="flex items-start gap-2 text-sm">
+                <span className="material-symbols-outlined text-base text-primary mt-0.5">style</span>
+                <span>{t?.ai?.dataKeywords ?? 'Schlüsselwörter/Charaktereigenschaften'}</span>
+              </li>
+              <li className="flex items-start gap-2 text-sm">
+                <span className="material-symbols-outlined text-base text-primary mt-0.5">translate</span>
+                <span>{t?.ai?.dataLang ?? 'Gewählte Sprache'}</span>
+              </li>
+            </ul>
+            
+            <div className={`p-3 rounded-lg ${darkMode ? 'bg-green-900/30 border border-green-600/30' : 'bg-green-50 border border-green-200'}`}>
+              <p className={`text-xs flex items-start gap-2 ${darkMode ? 'text-green-300' : 'text-green-700'}`}>
+                <span className="material-symbols-outlined text-base mt-0.5">check_circle</span>
+                <span>{t?.ai?.dataNoPersonal ?? 'Keine persönlichen Daten (Name, Adresse, Telefon) werden gesendet. Das generierte PDF wird lokal erstellt.'}</span>
+              </p>
+            </div>
+            
+            <button
+              type="button"
+              onClick={() => setShowAiDataInfo(false)}
+              className={`mt-4 w-full py-2 rounded-xl font-bold transition-colors ${
+                darkMode 
+                  ? 'bg-primary text-white hover:bg-primary-dark' 
+                  : 'bg-primary text-white hover:bg-primary-dark'
+              }`}
+            >
+              {t?.ui?.understand ?? 'Verstanden'}
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 });
 
-Step4Description.displayName = 'Step4Description';
+Step3Description.displayName = 'Step3Description';
 
-export default Step4Description;
+export default Step3Description;

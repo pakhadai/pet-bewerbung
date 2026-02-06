@@ -50,8 +50,8 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
   const getTemplateConfig = () => {
     const configs = {
       classic: {
-        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[14mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
-        headerContainer: 'mb-5 pb-3 border-b-2 border-slate-900',
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[12mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        headerContainer: 'mb-4 pb-2.5 border-b-2 border-slate-900',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
         headerIconBg: 'bg-white p-2 rounded-sm border-2 border-slate-900',
@@ -60,21 +60,21 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         subtitleText: 'text-[10px] uppercase tracking-wider text-slate-500 mt-1',
         dateText: 'text-[10px] text-slate-500 text-right',
         dateLabel: today,
-        mainLayout: 'flex gap-6 flex-1 min-h-0 overflow-hidden',
+        mainLayout: 'flex gap-5 flex-1 min-h-0 overflow-hidden',
         sidebarWidth: 'w-[35%] flex-shrink-0',
-        sidebarSpace: 'space-y-4',
+        sidebarSpace: 'space-y-3',
         mainWidth: 'flex-1 min-w-0',
-        mainSpace: 'space-y-4',
+        mainSpace: 'space-y-3',
         footerContainer: 'mt-auto pt-2 border-t-2 border-slate-900 flex-shrink-0 pb-[3mm]',
-        footerText: 'text-[9px] text-slate-400 uppercase tracking-wider text-center mb-2',
-        footerSignContainer: 'w-40 border-t border-slate-400 pt-2 mt-4',
+        footerText: 'text-[10px] text-slate-400 uppercase tracking-[0.15em] font-semibold text-center',
+        footerSignContainer: 'w-44 border-t border-slate-400 pt-2 mt-3',
         footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600',
         badge: null
       },
 
       modern: {
-        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[14mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
-        headerContainer: 'mb-5 pb-3 border-b border-slate-200',
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[12mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        headerContainer: 'mb-4 pb-2.5 border-b border-slate-200',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
         headerIconBg: 'bg-slate-100 text-slate-700 p-2 rounded-md border border-slate-200',
@@ -83,21 +83,21 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         subtitleText: 'text-[11px] text-slate-500 mt-1.5',
         dateText: 'text-[10px] text-slate-400 text-right',
         dateLabel: today,
-        mainLayout: 'flex gap-6 flex-1 min-h-0 overflow-hidden',
+        mainLayout: 'flex gap-5 flex-1 min-h-0 overflow-hidden',
         sidebarWidth: 'w-[35%] flex-shrink-0',
-        sidebarSpace: 'space-y-4',
+        sidebarSpace: 'space-y-3',
         mainWidth: 'flex-1 min-w-0',
-        mainSpace: 'space-y-4',
-        footerContainer: 'mt-auto pt-2 border-t border-slate-200 flex-shrink-0 pb-[3mm]',
-        footerText: 'text-[9px] text-slate-400 text-center mb-2',
-        footerSignContainer: 'w-40 border-t border-slate-300 pt-2 mt-4',
+        mainSpace: 'space-y-3',
+        footerContainer: 'mt-auto pt-3 border-t border-slate-200 flex-shrink-0 pb-[5mm]',
+        footerText: 'text-[9px] text-slate-400 text-center mb-3',
+        footerSignContainer: 'w-44 border-t border-slate-300 pt-3 mt-6',
         footerSignText: 'text-[9px] uppercase font-medium tracking-wider text-slate-500',
         badge: null
       },
 
       compact: {
-        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[12mm] text-[10px] font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
-        headerContainer: 'mb-4 pb-3 border-b border-slate-300',
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[10mm] text-[10px] font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        headerContainer: 'mb-3 pb-2 border-b border-slate-300',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-2',
         headerIconBg: 'bg-white p-1.5 rounded-sm border-2 border-slate-700',
@@ -108,19 +108,19 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         dateLabel: today,
         mainLayout: 'flex gap-4 flex-1 min-h-0 overflow-hidden',
         sidebarWidth: 'w-[32%] flex-shrink-0',
-        sidebarSpace: 'space-y-3',
+        sidebarSpace: 'space-y-2',
         mainWidth: 'flex-1 min-w-0',
-        mainSpace: 'space-y-3',
-        footerContainer: 'mt-auto pt-2 border-t border-slate-300 flex-shrink-0',
-        footerText: 'text-[8px] text-slate-400 text-center mb-1.5',
-        footerSignContainer: 'w-36 border-t border-slate-300 pt-1.5 mt-3',
+        mainSpace: 'space-y-2',
+        footerContainer: 'mt-auto pt-3 border-t border-slate-300 flex-shrink-0 pb-[4mm]',
+        footerText: 'text-[8px] text-slate-400 text-center mb-2',
+        footerSignContainer: 'w-40 border-t border-slate-300 pt-2 mt-5',
         footerSignText: 'text-[8px] uppercase font-medium tracking-wider text-slate-500',
         badge: null
       },
 
       swiss: {
-        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[14mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden border-t-4 border-red-600',
-        headerContainer: 'mb-5 pb-3 border-b-2 border-red-600',
+        container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[12mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden border-t-4 border-red-600',
+        headerContainer: 'mb-4 pb-2.5 border-b-2 border-red-600',
         headerFlex: 'flex items-start justify-between',
         headerIconContainer: 'flex items-center gap-3',
         headerIconBg: 'bg-white p-2 rounded-sm border border-red-600',
@@ -130,14 +130,14 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         dateText: 'text-[10px] text-slate-500 text-right',
         dateLabel: today,
         dateBadge: null,
-        mainLayout: 'flex gap-6 flex-1 min-h-0 overflow-hidden',
+        mainLayout: 'flex gap-5 flex-1 min-h-0 overflow-hidden',
         sidebarWidth: 'w-[35%] flex-shrink-0',
-        sidebarSpace: 'space-y-4',
+        sidebarSpace: 'space-y-3',
         mainWidth: 'flex-1 min-w-0',
-        mainSpace: 'space-y-4',
-        footerContainer: 'mt-auto pt-2 border-t-2 border-red-600 flex-shrink-0 pb-[3mm]',
-        footerText: 'text-[9px] text-slate-500 text-center mb-2',
-        footerSignContainer: 'w-40 border-t border-red-400 pt-2 mt-4',
+        mainSpace: 'space-y-3',
+        footerContainer: 'mt-auto pt-3 border-t-2 border-red-600 flex-shrink-0 pb-[5mm]',
+        footerText: 'text-[9px] text-slate-500 text-center mb-3',
+        footerSignContainer: 'w-44 border-t border-red-400 pt-3 mt-6',
         footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600',
         badge: null
       },
@@ -189,6 +189,59 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
         footerSignText: 'text-[9px] uppercase font-bold text-gray-400 text-center mt-1',
         primaryColor: '#13ec5b',
         accentColor: '#dc2626',
+        badge: null
+      },
+
+      // Friendly template - whimsical, purple theme, rounded corners
+      friendly: {
+        container: 'w-[210mm] h-[292mm] bg-white text-[#130c1d] p-[12mm] text-xs relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        headerContainer: 'mb-6 pb-0',
+        headerFlex: 'flex flex-row gap-6 items-start',
+        headerIconContainer: 'flex-shrink-0',
+        headerIconBg: 'w-36 h-36 rounded-2xl overflow-hidden border-4 border-[#efe5fd] shadow-lg rotate-[-2deg]',
+        headerIconSize: 144,
+        titleText: 'text-4xl font-extrabold text-[#130c1d] tracking-tight mb-1',
+        subtitleText: 'text-lg text-[#6400f0] font-medium mb-3',
+        dateText: 'hidden',
+        dateLabel: today,
+        mainLayout: 'grid grid-cols-12 gap-6 flex-1 min-h-0 overflow-hidden',
+        sidebarWidth: 'col-span-7',
+        sidebarSpace: 'flex flex-col gap-4',
+        mainWidth: 'col-span-5',
+        mainSpace: 'flex flex-col gap-4',
+        footerContainer: 'mt-auto pt-4 border-t-2 border-dashed border-[#ece6f4] flex-shrink-0',
+        footerText: 'text-[8px] text-gray-400 tracking-wider',
+        footerSignContainer: 'w-32 border-b border-gray-300 pb-1',
+        footerSignText: 'text-[8px] uppercase tracking-widest text-gray-400 mt-1',
+        primaryColor: '#6400f0',
+        accentColor: '#efe5fd',
+        badge: null
+      },
+
+      // Grid template - strict Swiss grid style with red accent and progress bars
+      grid: {
+        container: 'w-[210mm] h-[292mm] bg-white text-[#1a1a1a] p-[12mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+        headerContainer: 'mb-6 pb-5 border-b-4 border-[#D80000]',
+        headerFlex: 'flex items-start justify-between',
+        headerIconContainer: 'flex items-center gap-4',
+        headerIconBg: 'size-14 bg-[#D80000] text-white flex items-center justify-center',
+        headerIconSize: 36,
+        titleText: 'text-2xl font-black uppercase tracking-tight text-black leading-none',
+        subtitleText: 'text-[10px] text-gray-400 uppercase tracking-widest mt-1',
+        dateText: 'text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right',
+        dateLabelTitle: 'Erstellungsdatum',
+        dateLabel: today,
+        mainLayout: 'grid grid-cols-12 gap-8 flex-1 min-h-0 overflow-hidden',
+        sidebarWidth: 'col-span-4',
+        sidebarSpace: 'flex flex-col gap-6',
+        mainWidth: 'col-span-8',
+        mainSpace: 'flex flex-col gap-6',
+        footerContainer: 'mt-auto pt-6 border-t-2 border-gray-100 flex-shrink-0',
+        footerText: 'text-[10px] text-gray-400 uppercase tracking-widest',
+        footerSignContainer: 'w-56 border-t border-black ml-auto',
+        footerSignText: 'text-[10px] uppercase tracking-widest text-gray-500 mt-2 font-bold text-right',
+        primaryColor: '#D80000',
+        accentColor: '#f5f5f5',
         badge: null
       }
     };
@@ -310,6 +363,74 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
       );
     }
 
+    // Friendly template header - photo + pet info in header
+    if (templateType === 'friendly') {
+      return (
+        <div className={config.headerContainer}>
+          <div className={config.headerFlex}>
+            {/* Pet Photo */}
+            <div className={config.headerIconContainer}>
+              <div className={config.headerIconBg}>
+                {data.photo ? (
+                  <img src={data.photo} alt={data.petName} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-[#efe5fd] flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[#6400f0] text-4xl">pets</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Pet Info */}
+            <div className="flex flex-col justify-center flex-grow">
+              <h1 className={config.titleText}>{data.petName || 'Mein Haustier'}</h1>
+              <p className={config.subtitleText}>{data.breed ? `${data.breed}` : (t.labels.breed || 'Rasse / Art')}</p>
+              <div className="grid grid-cols-2 gap-y-1.5 gap-x-6 text-[11px] text-[#130c1d]/80 mt-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[#6400f0] text-[16px]">cake</span>
+                  <span>{data.petAge ? `${data.petAge} ${t.labels?.years || 'Jahre'}` : '—'}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[#6400f0] text-[16px]">scale</span>
+                  <span>{data.weight ? `${data.weight} kg` : '—'}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[#6400f0] text-[16px]">transgender</span>
+                  <span>{data.gender === 'male' ? (t.labels?.male || 'Männlich') : data.gender === 'female' ? (t.labels?.female || 'Weiblich') : '—'}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[#6400f0] text-[16px]">location_on</span>
+                  <span>{data.city || '—'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Grid template header - strict Swiss style with red accent
+    if (templateType === 'grid') {
+      return (
+        <div className={config.headerContainer}>
+          <div className={config.headerFlex}>
+            <div className={config.headerIconContainer}>
+              <div className={config.headerIconBg}>
+                <span className="material-symbols-outlined text-[36px]">cruelty_free</span>
+              </div>
+              <div>
+                <h1 className={config.titleText}>Tierhalter-<br/>Referenzblatt</h1>
+                <p className={config.subtitleText}>Dokument-ID: #{data.chipId?.slice(-4) || 'XXXX'}-CH</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{t.labels?.date || 'Erstellungsdatum'}</p>
+              <p className="text-xl font-bold font-mono tracking-tight">{config.dateLabel}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     // Default header (classic, modern, compact)
     return (
       <div className={config.headerContainer}>
@@ -391,11 +512,83 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
       );
     }
 
+    // FREE template (classic) - prominent branding
+    if (templateType === 'classic') {
+      return (
+        <div className={config.footerContainer}>
+          <div className="flex flex-col items-center w-full">
+            <p className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-semibold mb-4">
+              ✦ DOKUMENT GENERIERT VIA PET-BEWERBUNG.CH ✦
+            </p>
+          </div>
+          <div className="flex justify-end">
+            {config.footerSignContainer && (
+              <div className={config.footerSignContainer}>
+                <p className={config.footerSignText}>{t.doc.sign}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Friendly template footer
+    if (templateType === 'friendly') {
+      return (
+        <div className={config.footerContainer}>
+          <div className="grid grid-cols-2 gap-6">
+            {/* Left - References */}
+            <div>
+              <h3 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#6400f0] text-lg">format_quote</span>
+                {t.doc.references || 'Referenzen'}
+              </h3>
+              {data.previousLandlord && (
+                <div className="bg-[#f7f5f8] p-2.5 rounded-lg border-l-4 border-[#6400f0] mb-2">
+                  <p className="text-[10px] text-gray-600 italic mb-1">
+                    "{data.landlordReference || t.doc.landlordReference || 'Guter Mieter mit wohlerzogenem Haustier.'}"
+                  </p>
+                  <p className="text-[10px] font-bold text-[#130c1d]">— {data.previousLandlord}</p>
+                </div>
+              )}
+            </div>
+            {/* Right - Signature */}
+            <div className="flex flex-col justify-end items-end">
+              <div className={config.footerSignContainer}></div>
+              <p className={config.footerSignText}>{data.ownerName || t.doc.sign}, {t.doc.ownerTitle || 'Halter'}</p>
+            </div>
+          </div>
+          <div className="mt-3 text-center">
+            <p className="text-[6px] text-slate-300 tracking-wide">pet-bewerbung.ch</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Grid template footer - Swiss official style
+    if (templateType === 'grid') {
+      return (
+        <div className={config.footerContainer}>
+          <div className="flex justify-between items-end">
+            <div className="flex flex-col">
+              <span className="font-black text-[#D80000] tracking-tight text-lg">Pet-Bewerbung.ch</span>
+              <span className="text-[9px] text-gray-400 uppercase tracking-widest mt-1">Swiss Standard Pet Resume • © {new Date().getFullYear()}</span>
+            </div>
+            <div className="text-right">
+              <div className={config.footerSignContainer}></div>
+              <p className={config.footerSignText}>{t.doc?.sign || 'Unterschrift Halter'}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Premium templates - subtle branding
     return (
       <div className={config.footerContainer}>
         <div className="flex justify-between items-end">
-          <p className="text-[8px] text-slate-500 uppercase tracking-wider">
-            {t.doc.footer ?? 'Dokument generiert via Pet-Bewerbung.ch'}
+          <p className="text-[6px] text-slate-300 tracking-wide">
+            pet-bewerbung.ch
           </p>
           {config.footerSignContainer && (
             <div className={config.footerSignContainer}>
@@ -417,6 +610,370 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     // Emergency template has its own unique layout
     if (templateType === 'emergency') {
       return renderEmergencyContent();
+    }
+
+    // Friendly template has its own unique card-based layout
+    if (templateType === 'friendly') {
+      return (
+        <div className={config.mainLayout}>
+          {/* Left Column - About Me & Behavior */}
+          <div className={`${config.sidebarWidth} ${config.sidebarSpace}`}>
+            {/* About Me Section */}
+            <div className="bg-[#efe5fd]/40 p-4 rounded-2xl border border-[#efe5fd]">
+              <h2 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#6400f0] text-lg">info</span>
+                {t.doc.descTitle || 'Über mich'}
+              </h2>
+              <p className="text-[11px] leading-relaxed text-[#130c1d]/80">
+                {data.description || t.doc.defaultDescription || 'Hier könnte eine Beschreibung stehen...'}
+              </p>
+            </div>
+            
+            {/* Behavior/Temperament Section */}
+            <div className="bg-white p-4 rounded-2xl border border-[#ece6f4] shadow-sm">
+              <h2 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#6400f0] text-lg">mood</span>
+                {t.doc.behavior || 'Temperament'}
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {data.characteristics && data.characteristics.length > 0 ? (
+                  data.characteristics.map((trait, i) => (
+                    <span 
+                      key={i}
+                      className="px-3 py-1.5 bg-[#efe5fd] text-[#6400f0] text-[10px] font-medium rounded-full"
+                    >
+                      {trait}
+                    </span>
+                  ))
+                ) : (
+                  <>
+                    <span className="px-3 py-1.5 bg-[#efe5fd] text-[#6400f0] text-[10px] font-medium rounded-full">{t.labels?.friendly || 'Freundlich'}</span>
+                    <span className="px-3 py-1.5 bg-[#efe5fd] text-[#6400f0] text-[10px] font-medium rounded-full">{t.labels?.playful || 'Verspielt'}</span>
+                    <span className="px-3 py-1.5 bg-[#efe5fd] text-[#6400f0] text-[10px] font-medium rounded-full">{t.labels?.calm || 'Ruhig'}</span>
+                  </>
+                )}
+              </div>
+              
+              {/* Additional behavior info */}
+              <div className="mt-3 pt-3 border-t border-[#ece6f4]">
+                <div className="grid grid-cols-2 gap-2 text-[10px]">
+                  <div className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[#6400f0] text-sm">
+                      {data.goodWithChildren === 'yes' ? 'check_circle' : 'cancel'}
+                    </span>
+                    <span className="text-[#130c1d]/70">{t.labels?.goodWithChildren || 'Kinderfreundlich'}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[#6400f0] text-sm">
+                      {data.goodWithAnimals === 'yes' ? 'check_circle' : 'cancel'}
+                    </span>
+                    <span className="text-[#130c1d]/70">{t.labels?.goodWithAnimals || 'Tierfreundlich'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Owner & Pet Details */}
+          <div className={`${config.mainWidth} ${config.mainSpace}`}>
+            {/* Owner Info */}
+            <div className="bg-gradient-to-br from-[#6400f0] to-[#8b5cf6] p-4 rounded-2xl text-white">
+              <h2 className="text-sm font-bold mb-3 flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg">person</span>
+                {t.doc.ownerTitle || 'Halter'}
+              </h2>
+              <div className="space-y-2 text-[11px]">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm opacity-80">badge</span>
+                  <span>{data.ownerName || '—'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm opacity-80">home</span>
+                  <span>{data.address ? `${data.address}, ${data.zip} ${data.city}` : '—'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm opacity-80">call</span>
+                  <span>{data.phone || '—'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm opacity-80">mail</span>
+                  <span>{data.email || '—'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Pet Details Card */}
+            <div className="bg-white p-4 rounded-2xl border border-[#ece6f4] shadow-sm">
+              <h2 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#6400f0] text-lg">pets</span>
+                {t.doc.details || 'Details'}
+              </h2>
+              <div className="space-y-2 text-[10px]">
+                <div className="flex justify-between items-center py-1.5 border-b border-[#ece6f4]">
+                  <span className="text-gray-500">{t.labels?.chipId || 'Chip-ID'}</span>
+                  <span className="font-medium text-[#130c1d]">{data.chipId || '—'}</span>
+                </div>
+                <div className="flex justify-between items-center py-1.5 border-b border-[#ece6f4]">
+                  <span className="text-gray-500">{t.labels?.vet || 'Tierarzt'}</span>
+                  <span className="font-medium text-[#130c1d]">{data.vetName || '—'}</span>
+                </div>
+                <div className="flex justify-between items-center py-1.5 border-b border-[#ece6f4]">
+                  <span className="text-gray-500">{t.labels?.insurance || 'Versicherung'}</span>
+                  <span className="font-medium text-[#130c1d]">{data.insuranceCompany || '—'}</span>
+                </div>
+                <div className="flex gap-3 mt-3">
+                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-[9px] ${data.isVaccinated === 'yes' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className="material-symbols-outlined text-xs">{data.isVaccinated === 'yes' ? 'check' : 'close'}</span>
+                    {t.labels?.vaccinated || 'Geimpft'}
+                  </span>
+                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-[9px] ${data.isNeutered === 'yes' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                    <span className="material-symbols-outlined text-xs">{data.isNeutered === 'yes' ? 'check' : 'close'}</span>
+                    {t.labels?.neutered || 'Kastriert'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Grid template - strict Swiss grid with progress bars and checkboxes
+    if (templateType === 'grid') {
+      // Helper function to get noise level percentage
+      const getNoiseLevelPercent = () => {
+        if (data.noiseLevel === 'low') return 20;
+        if (data.noiseLevel === 'high') return 85;
+        return 50;
+      };
+      
+      // Helper function to get alone time percentage (max 8 hours = 100%)
+      const getAloneTimePercent = () => {
+        const hours = parseInt(data.aloneTime) || 0;
+        return Math.min(100, (hours / 8) * 100);
+      };
+
+      return (
+        <div className={config.mainLayout}>
+          {/* Left Column - Photo, Owner, Details */}
+          <div className={`${config.sidebarWidth} ${config.sidebarSpace}`}>
+            {/* Pet Photo */}
+            <div className="w-full aspect-[3/4] bg-gray-100 border border-gray-200 p-2 shadow-sm">
+              {data.photo ? (
+                <img src={data.photo} alt={data.petName} className="w-full h-full object-cover" style={{ filter: 'grayscale(10%)' }} />
+              ) : (
+                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-gray-400 text-6xl">pets</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Owner Section */}
+            <div>
+              <h3 className="text-[10px] font-black text-black border-b-2 border-black pb-2 mb-3 uppercase tracking-wider">
+                {t.doc?.ownerTitle || 'Halter'} / Owner
+              </h3>
+              <div className="text-sm space-y-1.5 leading-snug">
+                <p className="font-bold text-base">{data.ownerName || '—'}</p>
+                <p>{data.street} {data.houseNumber}</p>
+                <p>{data.postal} {data.city}</p>
+                <div className="pt-2 space-y-1 text-gray-600">
+                  <p className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[16px] text-[#D80000]">call</span>
+                    <span className="font-medium">{data.phone || '—'}</span>
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[16px] text-[#D80000]">mail</span>
+                    <span>{data.email || '—'}</span>
+                  </p>
+                </div>
+              </div>
+              {/* QR Code placeholder */}
+              <div className="mt-5 size-24 bg-[#1a1a1a] text-white flex items-center justify-center p-2">
+                <span className="material-symbols-outlined text-[48px]">qr_code_2</span>
+              </div>
+            </div>
+
+            {/* Details Section */}
+            <div>
+              <h3 className="text-[10px] font-black text-black border-b-2 border-black pb-2 mb-3 uppercase tracking-wider">
+                {t.doc?.details || 'Details'}
+              </h3>
+              <div className="space-y-2 text-sm">
+                <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
+                  <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.breed || 'Rasse'}</span>
+                  <span className="font-semibold text-right">{data.breed || '—'}</span>
+                </div>
+                <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
+                  <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.gender || 'Geschlecht'}</span>
+                  <span className="font-semibold text-right">{data.gender === 'male' ? (t.labels?.male || 'Männlich') : data.gender === 'female' ? (t.labels?.female || 'Weiblich') : '—'}</span>
+                </div>
+                <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
+                  <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.age || 'Alter'}</span>
+                  <span className="font-semibold text-right">{data.petAge ? `${data.petAge} Jahre` : '—'}</span>
+                </div>
+                <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
+                  <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.weight || 'Gewicht'}</span>
+                  <span className="font-semibold text-right">{data.weight ? `${data.weight} kg` : '—'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Name, Description, Behavior, Legal, References */}
+          <div className={`${config.mainWidth} ${config.mainSpace}`}>
+            {/* Pet Name Header */}
+            <div className="border-b border-gray-100 pb-4">
+              <h2 className="text-6xl font-black tracking-tighter text-black leading-none mb-1">{(data.petName || 'NAME').toUpperCase()}</h2>
+              <div className="flex items-center gap-3">
+                <span className="bg-[#D80000] text-white text-[10px] font-bold px-2 py-0.5 uppercase tracking-wide">
+                  {t.labels?.availableForRent || 'Available for Rent'}
+                </span>
+                <span className="text-xl text-gray-400 font-light tracking-wide">{data.city || '—'}, Schweiz</span>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="bg-gray-50 p-5 border-l-4 border-[#D80000]">
+              <h3 className="text-[10px] font-bold text-[#D80000] uppercase tracking-widest mb-2">
+                {t.doc?.descTitle || 'Charakterbeschreibung'}
+              </h3>
+              <p className="text-sm leading-relaxed text-gray-800 text-justify">
+                {data.description || data.generatedText || t.doc?.defaultDescription || 'Hier könnte eine Beschreibung stehen...'}
+              </p>
+            </div>
+
+            {/* Behavior & Routine */}
+            <div>
+              <h3 className="text-sm font-bold border-b border-gray-300 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2 text-black">
+                <span className="material-symbols-outlined text-[#D80000] text-[20px]">psychology</span>
+                {t.doc?.behaviorTitle || 'Verhalten & Routine'}
+              </h3>
+              <div className="grid grid-cols-2 gap-6 mb-4">
+                <div className="space-y-4">
+                  {/* Noise Level */}
+                  <div>
+                    <div className="flex justify-between text-[10px] font-bold mb-1.5 uppercase tracking-wide">
+                      <span>{t.labels?.noiseLevel || 'Lärmempfindlichkeit'}</span>
+                      <span className="text-[#D80000]">{data.noiseLevel === 'low' ? (t.labels?.noiseLow || 'Niedrig') : data.noiseLevel === 'high' ? (t.labels?.noiseHigh || 'Hoch') : (t.labels?.noiseMedium || 'Mittel')}</span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-200">
+                      <div className="h-full bg-[#D80000]" style={{ width: `${getNoiseLevelPercent()}%` }}></div>
+                    </div>
+                  </div>
+                  {/* Alone Time */}
+                  <div>
+                    <div className="flex justify-between text-[10px] font-bold mb-1.5 uppercase tracking-wide">
+                      <span>{t.labels?.aloneTime || 'Alleine bleiben'}</span>
+                      <span className="text-[#D80000]">{data.aloneTime ? `${data.aloneTime} Std.` : '—'}</span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-200">
+                      <div className="h-full bg-[#D80000]" style={{ width: `${getAloneTimePercent()}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  {/* Activity Level placeholder */}
+                  <div>
+                    <div className="flex justify-between text-[10px] font-bold mb-1.5 uppercase tracking-wide">
+                      <span>{t.labels?.activityLevel || 'Aktivitätslevel'}</span>
+                      <span className="text-[#D80000]">{t.labels?.high || 'Hoch'}</span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-200">
+                      <div className="h-full bg-[#D80000] w-[85%]"></div>
+                    </div>
+                  </div>
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {data.behaviorWithChildren === 'good' && (
+                      <span className="px-2 py-1 bg-white text-[9px] font-bold uppercase border border-gray-300 tracking-wide text-gray-600">{t.labels?.goodWithChildren || 'Kinderlieb'}</span>
+                    )}
+                    {data.behaviorWithPets === 'good' && (
+                      <span className="px-2 py-1 bg-white text-[9px] font-bold uppercase border border-gray-300 tracking-wide text-gray-600">{t.labels?.social || 'Sozial'}</span>
+                    )}
+                    <span className="px-2 py-1 bg-white text-[9px] font-bold uppercase border border-gray-300 tracking-wide text-gray-600">{t.labels?.houseTrained || 'Stubenrein'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Legal & Health */}
+            <div>
+              <h3 className="text-sm font-bold border-b border-gray-300 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2 text-black">
+                <span className="material-symbols-outlined text-[#D80000] text-[20px]">shield</span>
+                {t.doc?.legalTitle || 'Rechtliches & Gesundheit'}
+              </h3>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                {/* Checkboxes */}
+                <div className="grid grid-cols-2 gap-y-2 gap-x-3">
+                  <div className="flex items-center justify-between text-sm font-medium p-2 bg-gray-50 border border-gray-100">
+                    <span>{t.labels?.chipped || 'Gechipt'}</span>
+                    <div className={`w-4 h-4 border border-gray-300 flex items-center justify-center bg-white ${data.chipId ? 'text-[#D80000]' : ''}`}>
+                      {data.chipId && <span className="text-sm font-black">✓</span>}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-sm font-medium p-2 bg-gray-50 border border-gray-100">
+                    <span>{t.labels?.vaccinated || 'Geimpft'}</span>
+                    <div className={`w-4 h-4 border border-gray-300 flex items-center justify-center bg-white ${data.hasVaccination ? 'text-[#D80000]' : ''}`}>
+                      {data.hasVaccination && <span className="text-sm font-black">✓</span>}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-sm font-medium p-2 bg-gray-50 border border-gray-100">
+                    <span>{t.labels?.neutered || 'Kastriert'}</span>
+                    <div className={`w-4 h-4 border border-gray-300 flex items-center justify-center bg-white ${data.isNeutered ? 'text-[#D80000]' : ''}`}>
+                      {data.isNeutered && <span className="text-sm font-black">✓</span>}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-sm font-medium p-2 bg-gray-50 border border-gray-100">
+                    <span>{t.labels?.dewormed || 'Entwurmt'}</span>
+                    <div className="w-4 h-4 border border-gray-300 flex items-center justify-center bg-white text-[#D80000]">
+                      <span className="text-sm font-black">✓</span>
+                    </div>
+                  </div>
+                </div>
+                {/* Details */}
+                <div className="text-sm space-y-2 border-l-2 border-gray-100 pl-4 py-1">
+                  <div>
+                    <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest">{t.labels?.chipId || 'Chip-Nummer'}</span>
+                    <span className="font-mono font-medium text-black">{data.chipId || '—'}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest">{t.labels?.insurance || 'Versicherung'}</span>
+                    <span className="font-medium text-black">{data.insuranceProvider || '—'}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest">{t.labels?.vet || 'Tierarzt'}</span>
+                    <span className="font-medium text-black">{data.vetName || '—'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* References */}
+            {(data.previousLandlordName || data.emergencyContactName) && (
+              <div>
+                <h3 className="text-sm font-bold border-b border-gray-300 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2 text-black">
+                  <span className="material-symbols-outlined text-[#D80000] text-[20px]">format_quote</span>
+                  {t.doc?.referenceTitle || 'Referenzen'}
+                </h3>
+                <div className="grid grid-cols-1 gap-3">
+                  {data.previousLandlordName && (
+                    <div className="text-sm bg-gray-50 p-3 border border-gray-100">
+                      <p className="italic text-gray-700 mb-2 font-medium">
+                        "{data.landlordReference || t.doc?.landlordQuote || 'War ein Vergnügen, dieses Tier im Gebäude zu haben.'}"
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <div className="h-0.5 w-4 bg-[#D80000]"></div>
+                        <p className="font-bold text-[10px] uppercase text-black">{data.previousLandlordName}, {t.labels?.formerLandlord || 'Früherer Vermieter'}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
     }
 
     // Apply dynamic section ordering when user has customized the layout

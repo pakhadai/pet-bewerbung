@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Wuff-Bewerbung (Pet CV)** is a web application that generates professional Swiss-standard pet application dossiers (CVs) for apartment rental applications. The application helps pet owners increase their chances of finding housing by creating a formal PDF document with pet details, owner information, insurance, and health records.
+**Pet-Bewerbung (Pet CV)** is a web application that generates professional Swiss-standard pet application dossiers (CVs) for apartment rental applications. The application helps pet owners increase their chances of finding housing by creating a formal PDF document with pet details, owner information, insurance, and health records.
+
+**Live Site**: https://pet-bewerbung.ch
 
 ## Development Commands
 
@@ -16,7 +18,7 @@ npm run build        # Build for production
 npm run preview      # Preview production build
 ```
 
-### Backend (Stripe Server)
+### Backend (Express + Stripe + AI)
 ```bash
 cd server
 npm install          # Install server dependencies
@@ -28,136 +30,265 @@ npm start            # Start Express server on http://localhost:4242
 npm run dev:all      # Runs both frontend and backend simultaneously
 ```
 
-### Stripe Configuration
-1. Copy `server/.env.example` to `server/.env`
-2. Set `STRIPE_SECRET_KEY` with test key (starts with `sk_test_`)
-3. Set `STRIPE_PUBLISHABLE_KEY` with test key (starts with `pk_test_`)
-4. Optionally set `STRIPE_WEBHOOK_SECRET` for webhook verification
-5. Server listens on port 4242 by default (configurable via `PORT` env var)
+### Docker
+```bash
+docker-compose up -d --build          # Production build
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up  # Dev with hot reload
+```
 
 ## Architecture
 
 ### Application Flow
-The app uses a **step-based wizard** (0-8) to guide users through creating a pet CV:
+The app uses a **step-based wizard** (0-6) to guide users through creating a pet CV:
 
-- **Step 0**: Landing page with features and call-to-action
-- **Step 1**: Owner information (name, address, email, phone)
-- **Step 2**: Pet details (type, name, breed, age, weight, gender)
-- **Step 3**: Health & insurance (chip ID, vet, insurance, neutered/vaccinated/registered status)
-- **Step 4**: Character description with AI text generation (transforms keywords into professional text)
-- **Step 5**: Photo upload
-- **Step 6**: Template selection (classic, modern, compact) - displays previews
-- **Step 7**: Document preview and download options (PDF or email)
-- **Step 8**: Thank you page with optional donation flow
+| Step | Component | Description |
+|------|-----------|-------------|
+| 0 | `Hero.tsx` | Landing page with features and CTA |
+| 1 | `Step1Details.jsx` | Owner info + pet basic info (name, type, breed, age) |
+| 2 | `Step2HealthInsurance.jsx` | Vet, insurance, chip, behavior, references |
+| 3 | `Step3Description.jsx` | AI text generation with premium sliders |
+| 4 | `Step4UploadSelect.jsx` | Photo upload + template selection |
+| 5 | `Step5Preview.jsx` | Document preview + download + visual editor |
+| 6 | `Step6ThankYou.jsx` | Thank you page + donation options |
 
-### State Management
-All application state is managed in [App.jsx](src/App.jsx) using React useState:
-- `step`: Current wizard step (0-8)
+### Frontend State Management
+State managed in `App.tsx` using React hooks:
+- `step`: Current wizard step (0-6)
 - `data`: Form data object with all pet and owner information
-- `theme`: Light/dark theme toggle
-- `templateType`: Selected PDF template (classic/modern/compact)
-- `donationAmount` + modal states: Stripe payment flow
+- `theme`: Light/dark theme toggle ('light' | 'dark')
+- `selectedTemplate`: PDF template ('classic' | 'modern' | 'compact' | 'swiss')
+- `isPremium`: Premium access status
+- `premiumToken`: JWT token for premium features
+- `premiumExpiresAt`: Token expiration timestamp
 
-Navigation between steps uses `goToStep()` which handles animation direction (`animDir`) for smooth transitions.
+Custom hooks in `src/hooks/`:
+- `useFormWizard`: Form state, navigation, premium logic
+- Exports: `data`, `updateData`, `step`, `goToStep`, `isPremium`, etc.
+
+### Backend Architecture (Modular)
+
+```
+server/
+├── index.js              # Entry point, middleware setup, routes
+├── config/
+│   └── index.js          # Centralized configuration, env validation
+├── controllers/
+│   ├── index.js          # Controller exports
+│   ├── stripe.js         # Payment endpoints
+│   └── ai.js             # AI generation endpoints
+├── middleware/
+│   ├── premium.js        # JWT token management
+│   └── rateLimit.js      # Redis-based rate limiting
+└── utils/
+    └── sanitize.js       # Input sanitization
+```
+
+**Key Backend Features:**
+- Modular controller architecture
+- Redis-based rate limiting (REQUIRED in production)
+- JWT-based premium session management (2-hour access)
+- Input sanitization for AI prompts (prompt injection protection)
+- Production-required environment variables validation
 
 ### Multi-Language Support
-Six languages supported via [constants.js](src/constants.js):
-- German (de) - Default
-- French (fr)
-- Italian (it)
-- Romansh (rm)
-- English (en)
-- Ukrainian (ua)
+Six languages in `src/translations/`:
+- `de.js` - German (Default)
+- `fr.js` - French
+- `it.js` - Italian
+- `rm.js` - Romansh
+- `en.js` - English
+- `ua.js` - Ukrainian
 
-Language auto-detected from browser on first load. All UI text comes from the `TRANSLATIONS` object in constants.js.
+Language auto-detected from browser. All UI text accessed via `t?.key?.subkey` pattern.
 
 ### PDF Generation
-Three template variants in [SwissDocument.jsx](src/components/SwissDocument.jsx):
-- **classic**: Traditional Swiss document style (black borders, gray sections)
-- **modern**: Contemporary design (blue accents, rounded corners)
-- **compact**: Space-efficient layout (smaller margins, reduced text size)
+Two rendering systems:
 
-Templates use CSS classes for A4 dimensions (210mm × 297mm) and are rendered to PDF via html2pdf.js. The document element has `id="pdf-document"` for export.
+1. **HTML Preview** (`SwissDocument.jsx`):
+   - Renders A4 document (210mm × 297mm) in browser
+   - Supports 4 templates + visual editor customization
+   - Dynamic section rendering based on `customDesign`
 
-### Payment Integration
-Two payment flows in [server/index.js](server/index.js):
-1. **Stripe Checkout** (`/create-checkout-session`): Hosted payment page with support for card and TWINT
-2. **Payment Elements** (`/create-payment-intent`): Embedded payment form with real-time status updates
+2. **PDF Export** (`SwissDocumentPdf.jsx`):
+   - Uses `@react-pdf/renderer` for server-side PDF
+   - Mirrors HTML structure with PDF-specific components
+   - Applies `customDesign` (colors, fonts, visibility, layout)
 
-Payment status tracked in-memory on server. Webhook endpoint (`/webhook`) handles Stripe events for payment status updates.
+### Premium Model (Freemium)
+
+**Free Tier:**
+- Classic template only
+- 1 AI generation per session
+- No visual editor
+
+**Premium (10 CHF, 2-hour access):**
+- All 4 templates
+- Unlimited AI generations
+- Visual editor (colors, fonts, bold/italic)
+- Download all templates as ZIP
+- Character constructor with sliders
+
+**Technical Implementation:**
+- JWT token with 2-hour expiration
+- Token bound to `deviceId` (stored in localStorage)
+- Restore mechanism via email link
+- Premium check: `verifyPremiumToken(token, deviceId)`
+
+### Visual Editor (Premium Feature)
+
+Located in `DocumentEditor.jsx`. Allows customization of:
+- Header color, text color, accent color, background color
+- Header font, body font (Inter, Roboto, Open Sans, etc.)
+- Bold/italic toggles for headers and body
+- Section visibility (hide elements)
+
+Changes stored in `localStorage` as `customDesign` object and applied to both HTML preview and PDF.
 
 ## Key Files
 
 ### Frontend
-- [src/App.jsx](src/App.jsx): Main application component with step routing and state
-- [src/constants.js](src/constants.js): Translations, initial data, template options
-- [src/components/SwissDocument.jsx](src/components/SwissDocument.jsx): PDF document templates (3 variants)
-- [src/components/LandingPage.jsx](src/components/LandingPage.jsx): Marketing landing page (step 0)
-- [src/components/DonateModal.jsx](src/components/DonateModal.jsx): Donation method selection modal
-- [src/components/PaymentModal.jsx](src/components/PaymentModal.jsx): Stripe Elements payment form
-- [src/theme.js](src/theme.js): Theme configuration (colors, fonts)
+| File | Purpose |
+|------|---------|
+| `src/App.tsx` | Main component, routing, global state |
+| `src/constants.js` | Template options, initial data |
+| `src/config.js` | API endpoint configuration |
+| `src/components/SwissDocument.jsx` | HTML document preview (4 templates) |
+| `src/components/SwissDocumentPdf.jsx` | PDF renderer |
+| `src/components/DocumentEditor.jsx` | Visual editor UI |
+| `src/components/steps/index.js` | Step component exports |
+| `src/hooks/useFormWizard.js` | Form wizard logic + premium |
+| `src/translations/*.js` | i18n files |
 
 ### Backend
-- [server/index.js](server/index.js): Express server with Stripe integration
-- [server/.env.example](server/.env.example): Environment variables template
-
-### Configuration
-- [vite.config.js](vite.config.js): Vite dev server on port 3000, host enabled for network access
-- [package.json](package.json): Frontend dependencies and scripts
+| File | Purpose |
+|------|---------|
+| `server/index.js` | Express entry, middleware, route mounting |
+| `server/config/index.js` | Environment validation, constants |
+| `server/controllers/stripe.js` | Checkout, payment intent, webhooks, premium activation |
+| `server/controllers/ai.js` | Pet description generation, text improvement |
+| `server/middleware/premium.js` | JWT creation/verification |
+| `server/middleware/rateLimit.js` | Redis-based AI rate limiting |
+| `server/utils/sanitize.js` | Input sanitization |
 
 ## Important Patterns
 
 ### Adding a New Language
-1. Add language code to constants.js in `TRANSLATIONS` object
-2. Include all translation keys (landing, steps, labels, doc, monetization, thankYou, templates)
-3. Add language to `detectLang()` function in App.jsx if needed
-4. Update LanguageSelector component if adding to UI dropdown
+1. Create `src/translations/xx.js` based on `en.js`
+2. Add export in `src/translations/index.js`
+3. Add language button in `LanguageSelector.jsx`
+4. Add to `detectLang()` in `App.tsx` if needed
 
 ### Adding a New Template
-1. Add template config to `TEMPLATE_OPTIONS` in constants.js
-2. Add variant styles in `getVariantStyles()` in SwissDocument.jsx
-3. Template should render at exactly 210mm × 297mm for A4 PDF output
-4. Add preview thumbnail to step 6 template grid
+1. Add config to `TEMPLATE_OPTIONS` in `constants.js`:
+   ```javascript
+   { id: 'new', label: 'New Style', isPremium: true, price: 10 }
+   ```
+2. Add variant case in `SwissDocument.jsx` `getVariantStyles()`
+3. Add variant case in `SwissDocumentPdf.jsx`
+4. Template must render at exactly 210mm × 297mm
 
 ### Modifying Form Steps
-- Step content defined in `renderStep()` switch statement in App.jsx
-- Each step should update `data` state via `updateData(field, value)`
-- Navigation controlled by `goToStep(newStep)` function
-- Bottom navigation panel shown for steps 1-7
+- Steps defined in `App.tsx` `renderStep()` switch
+- Each step receives: `data`, `updateData`, `t`, `animDir`, `darkMode`, `onPrev`, `onNext`
+- Update `data` via `updateData('fieldName', value)`
+- Navigation via `goToStep(stepNumber)`
 
-### PDF Export
-PDF generated in `handleDownloadPDF()` function:
-- Target element: `document.getElementById('pdf-document')`
-- Uses html2pdf.js with A4 portrait, 2x scale for quality
-- Auto-redirects to step 8 (thank you) after download
-- Template selected via `selectedTemplate` state variable
+### API Endpoints
 
-### Stripe Payments
-Backend expects:
-- `amount` in cents (e.g., 500 for 5 CHF)
-- `currency` defaulting to 'eur'
-- `successUrl` and `cancelUrl` for checkout redirect
-- `payment_method` for method selection ('card' or 'twint')
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/stripe-config` | GET | - | Get publishable key |
+| `/api/create-checkout-session` | POST | - | Create Stripe Checkout |
+| `/api/create-payment-intent` | POST | - | Create Payment Intent |
+| `/api/activate-premium` | POST | - | Activate after payment |
+| `/api/generate-restore-link` | POST | JWT | Generate restore email |
+| `/api/verify-restore` | GET | - | Verify restore token |
+| `/api/generate-pet-description` | POST | - | AI generation (rate limited) |
+| `/api/improve-text` | POST | JWT | AI text improvement |
+| `/api/webhook` | POST | Stripe sig | Stripe webhooks |
+| `/health` | GET | - | Health check |
 
-## API Configuration
+### Environment Variables
 
-### Stripe Endpoints
-API endpoints are centralized in [src/config.js](src/config.js):
-- **Development**: Uses `http://localhost:4242` by default
-- **Production**: Reads from `VITE_STRIPE_API_URL` environment variable
-- Create `.env` file from `.env.example` and set `VITE_STRIPE_API_URL` for custom endpoints
-
-All API calls use `API_ENDPOINTS` from config:
-```javascript
-import API_ENDPOINTS from './config';
-fetch(API_ENDPOINTS.createCheckoutSession, {...})
+**Required in Production:**
+```env
+JWT_SECRET=...              # REQUIRED - server exits without it
+STRIPE_WEBHOOK_SECRET=...   # REQUIRED - server exits without it
+STRIPE_SECRET_KEY=...
+STRIPE_PUBLISHABLE_KEY=...
+REDIS_URL=...               # REQUIRED - rate limiting won't work
 ```
 
-Available endpoints:
-- `createCheckoutSession` - Create Stripe Checkout session
-- `createPaymentIntent` - Create Payment Intent for embedded form
-- `stripeConfig` - Get Stripe publishable key
-- `paymentStatus(id)` - Check payment status by ID
+**Optional:**
+```env
+GEMINI_API_KEY=...          # For AI features
+PORT=4242                   # Server port
+ALLOWED_ORIGINS=...         # CORS origins (comma-separated)
+```
 
-## Data Privacy Note
-The app emphasizes that **no data is stored on the server** - all document generation happens client-side. This is a key selling point mentioned in translations and should be preserved in any changes.
+### Rate Limiting (AI)
+- Free users: 3 AI generations per 24 hours
+- Premium users: Unlimited
+- Implemented via Redis in `server/middleware/rateLimit.js`
+- Redis is REQUIRED in production (server exits if unavailable)
+- In development, rate limiting is disabled if Redis unavailable
+
+## Data Privacy
+
+**Key principle**: No user data is stored on the server.
+- All document generation happens client-side
+- Form data stored only in browser localStorage
+- Premium tokens are stateless JWTs
+- Only payment metadata stored by Stripe
+
+This is a key selling point and must be preserved in any changes.
+
+## Common Tasks
+
+### Debug PDF Generation
+1. Check browser console for errors
+2. Verify `data` object has all required fields
+3. Test with `formatAddress()` helper for address formatting
+4. Check `customDesign` object in localStorage
+
+### Debug Payment Issues
+1. Check `/health` endpoint for Redis status
+2. Verify Stripe keys in environment
+3. Test webhook with `stripe listen --forward-to localhost:4242/webhook`
+4. Check `payment-status/:id` endpoint
+
+### Debug AI Generation
+1. Verify `GEMINI_API_KEY` is set
+2. Check rate limit status (Redis)
+3. Look for sanitization issues in server logs
+4. Verify pet data is passed correctly
+
+## Testing
+
+```bash
+# Frontend linting
+npm run lint
+
+# Backend health check
+curl http://localhost:4242/health
+
+# Stripe webhook testing
+stripe listen --forward-to localhost:4242/webhook
+```
+
+## Docker Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| frontend | 80 | Nginx serving React build |
+| backend | 4242 | Express API |
+| redis | 6379 | Rate limiting cache |
+| tunnel | - | Cloudflare Tunnel |
+
+## Notes for AI Assistants
+
+1. **Step file naming**: Files are named `Step1Details`, `Step2HealthInsurance`, etc. to match actual step numbers in `App.tsx`
+2. **Translation access**: Always use optional chaining `t?.key?.subkey ?? 'fallback'`
+3. **Premium checks**: Use `isPremium` from `useFormWizard` hook
+4. **PDF changes**: Must update both `SwissDocument.jsx` (HTML) and `SwissDocumentPdf.jsx` (PDF)
+5. **New fields**: Add to `INITIAL_DATA` in `constants.js` and relevant translation files

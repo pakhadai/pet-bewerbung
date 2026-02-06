@@ -51,6 +51,8 @@ export default {
   finalMessage: "Thank you for using our service!",
   ui: {
     select: "Select",
+    selected: "Selected",
+    templateSelected: "Template selected",
     preview: "Preview",
     previewMode: "Preview Mode",
     cancel: "Cancel",
@@ -81,7 +83,39 @@ export default {
     pdfError: "Failed to create PDF",
     pdfMemoryError: "PDF generation failed due to large image. Try reducing photo size.",
     pdfTimeoutError: "PDF generation timed out. Please try again.",
-    pdfSaveHint: "Tap \"Share\" → \"Save to Files\""
+    pdfSaveHint: "Tap \"Share\" → \"Save to Files\"",
+    goTo: "Go to",
+    understand: "Got it",
+    photoHint: "Clear photos with good lighting work best!",
+    clickOrDrop: "Click or Drag & Drop"
+  },
+  // AI data privacy info
+  ai: {
+    dataInfoButton: "What data is sent during AI generation?",
+    dataInfoTitle: "AI Privacy",
+    dataInfoDesc: "The following data is sent to our server during AI text generation:",
+    dataPetName: "Pet name",
+    dataPetType: "Pet type (Dog/Cat/Other)",
+    dataBreed: "Breed",
+    dataKeywords: "Keywords/Character traits",
+    dataLang: "Selected language",
+    dataNoPersonal: "No personal data (name, address, phone) is sent. The generated PDF is created locally."
+  },
+  // Step 4 specific
+  step4: {
+    photoPrivacy: "Your photo is never uploaded. Everything happens locally in your browser.",
+    changePhotoHint: "Click on the image or drag a new one here",
+    maxSize: "up to 10MB",
+    tipFormat: "Tip: Portrait format (3:4) works best",
+    tipsTitle: "Tips for a perfect photo:",
+    tip1: "Good lighting (natural light is ideal)",
+    tip2: "Pet looking at the camera",
+    tip3: "Neutral background"
+  },
+  step5: {
+    photoPreview: "Your photo will be displayed in the templates",
+    premiumInfo: "Premium templates can be selected and previewed.",
+    premiumInfoSub: "Payment is only required at download."
   },
   labels: {
     type: "Animal Type",
@@ -103,12 +137,15 @@ export default {
     gender: "Gender",
     m: "Male",
     f: "Female",
+    male: "Male",
+    female: "Female",
     chipId: "Chip ID",
     insurance: "Liability Insurance",
     vet: "Veterinarian",
     neutered: "Neutered",
     vaccination: "Vaccinated",
     registration: "Registered (AMICUS/ANIS)",
+    willingToPayDeposit: "Willing to pay pet deposit",
     aiPrompt: "Keywords (e.g. quiet, clean)",
     tellUsAboutPet: "Tell us about your pet",
     descriptionHint: "Share their personality, favorite toys, or funny quirks.",
@@ -120,7 +157,8 @@ export default {
     aiResult: "Text for Landlord",
     aiError: "AI generation failed. Using template.",
     aiNetworkError: "Network error. Please check your connection and try again.",
-    recrop: "Crop image",
+    recrop: "Recrop",
+    remove: "Remove",
     useFullImage: "Use full image",
     cropDone: "Crop",
     photo: "Select Photo",
@@ -306,22 +344,21 @@ export default {
     title: "Pet CV Creator",
     privacyTitle: "Data Privacy Shield",
     privacyDesc: "Your data is never stored. Everything happens in your browser.",
-    subtitle: "4 simple steps to your professional pet dossier",
     problemTitle: "Looking for a flat with a pet?",
     problemDesc: "In Switzerland the rental market is highly competitive. Many landlords are skeptical about pets.",
     solutionTitle: "Your solution: The Pet Dossier",
-    solutionDesc: "A professional CV shows responsibility, proves insurance coverage and sets you apart from other applicants. Increase your chances of getting your dream apartment.",
+    solutionDesc: "A professional CV shows responsibility, proves insurance coverage and sets you apart from other applicants.",
     cta: "Create Now",
+    // Free vs Premium comparison
     transparencyTitle: "Free vs Premium",
-    transparencyText: "Classic template is free. Premium unlocks Visual Editor, AI text and all designs (10 CHF / 2 hours).",
     transparencyBadge1: "Local Data",
     transparencyBadge2: "No Ads",
     transparencyBadge3: "Premium: 10 CHF",
-    // Free vs Premium comparison
     freeTitle: "Free",
     freeFeatures: ["Classic template", "Manual input", "PDF download"],
     premiumTitle: "Premium (2 hours)",
-    premiumFeatures: ["Visual Editor", "All 4 pro templates", "AI text generation", "ZIP with all designs"]
+    premiumFeatures: ["8 Pro templates", "Visual Editor", "Unlimited AI texts", "ZIP with all designs"],
+    popularBadge: "Popular"
   },
   step1Details: {
     ownerSection: "Owner Information",
@@ -353,29 +390,39 @@ export default {
   stepsNew: {
     step1: {
       title: "Enter Data",
+      short: "Data",
       subtitle: "Owner & Pet"
     },
     step2: {
-      title: "Description",
-      subtitle: "Character & AI Text"
+      title: "Health & Emergency",
+      short: "Health",
+      subtitle: "Insurance, Vet, Contacts"
     },
     step3: {
-      title: "Photo & Design",
-      subtitle: "Upload & Template",
+      title: "Character & AI Text",
+      short: "Character",
+      subtitle: "Create Description",
       badge: "AI"
     },
     step4: {
-      title: "Editor & Export",
-      subtitle: "Customize & PDF",
-      badge: "Premium"
+      title: "Upload Photo",
+      short: "Photo",
+      subtitle: "A good photo makes the first impression"
     },
     step5: {
-      title: "Preview",
-      subtitle: "Review template & info"
+      title: "Choose Design",
+      short: "Design",
+      subtitle: "Select a design that matches your pet's personality"
     },
     step6: {
-      title: "Get PDF",
-      subtitle: "Download"
+      title: "Preview",
+      short: "Preview",
+      subtitle: "Review and download document"
+    },
+    step7: {
+      title: "Done!",
+      short: "Done",
+      subtitle: "Thank you"
     }
   },
   footer: {

@@ -109,6 +109,7 @@ export default {
     neutered: "Castrato",
     vaccination: "Vaccinato",
     registration: "Registrato (AMICUS/ANIS)",
+    willingToPayDeposit: "Disposto a pagare un deposito per animali",
     aiPrompt: "Parole chiave (es. tranquillo, pulito)",
     tellUsAboutPet: "Raccontaci del tuo animale",
     descriptionHint: "Personalità, giochi preferiti o piccole manie.",
@@ -277,21 +278,21 @@ export default {
     title: "Creatore CV per Animali",
     privacyTitle: "Scudo Privacy Dati",
     privacyDesc: "I tuoi dati non vengono mai memorizzati. Tutto avviene nel tuo browser.",
-    subtitle: "4 semplici passaggi per il tuo dossier pet professionale",
     problemTitle: "Cerchi appartamento con animale?",
     problemDesc: "In Svizzera il mercato degli affitti è molto competitivo. Molti proprietari sono scettici sugli animali.",
     solutionTitle: "La tua soluzione: il Dossier Pet",
-    solutionDesc: "Un CV professionale dimostra responsabilità, attesta la copertura assicurativa e ti distingue dagli altri candidati. Aumenta le tue possibilità di ottenere l'appartamento dei tuoi sogni.",
+    solutionDesc: "Un CV professionale dimostra responsabilità e ti distingue dagli altri candidati.",
     cta: "Crea ora",
+    // Free vs Premium comparison
     transparencyTitle: "Gratis vs Premium",
-    transparencyText: "Il modello Classic è gratis. Premium sblocca l'Editor Visuale, testi IA e tutti i design (10 CHF / 2 ore).",
     transparencyBadge1: "Dati locali",
     transparencyBadge2: "Niente annunci",
     transparencyBadge3: "Premium: 10 CHF",
     freeTitle: "Gratis",
     freeFeatures: ["Modello Classic", "Inserimento manuale", "Download PDF"],
     premiumTitle: "Premium (2 ore)",
-    premiumFeatures: ["Editor Visuale", "Tutti i 4 modelli pro", "Generazione IA", "ZIP con tutti i design"]
+    premiumFeatures: ["8 Modelli Pro", "Editor Visuale", "Testi IA illimitati", "ZIP con tutti i design"],
+    popularBadge: "Popolare"
   },
   step1Details: {
     ownerSection: "Informazioni proprietario",

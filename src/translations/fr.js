@@ -109,6 +109,7 @@ export default {
     neutered: "Castré",
     vaccination: "Vacciné",
     registration: "Enregistré (AMICUS/ANIS)",
+    willingToPayDeposit: "Prêt à payer une caution pour animal",
     aiPrompt: "Mots-clés (ex: calme, propre)",
     tellUsAboutPet: "Parlez-nous de votre animal",
     descriptionHint: "Personnalité, jouets préférés ou petits travers.",
@@ -277,21 +278,21 @@ export default {
     title: "Créateur de CV pour Animaux",
     privacyTitle: "Bouclier de Confidentialité",
     privacyDesc: "Vos données ne sont jamais stockées. Tout se passe dans votre navigateur.",
-    subtitle: "4 étapes simples vers votre dossier pet professionnel",
     problemTitle: "Recherche d'appartement avec animal?",
     problemDesc: "En Suisse, le marché locatif est très concurrentiel. Beaucoup de propriétaires sont sceptiques face aux animaux.",
     solutionTitle: "Votre solution: le Dossier Pet",
-    solutionDesc: "Un CV professionnel démontre votre responsabilité, prouve l'assurance et vous distingue des autres candidats. Augmentez vos chances d'obtenir l'appartement de vos rêves.",
+    solutionDesc: "Un CV pro démontre votre responsabilité et vous distingue des autres candidats.",
     cta: "Créer maintenant",
+    // Free vs Premium comparison
     transparencyTitle: "Gratuit vs Premium",
-    transparencyText: "Le modèle Classic est gratuit. Premium débloque l'Éditeur Visuel, les textes IA et tous les designs (10 CHF / 2 heures).",
     transparencyBadge1: "Données locales",
     transparencyBadge2: "Sans pub",
     transparencyBadge3: "Premium: 10 CHF",
     freeTitle: "Gratuit",
     freeFeatures: ["Modèle Classic", "Saisie manuelle", "Téléchargement PDF"],
     premiumTitle: "Premium (2 heures)",
-    premiumFeatures: ["Éditeur Visuel", "Tous les 4 modèles pro", "Génération IA", "ZIP avec tous les designs"]
+    premiumFeatures: ["8 Modèles Pro", "Éditeur Visuel", "Textes IA illimités", "ZIP avec tous les designs"],
+    popularBadge: "Populaire"
   },
   step1Details: {
     ownerSection: "Informations propriétaire",

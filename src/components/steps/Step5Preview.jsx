@@ -1,17 +1,28 @@
+/**
+ * Step5Preview.jsx
+ * 
+ * STEP: 5 (in App.tsx: step === 5)
+ * 
+ * This component handles:
+ * - Live document preview with selected template
+ * - PDF download functionality
+ * - Premium purchase flow (payment modal)
+ * - Visual Editor access (Premium feature)
+ * - Download all templates as ZIP (Premium feature)
+ * - Template switching
+ */
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Download, Lock, Crown, CreditCard, Check, X, FileArchive, Maximize2, Minimize2, Settings2, Wand2, Layout, Sparkles } from 'lucide-react';
+import { Download, Lock, Crown, CreditCard, Check, X, FileArchive, Maximize2, Minimize2, Layout, Sparkles } from 'lucide-react';
 import SwissDocument from '../SwissDocument';
 import ErrorBoundary from '../ErrorBoundary';
 import { TEMPLATE_OPTIONS } from '../../constants';
 
-const Step8Preview = React.memo(({ 
+const Step5Preview = React.memo(({ 
   data, 
   t, 
   animDir, 
   selectedTemplate, 
-  darkMode, 
-  onPrev, 
-  onNext,
+  darkMode,
   isPremium = false,
   getTemplateInfo = () => ({ isPremium: false, price: 0, accessible: true }),
   onDownloadPDF,
@@ -48,7 +59,7 @@ const Step8Preview = React.memo(({
   const previewScale = isEnlarged ? 1 : 0.48;
   
   return (
-    <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 ${isEnlarged ? 'max-w-7xl' : 'max-w-6xl'} mx-auto pb-24 transition-all duration-300`}>
+    <div className={`page page-enter-${animDir} reveal fade-enter space-y-4 ${isEnlarged ? 'max-w-7xl' : 'max-w-6xl'} mx-auto pb-32 transition-all duration-300`}>
       <div className="mb-4 text-center">
         <h2 className={`font-display font-bold text-2xl md:text-3xl ${titleCl}`}>
           {t?.stepsNew?.step5?.title ?? 'Preview'}
@@ -297,37 +308,10 @@ const Step8Preview = React.memo(({
         </div>
       </div>
 
-      {/* Navigation */}
-      {(onPrev != null || (!needsPayment && onNext != null)) && (
-        <div className="flex flex-wrap items-center justify-between gap-4 mt-8">
-          {onPrev && (
-            <button
-              type="button"
-              onClick={onPrev}
-              className={`font-display font-bold hand-drawn-button border-2 px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all ${
-                darkMode ? 'border-gray-400 text-gray-200 hover:bg-gray-700' : 'border-gray-500 text-text-main hover:bg-gray-100'
-              }`}
-            >
-              <ChevronLeft size={20} strokeWidth={2.5} />
-              {t?.nav?.previousStep ?? t?.nav?.back ?? '← Vorheriger Schritt'}
-            </button>
-          )}
-          {!needsPayment && onNext && (
-            <button
-              type="button"
-              onClick={onNext}
-              className="font-display font-bold hand-drawn-button border-2 px-6 py-2.5 rounded-xl flex items-center gap-2 border-primary bg-primary text-white hover:bg-primary-dark transition-all ml-auto"
-            >
-              {t?.nav?.finalReview ?? 'Abschlussprüfung →'}
-              <ChevronRight size={20} strokeWidth={2.5} />
-            </button>
-          )}
-        </div>
-      )}
     </div>
   );
 });
 
-Step8Preview.displayName = 'Step8Preview';
+Step5Preview.displayName = 'Step5Preview';
 
-export default Step8Preview;
+export default Step5Preview;

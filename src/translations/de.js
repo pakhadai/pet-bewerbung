@@ -51,6 +51,8 @@ export default {
   finalMessage: "Vielen Dank für die Nutzung unseres Service!",
   ui: {
     select: "Wählen",
+    selected: "Gewählt",
+    templateSelected: "Vorlage ausgewählt",
     preview: "Vorschau",
     previewMode: "Vorschau-Modus",
     cancel: "Abbrechen",
@@ -81,7 +83,39 @@ export default {
     pdfError: "PDF konnte nicht erstellt werden",
     pdfMemoryError: "PDF-Erstellung fehlgeschlagen wegen großem Bild. Bitte Bildgröße reduzieren.",
     pdfTimeoutError: "PDF-Erstellung dauerte zu lange. Bitte erneut versuchen.",
-    pdfSaveHint: "Tippen Sie auf \"Teilen\" → \"In Dateien sichern\""
+    pdfSaveHint: "Tippen Sie auf \"Teilen\" → \"In Dateien sichern\"",
+    goTo: "Gehe zu",
+    understand: "Verstanden",
+    photoHint: "Klare Fotos mit guter Beleuchtung funktionieren am besten!",
+    clickOrDrop: "Klicken oder per Drag & Drop"
+  },
+  // AI data privacy info
+  ai: {
+    dataInfoButton: "Welche Daten werden bei KI-Generierung gesendet?",
+    dataInfoTitle: "KI-Datenschutz",
+    dataInfoDesc: "Bei der KI-Textgenerierung werden folgende Daten an unseren Server gesendet:",
+    dataPetName: "Name des Tieres",
+    dataPetType: "Tierart (Hund/Katze/Andere)",
+    dataBreed: "Rasse",
+    dataKeywords: "Schlüsselwörter/Charaktereigenschaften",
+    dataLang: "Gewählte Sprache",
+    dataNoPersonal: "Keine persönlichen Daten (Name, Adresse, Telefon) werden gesendet. Das generierte PDF wird lokal erstellt."
+  },
+  // Step 4 specific
+  step4: {
+    photoPrivacy: "Ihr Foto wird niemals hochgeladen. Alles passiert lokal in Ihrem Browser.",
+    changePhotoHint: "Klicken Sie auf das Bild oder ziehen Sie ein neues hierher",
+    maxSize: "bis zu 10MB",
+    tipFormat: "Tipp: Hochformat (3:4) funktioniert am besten",
+    tipsTitle: "Tipps für ein perfektes Foto:",
+    tip1: "Gute Beleuchtung (natürliches Licht ist ideal)",
+    tip2: "Tier schaut in die Kamera",
+    tip3: "Neutraler Hintergrund"
+  },
+  step5: {
+    photoPreview: "Ihr Foto wird in den Vorlagen angezeigt",
+    premiumInfo: "Premium-Vorlagen können gewählt und in der Vorschau angezeigt werden.",
+    premiumInfoSub: "Die Zahlung erfolgt erst beim Download."
   },
   labels: {
     type: "Tierart",
@@ -103,12 +137,15 @@ export default {
     gender: "Geschlecht",
     m: "Männlich",
     f: "Weiblich",
+    male: "Männlich",
+    female: "Weiblich",
     chipId: "Chip-Nr. / Kennzeichnung",
     insurance: "Haftpflichtversicherung",
     vet: "Tierarzt / Praxis",
     neutered: "Kastriert",
     vaccination: "Geimpft",
     registration: "Registriert (AMICUS/ANIS)",
+    willingToPayDeposit: "Bereit für Tierkaution",
     aiPrompt: "Stichworte (z.B. ruhig, stubenrein)",
     tellUsAboutPet: "Erzählen Sie uns von Ihrem Tier",
     descriptionHint: "Persönlichkeit, Lieblingsspielzeug oder kleine Eigenheiten.",
@@ -120,7 +157,8 @@ export default {
     aiResult: "Text für Vermieter",
     aiError: "KI-Generierung fehlgeschlagen. Verwende Vorlage.",
     aiNetworkError: "Netzwerkfehler. Bitte Verbindung prüfen und erneut versuchen.",
-    recrop: "Bild zuschneiden",
+    recrop: "Neu zuschneiden",
+    remove: "Entfernen",
     useFullImage: "Vollbild verwenden",
     cropDone: "Zuschneiden",
     photo: "Foto wählen",
@@ -301,22 +339,21 @@ export default {
     title: "Pet CV Erstellen",
     privacyTitle: "Datenschutz-Schild",
     privacyDesc: "Ihre Daten werden niemals gespeichert. Alles passiert in Ihrem Browser.",
-    subtitle: "4 einfache Schritte zu Ihrem professionellen Tier-Dossier",
     problemTitle: "Wohnungssuche mit Haustier?",
     problemDesc: "In der Schweiz ist der Wohnungsmarkt hart umkämpft. Viele Vermieter sind skeptisch gegenüber Haustieren.",
     solutionTitle: "Ihre Lösung: Das Pet-Dossier",
-    solutionDesc: "Ein professioneller Lebenslauf zeigt Verantwortung, belegt Versicherungsschutz und hebt Sie von anderen Bewerbern ab. Erhöhen Sie Ihre Chancen auf Ihre Traumwohnung.",
+    solutionDesc: "Ein professioneller Lebenslauf zeigt Verantwortung, belegt Versicherungsschutz und hebt Sie von anderen Bewerbern ab.",
     cta: "Jetzt erstellen",
+    // Free vs Premium comparison
     transparencyTitle: "Kostenlos vs Premium",
-    transparencyText: "Die Classic-Vorlage ist kostenlos. Premium schaltet den Visual Editor, KI-Texte und alle Designs frei (10 CHF / 2 Stunden).",
     transparencyBadge1: "Lokale Daten",
     transparencyBadge2: "Keine Werbung",
     transparencyBadge3: "Premium: 10 CHF",
-    // Free vs Premium comparison
     freeTitle: "Kostenlos",
     freeFeatures: ["Classic-Vorlage", "Manuelle Eingabe", "PDF-Download"],
     premiumTitle: "Premium (2 Stunden)",
-    premiumFeatures: ["Visual Editor", "Alle 4 Profi-Vorlagen", "KI-Textgenerierung", "ZIP mit allen Designs"]
+    premiumFeatures: ["8 Profi-Vorlagen", "Visual Editor", "KI-Texte unbegrenzt", "ZIP mit allen Designs"],
+    popularBadge: "Beliebt"
   },
   step1Details: {
     ownerSection: "Halterangaben",
@@ -350,29 +387,39 @@ export default {
   stepsNew: {
     step1: {
       title: "Daten eingeben",
+      short: "Daten",
       subtitle: "Halter & Tier"
     },
     step2: {
-      title: "Beschreibung",
-      subtitle: "Charakter & KI-Text"
+      title: "Gesundheit & Notfall",
+      short: "Gesundheit",
+      subtitle: "Versicherung, Tierarzt, Kontakte"
     },
     step3: {
-      title: "Foto & Design",
-      subtitle: "Foto hochladen & Vorlage",
+      title: "Charakter & KI-Text",
+      short: "Charakter",
+      subtitle: "Beschreibung erstellen",
       badge: "KI"
     },
     step4: {
-      title: "Editor & Export",
-      subtitle: "Anpassen & PDF",
-      badge: "Premium"
+      title: "Foto hochladen",
+      short: "Foto",
+      subtitle: "Ein gutes Foto macht den ersten Eindruck"
     },
     step5: {
-      title: "Vorschau",
-      subtitle: "Vorlage & Infos prüfen"
+      title: "Design wählen",
+      short: "Design",
+      subtitle: "Wählen Sie ein Design, das zur Persönlichkeit Ihres Tieres passt"
     },
     step6: {
-      title: "PDF erhalten",
-      subtitle: "Herunterladen"
+      title: "Vorschau",
+      short: "Vorschau",
+      subtitle: "Dokument prüfen und herunterladen"
+    },
+    step7: {
+      title: "Fertig!",
+      short: "Fertig",
+      subtitle: "Vielen Dank"
     }
   },
   footer: {
