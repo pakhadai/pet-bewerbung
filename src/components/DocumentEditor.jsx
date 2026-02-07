@@ -1,6 +1,7 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, lazy, Suspense } from 'react';
 import { SECTION_DEFINITIONS, INITIAL_DATA } from '../constants';
-import SwissDocument from './SwissDocument';
+
+const SwissDocument = lazy(() => import('./SwissDocument'));
 
 // LocalStorage key for saving custom styles
 const STORAGE_KEY = 'petcv_custom_style';
@@ -570,33 +571,35 @@ const DocumentEditor = ({
               backgroundSize: '16px 16px',
             }}
           >
-            <div 
+            <div
               className="shadow-2xl origin-top transition-transform"
               style={{ transform: `scale(${zoom / 100})` }}
             >
-              <SwissDocument
-                data={{
-                  ...data,
-                  customDesign: {
-                    isEdited: true,
-                    primaryColor: style.headerColor,
-                    secondaryColor: style.accentColor,
-                    backgroundColor: style.backgroundColor,
-                    textColor: style.textColor,
-                    headerFont: style.headerFont,
-                    bodyFont: style.bodyFont,
-                    headerFontSize: style.headerFontSize,
-                    bodyFontSize: style.bodyFontSize,
-                    headerBold: style.headerBold,
-                    headerItalic: style.headerItalic,
-                    bodyBold: style.bodyBold,
-                    bodyItalic: style.bodyItalic,
-                    hiddenSections: style.hiddenSections,
-                  }
-                }}
-                t={t}
-                templateType={selectedTemplate || 'classic'}
-              />
+              <Suspense fallback={<div className="bg-white p-8 rounded-lg">Loading document...</div>}>
+                <SwissDocument
+                  data={{
+                    ...data,
+                    customDesign: {
+                      isEdited: true,
+                      primaryColor: style.headerColor,
+                      secondaryColor: style.accentColor,
+                      backgroundColor: style.backgroundColor,
+                      textColor: style.textColor,
+                      headerFont: style.headerFont,
+                      bodyFont: style.bodyFont,
+                      headerFontSize: style.headerFontSize,
+                      bodyFontSize: style.bodyFontSize,
+                      headerBold: style.headerBold,
+                      headerItalic: style.headerItalic,
+                      bodyBold: style.bodyBold,
+                      bodyItalic: style.bodyItalic,
+                      hiddenSections: style.hiddenSections,
+                    }
+                  }}
+                  t={t}
+                  templateType={selectedTemplate || 'classic'}
+                />
+              </Suspense>
             </div>
           </div>
         </main>

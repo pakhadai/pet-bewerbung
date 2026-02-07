@@ -4,7 +4,7 @@
  * Handles step navigation and orchestrates step rendering
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { PAYMENT_SUCCESS_BEHAVIOR } from '../constants';
 import Header from './Header';
 import Footer from './Footer';
@@ -16,14 +16,16 @@ import CookieBanner, { COOKIE_CONSENT_KEY, isCookieConsentGiven } from './Cookie
 import LegalPages from './LegalPages';
 import DonateModal from './DonateModal';
 import PaymentModal from './PaymentModal';
-import DocumentEditor from './DocumentEditor';
 import ErrorBoundary from './ErrorBoundary';
 import { X, Camera } from 'lucide-react';
-import SwissDocument from './SwissDocument';
 import { useFormWizard, useToast, usePremium, useTemplateSelection, usePaymentFlow } from '../hooks';
 import WizardRoute from '../routes/WizardRoute';
 import HeroRoute from '../routes/HeroRoute';
 import ThankYouRoute from '../routes/ThankYouRoute';
+
+// Lazy load heavy PDF components (only needed in Step 5)
+const SwissDocument = lazy(() => import('./SwissDocument'));
+const DocumentEditor = lazy(() => import('./DocumentEditor'));
 
 interface AppContainerProps {
   onDownloadPDF: () => Promise<void>;
@@ -347,15 +349,17 @@ export const AppContainer: React.FC<AppContainerProps> = ({
 
       {/* Visual Document Editor - Premium feature */}
       {builderOpen && (
-        <DocumentEditor
-          data={data}
-          updateData={updateData}
-          t={t}
-          darkMode={darkMode}
-          selectedTemplate={selectedTemplate}
-          onClose={() => setBuilderOpen(false)}
-          onApply={handleApplyBuilder}
-        />
+        <Suspense fallback={<div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
+          <DocumentEditor
+            data={data}
+            updateData={updateData}
+            t={t}
+            darkMode={darkMode}
+            selectedTemplate={selectedTemplate}
+            onClose={() => setBuilderOpen(false)}
+            onApply={handleApplyBuilder}
+          />
+        </Suspense>
       )}
 
       {/* Preview Modal */}
@@ -389,7 +393,9 @@ export const AppContainer: React.FC<AppContainerProps> = ({
                   fallbackMessage="Failed to render document preview. Please check your data and try again."
                   onReset={closePreview}
                 >
-                  <SwissDocument data={data} t={t} templateType={previewTemplate} />
+                  <Suspense fallback={<div className="bg-white p-8 rounded-lg">Loading preview...</div>}>
+                    <SwissDocument data={data} t={t} templateType={previewTemplate} />
+                  </Suspense>
                 </ErrorBoundary>
               </div>
             </div>

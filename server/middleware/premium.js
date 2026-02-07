@@ -85,29 +85,36 @@ async function requirePremium(req, res, next) {
 /**
  * Generate a restore token for email after purchase
  * @param {string} sessionId - Stripe session ID
- * @returns {string} Base64url encoded token
+ * @returns {Promise<string>} Signed JWT restore token
  */
-function generateRestoreToken(sessionId) {
-  const payload = JSON.stringify({ 
-    sid: sessionId, 
-    ts: Date.now(),
-    exp: Date.now() + 365 * 24 * 60 * 60 * 1000 // 1 year
-  });
-  return Buffer.from(payload).toString('base64url');
+async function generateRestoreToken(sessionId) {
+  return new SignJWT({
+    sid: sessionId,
+    type: 'restore'
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('1y') // 1 year expiration
+    .sign(JWT_SECRET);
 }
 
 /**
  * Verify a restore token
- * @param {string} token - Base64url encoded token
- * @returns {Object|null} Payload or null if invalid
+ * @param {string} token - Signed JWT token
+ * @returns {Promise<Object|null>} Payload or null if invalid
  */
-function verifyRestoreToken(token) {
+async function verifyRestoreToken(token) {
   try {
-    const payload = JSON.parse(Buffer.from(token, 'base64url').toString());
-    if (!payload.sid || !payload.exp) return null;
-    if (Date.now() > payload.exp) return null;
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+
+    // Ensure it's a restore token (not a premium token)
+    if (payload.type !== 'restore') {
+      return null;
+    }
+
     return payload;
-  } catch {
+  } catch (err) {
+    // Token is invalid, expired, or tampered with
     return null;
   }
 }

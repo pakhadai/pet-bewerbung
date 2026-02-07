@@ -15,8 +15,9 @@ export const validateSwissPhone = (phone) => {
   const cleaned = phone.replace(/[\s\-()]/g, '');
 
   // Swiss format: +41 followed by 9 digits OR 0 followed by 9 digits
-  const intlFormat = /^\+41[1-9]\d{8}$/; // +41791234567
-  const localFormat = /^0[1-9]\d{8}$/; // 0791234567
+  // Fixed: Allow any digit after +41 (including area codes like 044, 043, etc.)
+  const intlFormat = /^\+41\d{9}$/; // +41791234567 or +41441234567
+  const localFormat = /^0\d{9}$/; // 0791234567 or 0441234567
 
   return intlFormat.test(cleaned) || localFormat.test(cleaned);
 };
@@ -60,13 +61,29 @@ export const validateSwissPostal = (postal) => {
 };
 
 /**
- * Validates Swiss email format
+ * Validates email format (RFC 5322 compliant, practical subset)
  * @param {string} email - Email to validate
  * @returns {boolean} - True if valid
  */
 export const validateEmail = (email) => {
   if (!email) return true; // Empty is valid (optional field)
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  // More robust email validation:
+  // - Requires valid characters in local part
+  // - Requires @ symbol
+  // - Requires domain with at least one dot
+  // - TLD must be at least 2 characters
+  const emailPattern = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  // Additional checks
+  if (!emailPattern.test(email)) return false;
+
+  // Reject emails with consecutive dots or dots at start/end
+  if (email.includes('..') || email.startsWith('.') || email.includes('@.') || email.includes('.@')) {
+    return false;
+  }
+
+  return true;
 };
 
 /**

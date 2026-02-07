@@ -9,11 +9,12 @@
  * - Premium purchase flow
  * - Visual Editor access (Premium feature)
  */
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Download, Lock, Crown, CreditCard, Check, FileArchive, Maximize2, Minimize2, Layout, Sparkles } from 'lucide-react';
-import SwissDocument from '../SwissDocument';
 import ErrorBoundary from '../ErrorBoundary';
 import { TEMPLATE_OPTIONS } from '../../constants';
+
+const SwissDocument = lazy(() => import('../SwissDocument'));
 
 /** Display names for templates */
 const TEMPLATE_LABELS = {
@@ -157,7 +158,9 @@ const Step5Preview = React.memo(({
                     fallbackTitle={t?.ui?.previewError || "Fehler"}
                     fallbackMessage={t?.ui?.previewErrorMessage || "Dokument konnte nicht geladen werden."}
                   >
-                    <SwissDocument data={data} t={t} templateType={selectedTemplate} />
+                    <Suspense fallback={<div className="bg-white p-8 rounded-lg">Loading preview...</div>}>
+                      <SwissDocument data={data} t={t} templateType={selectedTemplate} />
+                    </Suspense>
                   </ErrorBoundary>
 
                   {/* Watermark for unpaid premium */}

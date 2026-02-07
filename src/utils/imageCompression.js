@@ -27,6 +27,7 @@ const WEBP_SUPPORTED = typeof document !== 'undefined' && supportsWebP();
  * @param {number} options.quality - Quality 0-1 (default: 0.8)
  * @param {number} options.maxSizeKB - Target max file size in KB (default: 500)
  * @param {string} options.format - 'webp' | 'jpeg' (default: 'webp' if supported)
+ * @param {number} options.timeout - Timeout in ms (default: 10000)
  * @returns {Promise<string>} - Base64 data URL of compressed image
  */
 export const compressImage = (file, options = {}) => {
@@ -36,24 +37,37 @@ export const compressImage = (file, options = {}) => {
     quality = 0.8,
     maxSizeKB = 500,
     format = WEBP_SUPPORTED ? 'webp' : 'jpeg',
+    timeout = 10000, // 10 second timeout
   } = options;
 
   const mime = format === 'webp' ? 'image/webp' : 'image/jpeg';
 
   return new Promise((resolve, reject) => {
+    // Set timeout to prevent browser hanging on large images
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Image compression timeout - image too large'));
+    }, timeout);
     if (!file.type.startsWith('image/')) {
+      clearTimeout(timeoutId);
       reject(new Error('File is not an image'));
       return;
     }
 
     const reader = new FileReader();
-    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.onerror = () => {
+      clearTimeout(timeoutId);
+      reject(new Error('Failed to read file'));
+    };
 
     reader.onload = (e) => {
       const img = new Image();
-      img.onerror = () => reject(new Error('Failed to load image'));
+      img.onerror = () => {
+        clearTimeout(timeoutId);
+        reject(new Error('Failed to load image'));
+      };
 
       img.onload = () => {
+        clearTimeout(timeoutId); // Clear timeout on successful load
         let { width, height } = img;
         if (width > maxWidth) {
           height = (height * maxWidth) / width;
@@ -76,7 +90,8 @@ export const compressImage = (file, options = {}) => {
         let result;
         try {
           result = canvas.toDataURL(mime, currentQuality);
-        } catch {
+        } catch (err) {
+          console.warn('WebP failed, falling back to JPEG:', err);
           result = canvas.toDataURL('image/jpeg', currentQuality);
         }
 
@@ -84,15 +99,21 @@ export const compressImage = (file, options = {}) => {
         let iterations = 0;
         const maxIterations = 5;
 
+        // Iterative compression with safety limit
         while (getBase64Size(result) > maxSizeBytes && currentQuality > 0.3 && iterations < maxIterations) {
           currentQuality -= 0.1;
           try {
             result = canvas.toDataURL(mime, currentQuality);
-          } catch {
+          } catch (err) {
+            console.warn('Compression iteration failed, falling back to JPEG:', err);
             result = canvas.toDataURL('image/jpeg', currentQuality);
           }
           iterations++;
         }
+
+        // Cleanup canvas
+        canvas.width = 0;
+        canvas.height = 0;
 
         resolve(result);
       };

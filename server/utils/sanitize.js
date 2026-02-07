@@ -6,8 +6,35 @@
 const MAX_FIELD_LENGTH = 100;
 const MAX_TRAITS_LENGTH = 300;
 
-// Patterns that could be used for prompt injection
-const SUSPICIOUS_PATTERNS = /(\bignore\b|\bforget\b|\bpretend\b|\bact as\b|\bsystem\b|\bprompt\b|\binstructions?\b|\bdisregard\b|\boverride\b|\byou are\b|\bnew role\b)/gi;
+// Comprehensive patterns for prompt injection prevention
+// Covers: command injections, role manipulation, instruction overrides
+const SUSPICIOUS_PATTERNS = [
+  // Command/instruction manipulation
+  /\b(ignore|forget|disregard|override|bypass|skip)\b/gi,
+  /\b(previous|prior|above|earlier)\s+(instruction|prompt|rule|command)/gi,
+
+  // Role manipulation
+  /\b(you are|act as|pretend|behave as|roleplay|assume|become)\b/gi,
+  /\b(new role|different (role|character|persona|assistant))/gi,
+
+  // System/prompt access attempts
+  /\b(system|admin|root|prompt|instruction|rule|command|directive)\b/gi,
+
+  // Direct instruction patterns
+  /\b(now (write|tell|say|do|generate|create)|instead (write|tell|say))/gi,
+
+  // Meta-instructions
+  /\b(original|real|actual)\s+(task|instruction|prompt|purpose)/gi,
+
+  // Encoding bypass attempts (basic)
+  /[\\\/](n|r|t|x[0-9a-f]{2})/gi, // Escape sequences
+
+  // Repetition attacks (more than 3 repeated chars)
+  /(.)\1{4,}/gi,
+];
+
+// Additional suspicious characters that could be used for injection
+const SUSPICIOUS_CHARS = /[{}\\<>|`$]/g;
 
 /**
  * Sanitize a string field
@@ -17,12 +44,22 @@ const SUSPICIOUS_PATTERNS = /(\bignore\b|\bforget\b|\bpretend\b|\bact as\b|\bsys
  */
 function sanitizeString(str, maxLen = MAX_FIELD_LENGTH) {
   if (!str) return '';
-  return String(str)
-    .slice(0, maxLen)
-    .replace(SUSPICIOUS_PATTERNS, '')
-    .replace(/[<>{}\\]/g, '')
-    .replace(/\n+/g, ' ')
+
+  let sanitized = String(str).slice(0, maxLen);
+
+  // Apply all suspicious pattern removals
+  for (const pattern of SUSPICIOUS_PATTERNS) {
+    sanitized = sanitized.replace(pattern, '');
+  }
+
+  // Remove suspicious characters
+  sanitized = sanitized
+    .replace(SUSPICIOUS_CHARS, '')
+    .replace(/\n+/g, ' ')  // Replace newlines with spaces
+    .replace(/\s{2,}/g, ' ')  // Collapse multiple spaces
     .trim();
+
+  return sanitized;
 }
 
 /**
@@ -45,17 +82,28 @@ function sanitizePetData(petData) {
 }
 
 /**
- * Sanitize text for AI improvement
+ * Sanitize text for AI improvement (more lenient than sanitizeString)
  * @param {string} text - Input text
  * @param {number} maxLen - Maximum length
  * @returns {string} Sanitized text
  */
 function sanitizeText(text, maxLen = 1000) {
   if (!text) return '';
-  return String(text)
-    .slice(0, maxLen)
-    .replace(/[<>{}]/g, '')
+
+  let sanitized = String(text).slice(0, maxLen);
+
+  // Apply suspicious pattern removals
+  for (const pattern of SUSPICIOUS_PATTERNS) {
+    sanitized = sanitized.replace(pattern, '');
+  }
+
+  // Remove dangerous characters
+  sanitized = sanitized
+    .replace(SUSPICIOUS_CHARS, '')
+    .replace(/\s{2,}/g, ' ')  // Collapse multiple spaces
     .trim();
+
+  return sanitized;
 }
 
 /**

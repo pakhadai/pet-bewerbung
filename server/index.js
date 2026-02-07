@@ -16,6 +16,11 @@ const {
 
 // Import middleware
 const { initRedis } = require('./middleware/rateLimit');
+const {
+  provideCsrfToken,
+  smartCsrfProtection,
+  getCsrfTokenEndpoint
+} = require('./middleware/csrf');
 
 // Import controllers
 const stripe = require('./controllers/stripe');
@@ -29,18 +34,37 @@ const app = express();
 // ============================================
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, etc.)
+    // Allow requests with no origin (mobile apps, curl, Postman, etc.)
+    // SECURITY NOTE: This allows non-browser clients (no CORS protection)
     if (!origin) {
+      if (!isProduction) {
+        console.log('ℹ️  Request without Origin header (likely non-browser client)');
+      }
+      // In production, consider blocking or rate-limiting no-origin requests
+      // for sensitive endpoints via additional middleware
       return callback(null, true);
     }
+
+    // Check if origin is in allowed list
     if (ALLOWED_ORIGINS.includes(origin)) {
       return callback(null, true);
     }
-    console.warn(`CORS blocked origin: ${origin}`);
+
+    // Block unrecognized origins
+    console.warn(`⚠️  CORS blocked origin: ${origin}`);
     callback(new Error('CORS policy: Origin not allowed'));
   },
   credentials: true,
 }));
+
+// ============================================
+// CSRF Protection Middleware
+// ============================================
+// Provide CSRF token on all GET requests
+app.use(provideCsrfToken);
+
+// Protect state-changing requests (POST, PUT, DELETE)
+app.use(smartCsrfProtection);
 
 // ============================================
 // Body Parsing Middleware
@@ -58,12 +82,17 @@ app.use((req, res, next) => {
 // Health Check
 // ============================================
 app.get('/', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    service: 'pet-bewerbung-server', 
-    environment: isProduction ? 'production' : 'development' 
+  res.json({
+    status: 'ok',
+    service: 'pet-bewerbung-server',
+    environment: isProduction ? 'production' : 'development'
   });
 });
+
+// ============================================
+// CSRF Token Endpoint
+// ============================================
+app.get('/api/csrf-token', getCsrfTokenEndpoint);
 
 // ============================================
 // Stripe Routes

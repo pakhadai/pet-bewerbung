@@ -33,15 +33,17 @@ if (!STRIPE_SECRET_KEY) {
  */
 async function createCheckoutSession(req, res) {
   const { amount, currency = 'chf', successUrl, cancelUrl, payment_method = 'card' } = req.body || {};
-  
+
   if (!STRIPE_SECRET_KEY) {
     if (!isProduction) console.error('❌ STRIPE_SECRET_KEY not configured');
     return res.status(400).json({ error: 'STRIPE_SECRET_KEY not configured on server.' });
   }
-  
-  if (!amount || amount <= 0) {
-    if (!isProduction) console.error('❌ Invalid amount:', amount);
-    return res.status(400).json({ error: 'Invalid amount' });
+
+  // Validate amount type and value
+  const numAmount = typeof amount === 'string' ? parseInt(amount, 10) : amount;
+  if (typeof numAmount !== 'number' || isNaN(numAmount) || numAmount <= 0) {
+    if (!isProduction) console.error('❌ Invalid amount:', amount, 'parsed:', numAmount);
+    return res.status(400).json({ error: 'Invalid amount. Must be a positive number.' });
   }
 
   const supported = { card: ['card'], twint: ['twint'] };
@@ -68,7 +70,7 @@ async function createCheckoutSession(req, res) {
         price_data: {
           currency: sessionCurrency,
           product_data: { name: 'Support contribution — Pet CV' },
-          unit_amount: amount,
+          unit_amount: numAmount, // Use validated number
         },
         quantity: 1,
       }],
@@ -101,17 +103,20 @@ async function createCheckoutSession(req, res) {
  */
 async function createPaymentIntent(req, res) {
   const { amount, currency = 'chf' } = req.body || {};
-  
+
   if (!STRIPE_SECRET_KEY) {
     return res.status(400).json({ error: 'STRIPE_SECRET_KEY not configured on server.' });
   }
-  if (!amount || amount <= 0) {
-    return res.status(400).json({ error: 'Invalid amount' });
+
+  // Validate amount type and value
+  const numAmount = typeof amount === 'string' ? parseInt(amount, 10) : amount;
+  if (typeof numAmount !== 'number' || isNaN(numAmount) || numAmount <= 0) {
+    return res.status(400).json({ error: 'Invalid amount. Must be a positive number.' });
   }
 
   try {
     const intent = await stripe.paymentIntents.create({
-      amount,
+      amount: numAmount, // Use validated number
       currency,
       payment_method_types: ['card', 'twint'],
     });
@@ -228,22 +233,49 @@ async function getPaymentStatus(req, res) {
  */
 function handleWebhook(req, res) {
   const sig = req.headers['stripe-signature'];
-  
+
   if (!STRIPE_WEBHOOK_SECRET) {
     if (isProduction) {
       console.error('❌ CRITICAL: STRIPE_WEBHOOK_SECRET not set in production!');
       return res.status(500).send('Webhook secret not configured');
     }
-    console.warn('⚠️  Development mode: Webhook secret not set. Skipping signature verification.');
+    console.warn('⚠️  ====== SECURITY WARNING ======');
+    console.warn('⚠️  STRIPE_WEBHOOK_SECRET not set!');
+    console.warn('⚠️  Webhooks can be FORGED in dev mode.');
+    console.warn('⚠️  Set STRIPE_WEBHOOK_SECRET for testing.');
+    console.warn('⚠️  Use: stripe listen --forward-to localhost:4242/webhook');
+    console.warn('⚠️  ===============================');
   }
 
   let event;
 
   try {
     if (STRIPE_WEBHOOK_SECRET) {
+      // PRODUCTION: Always verify signature
       event = stripe.webhooks.constructEvent(req.body, sig, STRIPE_WEBHOOK_SECRET);
     } else if (!isProduction) {
+      // DEVELOPMENT: Parse but validate structure
       event = JSON.parse(req.body.toString());
+
+      // Basic validation: Ensure it looks like a Stripe event
+      if (!event.type || !event.data || !event.data.object) {
+        console.error('❌ Invalid webhook structure - missing required fields');
+        return res.status(400).send('Invalid webhook structure');
+      }
+
+      // Warn on sensitive events
+      const sensitiveEvents = [
+        'checkout.session.completed',
+        'payment_intent.succeeded',
+        'checkout.session.async_payment_succeeded'
+      ];
+
+      if (sensitiveEvents.includes(event.type)) {
+        console.warn('⚠️  ⚠️  ⚠️  UNVERIFIED SENSITIVE WEBHOOK ⚠️  ⚠️  ⚠️');
+        console.warn(`   Event: ${event.type}`);
+        console.warn('   This could be FORGED! Set STRIPE_WEBHOOK_SECRET.');
+      }
+
       console.warn('⚠️  Processing unverified webhook in development mode');
     } else {
       return res.status(400).send('Webhook signature verification required');
@@ -348,8 +380,8 @@ async function activatePremium(req, res) {
  */
 async function verifyRestore(req, res) {
   const { token } = req.params;
-  
-  const payload = verifyRestoreToken(token);
+
+  const payload = await verifyRestoreToken(token);
   if (!payload) {
     return res.status(400).json({ valid: false, error: 'Invalid or expired token' });
   }
@@ -396,11 +428,11 @@ async function generateRestoreLink(req, res) {
       return res.status(400).json({ error: 'Payment not completed' });
     }
     
-    const token = generateRestoreToken(sessionId);
+    const token = await generateRestoreToken(sessionId);
     const restoreUrl = `${FRONTEND_URL}?restore=${token}`;
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       token,
       restoreUrl,
       expiresIn: '1 year'
