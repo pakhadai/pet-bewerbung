@@ -80,9 +80,11 @@ const TEMPLATE_OPTIONS = [
   { id: 'compact', label: 'Compact', isPremium: true, price: 10 },
   { id: 'swiss', label: 'Swiss', isPremium: true, price: 10 },
   { id: 'professional', label: 'Professional', isPremium: true, price: 10 },
-  { id: 'emergency', label: 'Emergency', isPremium: true, price: 10 },
-  { id: 'friendly', label: 'Friendly', isPremium: true, price: 10 },
-  { id: 'grid', label: 'Swiss Grid', isPremium: true, price: 10 }
+  // TODO: Emergency, Friendly, Grid templates exist in SwissDocumentPdf.jsx.backup
+  // but require full extraction (2500+ lines). Disabled until fully implemented.
+  // { id: 'emergency', label: 'Emergency', isPremium: true, price: 10 },
+  // { id: 'friendly', label: 'Friendly', isPremium: true, price: 10 },
+  // { id: 'grid', label: 'Swiss Grid', isPremium: true, price: 10 }
 ];
 
 // Section definitions for the Template Builder

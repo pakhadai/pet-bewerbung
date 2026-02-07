@@ -32,8 +32,17 @@ export type { UseToastReturn, Toast, ToastType } from './useToast';
 export { useDeviceId } from './useDeviceId';
 export type { UseDeviceIdReturn } from './useDeviceId';
 
-// Legacy hooks from original file (re-exported for backward compatibility)
-export { useTemplateSelection, usePaymentFlow, useScrollVisibility, useFormValidation } from './useFormWizard.js';
+// Additional utility hooks
+export { useTemplateSelection } from './useTemplateSelection';
+export type { UseTemplateSelectionReturn } from './useTemplateSelection';
+
+export { usePaymentFlow } from './usePaymentFlow';
+export type { UsePaymentFlowReturn } from './usePaymentFlow';
+
+export { useScrollVisibility } from './useScrollVisibility';
+
+export { useFormValidation } from './useFormValidation';
+export type { FormValidationResult, FormValidationErrors } from './useFormValidation';
 
 // Alias exports for backward compatibility
 export { usePremiumSession as usePremium } from './usePremiumSession';

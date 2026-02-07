@@ -1,53 +1,76 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { INITIAL_DATA } from '../constants';
-
-const STORAGE_KEY = 'pet-bewerbung-form-data';
+import { storage } from '../utils/storage';
 
 /**
- * Load saved form data from localStorage
+ * Load saved form data from storage
+ * Loads main form data from localStorage and photo from IndexedDB
  * Merges with INITIAL_DATA to ensure all fields exist
  */
-const loadSavedData = (defaultLang: string): any => {
+const loadSavedData = async (defaultLang: string): Promise<any> => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    // Load main form data from localStorage
+    const saved = await storage.get<any>('form-data');
+
+    // Load photo from IndexedDB (if exists)
+    const photoBlob = await storage.get<string>('photo-blob');
+
     if (saved) {
-      const parsed = JSON.parse(saved);
-      // Merge with INITIAL_DATA to ensure all fields exist
-      return { ...INITIAL_DATA, ...parsed, lang: parsed.lang || defaultLang };
+      const mergedData = {
+        ...INITIAL_DATA,
+        ...saved,
+        lang: saved.lang || defaultLang
+      };
+
+      // Add photo if it exists
+      if (photoBlob) {
+        mergedData.photoPreview = photoBlob;
+        mergedData.hasPhotoSaved = true;
+        mergedData.photoTooLarge = false;
+      }
+
+      return mergedData;
     }
   } catch (e) {
     if (import.meta.env.DEV) {
       console.warn('Could not load saved form data:', e);
     }
   }
+
   return { ...INITIAL_DATA, lang: defaultLang };
 };
 
 /**
- * Save form data to localStorage
- * Handles large photos by not saving them
+ * Save form data to storage
+ * Saves main data to localStorage and photos to IndexedDB
  */
-const saveDataToStorage = (data: any): void => {
+const saveDataToStorage = async (data: any): Promise<void> => {
   try {
     const dataToSave = { ...data };
 
-    // Don't save photo data to localStorage (too large)
-    if (dataToSave.photoPreview && dataToSave.photoPreview.length > 50000) {
-      // If photo is too large, store a flag instead
-      console.warn('⚠️  Photo too large for localStorage (>50KB). Photo will not persist on page refresh.');
-      dataToSave.photoPreview = '';
-      dataToSave.hasPhotoSaved = false;
-      // Flag to indicate photo was dropped (can be used to show warning in UI)
-      dataToSave.photoTooLarge = true;
-    } else {
+    // Handle photo storage separately in IndexedDB
+    if (dataToSave.photoPreview && dataToSave.photoPreview.length > 0) {
+      // Save photo to IndexedDB (supports up to 10MB)
+      await storage.set('photo-blob', dataToSave.photoPreview);
+
+      // Don't include photo in main form data (to keep localStorage small)
+      delete dataToSave.photoPreview;
+      dataToSave.hasPhotoSaved = true;
       dataToSave.photoTooLarge = false;
+    } else {
+      // Remove photo from IndexedDB if no photo
+      await storage.remove('photo-blob');
+      delete dataToSave.photoPreview;
+      dataToSave.hasPhotoSaved = false;
     }
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+    // Save main form data to localStorage
+    await storage.set('form-data', dataToSave);
   } catch (e) {
     if (import.meta.env.DEV) {
-      console.warn('Could not save form data to localStorage:', e);
+      console.warn('Could not save form data to storage:', e);
     }
+    throw e;
   }
 };
 
@@ -60,30 +83,64 @@ export interface UseFormDataReturn {
   updateMultipleData: (updates: Record<string, any>) => void;
   /** Reset form to initial state (keeps language) */
   resetForm: () => void;
-  /** Manually save current data to localStorage */
+  /** Manually save current data to storage */
   saveData: () => void;
-  /** Manually load data from localStorage */
+  /** Manually load data from storage */
   loadSavedData: () => void;
   /** Set entire data object (use with caution) */
   setData: (data: any) => void;
+  /** Loading state */
+  isLoading: boolean;
 }
 
 /**
  * Form data management hook
- * Manages form state with automatic localStorage persistence
- * Handles large photos by not persisting them
+ * Manages form state with automatic storage persistence
+ * Uses IndexedDB for large photos and localStorage for form data
  *
  * @param defaultLang - Default language if none saved
  * @returns Form data state and handlers
  */
 export const useFormData = (defaultLang: string = 'de'): UseFormDataReturn => {
-  const [data, setData] = useState<any>(() => loadSavedData(defaultLang));
+  const [data, setData] = useState<any>({ ...INITIAL_DATA, lang: defaultLang });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const prevLangRef = useRef<string>(data.lang);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Save data to localStorage when it changes
+  // Load data on mount
   useEffect(() => {
-    saveDataToStorage(data);
-  }, [data]);
+    const loadData = async () => {
+      setIsLoading(true);
+      const loadedData = await loadSavedData(defaultLang);
+      setData(loadedData);
+      setIsLoading(false);
+    };
+
+    loadData();
+  }, [defaultLang]);
+
+  // Debounced save to storage when data changes
+  useEffect(() => {
+    if (isLoading) return; // Don't save while loading
+
+    // Clear previous timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Debounce save by 500ms to avoid excessive writes
+    saveTimeoutRef.current = setTimeout(() => {
+      saveDataToStorage(data).catch(err => {
+        console.error('Failed to save form data:', err);
+      });
+    }, 500);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [data, isLoading]);
 
   // Clear generated text when language changes
   useEffect(() => {
@@ -110,30 +167,37 @@ export const useFormData = (defaultLang: string = 'de'): UseFormDataReturn => {
   /**
    * Reset form to initial state (preserves current language)
    */
-  const resetForm = useCallback(() => {
+  const resetForm = useCallback(async () => {
     const currentLang = data.lang;
     const resetData = { ...INITIAL_DATA, lang: currentLang };
     setData(resetData);
+
     try {
-      localStorage.removeItem(STORAGE_KEY);
+      // Clear all storage
+      await storage.remove('form-data');
+      await storage.remove('photo-blob');
     } catch (e) {
       // ignore
     }
   }, [data.lang]);
 
   /**
-   * Manually save current data to localStorage
+   * Manually save current data to storage
    */
   const saveData = useCallback(() => {
-    saveDataToStorage(data);
+    saveDataToStorage(data).catch(err => {
+      console.error('Failed to save form data:', err);
+    });
   }, [data]);
 
   /**
-   * Manually reload data from localStorage
+   * Manually reload data from storage
    */
-  const loadData = useCallback(() => {
-    const loaded = loadSavedData(defaultLang);
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    const loaded = await loadSavedData(defaultLang);
     setData(loaded);
+    setIsLoading(false);
   }, [defaultLang]);
 
   return {
@@ -143,6 +207,7 @@ export const useFormData = (defaultLang: string = 'de'): UseFormDataReturn => {
     resetForm,
     saveData,
     loadSavedData: loadData,
-    setData
+    setData,
+    isLoading
   };
 };

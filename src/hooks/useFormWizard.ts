@@ -23,6 +23,7 @@ export interface UseFormWizardReturn {
   resetForm: () => void;
   setData: (data: any) => void;
   clearSavedData: () => void;
+  isLoading: boolean;
 
   // Premium
   isPremium: boolean;
@@ -126,6 +127,7 @@ export const useFormWizard = (): UseFormWizardReturn => {
     resetForm: formData.resetForm,
     setData: formData.setData,
     clearSavedData,
+    isLoading: formData.isLoading,
 
     // Premium
     isPremium: premium.isPremium,

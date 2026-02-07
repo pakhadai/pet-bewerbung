@@ -69,9 +69,12 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
   }
 
   /**
-   * Complex templates (Friendly, Emergency, Grid) kept inline
-   * These templates have unique styles and layouts (2500+ lines combined)
-   * that are too complex to cleanly extract
+   * Complex templates (Friendly, Emergency, Grid) - NOT IMPLEMENTED
+   * These templates exist in SwissDocumentPdf.jsx.backup but were not extracted
+   * during refactoring due to their complexity (2500+ lines combined).
+   * They are disabled in TEMPLATE_OPTIONS until fully implemented.
+   *
+   * TODO: Extract from backup and implement as separate template components
    */
 
   const today = new Date().toLocaleDateString(data?.lang === 'de' ? 'de-CH' : data?.lang === 'fr' ? 'fr-CH' : 'en-GB');
