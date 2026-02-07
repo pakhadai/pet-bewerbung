@@ -51,19 +51,45 @@ The app uses a **step-based wizard** (0-6) to guide users through creating a pet
 | 5 | `Step5Preview.jsx` | Document preview + download + visual editor |
 | 6 | `Step6ThankYou.jsx` | Thank you page + donation options |
 
-### Frontend State Management
-State managed in `App.tsx` using React hooks:
-- `step`: Current wizard step (0-6)
-- `data`: Form data object with all pet and owner information
-- `theme`: Light/dark theme toggle ('light' | 'dark')
-- `selectedTemplate`: PDF template ('classic' | 'modern' | 'compact' | 'swiss')
-- `isPremium`: Premium access status
-- `premiumToken`: JWT token for premium features
-- `premiumExpiresAt`: Token expiration timestamp
+### Frontend State Management (Refactored)
 
-Custom hooks in `src/hooks/`:
-- `useFormWizard`: Form state, navigation, premium logic
-- Exports: `data`, `updateData`, `step`, `goToStep`, `isPremium`, etc.
+As of the latest refactoring, the frontend has been modularized for better maintainability:
+
+**Entry Point**: `src/App.tsx` (26 lines)
+- Clean composition: wraps `AppProviders` and `AppContent`
+- No business logic, purely structural
+
+**Main Layers**:
+1. **AppProviders.tsx** (30 lines) - Error boundary and setup
+2. **AppContent.tsx** (450 lines) - All business logic:
+   - PDF generation (`handleDownloadPDF`, `generatePdfBlob`, `handleDownloadAllTemplates`)
+   - AI text generation (`generateText`, `generateFallbackText`)
+   - Payment handling (`handleDonateMethod`)
+   - Data conversion and utilities
+3. **AppContainer.tsx** (500 lines) - UI orchestration:
+   - Step-based routing (0-7)
+   - Modal and navigation management
+   - Theme and cookie handling
+4. **Routes** (`src/routes/`) - Step-specific components:
+   - `WizardRoute.tsx` - Steps 1-6 rendering
+   - `HeroRoute.tsx` - Landing page (step 0)
+   - `ThankYouRoute.tsx` - Thank you page (step 7)
+
+**State Management**:
+- Step, form data, theme, premium status via custom hooks
+- Custom hooks in `src/hooks/`:
+  - `useFormWizard`: Main wizard logic
+  - `usePremium`: Premium features
+  - `useToast`: Toast notifications
+  - `usePaymentFlow`: Donation/payment state
+  - `useTemplateSelection`: Template management
+
+**Backup**: Original monolithic file preserved as `src/App.legacy.tsx`
+
+**Documentation**:
+- `docs/ARCHITECTURE.md` - Detailed architecture guide
+- `docs/REFACTORING_GUIDE.md` - Developer guide
+- `REFACTORING_NOTES.md` - Summary of changes
 
 ### Backend Architecture (Modular)
 
@@ -146,18 +172,27 @@ Changes stored in `localStorage` as `customDesign` object and applied to both HT
 
 ## Key Files
 
-### Frontend
+### Frontend (Refactored Structure)
 | File | Purpose |
 |------|---------|
-| `src/App.tsx` | Main component, routing, global state |
+| `src/App.tsx` | Entry point, composition layer (26 lines) |
+| `src/components/AppProviders.tsx` | Error boundary setup |
+| `src/components/AppContainer.tsx` | UI routing and orchestration (500 lines) |
+| `src/components/AppContent.tsx` | Business logic - PDF, AI, payments (450 lines) |
+| `src/routes/WizardRoute.tsx` | Steps 1-6 rendering |
+| `src/routes/HeroRoute.tsx` | Landing page (step 0) |
+| `src/routes/ThankYouRoute.tsx` | Thank you page (step 7) |
+| `src/App.legacy.tsx` | Original monolithic file (backup, 44 KB) |
 | `src/constants.js` | Template options, initial data |
 | `src/config.js` | API endpoint configuration |
 | `src/components/SwissDocument.jsx` | HTML document preview (4 templates) |
 | `src/components/SwissDocumentPdf.jsx` | PDF renderer |
 | `src/components/DocumentEditor.jsx` | Visual editor UI |
-| `src/components/steps/index.js` | Step component exports |
-| `src/hooks/useFormWizard.js` | Form wizard logic + premium |
-| `src/translations/*.js` | i18n files |
+| `src/components/steps/` | Individual step components |
+| `src/hooks/useFormWizard.ts` | Main wizard hook - state & navigation |
+| `src/hooks/usePremium.ts` | Premium features |
+| `src/hooks/useToast.ts` | Toast notifications |
+| `src/translations/*.js` | i18n files (6 languages) |
 
 ### Backend
 | File | Purpose |
@@ -287,8 +322,37 @@ stripe listen --forward-to localhost:4242/webhook
 
 ## Notes for AI Assistants
 
-1. **Step file naming**: Files are named `Step1Details`, `Step2HealthInsurance`, etc. to match actual step numbers in `App.tsx`
-2. **Translation access**: Always use optional chaining `t?.key?.subkey ?? 'fallback'`
-3. **Premium checks**: Use `isPremium` from `useFormWizard` hook
-4. **PDF changes**: Must update both `SwissDocument.jsx` (HTML) and `SwissDocumentPdf.jsx` (PDF)
-5. **New fields**: Add to `INITIAL_DATA` in `constants.js` and relevant translation files
+### Architecture (Post-Refactoring)
+1. **Entry Point**: `src/App.tsx` is now a minimal composition layer (26 lines)
+   - Only imports AppProviders and AppContent
+   - All logic delegated to child components
+   - Original file backed up as `src/App.legacy.tsx`
+
+2. **Business Logic**: Locate in `src/components/AppContent.tsx`
+   - PDF generation functions: `handleDownloadPDF`, `generatePdfBlob`, `handleDownloadAllTemplates`
+   - AI text generation: `generateText`, `generateFallbackText`
+   - Payment handling: `handleDonateMethod`
+
+3. **UI Orchestration**: Locate in `src/components/AppContainer.tsx`
+   - Step-based routing logic
+   - Modal state management
+   - Theme and cookie handling
+   - Navigation components
+
+4. **Step Rendering**: Locate in `src/routes/`
+   - `WizardRoute.tsx` - Steps 1-6
+   - `HeroRoute.tsx` - Step 0 (landing)
+   - `ThankYouRoute.tsx` - Step 7 (thank you)
+
+### Development Patterns
+5. **Step file naming**: Files are named `Step1Details`, `Step2HealthInsurance`, etc. to match step numbers
+6. **Translation access**: Always use optional chaining `t?.key?.subkey ?? 'fallback'`
+7. **Premium checks**: Use `isPremium` from `usePremium` hook
+8. **PDF changes**: Must update both `SwissDocument.jsx` (HTML) and `SwissDocumentPdf.jsx` (PDF)
+9. **New fields**: Add to `INITIAL_DATA` in `constants.js` and relevant translation files
+10. **Adding features**: See `docs/REFACTORING_GUIDE.md` section "Adding New Features"
+
+### Documentation
+- Read `docs/ARCHITECTURE.md` for detailed architecture
+- Read `docs/REFACTORING_GUIDE.md` for development guide
+- Check `REFACTORING_NOTES.md` for summary of changes
