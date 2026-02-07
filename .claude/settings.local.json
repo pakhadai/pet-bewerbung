@@ -13,7 +13,9 @@
       "Bash(npm run build:*)",
       "Bash(wc:*)",
       "Bash(timeout:*)",
-      "Bash(du:*)"
+      "Bash(du:*)",
+      "Bash(npx acorn:*)",
+      "Bash(node -e:*)"
     ]
   }
 }

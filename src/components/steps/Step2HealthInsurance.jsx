@@ -133,7 +133,7 @@ const Step2HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
               {/* Behavior & Routine */}
               <div className="space-y-3">
                 <h4 className={`font-display font-bold text-base ${titleCl}`}>{t?.labels?.behaviorTitle ?? 'Verhalten & Routine'}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label>{t?.labels?.noiseLevel ?? 'Lautstärke'}</Label>
                     <select className="theme-input w-full p-3 border-2 hand-drawn-border rounded-xl text-sm" value={data.noiseLevel ?? 'low'} onChange={(e) => updateData('noiseLevel', e.target.value)}>
@@ -174,7 +174,7 @@ const Step2HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMod
               {/* References & Emergency Contact */}
               <div className="space-y-3">
                 <h4 className={`font-display font-bold text-base ${titleCl}`}>{t?.labels?.referenceTitle ?? 'Referenzen & Notfallkontakt'}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label>{t?.labels?.previousLandlordName ?? 'Name Vermieter'}</Label>
                     <Input value={data.previousLandlordName ?? ''} onChange={(e) => updateData('previousLandlordName', e.target.value)} />

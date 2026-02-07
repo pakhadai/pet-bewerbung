@@ -6,6 +6,7 @@ const PREMIUM_TOKEN_KEY = 'pet-bewerbung-premium-token';
 const PREMIUM_EXPIRY_KEY = 'pet-bewerbung-premium-expiry';
 const DEVICE_ID_KEY = 'pet-bewerbung-device-id';
 const AI_GENERATIONS_KEY = 'pet-bewerbung-ai-generations';
+const PREMIUM_AI_GENERATIONS_KEY = 'pet-bewerbung-premium-ai-generations';
 
 // Generate or retrieve a stable device ID
 const getDeviceId = () => {
@@ -547,7 +548,9 @@ export const usePremium = () => {
  */
 export const useAIGenerations = (isPremium = false) => {
   const FREE_LIMIT = 1; // Free users get 1 generation per session
-  
+  const PREMIUM_LIMIT = 20; // Premium users get 20 generations
+
+  // Free user generation count
   const [generationCount, setGenerationCount] = useState(() => {
     try {
       const saved = localStorage.getItem(AI_GENERATIONS_KEY);
@@ -565,29 +568,67 @@ export const useAIGenerations = (isPremium = false) => {
     return 0;
   });
 
-  // Save generation count
-  const incrementGeneration = useCallback(() => {
-    const newCount = generationCount + 1;
+  // Premium user generation count
+  const [premiumGenerationCount, setPremiumGenerationCount] = useState(() => {
     try {
-      localStorage.setItem(AI_GENERATIONS_KEY, JSON.stringify({
-        count: newCount,
-        date: new Date().toDateString()
-      }));
+      const saved = localStorage.getItem(PREMIUM_AI_GENERATIONS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Reset if from a different day
+        const today = new Date().toDateString();
+        if (parsed.date === today) {
+          return parsed.count;
+        }
+      }
     } catch (e) {
       // ignore
     }
-    setGenerationCount(newCount);
-    return newCount;
-  }, [generationCount]);
+    return 0;
+  });
 
-  const canGenerate = isPremium || generationCount < FREE_LIMIT;
-  const remainingGenerations = isPremium ? Infinity : Math.max(0, FREE_LIMIT - generationCount);
+  // Save generation count (different for premium vs free)
+  const incrementGeneration = useCallback(() => {
+    if (isPremium) {
+      const newCount = premiumGenerationCount + 1;
+      try {
+        localStorage.setItem(PREMIUM_AI_GENERATIONS_KEY, JSON.stringify({
+          count: newCount,
+          date: new Date().toDateString()
+        }));
+      } catch (e) {
+        // ignore
+      }
+      setPremiumGenerationCount(newCount);
+      return newCount;
+    } else {
+      const newCount = generationCount + 1;
+      try {
+        localStorage.setItem(AI_GENERATIONS_KEY, JSON.stringify({
+          count: newCount,
+          date: new Date().toDateString()
+        }));
+      } catch (e) {
+        // ignore
+      }
+      setGenerationCount(newCount);
+      return newCount;
+    }
+  }, [generationCount, premiumGenerationCount, isPremium]);
+
+  const canGenerate = isPremium
+    ? premiumGenerationCount < PREMIUM_LIMIT
+    : generationCount < FREE_LIMIT;
+
+  const remainingGenerations = isPremium
+    ? Math.max(0, PREMIUM_LIMIT - premiumGenerationCount)
+    : Math.max(0, FREE_LIMIT - generationCount);
 
   return {
-    generationCount,
+    generationCount: isPremium ? premiumGenerationCount : generationCount,
     incrementGeneration,
     canGenerate,
     remainingGenerations,
-    freeLimit: FREE_LIMIT
+    freeLimit: FREE_LIMIT,
+    premiumLimit: PREMIUM_LIMIT
   };
 };

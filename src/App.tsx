@@ -267,7 +267,7 @@ export default function App() {
       const res = await fetch(API_ENDPOINTS.generatePetDescription, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ petData, lang: data.lang, premiumToken: isPremium ? 'premium' : null }),
+        body: JSON.stringify({ petData, lang: data.lang, premiumToken: isPremium ? 'premium' : null, tone: data.aiTone || 'formal' }),
       });
       
       const json = await res.json();
@@ -400,9 +400,24 @@ export default function App() {
           sectionLegal: t?.doc?.sectionLegal ?? 'Insurance & Legal',
           sectionBehavior: t?.doc?.sectionBehavior ?? 'Behavior',
           sectionReference: t?.doc?.sectionReference ?? 'References',
+          sectionDescription: t?.doc?.sectionDescription ?? 'Description',
           petPhoto: t?.doc?.petPhoto ?? t?.ui?.petPhotoAlt ?? 'Photo',
           sign: t?.doc?.sign ?? 'Signature',
           footer: t?.doc?.footer ?? 'Dokument generiert via Pet-Bewerbung.ch',
+          emergencyTitle: t?.doc?.emergencyTitle ?? 'Emergency Profile',
+          emergencySubtitle: t?.doc?.emergencySubtitle ?? 'Kritische Informationen für Tiersitter',
+          ownerTitle: t?.doc?.ownerTitle ?? 'Owner',
+          descTitle: t?.doc?.descTitle ?? 'About',
+          behavior: t?.doc?.behavior ?? 'Temperament',
+          details: t?.doc?.details ?? 'Details',
+          behaviorTitle: t?.doc?.behaviorTitle ?? 'Behavior & Routine',
+          legalTitle: t?.doc?.legalTitle ?? 'Legal & Health',
+          gridTitle: t?.doc?.gridTitle ?? 'Tierhalter-Referenzblatt',
+          gridDocId: t?.doc?.gridDocId ?? 'Dokument-ID',
+          defaultDescription: t?.doc?.defaultDescription ?? '',
+          qrLabel: t?.doc?.qrLabel ?? 'Kontakt scannen',
+          qrHint: t?.doc?.qrHint ?? 'vCard hinzufügen',
+          digitalSign: t?.doc?.digitalSign ?? 'Digital Signatur Halter',
         },
         labels: {
           petName: t?.labels?.petName ?? 'Name',
@@ -437,6 +452,13 @@ export default function App() {
           kg: t?.labels?.kg ?? 'kg',
           m: t?.labels?.m ?? 'M',
           f: t?.labels?.f ?? 'F',
+          male: t?.labels?.male ?? 'M',
+          female: t?.labels?.female ?? 'F',
+          name: t?.labels?.name ?? 'Name',
+          address: t?.labels?.address ?? 'Address',
+          city: t?.labels?.city ?? 'City',
+          phone: t?.labels?.phone ?? 'Phone',
+          date: t?.labels?.date ?? 'Date',
           previousLandlord: t?.labels?.previousLandlord ?? 'Previous landlord',
           previousDuration: t?.labels?.previousDuration ?? 'Duration',
           emergencyContact: t?.labels?.emergencyContact ?? 'Emergency',
@@ -444,6 +466,15 @@ export default function App() {
           referenceTitle: t?.labels?.referenceTitle ?? 'References',
           medicalConditions: t?.labels?.medicalConditions ?? t?.step2Emergency?.displayMedical ?? 'Medizinische Angaben',
           secondaryEmergencyContact: t?.labels?.secondaryEmergencyContact ?? t?.step2Emergency?.secondaryContact ?? 'Zweiter Kontakt',
+          houseTrained: t?.labels?.houseTrained ?? 'House trained',
+          chipped: t?.labels?.chipped ?? 'Chipped',
+          vaccinated: t?.labels?.vaccinated ?? 'Vaccinated',
+          dewormed: t?.labels?.dewormed ?? 'Dewormed',
+          activityLevel: t?.labels?.activityLevel ?? 'Activity',
+          goodWithChildren: t?.labels?.goodWithChildren ?? 'Good with children',
+          social: t?.labels?.social ?? 'Social',
+          availableForRent: t?.labels?.availableForRent ?? 'Pet CV',
+          willingToPayDeposit: t?.labels?.willingToPayDeposit ?? 'Pet Deposit',
         },
         step2Emergency: {
           displayMedical: t?.step2Emergency?.displayMedical ?? 'Medizinische Angaben',
@@ -1094,7 +1125,7 @@ export default function App() {
         </div>
       )}
 
-      <Footer darkMode={darkMode} t={t} onOpenLegal={setLegalPage} onFaqClick={() => setFaqOpen(true)} />
+      {step === 0 && <Footer darkMode={darkMode} t={t} onOpenLegal={setLegalPage} onFaqClick={() => setFaqOpen(true)} />}
 
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
 

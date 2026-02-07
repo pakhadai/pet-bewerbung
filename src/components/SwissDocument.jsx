@@ -257,56 +257,46 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
   // isEdited flag is set when user applies changes in the Visual Editor
   const isCustomized = customDesign.isEdited || hasCustomColors || hasCustomLayout;
   
-  // Custom colors - available for ANY template when user has customized
+  // Custom colors & styles - available for ANY template when user has customized
   const customColors = useMemo(() => {
     if (!isCustomized) return null;
     return {
       primary: customDesign.primaryColor || '#b39ddb',
       secondary: customDesign.secondaryColor || '#f5f5f5',
-      accentStyle: customDesign.accentStyle || 'modern'
+      accentStyle: customDesign.accentStyle || 'modern',
+      textColor: customDesign.textColor || '#1f2937',
+      backgroundColor: customDesign.backgroundColor || '#ffffff',
+      headerFont: customDesign.headerFont || 'helvetica',
+      bodyFont: customDesign.bodyFont || 'helvetica',
+      headerBold: customDesign.headerBold ?? true,
+      headerItalic: customDesign.headerItalic ?? false,
+      bodyBold: customDesign.bodyBold ?? false,
+      bodyItalic: customDesign.bodyItalic ?? false,
+      headerFontSize: customDesign.headerFontSize || 9,
+      bodyFontSize: customDesign.bodyFontSize || 10,
     };
   }, [isCustomized, customDesign]);
 
   const config = getTemplateConfig();
 
-  // Render header based on template (with optional custom colors)
-  const renderHeader = () => {
-    // Apply custom colors when user has customized the template
-    if (customColors) {
-      return (
-        <div className={config.headerContainer} style={{ borderBottomColor: customColors.primary }}>
-          <div className={config.headerFlex}>
-            <div className={config.headerIconContainer}>
-              <div 
-                className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}
-                style={{ borderColor: customColors.primary }}
-              >
-                <img src="/logo.png" alt="" className="w-full h-full object-contain" style={{ width: config.headerIconSize + 8, height: config.headerIconSize + 8 }} />
-              </div>
-              <div className="flex flex-col">
-                <h1 className={config.titleText}>{t.doc.title}</h1>
-                <p className={config.subtitleText} style={{ color: customColors.primary }}>{t.doc.subtitle}</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className={config.dateText}>{config.dateLabel}</p>
-            </div>
-          </div>
-        </div>
-      );
-    }
+  // Helper: inline style overrides when user customized via editor
+  const customHeaderStyle = customColors ? { borderBottomColor: customColors.primary } : {};
+  const customAccentStyle = customColors ? { color: customColors.primary } : {};
+  const customBorderStyle = customColors ? { borderColor: customColors.primary } : {};
 
+  // Render header based on template (custom colors applied as style overrides, preserving template structure)
+  const renderHeader = () => {
     if (templateType === 'swiss') {
       return (
-        <div className={config.headerContainer}>
+        <div className={config.headerContainer} style={customHeaderStyle}>
           <div className={config.headerFlex}>
             <div className={config.headerIconContainer}>
-              <div className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}>
+              <div className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`} style={customBorderStyle}>
                 <img src="/logo.png" alt="" className="w-full h-full object-contain" style={{ width: config.headerIconSize + 8, height: config.headerIconSize + 8 }} />
               </div>
               <div className="flex flex-col">
                 <h1 className={config.titleText}>{t.doc.title}</h1>
-                <p className={config.subtitleText}>{t.doc.subtitle}</p>
+                <p className={config.subtitleText} style={customAccentStyle}>{t.doc.subtitle}</p>
               </div>
             </div>
             <div className="text-right">
@@ -320,10 +310,10 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     // Professional template header
     if (templateType === 'professional') {
       return (
-        <div className={config.headerContainer}>
+        <div className={config.headerContainer} style={customHeaderStyle}>
           <div className={config.headerFlex}>
             <div className={config.headerIconContainer}>
-              <div className={config.headerIconBg}>
+              <div className={config.headerIconBg} style={customColors ? { backgroundColor: customColors.primary } : {}}>
                 <span className="material-symbols-outlined text-xl">verified</span>
               </div>
               <div className="flex flex-col">
@@ -332,7 +322,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">{t.labels.date || 'Datum'}</p>
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">{t.labels?.date || 'Datum'}</p>
               <p className="text-sm font-medium text-black">{config.dateLabel}</p>
             </div>
           </div>
@@ -343,19 +333,19 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     // Emergency template header
     if (templateType === 'emergency') {
       return (
-        <div className={config.headerContainer}>
+        <div className={config.headerContainer} style={customHeaderStyle}>
           <div className={config.headerFlex}>
             <div className={config.headerIconContainer}>
-              <div className={config.headerIconBg}>
+              <div className={config.headerIconBg} style={customColors ? { backgroundColor: customColors.primary } : {}}>
                 <span className="material-symbols-outlined text-3xl">emergency_home</span>
               </div>
               <div className="flex flex-col">
-                <h1 className={config.titleText}>Emergency Profile</h1>
-                <p className={config.subtitleText}>Kritische Informationen für Tiersitter</p>
+                <h1 className={config.titleText}>{t?.doc?.emergencyTitle ?? 'Emergency Profile'}</h1>
+                <p className={config.subtitleText} style={customAccentStyle}>{t?.doc?.emergencySubtitle ?? 'Kritische Informationen für Tiersitter'}</p>
               </div>
             </div>
             <div className="text-right hidden sm:block">
-              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{t.labels.date || 'Aktualisiert am'}</p>
+              <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{t?.labels?.date || 'Aktualisiert am'}</p>
               <p className="text-sm font-bold text-black">{config.dateLabel}</p>
             </div>
           </div>
@@ -365,40 +355,42 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
 
     // Friendly template header - photo + pet info in header
     if (templateType === 'friendly') {
+      const friendlyAccent = customColors?.primary || '#6400f0';
+      const friendlyBg = customColors?.secondary || '#efe5fd';
       return (
         <div className={config.headerContainer}>
           <div className={config.headerFlex}>
             {/* Pet Photo */}
             <div className={config.headerIconContainer}>
-              <div className={config.headerIconBg}>
+              <div className={config.headerIconBg} style={customColors ? { borderColor: friendlyBg } : {}}>
                 {data.photo ? (
-                  <img src={data.photo} alt={data.petName} className="w-full h-full object-cover" />
+                  <img src={data.photo} alt={data.name} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-[#efe5fd] flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[#6400f0] text-4xl">pets</span>
+                  <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: friendlyBg }}>
+                    <span className="material-symbols-outlined text-4xl" style={{ color: friendlyAccent }}>pets</span>
                   </div>
                 )}
               </div>
             </div>
             {/* Pet Info */}
             <div className="flex flex-col justify-center flex-grow">
-              <h1 className={config.titleText}>{data.petName || 'Mein Haustier'}</h1>
-              <p className={config.subtitleText}>{data.breed ? `${data.breed}` : (t.labels.breed || 'Rasse / Art')}</p>
+              <h1 className={config.titleText}>{data.name || (t?.labels?.petName || 'Mein Haustier')}</h1>
+              <p className={config.subtitleText} style={customAccentStyle}>{data.breed ? `${data.breed}` : (t?.labels?.breed || 'Rasse / Art')}</p>
               <div className="grid grid-cols-2 gap-y-1.5 gap-x-6 text-[11px] text-[#130c1d]/80 mt-2">
                 <div className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[#6400f0] text-[16px]">cake</span>
-                  <span>{data.petAge ? `${data.petAge} ${t.labels?.years || 'Jahre'}` : '—'}</span>
+                  <span className="material-symbols-outlined text-[16px]" style={{ color: friendlyAccent }}>cake</span>
+                  <span>{data.age ? `${data.age} ${t?.labels?.years || 'Jahre'}` : '—'}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[#6400f0] text-[16px]">scale</span>
+                  <span className="material-symbols-outlined text-[16px]" style={{ color: friendlyAccent }}>scale</span>
                   <span>{data.weight ? `${data.weight} kg` : '—'}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[#6400f0] text-[16px]">transgender</span>
-                  <span>{data.gender === 'male' ? (t.labels?.male || 'Männlich') : data.gender === 'female' ? (t.labels?.female || 'Weiblich') : '—'}</span>
+                  <span className="material-symbols-outlined text-[16px]" style={{ color: friendlyAccent }}>transgender</span>
+                  <span>{data.gender === 'm' ? (t?.labels?.male || 'Männlich') : data.gender === 'f' ? (t?.labels?.female || 'Weiblich') : '—'}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[#6400f0] text-[16px]">location_on</span>
+                  <span className="material-symbols-outlined text-[16px]" style={{ color: friendlyAccent }}>location_on</span>
                   <span>{data.city || '—'}</span>
                 </div>
               </div>
@@ -411,19 +403,19 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     // Grid template header - strict Swiss style with red accent
     if (templateType === 'grid') {
       return (
-        <div className={config.headerContainer}>
+        <div className={config.headerContainer} style={customHeaderStyle}>
           <div className={config.headerFlex}>
             <div className={config.headerIconContainer}>
-              <div className={config.headerIconBg}>
+              <div className={config.headerIconBg} style={customColors ? { backgroundColor: customColors.primary } : {}}>
                 <span className="material-symbols-outlined text-[36px]">cruelty_free</span>
               </div>
               <div>
-                <h1 className={config.titleText}>Tierhalter-<br/>Referenzblatt</h1>
-                <p className={config.subtitleText}>Dokument-ID: #{data.chipId?.slice(-4) || 'XXXX'}-CH</p>
+                <h1 className={config.titleText}>{t?.doc?.gridTitle ?? 'Tierhalter-Referenzblatt'}</h1>
+                <p className={config.subtitleText}>{t?.doc?.gridDocId ?? 'Dokument-ID'}: #{data.chipId?.slice(-4) || 'XXXX'}-CH</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{t.labels?.date || 'Erstellungsdatum'}</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{t?.labels?.date || 'Erstellungsdatum'}</p>
               <p className="text-xl font-bold font-mono tracking-tight">{config.dateLabel}</p>
             </div>
           </div>
@@ -433,15 +425,15 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
 
     // Default header (classic, modern, compact)
     return (
-      <div className={config.headerContainer}>
+      <div className={config.headerContainer} style={customHeaderStyle}>
         <div className={config.headerFlex}>
           <div className={config.headerIconContainer}>
-            <div className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}>
+            <div className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`} style={customBorderStyle}>
               <img src="/logo.png" alt="" className="w-full h-full object-contain" style={{ width: config.headerIconSize + 8, height: config.headerIconSize + 8 }} />
             </div>
             <div className="flex flex-col">
               <h1 className={config.titleText}>{t.doc.title}</h1>
-              <p className={config.subtitleText}>{t.doc.subtitle}</p>
+              <p className={config.subtitleText} style={customAccentStyle}>{t.doc.subtitle}</p>
             </div>
           </div>
           <div className="text-right">
@@ -452,36 +444,21 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     );
   };
 
-  // Render footer: left = generated by, right = signature line (with optional custom colors)
+  // Helper: footer border style override
+  const customFooterStyle = customColors ? { borderTopColor: customColors.primary } : {};
+
+  // Render footer: left = generated by, right = signature line (custom colors as style overrides)
   const renderFooter = () => {
     if (!config.footerContainer) return null;
 
-    // Apply custom colors when user has customized the template
-    if (customColors) {
-      return (
-        <div className={config.footerContainer} style={{ borderTopColor: customColors.primary }}>
-          <div className="flex justify-between items-end">
-            <p className="text-[8px] text-slate-500 uppercase tracking-wider">
-              {t.doc.footer ?? 'Dokument generiert via Pet-Bewerbung.ch'}
-            </p>
-            {config.footerSignContainer && (
-              <div className={config.footerSignContainer} style={{ borderTopColor: customColors.primary }}>
-                <p className={config.footerSignText}>{t.doc.sign}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      );
-    }
-
     // Professional template footer
     if (templateType === 'professional') {
+      const profColor = customColors?.primary || config.primaryColor || '#13ec5b';
       return (
-        <div className={config.footerContainer}>
+        <div className={config.footerContainer} style={customFooterStyle}>
           <div className="flex justify-between items-end">
             <div className={config.footerText}>
-              Dokument-ID: {Math.random().toString(36).substring(2, 6).toUpperCase()}-REF-{new Date().getFullYear()}<br/>
-              Generiert via <span className="font-bold" style={{ color: config.primaryColor }}>Pet-Bewerbung.ch</span>
+              {t?.doc?.footer ?? 'Dokument generiert via Pet-Bewerbung.ch'}
             </div>
             {config.footerSignContainer && (
               <div className="flex flex-col gap-1">
@@ -497,15 +474,14 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     // Emergency template footer
     if (templateType === 'emergency') {
       return (
-        <div className={config.footerContainer}>
+        <div className={config.footerContainer} style={customFooterStyle}>
           <div className="flex flex-col md:flex-row justify-between items-end gap-3">
             <div className={config.footerText}>
-              EMERGENCY-ID: {Math.random().toString(36).substring(2, 6).toUpperCase()}-PET-PROFILE-{new Date().getFullYear()}<br/>
-              Powered by <span className="text-black font-bold">Pet-Bewerbung.ch</span>
+              {t?.doc?.footer ?? 'Dokument generiert via Pet-Bewerbung.ch'}
             </div>
             <div className="flex flex-col gap-0.5 w-40 items-center">
               <div className={config.footerSignContainer}></div>
-              <p className={config.footerSignText}>Digital Signatur Halter</p>
+              <p className={config.footerSignText}>{t?.doc?.digitalSign ?? 'Digital Signatur Halter'}</p>
             </div>
           </div>
         </div>
@@ -515,10 +491,10 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     // FREE template (classic) - prominent branding
     if (templateType === 'classic') {
       return (
-        <div className={config.footerContainer}>
+        <div className={config.footerContainer} style={customFooterStyle}>
           <div className="flex flex-col items-center w-full">
             <p className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-semibold mb-4">
-              ✦ DOKUMENT GENERIERT VIA PET-BEWERBUNG.CH ✦
+              ✦ {t?.doc?.footer ?? 'DOKUMENT GENERIERT VIA PET-BEWERBUNG.CH'} ✦
             </p>
           </div>
           <div className="flex justify-end">
@@ -534,28 +510,35 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
 
     // Friendly template footer
     if (templateType === 'friendly') {
+      const friendlyAccent = customColors?.primary || '#6400f0';
       return (
-        <div className={config.footerContainer}>
+        <div className={config.footerContainer} style={customFooterStyle}>
           <div className="grid grid-cols-2 gap-6">
             {/* Left - References */}
             <div>
               <h3 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#6400f0] text-lg">format_quote</span>
-                {t.doc.references || 'Referenzen'}
+                <span className="material-symbols-outlined text-lg" style={{ color: friendlyAccent }}>contact_phone</span>
+                {t?.doc?.sectionReference || 'Referenzen'}
               </h3>
-              {data.previousLandlord && (
-                <div className="bg-[#f7f5f8] p-2.5 rounded-lg border-l-4 border-[#6400f0] mb-2">
-                  <p className="text-[10px] text-gray-600 italic mb-1">
-                    "{data.landlordReference || t.doc.landlordReference || 'Guter Mieter mit wohlerzogenem Haustier.'}"
-                  </p>
-                  <p className="text-[10px] font-bold text-[#130c1d]">— {data.previousLandlord}</p>
+              {data.previousLandlordName && (
+                <div className="bg-[#f7f5f8] p-2.5 rounded-lg border-l-4 mb-2" style={{ borderLeftColor: friendlyAccent }}>
+                  <p className="text-[10px] font-bold text-[#130c1d]">{data.previousLandlordName}</p>
+                  {data.previousLandlordPhone && <p className="text-[10px] text-gray-600">{data.previousLandlordPhone}</p>}
+                  {data.previousDuration && <p className="text-[9px] text-gray-500 mt-1">{t?.labels?.previousDuration || 'Mietdauer'}: {data.previousDuration}</p>}
+                </div>
+              )}
+              {data.emergencyContactName && (
+                <div className="bg-[#f7f5f8] p-2.5 rounded-lg border-l-4" style={{ borderLeftColor: friendlyAccent }}>
+                  <p className="text-[10px] font-bold text-[#130c1d]">{data.emergencyContactName}</p>
+                  {data.emergencyContactPhone && <p className="text-[10px] text-gray-600">{data.emergencyContactPhone}</p>}
+                  {data.emergencyContactRelation && <p className="text-[9px] text-gray-500 mt-1">{data.emergencyContactRelation}</p>}
                 </div>
               )}
             </div>
             {/* Right - Signature */}
             <div className="flex flex-col justify-end items-end">
               <div className={config.footerSignContainer}></div>
-              <p className={config.footerSignText}>{data.ownerName || t.doc.sign}, {t.doc.ownerTitle || 'Halter'}</p>
+              <p className={config.footerSignText}>{data.ownerName || t.doc.sign}, {t?.doc?.ownerTitle || 'Halter'}</p>
             </div>
           </div>
           <div className="mt-3 text-center">
@@ -567,25 +550,26 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
 
     // Grid template footer - Swiss official style
     if (templateType === 'grid') {
+      const gridAccent = customColors?.primary || '#D80000';
       return (
-        <div className={config.footerContainer}>
+        <div className={config.footerContainer} style={customFooterStyle}>
           <div className="flex justify-between items-end">
             <div className="flex flex-col">
-              <span className="font-black text-[#D80000] tracking-tight text-lg">Pet-Bewerbung.ch</span>
+              <span className="font-black tracking-tight text-lg" style={{ color: gridAccent }}>Pet-Bewerbung.ch</span>
               <span className="text-[9px] text-gray-400 uppercase tracking-widest mt-1">Swiss Standard Pet Resume • © {new Date().getFullYear()}</span>
             </div>
             <div className="text-right">
               <div className={config.footerSignContainer}></div>
-              <p className={config.footerSignText}>{t.doc?.sign || 'Unterschrift Halter'}</p>
+              <p className={config.footerSignText}>{t?.doc?.sign || 'Unterschrift Halter'}</p>
             </div>
           </div>
         </div>
       );
     }
 
-    // Premium templates - subtle branding
+    // Premium templates (modern, compact, swiss) - subtle branding
     return (
-      <div className={config.footerContainer}>
+      <div className={config.footerContainer} style={customFooterStyle}>
         <div className="flex justify-between items-end">
           <p className="text-[6px] text-slate-300 tracking-wide">
             pet-bewerbung.ch
@@ -614,125 +598,129 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
 
     // Friendly template has its own unique card-based layout
     if (templateType === 'friendly') {
+      const hiddenSections = customDesign?.hiddenSections || [];
       return (
         <div className={config.mainLayout}>
           {/* Left Column - About Me & Behavior */}
           <div className={`${config.sidebarWidth} ${config.sidebarSpace}`}>
             {/* About Me Section */}
-            <div className="bg-[#efe5fd]/40 p-4 rounded-2xl border border-[#efe5fd]">
-              <h2 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#6400f0] text-lg">info</span>
-                {t.doc.descTitle || 'Über mich'}
-              </h2>
-              <p className="text-[11px] leading-relaxed text-[#130c1d]/80">
-                {data.description || t.doc.defaultDescription || 'Hier könnte eine Beschreibung stehen...'}
-              </p>
-            </div>
-            
-            {/* Behavior/Temperament Section */}
-            <div className="bg-white p-4 rounded-2xl border border-[#ece6f4] shadow-sm">
-              <h2 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#6400f0] text-lg">mood</span>
-                {t.doc.behavior || 'Temperament'}
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {data.characteristics && data.characteristics.length > 0 ? (
-                  data.characteristics.map((trait, i) => (
-                    <span 
-                      key={i}
-                      className="px-3 py-1.5 bg-[#efe5fd] text-[#6400f0] text-[10px] font-medium rounded-full"
-                    >
-                      {trait}
-                    </span>
-                  ))
-                ) : (
-                  <>
-                    <span className="px-3 py-1.5 bg-[#efe5fd] text-[#6400f0] text-[10px] font-medium rounded-full">{t.labels?.friendly || 'Freundlich'}</span>
-                    <span className="px-3 py-1.5 bg-[#efe5fd] text-[#6400f0] text-[10px] font-medium rounded-full">{t.labels?.playful || 'Verspielt'}</span>
-                    <span className="px-3 py-1.5 bg-[#efe5fd] text-[#6400f0] text-[10px] font-medium rounded-full">{t.labels?.calm || 'Ruhig'}</span>
-                  </>
-                )}
+            {!hiddenSections.includes('description') && (
+              <div className="bg-[#efe5fd]/40 p-4 rounded-2xl border border-[#efe5fd]">
+                <h2 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#6400f0] text-lg">info</span>
+                  {t.doc.descTitle || 'Über mich'}
+                </h2>
+                <p className="text-[11px] leading-relaxed text-[#130c1d]/80">
+                  {data.generatedText || t.doc.defaultDescription || 'Hier könnte eine Beschreibung stehen...'}
+                </p>
               </div>
-              
-              {/* Additional behavior info */}
-              <div className="mt-3 pt-3 border-t border-[#ece6f4]">
+            )}
+
+            {/* Behavior/Temperament Section */}
+            {!hiddenSections.includes('behavior') && (
+              <div className="bg-white p-4 rounded-2xl border border-[#ece6f4] shadow-sm">
+                <h2 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#6400f0] text-lg">mood</span>
+                  {t.doc.behavior || 'Temperament'}
+                </h2>
+
+                {/* Behavior info */}
                 <div className="grid grid-cols-2 gap-2 text-[10px]">
                   <div className="flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-[#6400f0] text-sm">
-                      {data.goodWithChildren === 'yes' ? 'check_circle' : 'cancel'}
+                      {data.behaviorWithChildren === 'good' ? 'check_circle' : 'cancel'}
                     </span>
-                    <span className="text-[#130c1d]/70">{t.labels?.goodWithChildren || 'Kinderfreundlich'}</span>
+                    <span className="text-[#130c1d]/70">{t.labels?.behaviorWithChildren || 'Kinderfreundlich'}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-[#6400f0] text-sm">
-                      {data.goodWithAnimals === 'yes' ? 'check_circle' : 'cancel'}
+                      {data.behaviorWithPets === 'good' ? 'check_circle' : 'cancel'}
                     </span>
-                    <span className="text-[#130c1d]/70">{t.labels?.goodWithAnimals || 'Tierfreundlich'}</span>
+                    <span className="text-[#130c1d]/70">{t.labels?.behaviorWithPets || 'Tierfreundlich'}</span>
                   </div>
                 </div>
+
+                {/* Noise level */}
+                {data.noiseLevel && (
+                  <div className="mt-3 pt-3 border-t border-[#ece6f4]">
+                    <div className="flex items-center gap-2 text-[10px]">
+                      <span className="material-symbols-outlined text-[#6400f0] text-sm">volume_up</span>
+                      <span className="text-[#130c1d]/70">{t.labels?.noiseLevel || 'Lautstärke'}:</span>
+                      <span className="font-medium text-[#130c1d]">
+                        {data.noiseLevel === 'low' ? (t.labels?.noiseLow || 'Niedrig') :
+                         data.noiseLevel === 'medium' ? (t.labels?.noiseMedium || 'Mittel') :
+                         (t.labels?.noiseHigh || 'Hoch')}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
           </div>
 
           {/* Right Column - Owner & Pet Details */}
           <div className={`${config.mainWidth} ${config.mainSpace}`}>
             {/* Owner Info */}
-            <div className="bg-gradient-to-br from-[#6400f0] to-[#8b5cf6] p-4 rounded-2xl text-white">
-              <h2 className="text-sm font-bold mb-3 flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg">person</span>
-                {t.doc.ownerTitle || 'Halter'}
-              </h2>
-              <div className="space-y-2 text-[11px]">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm opacity-80">badge</span>
-                  <span>{data.ownerName || '—'}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm opacity-80">home</span>
-                  <span>{data.address ? `${data.address}, ${data.zip} ${data.city}` : '—'}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm opacity-80">call</span>
-                  <span>{data.phone || '—'}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm opacity-80">mail</span>
-                  <span>{data.email || '—'}</span>
+            {!hiddenSections.includes('owner') && (
+              <div className="bg-gradient-to-br from-[#6400f0] to-[#8b5cf6] p-4 rounded-2xl text-white">
+                <h2 className="text-sm font-bold mb-3 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">person</span>
+                  {t.doc.ownerTitle || 'Halter'}
+                </h2>
+                <div className="space-y-2 text-[11px]">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-sm opacity-80">badge</span>
+                    <span>{data.ownerName || '—'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-sm opacity-80">home</span>
+                    <span>{(data.street || data.city) ? `${data.street || ''} ${data.houseNumber || ''}, ${data.postal || ''} ${data.city || ''}`.trim() : '—'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-sm opacity-80">call</span>
+                    <span>{data.phone || '—'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-sm opacity-80">mail</span>
+                    <span>{data.email || '—'}</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Pet Details Card */}
-            <div className="bg-white p-4 rounded-2xl border border-[#ece6f4] shadow-sm">
-              <h2 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#6400f0] text-lg">pets</span>
-                {t.doc.details || 'Details'}
-              </h2>
-              <div className="space-y-2 text-[10px]">
-                <div className="flex justify-between items-center py-1.5 border-b border-[#ece6f4]">
-                  <span className="text-gray-500">{t.labels?.chipId || 'Chip-ID'}</span>
-                  <span className="font-medium text-[#130c1d]">{data.chipId || '—'}</span>
-                </div>
-                <div className="flex justify-between items-center py-1.5 border-b border-[#ece6f4]">
-                  <span className="text-gray-500">{t.labels?.vet || 'Tierarzt'}</span>
-                  <span className="font-medium text-[#130c1d]">{data.vetName || '—'}</span>
-                </div>
-                <div className="flex justify-between items-center py-1.5 border-b border-[#ece6f4]">
-                  <span className="text-gray-500">{t.labels?.insurance || 'Versicherung'}</span>
-                  <span className="font-medium text-[#130c1d]">{data.insuranceCompany || '—'}</span>
-                </div>
-                <div className="flex gap-3 mt-3">
-                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-[9px] ${data.isVaccinated === 'yes' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                    <span className="material-symbols-outlined text-xs">{data.isVaccinated === 'yes' ? 'check' : 'close'}</span>
-                    {t.labels?.vaccinated || 'Geimpft'}
-                  </span>
-                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-[9px] ${data.isNeutered === 'yes' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                    <span className="material-symbols-outlined text-xs">{data.isNeutered === 'yes' ? 'check' : 'close'}</span>
-                    {t.labels?.neutered || 'Kastriert'}
-                  </span>
+            {!hiddenSections.includes('legal') && (
+              <div className="bg-white p-4 rounded-2xl border border-[#ece6f4] shadow-sm">
+                <h2 className="text-sm font-bold text-[#130c1d] mb-3 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#6400f0] text-lg">pets</span>
+                  {t.doc.details || 'Details'}
+                </h2>
+                <div className="space-y-2 text-[10px]">
+                  <div className="flex justify-between items-center py-1.5 border-b border-[#ece6f4]">
+                    <span className="text-gray-500">{t.labels?.chipId || 'Chip-ID'}</span>
+                    <span className="font-medium text-[#130c1d]">{data.chipId || '—'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1.5 border-b border-[#ece6f4]">
+                    <span className="text-gray-500">{t.labels?.vet || 'Tierarzt'}</span>
+                    <span className="font-medium text-[#130c1d]">{data.vetName || '—'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1.5 border-b border-[#ece6f4]">
+                    <span className="text-gray-500">{t.labels?.insurance || 'Versicherung'}</span>
+                    <span className="font-medium text-[#130c1d]">{data.insuranceProvider || '—'}</span>
+                  </div>
+                  <div className="flex gap-3 mt-3">
+                    <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-[9px] ${data.hasVaccination ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <span className="material-symbols-outlined text-xs">{data.hasVaccination ? 'check' : 'close'}</span>
+                      {t.labels?.vaccinated || 'Geimpft'}
+                    </span>
+                    <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-[9px] ${data.isNeutered ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <span className="material-symbols-outlined text-xs">{data.isNeutered ? 'check' : 'close'}</span>
+                      {t.labels?.neutered || 'Kastriert'}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       );
@@ -740,6 +728,8 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
 
     // Grid template - strict Swiss grid with progress bars and checkboxes
     if (templateType === 'grid') {
+      const hiddenSections = customDesign?.hiddenSections || [];
+
       // Helper function to get noise level percentage
       const getNoiseLevelPercent = () => {
         if (data.noiseLevel === 'low') return 20;
@@ -758,151 +748,162 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
           {/* Left Column - Photo, Owner, Details */}
           <div className={`${config.sidebarWidth} ${config.sidebarSpace}`}>
             {/* Pet Photo */}
-            <div className="w-full aspect-[3/4] bg-gray-100 border border-gray-200 p-2 shadow-sm">
-              {data.photo ? (
-                <img src={data.photo} alt={data.petName} className="w-full h-full object-cover" style={{ filter: 'grayscale(10%)' }} />
-              ) : (
-                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-gray-400 text-6xl">pets</span>
-                </div>
-              )}
-            </div>
-            
+            {!hiddenSections.includes('photo') && (
+              <div className="w-full aspect-[3/4] bg-gray-100 border border-gray-200 p-2 shadow-sm">
+                {data.photo ? (
+                  <img src={data.photo} alt={data.name} className="w-full h-full object-cover" style={{ filter: 'grayscale(10%)' }} />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-gray-400 text-6xl">pets</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Owner Section */}
-            <div>
-              <h3 className="text-[10px] font-black text-black border-b-2 border-black pb-2 mb-3 uppercase tracking-wider">
-                {t.doc?.ownerTitle || 'Halter'} / Owner
-              </h3>
-              <div className="text-sm space-y-1.5 leading-snug">
-                <p className="font-bold text-base">{data.ownerName || '—'}</p>
-                <p>{data.street} {data.houseNumber}</p>
-                <p>{data.postal} {data.city}</p>
-                <div className="pt-2 space-y-1 text-gray-600">
-                  <p className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[16px] text-[#D80000]">call</span>
-                    <span className="font-medium">{data.phone || '—'}</span>
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[16px] text-[#D80000]">mail</span>
-                    <span>{data.email || '—'}</span>
-                  </p>
+            {!hiddenSections.includes('owner') && (
+              <div>
+                <h3 className="text-[10px] font-black text-black border-b-2 border-black pb-2 mb-3 uppercase tracking-wider">
+                  {t.doc?.sectionOwner || 'Halter'} / Owner
+                </h3>
+                <div className="text-sm space-y-1.5 leading-snug">
+                  <p className="font-bold text-base">{data.ownerName || '—'}</p>
+                  <p>{data.street} {data.houseNumber}</p>
+                  <p>{data.postal} {data.city}</p>
+                  <div className="pt-2 space-y-1 text-gray-600">
+                    <p className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[16px] text-[#D80000]">call</span>
+                      <span className="font-medium">{data.phone || '—'}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[16px] text-[#D80000]">mail</span>
+                      <span>{data.email || '—'}</span>
+                    </p>
+                  </div>
+                </div>
+                {/* QR Code - will be generated via qrCode.js */}
+                <div className="mt-5 size-24 bg-white border border-gray-200 flex items-center justify-center p-1" id="qr-code-grid">
+                  <span className="material-symbols-outlined text-gray-300 text-[48px]">qr_code_2</span>
                 </div>
               </div>
-              {/* QR Code placeholder */}
-              <div className="mt-5 size-24 bg-[#1a1a1a] text-white flex items-center justify-center p-2">
-                <span className="material-symbols-outlined text-[48px]">qr_code_2</span>
-              </div>
-            </div>
+            )}
 
             {/* Details Section */}
-            <div>
-              <h3 className="text-[10px] font-black text-black border-b-2 border-black pb-2 mb-3 uppercase tracking-wider">
-                {t.doc?.details || 'Details'}
-              </h3>
-              <div className="space-y-2 text-sm">
-                <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
-                  <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.breed || 'Rasse'}</span>
-                  <span className="font-semibold text-right">{data.breed || '—'}</span>
-                </div>
-                <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
-                  <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.gender || 'Geschlecht'}</span>
-                  <span className="font-semibold text-right">{data.gender === 'male' ? (t.labels?.male || 'Männlich') : data.gender === 'female' ? (t.labels?.female || 'Weiblich') : '—'}</span>
-                </div>
-                <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
-                  <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.age || 'Alter'}</span>
-                  <span className="font-semibold text-right">{data.petAge ? `${data.petAge} Jahre` : '—'}</span>
-                </div>
-                <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
-                  <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.weight || 'Gewicht'}</span>
-                  <span className="font-semibold text-right">{data.weight ? `${data.weight} kg` : '—'}</span>
+            {!hiddenSections.includes('details') && (
+              <div>
+                <h3 className="text-[10px] font-black text-black border-b-2 border-black pb-2 mb-3 uppercase tracking-wider">
+                  {t.doc?.sectionPet || 'Details'}
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
+                    <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.breed || 'Rasse'}</span>
+                    <span className="font-semibold text-right">{data.breed || '—'}</span>
+                  </div>
+                  <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
+                    <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.gender || 'Geschlecht'}</span>
+                    <span className="font-semibold text-right">{data.gender === 'm' ? (t.labels?.male || 'Männlich') : data.gender === 'f' ? (t.labels?.female || 'Weiblich') : '—'}</span>
+                  </div>
+                  <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
+                    <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.age || 'Alter'}</span>
+                    <span className="font-semibold text-right">{data.age ? `${data.age} ${t.labels?.years || 'Jahre'}` : '—'}</span>
+                  </div>
+                  <div className="grid grid-cols-2 border-b border-gray-100 pb-1">
+                    <span className="text-gray-500 text-[10px] uppercase font-bold pt-1">{t.labels?.weight || 'Gewicht'}</span>
+                    <span className="font-semibold text-right">{data.weight ? `${data.weight} kg` : '—'}</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Right Column - Name, Description, Behavior, Legal, References */}
           <div className={`${config.mainWidth} ${config.mainSpace}`}>
             {/* Pet Name Header */}
             <div className="border-b border-gray-100 pb-4">
-              <h2 className="text-6xl font-black tracking-tighter text-black leading-none mb-1">{(data.petName || 'NAME').toUpperCase()}</h2>
+              <h2 className="text-6xl font-black tracking-tighter text-black leading-none mb-1">{(data.name || 'NAME').toUpperCase()}</h2>
               <div className="flex items-center gap-3">
                 <span className="bg-[#D80000] text-white text-[10px] font-bold px-2 py-0.5 uppercase tracking-wide">
-                  {t.labels?.availableForRent || 'Available for Rent'}
+                  {t.labels?.availableForRent || 'Pet CV'}
                 </span>
                 <span className="text-xl text-gray-400 font-light tracking-wide">{data.city || '—'}, Schweiz</span>
               </div>
             </div>
 
             {/* Description */}
-            <div className="bg-gray-50 p-5 border-l-4 border-[#D80000]">
-              <h3 className="text-[10px] font-bold text-[#D80000] uppercase tracking-widest mb-2">
-                {t.doc?.descTitle || 'Charakterbeschreibung'}
-              </h3>
-              <p className="text-sm leading-relaxed text-gray-800 text-justify">
-                {data.description || data.generatedText || t.doc?.defaultDescription || 'Hier könnte eine Beschreibung stehen...'}
-              </p>
-            </div>
+            {!hiddenSections.includes('description') && (
+              <div className="bg-gray-50 p-5 border-l-4 border-[#D80000]">
+                <h3 className="text-[10px] font-bold text-[#D80000] uppercase tracking-widest mb-2">
+                  {t.doc?.sectionDescription || 'Charakterbeschreibung'}
+                </h3>
+                <p className="text-sm leading-relaxed text-gray-800 text-justify">
+                  {data.generatedText || t.doc?.defaultDescription || 'Hier könnte eine Beschreibung stehen...'}
+                </p>
+              </div>
+            )}
 
             {/* Behavior & Routine */}
-            <div>
-              <h3 className="text-sm font-bold border-b border-gray-300 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2 text-black">
-                <span className="material-symbols-outlined text-[#D80000] text-[20px]">psychology</span>
-                {t.doc?.behaviorTitle || 'Verhalten & Routine'}
-              </h3>
-              <div className="grid grid-cols-2 gap-6 mb-4">
-                <div className="space-y-4">
-                  {/* Noise Level */}
-                  <div>
-                    <div className="flex justify-between text-[10px] font-bold mb-1.5 uppercase tracking-wide">
-                      <span>{t.labels?.noiseLevel || 'Lärmempfindlichkeit'}</span>
-                      <span className="text-[#D80000]">{data.noiseLevel === 'low' ? (t.labels?.noiseLow || 'Niedrig') : data.noiseLevel === 'high' ? (t.labels?.noiseHigh || 'Hoch') : (t.labels?.noiseMedium || 'Mittel')}</span>
+            {!hiddenSections.includes('behavior') && (
+              <div>
+                <h3 className="text-sm font-bold border-b border-gray-300 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2 text-black">
+                  <span className="material-symbols-outlined text-[#D80000] text-[20px]">psychology</span>
+                  {t.doc?.behaviorTitle || 'Verhalten & Routine'}
+                </h3>
+                <div className="grid grid-cols-2 gap-6 mb-4">
+                  <div className="space-y-4">
+                    {/* Noise Level */}
+                    <div>
+                      <div className="flex justify-between text-[10px] font-bold mb-1.5 uppercase tracking-wide">
+                        <span>{t.labels?.noiseLevel || 'Lärmempfindlichkeit'}</span>
+                        <span className="text-[#D80000]">{data.noiseLevel === 'low' ? (t.labels?.noiseLow || 'Niedrig') : data.noiseLevel === 'high' ? (t.labels?.noiseHigh || 'Hoch') : (t.labels?.noiseMedium || 'Mittel')}</span>
+                      </div>
+                      <div className="h-2 w-full bg-gray-200">
+                        <div className="h-full bg-[#D80000]" style={{ width: `${getNoiseLevelPercent()}%` }}></div>
+                      </div>
                     </div>
-                    <div className="h-2 w-full bg-gray-200">
-                      <div className="h-full bg-[#D80000]" style={{ width: `${getNoiseLevelPercent()}%` }}></div>
-                    </div>
-                  </div>
-                  {/* Alone Time */}
-                  <div>
-                    <div className="flex justify-between text-[10px] font-bold mb-1.5 uppercase tracking-wide">
-                      <span>{t.labels?.aloneTime || 'Alleine bleiben'}</span>
-                      <span className="text-[#D80000]">{data.aloneTime ? `${data.aloneTime} Std.` : '—'}</span>
-                    </div>
-                    <div className="h-2 w-full bg-gray-200">
-                      <div className="h-full bg-[#D80000]" style={{ width: `${getAloneTimePercent()}%` }}></div>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  {/* Activity Level placeholder */}
-                  <div>
-                    <div className="flex justify-between text-[10px] font-bold mb-1.5 uppercase tracking-wide">
-                      <span>{t.labels?.activityLevel || 'Aktivitätslevel'}</span>
-                      <span className="text-[#D80000]">{t.labels?.high || 'Hoch'}</span>
-                    </div>
-                    <div className="h-2 w-full bg-gray-200">
-                      <div className="h-full bg-[#D80000] w-[85%]"></div>
+                    {/* Alone Time */}
+                    <div>
+                      <div className="flex justify-between text-[10px] font-bold mb-1.5 uppercase tracking-wide">
+                        <span>{t.labels?.aloneTime || 'Alleine bleiben'}</span>
+                        <span className="text-[#D80000]">{data.aloneTime ? `${data.aloneTime} Std.` : '—'}</span>
+                      </div>
+                      <div className="h-2 w-full bg-gray-200">
+                        <div className="h-full bg-[#D80000]" style={{ width: `${getAloneTimePercent()}%` }}></div>
+                      </div>
                     </div>
                   </div>
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {data.behaviorWithChildren === 'good' && (
-                      <span className="px-2 py-1 bg-white text-[9px] font-bold uppercase border border-gray-300 tracking-wide text-gray-600">{t.labels?.goodWithChildren || 'Kinderlieb'}</span>
-                    )}
-                    {data.behaviorWithPets === 'good' && (
-                      <span className="px-2 py-1 bg-white text-[9px] font-bold uppercase border border-gray-300 tracking-wide text-gray-600">{t.labels?.social || 'Sozial'}</span>
-                    )}
-                    <span className="px-2 py-1 bg-white text-[9px] font-bold uppercase border border-gray-300 tracking-wide text-gray-600">{t.labels?.houseTrained || 'Stubenrein'}</span>
+                  <div className="space-y-4">
+                    {/* Activity Level placeholder */}
+                    <div>
+                      <div className="flex justify-between text-[10px] font-bold mb-1.5 uppercase tracking-wide">
+                        <span>{t.labels?.activityLevel || 'Aktivitätslevel'}</span>
+                        <span className="text-[#D80000]">{t.labels?.high || 'Hoch'}</span>
+                      </div>
+                      <div className="h-2 w-full bg-gray-200">
+                        <div className="h-full bg-[#D80000] w-[85%]"></div>
+                      </div>
+                    </div>
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {data.behaviorWithChildren === 'good' && (
+                        <span className="px-2 py-1 bg-white text-[9px] font-bold uppercase border border-gray-300 tracking-wide text-gray-600">{t.labels?.goodWithChildren || 'Kinderlieb'}</span>
+                      )}
+                      {data.behaviorWithPets === 'good' && (
+                        <span className="px-2 py-1 bg-white text-[9px] font-bold uppercase border border-gray-300 tracking-wide text-gray-600">{t.labels?.social || 'Sozial'}</span>
+                      )}
+                      <span className="px-2 py-1 bg-white text-[9px] font-bold uppercase border border-gray-300 tracking-wide text-gray-600">{t.labels?.houseTrained || 'Stubenrein'}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Legal & Health */}
-            <div>
-              <h3 className="text-sm font-bold border-b border-gray-300 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2 text-black">
-                <span className="material-symbols-outlined text-[#D80000] text-[20px]">shield</span>
-                {t.doc?.legalTitle || 'Rechtliches & Gesundheit'}
-              </h3>
+            {!hiddenSections.includes('legal') && (
+              <div>
+                <h3 className="text-sm font-bold border-b border-gray-300 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2 text-black">
+                  <span className="material-symbols-outlined text-[#D80000] text-[20px]">shield</span>
+                  {t.doc?.legalTitle || 'Rechtliches & Gesundheit'}
+                </h3>
               <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                 {/* Checkboxes */}
                 <div className="grid grid-cols-2 gap-y-2 gap-x-3">
@@ -948,24 +949,30 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
                 </div>
               </div>
             </div>
+            )}
 
             {/* References */}
-            {(data.previousLandlordName || data.emergencyContactName) && (
+            {!hiddenSections.includes('reference') && (data.previousLandlordName || data.emergencyContactName) && (
               <div>
                 <h3 className="text-sm font-bold border-b border-gray-300 pb-2 mb-4 uppercase tracking-wider flex items-center gap-2 text-black">
-                  <span className="material-symbols-outlined text-[#D80000] text-[20px]">format_quote</span>
-                  {t.doc?.referenceTitle || 'Referenzen'}
+                  <span className="material-symbols-outlined text-[#D80000] text-[20px]">contact_phone</span>
+                  {t.doc?.sectionReference || 'Referenzen'}
                 </h3>
-                <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   {data.previousLandlordName && (
                     <div className="text-sm bg-gray-50 p-3 border border-gray-100">
-                      <p className="italic text-gray-700 mb-2 font-medium">
-                        "{data.landlordReference || t.doc?.landlordQuote || 'War ein Vergnügen, dieses Tier im Gebäude zu haben.'}"
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <div className="h-0.5 w-4 bg-[#D80000]"></div>
-                        <p className="font-bold text-[10px] uppercase text-black">{data.previousLandlordName}, {t.labels?.formerLandlord || 'Früherer Vermieter'}</p>
-                      </div>
+                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">{t.labels?.previousLandlord || 'Früherer Vermieter'}</p>
+                      <p className="font-bold text-black">{data.previousLandlordName}</p>
+                      {data.previousLandlordPhone && <p className="text-gray-600 text-xs">{data.previousLandlordPhone}</p>}
+                      {data.previousDuration && <p className="text-gray-500 text-[10px] mt-1">{t.labels?.previousDuration || 'Mietdauer'}: {data.previousDuration}</p>}
+                    </div>
+                  )}
+                  {data.emergencyContactName && (
+                    <div className="text-sm bg-gray-50 p-3 border border-gray-100">
+                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">{t.labels?.emergencyContact || 'Notfallkontakt'}</p>
+                      <p className="font-bold text-black">{data.emergencyContactName}</p>
+                      {data.emergencyContactPhone && <p className="text-gray-600 text-xs">{data.emergencyContactPhone}</p>}
+                      {data.emergencyContactRelation && <p className="text-gray-500 text-[10px] mt-1">{data.emergencyContactRelation}</p>}
                     </div>
                   )}
                 </div>
@@ -1065,7 +1072,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
                 <h2 className="text-2xl font-black text-black mb-0.5">{data.name || '–'}</h2>
                 <p className="text-xs font-medium mb-3 flex items-center gap-1" style={{ color: primaryColor }}>
                   <span className="material-symbols-outlined text-xs">badge</span>
-                  Referenz-ID: #{Math.random().toString(36).substring(2, 6).toUpperCase()}-PET
+                  Referenz-ID: #{(data.chipId || data.name || 'XXXX').slice(-4).toUpperCase()}-PET
                 </p>
                 <div className="grid grid-cols-2 gap-y-3 gap-x-2 border-t border-gray-200 pt-3">
                   <div>
@@ -1205,7 +1212,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
                     </span>
                   )}
                   <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-medium bg-green-100 text-green-800">
-                    <span className="material-symbols-outlined text-xs">check_circle</span> Stubenrein
+                    <span className="material-symbols-outlined text-xs">check_circle</span> {t?.labels?.houseTrained || 'Stubenrein'}
                   </span>
                 </div>
               </div>
@@ -1604,12 +1611,30 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     </div>
   );
 
-  // Dynamic style for custom colors (applies to any template when customized)
+  // Font family mapping
+  const FONT_FAMILIES = {
+    helvetica: 'Helvetica, Arial, sans-serif',
+    georgia: 'Georgia, "Times New Roman", serif',
+    arial: 'Arial, sans-serif',
+    times: '"Times New Roman", Times, serif',
+    verdana: 'Verdana, Geneva, sans-serif',
+    tahoma: 'Tahoma, Geneva, sans-serif',
+    trebuchet: '"Trebuchet MS", sans-serif',
+    courier: '"Courier New", monospace',
+  };
+
+  // Dynamic style for custom colors, fonts, background (applies to any template when customized)
   const customStyle = customColors ? {
     '--custom-primary': customColors.primary,
     '--custom-secondary': customColors.secondary,
     borderTopColor: customColors.primary,
-    borderTopWidth: '4px'
+    borderTopWidth: '4px',
+    backgroundColor: customColors.backgroundColor,
+    color: customColors.textColor,
+    fontFamily: FONT_FAMILIES[customColors.bodyFont] || FONT_FAMILIES.helvetica,
+    fontWeight: customColors.bodyBold ? 'bold' : 'normal',
+    fontStyle: customColors.bodyItalic ? 'italic' : 'normal',
+    fontSize: `${customColors.bodyFontSize}px`,
   } : {};
 
   return (

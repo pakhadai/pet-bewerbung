@@ -4,30 +4,42 @@
  */
 
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const { 
-  GEMINI_API_KEY, 
-  AI_MODELS, 
-  AI_MAX_CHARS, 
+const {
+  GEMINI_API_KEY,
+  AI_MODELS,
+  AI_MAX_CHARS,
   AI_RATE_LIMIT_FREE,
-  isProduction 
+  isProduction
 } = require('../config');
 const { sanitizePetData, sanitizeText, sanitizeTone } = require('../utils/sanitize');
-const { 
-  checkAIRateLimit, 
-  refundRateLimit, 
-  getRateLimitStatus, 
-  getClientIP 
+const {
+  checkAIRateLimit,
+  refundRateLimit,
+  getRateLimitStatus,
+  getClientIP
 } = require('../middleware/rateLimit');
 const { verifyPremiumToken } = require('../middleware/premium');
 
 // Initialize Gemini AI
 const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
-// Tone instructions
+// Per-model timeout (ms) — skip hanging models fast
+const MODEL_TIMEOUT_MS = 12000;
+
+// Min chars for generated text
+const AI_MIN_CHARS = 450;
+
+// Tone instructions (extended for premium)
 const TONE_INSTRUCTIONS = {
   formal: 'Schreibe in einem professionellen, sachlichen Ton.',
   humorous: 'Schreibe mit leichtem Humor und Charme, aber bleibe professionell.',
   cute: 'Schreibe in einem liebevollen, herzlichen Ton.',
+};
+
+const TONE_INSTRUCTIONS_PREMIUM = {
+  formal: 'Schreibe in einem professionellen, sachlichen Ton. Verwende präzise Formulierungen und einen seriösen, vertrauenswürdigen Stil, der den Vermieter überzeugt.',
+  humorous: 'Schreibe mit feinem Schweizer Humor und Charme, der ein Lächeln erzeugt, aber trotzdem professionell und vertrauenswürdig bleibt. Der Vermieter soll schmunzeln und gleichzeitig Vertrauen fassen.',
+  cute: 'Schreibe in einem warmherzigen, liebevollen Ton, der die Persönlichkeit des Tieres charmant hervorhebt. Bleibe dabei authentisch und überzeugend für den Vermieter.',
 };
 
 // Language instructions
@@ -58,32 +70,34 @@ const LANG_INSTRUCTIONS = {
   },
 };
 
+// Structural variations for unique re-generations
+const STRUCTURE_VARIATIONS = [
+  'Beginne mit dem Charakter des Tieres, dann Wohnverhalten, dann Nachbarschaft, dann Halterverantwortung.',
+  'Beginne mit dem Wohnalltag, dann Charakter, dann Sozialverhalten, dann Pflege und Verantwortung.',
+  'Beginne mit der Beziehung zwischen Tier und Halter, dann Tagesablauf, dann Verhalten in der Wohnung.',
+  'Beginne mit dem Sozialverhalten gegenüber Nachbarn, dann Charakter, dann Wohnverhalten, dann Haltung.',
+  'Beginne mit dem Tagesablauf des Tieres, dann Charakter, dann Nachbarschaft, dann Verantwortung des Halters.',
+  'Beginne mit einer kurzen Charakterbeschreibung, dann Ruheverhalten, dann Aktivitäten, dann Zusammenleben.',
+  'Beginne mit dem Verhalten bei Besuchern, dann Wohnalltag, dann Charakter, dann Halterengagement.',
+  'Beginne mit der Erziehung und Ausbildung, dann Charakter, dann Wohnverhalten, dann Soziales.',
+];
+
 /**
  * Build prompt for pet description generation
  */
-function buildPetPrompt(petData, lang, tone = 'formal') {
+function buildPetPrompt(petData, lang, tone = 'formal', isPremium = false) {
   const instructions = LANG_INSTRUCTIONS[lang] || LANG_INSTRUCTIONS.de;
-  const toneInstruction = TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.formal;
-  const minChars = 420;
+  const toneInstruction = isPremium
+    ? (TONE_INSTRUCTIONS_PREMIUM[tone] || TONE_INSTRUCTIONS_PREMIUM.formal)
+    : (TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.formal);
+  const minChars = AI_MIN_CHARS;
   const maxChars = AI_MAX_CHARS;
-  
-  return `Du bist ein erfahrener Texter, der Mietbewerbungen mit Haustieren in der Schweiz schreibt.
 
-KONTEXT: ${instructions.context}
-TON: ${toneInstruction}
-WICHTIG: Du schreibst NICHT, um das Tier zu verkaufen! Du schreibst, um den MIETER als verantwortungsvollen Tierhalter zu präsentieren.
+  // Select a random structure variation for uniqueness
+  const variationIndex = Math.floor(Math.random() * STRUCTURE_VARIATIONS.length);
+  const structureHint = STRUCTURE_VARIATIONS[variationIndex];
 
-STRENGE REGELN:
-1. Schreibe einen zusammenhängenden, professionellen Text über das Haustier
-2. MINDESTENS ${minChars} Zeichen, MAXIMAL ${maxChars} Zeichen (inklusive Leerzeichen) - NUTZE DEN PLATZ!
-3. Beschreibe das Verhalten im Alltag: Wie verhält sich das Tier in der Wohnung? Wann ist es aktiv? Wie reagiert es auf Nachbarn/Besucher?
-4. Betone Eigenschaften, die für Vermieter wichtig sind: ruhig, stubenrein, gut erzogen, keine Schäden, kein Lärm
-5. Erwähne die Verantwortung des Halters: regelmässige Spaziergänge, Pflege, Erziehung
-6. VERMEIDE Phrasen wie "wird eine tolle Ergänzung sein" oder "perfekt für Ihre Wohnung" - das klingt nach Verkauf!
-7. KEINE erfundenen Fakten - nutze nur die gegebenen Informationen
-8. ${instructions.lang}
-
-HAUSTIER-DATEN (nicht alle im Text wiederholen, nur ergänzen):
+  const petDataBlock = `HAUSTIER-DATEN:
 - Name: ${petData.petName || 'Unbekannt'}
 - Tierart: ${petData.petType || 'Haustier'}
 - Rasse: ${petData.breed || 'Unbekannt'}
@@ -92,45 +106,81 @@ HAUSTIER-DATEN (nicht alle im Text wiederholen, nur ergänzen):
 - Gewicht: ${petData.weight || 'Unbekannt'} kg
 - Charakter: ${petData.traits || 'freundlich, ruhig'}
 - Kastriert: ${petData.neutered ? 'Ja' : 'Nein'}
-- Geimpft: ${petData.vaccinated ? 'Ja' : 'Nein'}
+- Geimpft: ${petData.vaccinated ? 'Ja' : 'Nein'}`;
 
-BEISPIEL-STRUKTUR (anpassen, nicht kopieren):
-1. Kurze Vorstellung des Charakters
-2. Verhalten im Wohnalltag (ruhig, kein Bellen/Miauen, stubenrein)
-3. Tagesablauf (wann aktiv, wann ruhig)
-4. Verhalten mit Nachbarn/Besuchern
-5. Verantwortungsvolle Haltung durch den Besitzer
+  if (isPremium) {
+    return `Du bist ein erfahrener Schweizer Texter, spezialisiert auf überzeugende Mietbewerbungen mit Haustieren.
 
-WICHTIG: Jede Generierung muss EINZIGARTIG sein! Verwende unterschiedliche:
-- Satzanfänge und Formulierungen
-- Reihenfolge der Informationen
-- Beschreibende Adjektive und Verben
-- Struktur und Absätze
+KONTEXT: ${instructions.context}
+TON: ${toneInstruction}
+ZIEL: Präsentiere den Mieter als verantwortungsvollen, zuverlässigen Tierhalter. Der Vermieter soll Vertrauen fassen.
+
+STRENGE REGELN:
+1. Schreibe EXAKT zwischen ${minChars} und ${maxChars} Zeichen (inklusive Leerzeichen). Zähle genau!
+2. Ein zusammenhängender, flüssiger Text — keine Listen, keine Aufzählungen, keine Absätze
+3. Nutze die Charaktereigenschaften aus den Daten aktiv im Text
+4. Beschreibe konkretes Verhalten: Wie verhält sich das Tier in der Wohnung, bei Nachbarn, bei Besuchern?
+5. Betone vermietertrelevante Aspekte: Ruhe, Sauberkeit, keine Schäden, gute Erziehung
+6. Erwähne die Verantwortung des Halters: Pflege, Spaziergänge, Erziehung
+7. VERMEIDE Marketing-Sprache ("perfekt", "ideal", "beste Wahl", "wird eine Bereicherung")
+8. KEINE erfundenen Fakten — nur gegebene Informationen verwenden
+9. ${instructions.lang}
+
+${petDataBlock}
+
+STRUKTUR FÜR DIESE GENERIERUNG: ${structureHint}
+
+EINZIGARTIGKEIT: Verwende kreative, abwechslungsreiche Formulierungen. Jeder Text muss einzigartig klingen.
 Variation-Seed: ${Date.now()}-${Math.random().toString(36).substring(2, 8)}
 
-Schreibe jetzt einen professionellen, ausführlichen Text (${minChars}-${maxChars} Zeichen):`;
+Schreibe jetzt den Text (${minChars}-${maxChars} Zeichen, zähle genau):`;
+  }
+
+  // Free tier prompt — simpler but still effective
+  return `Du bist ein Texter für Schweizer Mietbewerbungen mit Haustieren.
+
+KONTEXT: ${instructions.context}
+TON: ${toneInstruction}
+
+REGELN:
+1. Schreibe EXAKT zwischen ${minChars} und ${maxChars} Zeichen (inklusive Leerzeichen)
+2. Ein zusammenhängender Text ohne Absätze
+3. Beschreibe Charakter und Verhalten in der Wohnung
+4. Betone: ruhig, stubenrein, gut erzogen, keine Schäden
+5. Erwähne Verantwortung des Halters
+6. Keine Marketing-Sprache, keine erfundenen Fakten
+7. ${instructions.lang}
+
+${petDataBlock}
+
+STRUKTUR: ${structureHint}
+Variation-Seed: ${Date.now()}-${Math.random().toString(36).substring(2, 8)}
+
+Text (${minChars}-${maxChars} Zeichen):`;
 }
 
 /**
- * Try to generate with fallback models
+ * Try to generate with fallback models and per-model timeout
  */
-async function generateWithFallback(prompt) {
+async function generateWithFallback(prompt, config = {}) {
   let lastError = null;
-  
+
+  const genConfig = {
+    maxOutputTokens: config.maxOutputTokens || 300,
+    temperature: config.temperature || 0.7,
+    topP: config.topP || 0.92,
+    topK: config.topK || 20,
+  };
+
   for (const modelName of AI_MODELS) {
     try {
       if (!isProduction) {
         console.log(`Trying model: ${modelName}`);
       }
-      
-      const model = genAI.getGenerativeModel({ 
+
+      const model = genAI.getGenerativeModel({
         model: modelName,
-        generationConfig: {
-          maxOutputTokens: 350,
-          temperature: 0.9,
-          topP: 0.95,
-          topK: 40,
-        },
+        generationConfig: genConfig,
         safetySettings: [
           { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
           { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
@@ -138,23 +188,37 @@ async function generateWithFallback(prompt) {
           { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
         ],
       });
-      
-      const result = await model.generateContent(prompt);
+
+      // Race between model generation and timeout
+      const result = await Promise.race([
+        model.generateContent(prompt),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error(`Timeout after ${MODEL_TIMEOUT_MS}ms`)), MODEL_TIMEOUT_MS)
+        ),
+      ]);
+
       const response = result.response;
       const text = response.text().trim();
-      
+
       if (!isProduction) {
-        console.log(`✅ Success with model: ${modelName}`);
+        console.log(`✅ Success with model: ${modelName} (${text.length} chars)`);
       }
-      
+
       return { text, model: modelName };
-      
+
     } catch (err) {
       lastError = err;
       const errorMsg = err.message || '';
-      
-      if (errorMsg.includes('429') || 
-          errorMsg.includes('quota') || 
+
+      if (errorMsg.includes('Timeout')) {
+        if (!isProduction) {
+          console.warn(`⏱️ Timeout on ${modelName}, trying next...`);
+        }
+        continue;
+      }
+
+      if (errorMsg.includes('429') ||
+          errorMsg.includes('quota') ||
           errorMsg.includes('rate') ||
           errorMsg.includes('RESOURCE_EXHAUSTED') ||
           errorMsg.includes('Too Many Requests')) {
@@ -163,8 +227,8 @@ async function generateWithFallback(prompt) {
         }
         continue;
       }
-      
-      if (errorMsg.includes('404') || 
+
+      if (errorMsg.includes('404') ||
           errorMsg.includes('not found') ||
           errorMsg.includes('NOT_FOUND') ||
           errorMsg.includes('does not exist')) {
@@ -173,14 +237,14 @@ async function generateWithFallback(prompt) {
         }
         continue;
       }
-      
+
       if (!isProduction) {
         console.warn(`⚠️ Error with ${modelName}: ${errorMsg}, trying next...`);
       }
       continue;
     }
   }
-  
+
   throw lastError || new Error('All AI models failed');
 }
 
@@ -189,16 +253,16 @@ async function generateWithFallback(prompt) {
  */
 function truncateAtSentence(text, maxLen) {
   if (text.length <= maxLen) return text;
-  
+
   const cutText = text.substring(0, maxLen);
   const lastSentenceEnd = Math.max(
     cutText.lastIndexOf('.'),
     cutText.lastIndexOf('!'),
     cutText.lastIndexOf('?')
   );
-  
-  return lastSentenceEnd > maxLen * 0.6 
-    ? cutText.substring(0, lastSentenceEnd + 1) 
+
+  return lastSentenceEnd > maxLen * 0.6
+    ? cutText.substring(0, lastSentenceEnd + 1)
     : cutText.substring(0, maxLen - 3) + '...';
 }
 
@@ -208,62 +272,83 @@ function truncateAtSentence(text, maxLen) {
 async function generatePetDescription(req, res) {
   const clientIP = getClientIP(req);
   const { petData: rawPetData, lang = 'de', premiumToken, tone = 'formal' } = req.body || {};
-  
+
   if (!rawPetData || !rawPetData.petName) {
     return res.status(400).json({ error: 'Pet data required' });
   }
-  
+
   const petData = sanitizePetData(rawPetData);
-  
+
   if (!petData.petName) {
     return res.status(400).json({ error: 'Invalid pet name after sanitization' });
   }
-  
+
   const rateCheck = await checkAIRateLimit(clientIP, premiumToken);
-  
+
   res.set('X-RateLimit-Limit', AI_RATE_LIMIT_FREE.toString());
   res.set('X-RateLimit-Remaining', rateCheck.remaining.toString());
   res.set('X-RateLimit-Reset', new Date(rateCheck.resetTime).toISOString());
-  
+
   if (!rateCheck.allowed) {
-    return res.status(429).json({ 
-      error: 'Rate limit exceeded', 
+    return res.status(429).json({
+      error: 'Rate limit exceeded',
       message: `Maximum ${AI_RATE_LIMIT_FREE} AI request(s) per day on free tier.`,
       resetTime: rateCheck.resetTime,
       remaining: 0
     });
   }
-  
+
   if (!genAI) {
-    return res.status(503).json({ 
+    return res.status(503).json({
       error: 'AI service not configured',
       message: 'GEMINI_API_KEY not set on server'
     });
   }
-  
+
+  const isPremium = !!premiumToken;
+
   try {
     const safeTone = sanitizeTone(tone);
-    const prompt = buildPetPrompt(petData, lang, safeTone);
-    const { text: rawText, model: usedModel } = await generateWithFallback(prompt);
-    const text = truncateAtSentence(rawText, AI_MAX_CHARS);
-    
+    const prompt = buildPetPrompt(petData, lang, safeTone, isPremium);
+
+    // Different generation config for premium vs free
+    const genConfig = isPremium
+      ? { maxOutputTokens: 300, temperature: 0.85, topP: 0.93, topK: 25 }
+      : { maxOutputTokens: 300, temperature: 0.7, topP: 0.90, topK: 20 };
+
+    let { text: rawText, model: usedModel } = await generateWithFallback(prompt, genConfig);
+    let text = truncateAtSentence(rawText, AI_MAX_CHARS);
+
+    // For premium: retry once if text is too short
+    if (isPremium && text.length < AI_MIN_CHARS) {
+      if (!isProduction) {
+        console.log(`⚠️ Text too short (${text.length}), retrying for premium...`);
+      }
+      const retry = await generateWithFallback(prompt, genConfig);
+      const retryText = truncateAtSentence(retry.text, AI_MAX_CHARS);
+      if (retryText.length >= AI_MIN_CHARS) {
+        text = retryText;
+        usedModel = retry.model;
+      }
+    }
+
     if (!isProduction) {
       console.log(`✅ AI generated for ${petData.petName} using ${usedModel} (${text.length} chars), remaining: ${rateCheck.remaining}`);
     }
-    
-    res.json({ 
-      description: text, 
+
+    res.json({
+      description: text,
       length: text.length,
       remaining: rateCheck.remaining,
       resetTime: rateCheck.resetTime,
       model: !isProduction ? usedModel : undefined
     });
-    
+
   } catch (err) {
     console.error('AI generation error (all models failed):', err.message);
     await refundRateLimit(clientIP);
-    
-    res.status(500).json({ 
+
+    res.status(500).json({
       error: 'AI generation failed',
       message: err.message || 'All AI models unavailable. Please try again later.',
       remaining: rateCheck.remaining + 1
@@ -277,7 +362,7 @@ async function generatePetDescription(req, res) {
 async function getAIRateLimitStatus(req, res) {
   const clientIP = getClientIP(req);
   const status = await getRateLimitStatus(clientIP);
-  
+
   res.json({
     ...status,
     configured: !!genAI
@@ -285,74 +370,83 @@ async function getAIRateLimitStatus(req, res) {
 }
 
 /**
- * Improve text (Premium feature)
+ * Improve text (Premium feature) — polishes without rewriting
  */
 async function improveText(req, res) {
   const { text, tone = 'formal', premiumToken, deviceId } = req.body || {};
-  
+
   if (!premiumToken || !deviceId) {
     return res.status(401).json({ error: 'Premium token required', code: 'NO_TOKEN' });
   }
-  
+
   const verification = await verifyPremiumToken(premiumToken, deviceId);
   if (!verification.valid) {
-    return res.status(401).json({ 
-      error: verification.error === 'expired' ? 'Premium session expired' : 
-             verification.error === 'device_mismatch' ? 'Token bound to different device' : 
+    return res.status(401).json({
+      error: verification.error === 'expired' ? 'Premium session expired' :
+             verification.error === 'device_mismatch' ? 'Token bound to different device' :
              'Invalid premium token',
       code: verification.error?.toUpperCase() || 'INVALID'
     });
   }
-  
+
   if (!text || text.trim().length < 20) {
     return res.status(400).json({ error: 'Text too short (minimum 20 characters)' });
   }
-  
+
   if (!genAI) {
     return res.status(503).json({ error: 'AI service not configured' });
   }
-  
+
   try {
     const safeTone = sanitizeTone(tone);
-    const toneInstruction = TONE_INSTRUCTIONS[safeTone] || TONE_INSTRUCTIONS.formal;
+    const toneInstruction = TONE_INSTRUCTIONS_PREMIUM[safeTone] || TONE_INSTRUCTIONS_PREMIUM.formal;
     const sanitizedText = sanitizeText(text, 1000);
-    
-    const prompt = `Du bist ein erfahrener Texter für Schweizer Mietbewerbungen mit Haustieren.
+    const originalLength = sanitizedText.length;
 
-AUFGABE: Verbessere den folgenden Text professionell.
+    const prompt = `Du bist ein erfahrener Lektor für Schweizer Mietbewerbungen mit Haustieren.
+
+AUFGABE: Verbessere den folgenden Text — NUR polieren, NICHT umschreiben!
 TON: ${toneInstruction}
 
-REGELN:
-1. Behalte alle wichtigen Informationen bei
-2. Verbessere Grammatik und Stil
-3. Mache den Text professioneller und überzeugender
-4. Maximal 470 Zeichen (inklusive Leerzeichen)
-5. Keine neuen Informationen hinzufügen
-6. Vermeide Marketing-Sprache ("perfekt", "ideal", "beste Wahl")
+STRENGE REGELN:
+1. BEHALTE die Struktur und den Aufbau des Originaltextes bei
+2. BEHALTE alle Informationen, Fakten und Kernaussagen bei
+3. Verbessere NUR: Grammatik, Wortwahl, Satzfluss, Stil
+4. Ersetze schwache Wörter durch stärkere, präzisere Alternativen
+5. Der verbesserte Text MUSS zwischen ${AI_MIN_CHARS} und ${AI_MAX_CHARS} Zeichen lang sein
+6. KÜRZE den Text NICHT — der Originaltext hat ${originalLength} Zeichen, dein Text muss ähnlich lang sein
+7. Füge KEINE neuen Informationen oder Fakten hinzu
+8. KEINE Marketing-Sprache ("perfekt", "ideal", "beste Wahl")
+9. Der Text soll natürlich und authentisch klingen
 
-ORIGINALTEXT:
+ORIGINALTEXT (${originalLength} Zeichen):
 "${sanitizedText}"
 
-Verbesserter Text:`;
+Verbesserter Text (${AI_MIN_CHARS}-${AI_MAX_CHARS} Zeichen, behalte Struktur bei):`;
 
-    const { text: improvedText, model } = await generateWithFallback(prompt);
-    
+    const { text: improvedText, model } = await generateWithFallback(prompt, {
+      maxOutputTokens: 300,
+      temperature: 0.5,
+      topP: 0.90,
+      topK: 15,
+    });
+
     let finalText = improvedText
       .replace(/^["']|["']$/g, '')
       .trim();
-    
+
     finalText = truncateAtSentence(finalText, AI_MAX_CHARS);
-    
+
     if (!isProduction) {
-      console.log(`✅ Text improved using ${model} (${finalText.length} chars)`);
+      console.log(`✅ Text improved using ${model} (${originalLength} → ${finalText.length} chars)`);
     }
-    
-    res.json({ 
+
+    res.json({
       improvedText: finalText,
       length: finalText.length,
       model: !isProduction ? model : undefined
     });
-    
+
   } catch (err) {
     console.error('Text improvement error:', err.message);
     res.status(500).json({ error: 'Failed to improve text' });

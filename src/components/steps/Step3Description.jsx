@@ -14,26 +14,35 @@ import React, { useState, useCallback } from 'react';
 import { Lock, Sparkles, Zap, Volume2, Users, Crown, Info, X } from 'lucide-react';
 import { MAX_DESCRIPTION_LENGTH } from '../../constants';
 
-// Convert slider values to trait descriptions
-const slidersToTraits = (sliders, t) => {
+// Convert slider values to rich trait descriptions (5 levels per slider)
+const slidersToTraits = (sliders) => {
   const traits = [];
-  
-  // Energy
-  if (sliders.energy < 30) traits.push(t?.premium?.sliders?.energyLow ?? 'ruhig', 'gemütlich');
-  else if (sliders.energy > 70) traits.push(t?.premium?.sliders?.energyHigh ?? 'energiegeladen', 'aktiv', 'verspielt');
-  else traits.push('ausgeglichen');
-  
-  // Noise
-  if (sliders.noise < 30) traits.push(t?.premium?.sliders?.noiseLow ?? 'leise', 'still');
-  else if (sliders.noise > 70) traits.push('wachsam', 'meldet Besucher');
-  else traits.push('bellt selten');
-  
-  // Sociability
-  if (sliders.sociability < 30) traits.push('unabhängig', 'braucht Ruhe');
-  else if (sliders.sociability > 70) traits.push(t?.premium?.sliders?.sociabilityHigh ?? 'sehr sozial', 'liebt Menschen');
-  else traits.push('freundlich');
-  
-  return traits.join(', ');
+  const e = sliders.energy;
+  const n = sliders.noise;
+  const s = sliders.sociability;
+
+  // Energy (5 levels)
+  if (e <= 20) traits.push('sehr ruhig, liebt es zu dösen, bevorzugt gemütliche Plätze');
+  else if (e <= 40) traits.push('eher ruhig, geniesst kurze Spaziergänge, entspannt sich gerne');
+  else if (e <= 60) traits.push('ausgeglichen, wechselt zwischen Aktivität und Ruhe');
+  else if (e <= 80) traits.push('aktiv, liebt Spaziergänge und Spielzeit, gut ausgelastet');
+  else traits.push('sehr energiegeladen, braucht viel Bewegung, liebt ausgedehnte Spaziergänge');
+
+  // Noise (5 levels)
+  if (n <= 20) traits.push('sehr leise, bellt praktisch nie, ideal für Mehrfamilienhäuser');
+  else if (n <= 40) traits.push('ruhig, bellt nur bei Klingel, stört Nachbarn nicht');
+  else if (n <= 60) traits.push('bellt selten, meldet sich nur bei ungewöhnlichen Geräuschen');
+  else if (n <= 80) traits.push('wachsam, meldet Besucher kurz, beruhigt sich schnell');
+  else traits.push('aufmerksam, meldet Besucher zuverlässig, gut erziehbar');
+
+  // Sociability (5 levels)
+  if (s <= 20) traits.push('eigenständig, braucht Rückzugsort, ruhiger Charakter');
+  else if (s <= 40) traits.push('zurückhaltend bei Fremden, treu gegenüber Bezugspersonen');
+  else if (s <= 60) traits.push('freundlich, kommt mit Menschen und Tieren gut aus');
+  else if (s <= 80) traits.push('sehr sozial, liebt Gesellschaft, verträglich mit Nachbarn');
+  else traits.push('äusserst menschenbezogen, liebt jeden Besuch, sehr verträglich');
+
+  return traits.join('. ');
 };
 
 const Step3Description = React.memo(({
@@ -70,12 +79,12 @@ const Step3Description = React.memo(({
   // Generate with sliders data
   const handleGenerateWithSliders = useCallback(() => {
     // Update keywords with slider traits before generating
-    const traits = slidersToTraits(sliders, t);
+    const traits = slidersToTraits(sliders);
     updateData('keywords', traits);
     updateData('aiTone', tone);
     // Call the original generate function
     onGenerate?.();
-  }, [sliders, tone, t, updateData, onGenerate]);
+  }, [sliders, tone, updateData, onGenerate]);
   
   // Magic Rewrite - improve existing text
   const handleMagicRewrite = useCallback(async () => {
@@ -110,7 +119,7 @@ const Step3Description = React.memo(({
     }
   }, [data.generatedText, tone, premiumToken, deviceId, updateData, onMagicRewrite]);
   
-  const canGenerate = !isGenerating && (data.name || data.petType || data.keywords);
+  const canGenerate = !isGenerating && canGenerateAI && (data.name || data.petType || data.keywords);
   const len = (data.generatedText || '').length;
   const titleCl = darkMode ? 'text-white' : 'text-text-main';
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary';
@@ -325,40 +334,34 @@ const Step3Description = React.memo(({
               </span>
             </button>
             
-            {/* AI generations limit info for free users */}
-            {!isPremium && (
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-                canGenerateAI 
+            {/* AI generations limit info */}
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+              isPremium
+                ? (darkMode ? 'bg-purple-900/30 border border-purple-500/30' : 'bg-purple-50 border border-purple-200')
+                : canGenerateAI
                   ? (darkMode ? 'bg-blue-900/20 border border-blue-600/30' : 'bg-blue-50 border border-blue-200')
                   : (darkMode ? 'bg-amber-900/20 border border-amber-600/30' : 'bg-amber-50 border border-amber-200')
-              }`}>
-                {canGenerateAI ? (
-                  <Sparkles size={16} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
-                ) : (
-                  <Lock size={16} className={darkMode ? 'text-amber-400' : 'text-amber-600'} />
-                )}
-                <span className={`text-xs font-medium ${
-                  canGenerateAI 
+            }`}>
+              {isPremium ? (
+                <Sparkles size={16} className="text-purple-500" />
+              ) : canGenerateAI ? (
+                <Sparkles size={16} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
+              ) : (
+                <Lock size={16} className={darkMode ? 'text-amber-400' : 'text-amber-600'} />
+              )}
+              <span className={`text-xs font-medium ${
+                isPremium
+                  ? (darkMode ? 'text-purple-300' : 'text-purple-700')
+                  : canGenerateAI
                     ? (darkMode ? 'text-blue-300' : 'text-blue-700')
                     : (darkMode ? 'text-amber-300' : 'text-amber-700')
-                }`}>
-                  {canGenerateAI 
-                    ? (t?.premium?.aiRemaining ?? `${remainingGenerations} KI-Generierung(en) übrig`)
-                    : (t?.premium?.aiLimitInfo ?? 'Premium für unbegrenzte KI-Texte')
-                  }
-                </span>
-              </div>
-            )}
-            
-            {/* Premium badge */}
-            {isPremium && (
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${darkMode ? 'bg-purple-900/30 border border-purple-500/30' : 'bg-purple-50 border border-purple-200'}`}>
-                <Sparkles size={16} className="text-purple-500" />
-                <span className={`text-xs font-bold ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>
-                  {t?.premium?.unlimitedAI ?? 'Premium – Unbegrenzte KI-Generierungen'}
-                </span>
-              </div>
-            )}
+              }`}>
+                {canGenerateAI
+                  ? (t?.premium?.aiRemaining ?? `${remainingGenerations} KI-Generierung(en) übrig`)
+                  : (t?.premium?.aiLimitInfo ?? 'Premium für unbegrenzte KI-Texte')
+                }
+              </span>
+            </div>
             
             {/* AI Data Info - shows what data is sent */}
             <button
@@ -381,73 +384,77 @@ const Step3Description = React.memo(({
 
       {/* AI Data Info Modal */}
       {showAiDataInfo && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowAiDataInfo(false)}>
-          <div 
-            className={`relative max-w-md w-full rounded-2xl p-6 shadow-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowAiDataInfo(false)}>
+          <div
+            className={`relative max-w-lg w-full rounded-2xl border-2 hand-drawn-border shadow-xl ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'}`}
             onClick={e => e.stopPropagation()}
           >
-            <button
-              type="button"
-              onClick={() => setShowAiDataInfo(false)}
-              className={`absolute top-4 right-4 p-1 rounded-full transition-colors ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-            >
-              <X size={20} className={darkMode ? 'text-gray-400' : 'text-gray-500'} />
-            </button>
-            
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`p-2 rounded-full ${darkMode ? 'bg-blue-900/50' : 'bg-blue-100'}`}>
-                <Info size={24} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
+            <div className="p-6">
+              <button
+                type="button"
+                onClick={() => setShowAiDataInfo(false)}
+                className={`absolute top-4 right-4 p-1.5 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+              >
+                <X size={20} className={darkMode ? 'text-gray-400' : 'text-gray-500'} />
+              </button>
+
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`p-2.5 rounded-xl ${darkMode ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                  <Info size={24} className={darkMode ? 'text-blue-400' : 'text-blue-600'} />
+                </div>
+                <h3 className={`font-display font-bold text-xl ${darkMode ? 'text-white' : 'text-text-main'}`}>
+                  {t?.ai?.dataInfoTitle ?? 'KI-Datenschutz'}
+                </h3>
               </div>
-              <h3 className={`font-display font-bold text-xl ${darkMode ? 'text-white' : 'text-text-main'}`}>
-                {t?.ai?.dataInfoTitle ?? 'KI-Datenschutz'}
-              </h3>
-            </div>
-            
-            <p className={`text-sm mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              {t?.ai?.dataInfoDesc ?? 'Bei der KI-Textgenerierung werden folgende Daten an unseren Server gesendet:'}
-            </p>
-            
-            <ul className={`space-y-2 mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              <li className="flex items-start gap-2 text-sm">
-                <span className="material-symbols-outlined text-base text-primary mt-0.5">pets</span>
-                <span>{t?.ai?.dataPetName ?? 'Name des Tieres'}</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm">
-                <span className="material-symbols-outlined text-base text-primary mt-0.5">category</span>
-                <span>{t?.ai?.dataPetType ?? 'Tierart (Hund/Katze/Andere)'}</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm">
-                <span className="material-symbols-outlined text-base text-primary mt-0.5">genetics</span>
-                <span>{t?.ai?.dataBreed ?? 'Rasse'}</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm">
-                <span className="material-symbols-outlined text-base text-primary mt-0.5">style</span>
-                <span>{t?.ai?.dataKeywords ?? 'Schlüsselwörter/Charaktereigenschaften'}</span>
-              </li>
-              <li className="flex items-start gap-2 text-sm">
-                <span className="material-symbols-outlined text-base text-primary mt-0.5">translate</span>
-                <span>{t?.ai?.dataLang ?? 'Gewählte Sprache'}</span>
-              </li>
-            </ul>
-            
-            <div className={`p-3 rounded-lg ${darkMode ? 'bg-green-900/30 border border-green-600/30' : 'bg-green-50 border border-green-200'}`}>
-              <p className={`text-xs flex items-start gap-2 ${darkMode ? 'text-green-300' : 'text-green-700'}`}>
-                <span className="material-symbols-outlined text-base mt-0.5">check_circle</span>
-                <span>{t?.ai?.dataNoPersonal ?? 'Keine persönlichen Daten (Name, Adresse, Telefon) werden gesendet. Das generierte PDF wird lokal erstellt.'}</span>
+
+              <p className={`text-sm mb-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                {t?.ai?.dataInfoDesc ?? 'Bei der KI-Textgenerierung werden folgende Daten an unseren Server gesendet:'}
               </p>
+
+              <ul className={`space-y-2.5 mb-5 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <li className="flex items-center gap-2.5 text-sm">
+                  <span className="material-symbols-outlined text-base text-primary">pets</span>
+                  <span>{t?.ai?.dataPetName ?? 'Name des Tieres'}</span>
+                </li>
+                <li className="flex items-center gap-2.5 text-sm">
+                  <span className="material-symbols-outlined text-base text-primary">category</span>
+                  <span>{t?.ai?.dataPetType ?? 'Tierart (Hund/Katze/Andere)'}</span>
+                </li>
+                <li className="flex items-center gap-2.5 text-sm">
+                  <span className="material-symbols-outlined text-base text-primary">genetics</span>
+                  <span>{t?.ai?.dataBreed ?? 'Rasse'}</span>
+                </li>
+                <li className="flex items-center gap-2.5 text-sm">
+                  <span className="material-symbols-outlined text-base text-primary">style</span>
+                  <span>{t?.ai?.dataKeywords ?? 'Schlüsselwörter/Charaktereigenschaften'}</span>
+                </li>
+                <li className="flex items-center gap-2.5 text-sm">
+                  <span className="material-symbols-outlined text-base text-primary">translate</span>
+                  <span>{t?.ai?.dataLang ?? 'Gewählte Sprache'}</span>
+                </li>
+              </ul>
+
+              <div className={`p-3.5 rounded-xl border-2 hand-drawn-border mb-5 ${darkMode ? 'bg-green-900/20 border-green-600/50' : 'bg-green-50 border-green-200'}`}>
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-green-600 dark:text-green-400 sketch-icon-filled flex-shrink-0">verified_user</span>
+                  <p className={`text-sm font-semibold ${darkMode ? 'text-green-300' : 'text-green-800'}`}>
+                    {t?.ai?.dataNoPersonal ?? 'Keine persönlichen Daten (Name, Adresse, Telefon) werden gesendet. Das generierte PDF wird lokal erstellt.'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowAiDataInfo(false)}
+                className={`w-full py-3 rounded-xl font-display font-bold transition-all hand-drawn-button ${
+                  darkMode
+                    ? 'bg-primary text-white hover:bg-primary-dark'
+                    : 'bg-primary text-white hover:bg-primary-dark'
+                }`}
+              >
+                {t?.ui?.understand ?? 'Verstanden'}
+              </button>
             </div>
-            
-            <button
-              type="button"
-              onClick={() => setShowAiDataInfo(false)}
-              className={`mt-4 w-full py-2 rounded-xl font-bold transition-colors ${
-                darkMode 
-                  ? 'bg-primary text-white hover:bg-primary-dark' 
-                  : 'bg-primary text-white hover:bg-primary-dark'
-              }`}
-            >
-              {t?.ui?.understand ?? 'Verstanden'}
-            </button>
           </div>
         </div>
       )}

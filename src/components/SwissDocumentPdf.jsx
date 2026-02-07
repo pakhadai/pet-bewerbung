@@ -221,6 +221,8 @@ const TEMPLATE_COLORS = {
   modern: { primary: '#334155', border: '#e2e8f0', muted: '#64748b', light: '#f1f5f9' },
   compact: { primary: '#334155', border: '#cbd5e1', muted: '#64748b', light: '#e2e8f0' },
   swiss: { primary: '#dc2626', border: '#dc2626', muted: '#64748b', light: '#fef2f2' },
+  professional: { primary: '#000000', border: '#000000', muted: '#6b7280', light: '#f3f4f6' },
+  emergency: { primary: '#dc2626', border: '#000000', muted: '#6b7280', light: '#fef2f2' },
   friendly: { primary: '#6400f0', border: '#efe5fd', muted: '#130c1d', light: '#efe5fd' },
   grid: { primary: '#D80000', border: '#D80000', muted: '#1a1a1a', light: '#f5f5f5' },
 };
@@ -298,15 +300,19 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
   const textColor = customStyle?.text || '#334155';
   const backgroundColor = customStyle?.background || '#ffffff';
   
-  // Font weights (react-pdf uses 'bold' or 'normal')
+  // Font weights & sizes (react-pdf uses 'bold' or 'normal')
   const headerFontWeight = customStyle?.headerBold ? 'bold' : 'normal';
   const headerFontStyle = customStyle?.headerItalic ? 'italic' : 'normal';
   const bodyFontWeight = customStyle?.bodyBold ? 'bold' : 'normal';
   const bodyFontStyle = customStyle?.bodyItalic ? 'italic' : 'normal';
+  const headerFontSize = customDesign?.headerFontSize || 9;
+  const bodyFontSize = customDesign?.bodyFontSize || 10;
   const isSwiss = templateType === 'swiss';
   const isCompact = templateType === 'compact';
   const isModern = templateType === 'modern';
   const isFriendly = templateType === 'friendly';
+  const isProfessional = templateType === 'professional';
+  const isEmergency = templateType === 'emergency';
   const isGrid = templateType === 'grid';
 
   // Get layout order and hidden sections from customDesign
@@ -329,16 +335,17 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
   const headingStyle = [
     styles.sectionHeading,
     isModern && styles.sectionHeadingModern,
-    { 
-      borderBottomColor: isModern ? colors.border : colors.primary, 
+    {
+      borderBottomColor: isModern ? colors.border : colors.primary,
       color: colors.primary,
       fontWeight: headerFontWeight,
       fontStyle: headerFontStyle,
+      fontSize: headerFontSize,
     },
   ];
   const textStyle = [
     styles.text,
-    { color: textColor, fontWeight: bodyFontWeight, fontStyle: bodyFontStyle },
+    { color: textColor, fontWeight: bodyFontWeight, fontStyle: bodyFontStyle, fontSize: bodyFontSize },
   ];
   const footerStyle = [styles.footer, { borderTopColor: colors.primary }];
   const footerSignStyle = [styles.footerSign, isSwiss && { borderTopColor: '#f87171' }];
@@ -723,7 +730,7 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
     cardAccent: {
       padding: 12,
       borderRadius: 12,
-      backgroundColor: `${friendlyColors.accent}66`, // semi-transparent
+      backgroundColor: '#f7f2fe',
       borderWidth: 1,
       borderColor: friendlyColors.accent,
     },
@@ -737,9 +744,6 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
       fontWeight: 'bold',
       color: friendlyColors.text,
       marginBottom: 8,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
     },
     cardTitleWhite: {
       fontSize: 10,
@@ -809,7 +813,6 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
       paddingTop: 12,
       borderTopWidth: 2,
       borderTopColor: friendlyColors.border,
-      borderTopStyle: 'dashed',
     },
     footerContent: {
       flexDirection: 'row',
@@ -853,27 +856,25 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
                 <Image src={data.photo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 <View style={{ width: '100%', height: '100%', backgroundColor: friendlyColors.accent, justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ fontSize: 24, color: friendlyColors.primary }}>🐾</Text>
+                  <Text style={{ fontSize: 14, color: friendlyColors.primary, fontWeight: 'bold' }}>PET</Text>
                 </View>
               )}
             </View>
             <View style={friendlyStyles.headerInfo}>
-              <Text style={friendlyStyles.petName}>{data?.petName || t?.labels?.petName || 'Mein Haustier'}</Text>
+              <Text style={friendlyStyles.petName}>{data?.name || t?.labels?.petName || 'Mein Haustier'}</Text>
               <Text style={friendlyStyles.petBreed}>{data?.breed || t?.labels?.breed || 'Rasse'}</Text>
               <View style={friendlyStyles.infoGrid}>
                 <View style={friendlyStyles.infoItem}>
-                  <Text style={friendlyStyles.infoText}>🎂 {data?.petAge ? `${data.petAge} ${t?.labels?.years || 'Jahre'}` : '—'}</Text>
+                  <Text style={friendlyStyles.infoText}>{t?.labels?.age || 'Alter'}: {data?.age ? `${data.age} ${t?.labels?.years || 'Jahre'}` : '—'}</Text>
                 </View>
                 <View style={friendlyStyles.infoItem}>
-                  <Text style={friendlyStyles.infoText}>⚖️ {data?.weight ? `${data.weight} kg` : '—'}</Text>
+                  <Text style={friendlyStyles.infoText}>{t?.labels?.weight || 'Gewicht'}: {data?.weight ? `${data.weight} kg` : '—'}</Text>
                 </View>
                 <View style={friendlyStyles.infoItem}>
-                  <Text style={friendlyStyles.infoText}>
-                    {data?.gender === 'male' ? '♂️' : data?.gender === 'female' ? '♀️' : '⚥'} {getGenderLabel(data?.gender, t)}
-                  </Text>
+                  <Text style={friendlyStyles.infoText}>{getGenderLabel(data?.gender, t)}</Text>
                 </View>
                 <View style={friendlyStyles.infoItem}>
-                  <Text style={friendlyStyles.infoText}>📍 {data?.city || '—'}</Text>
+                  <Text style={friendlyStyles.infoText}>{data?.city || '—'}</Text>
                 </View>
               </View>
             </View>
@@ -885,45 +886,43 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
             <View style={friendlyStyles.leftColumn}>
               {/* About Me */}
               <View style={friendlyStyles.cardAccent}>
-                <Text style={friendlyStyles.cardTitle}>ℹ️ {t?.doc?.descTitle || 'Über mich'}</Text>
-                <Text style={{ fontSize: 9, lineHeight: 1.4, color: friendlyColors.text, opacity: 0.85 }}>
-                  {sanitizeForPdf(data?.description) || t?.doc?.defaultDescription || 'Hier könnte eine Beschreibung stehen...'}
+                <Text style={friendlyStyles.cardTitle}>{t?.doc?.descTitle || 'Über mich'}</Text>
+                <Text style={{ fontSize: 9, lineHeight: 1.4, color: '#3d2e4d' }}>
+                  {sanitizeForPdf(data?.generatedText) || t?.doc?.defaultDescription || 'Hier könnte eine Beschreibung stehen...'}
                 </Text>
               </View>
 
               {/* Temperament */}
               <View style={friendlyStyles.card}>
-                <Text style={friendlyStyles.cardTitle}>😊 {t?.doc?.behavior || 'Temperament'}</Text>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                  {data?.characteristics && data.characteristics.length > 0 ? (
-                    data.characteristics.slice(0, 6).map((trait, i) => (
-                      <View key={i} style={friendlyStyles.tag}>
-                        <Text style={friendlyStyles.tagText}>{trait}</Text>
-                      </View>
-                    ))
-                  ) : (
-                    <>
-                      <View style={friendlyStyles.tag}><Text style={friendlyStyles.tagText}>{t?.labels?.friendly || 'Freundlich'}</Text></View>
-                      <View style={friendlyStyles.tag}><Text style={friendlyStyles.tagText}>{t?.labels?.playful || 'Verspielt'}</Text></View>
-                      <View style={friendlyStyles.tag}><Text style={friendlyStyles.tagText}>{t?.labels?.calm || 'Ruhig'}</Text></View>
-                    </>
-                  )}
-                </View>
+                <Text style={friendlyStyles.cardTitle}>{t?.doc?.behavior || 'Temperament'}</Text>
                 {/* Behavior indicators */}
-                <View style={{ marginTop: 10, paddingTop: 8, borderTopWidth: 1, borderTopColor: friendlyColors.border, flexDirection: 'row', gap: 16 }}>
+                <View style={{ flexDirection: 'row', gap: 16 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Text style={{ fontSize: 8, color: data?.behaviorWithChildren === 'good' ? '#15803d' : friendlyColors.muted }}>
-                      {data?.behaviorWithChildren === 'good' ? '✓' : '✗'}
+                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: data?.behaviorWithChildren === 'good' ? '#15803d' : friendlyColors.muted }}>
+                      {data?.behaviorWithChildren === 'good' ? '+' : '-'}
                     </Text>
-                    <Text style={{ fontSize: 8, color: friendlyColors.text, opacity: 0.7 }}>{t?.labels?.goodWithChildren || 'Kinderfreundlich'}</Text>
+                    <Text style={{ fontSize: 8, color: '#3d2e4d' }}>{t?.labels?.behaviorWithChildren || 'Kinderfreundlich'}</Text>
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Text style={{ fontSize: 8, color: data?.behaviorWithPets === 'good' ? '#15803d' : friendlyColors.muted }}>
-                      {data?.behaviorWithPets === 'good' ? '✓' : '✗'}
+                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: data?.behaviorWithPets === 'good' ? '#15803d' : friendlyColors.muted }}>
+                      {data?.behaviorWithPets === 'good' ? '+' : '-'}
                     </Text>
-                    <Text style={{ fontSize: 8, color: friendlyColors.text, opacity: 0.7 }}>{t?.labels?.goodWithAnimals || 'Tierfreundlich'}</Text>
+                    <Text style={{ fontSize: 8, color: '#3d2e4d' }}>{t?.labels?.behaviorWithPets || 'Tierfreundlich'}</Text>
                   </View>
                 </View>
+                {/* Noise level */}
+                {data?.noiseLevel && (
+                  <View style={{ marginTop: 10, paddingTop: 8, borderTopWidth: 1, borderTopColor: friendlyColors.border }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                      <Text style={{ fontSize: 8, color: '#3d2e4d' }}>{t?.labels?.noiseLevel || 'Lautstärke'}:</Text>
+                      <Text style={{ fontSize: 8, fontWeight: 'bold', color: friendlyColors.text }}>
+                        {data.noiseLevel === 'low' ? (t?.labels?.noiseLow || 'Niedrig') :
+                         data.noiseLevel === 'medium' ? (t?.labels?.noiseMedium || 'Mittel') :
+                         (t?.labels?.noiseHigh || 'Hoch')}
+                      </Text>
+                    </View>
+                  </View>
+                )}
               </View>
             </View>
 
@@ -931,22 +930,22 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
             <View style={friendlyStyles.rightColumn}>
               {/* Owner Info - Gradient Card */}
               <View style={friendlyStyles.cardGradient}>
-                <Text style={friendlyStyles.cardTitleWhite}>👤 {t?.doc?.ownerTitle || 'Halter'}</Text>
+                <Text style={friendlyStyles.cardTitleWhite}>{t?.doc?.ownerTitle || 'Halter'}</Text>
                 <View style={{ gap: 6 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>🪪</Text>
+                    <Text style={{ fontSize: 7, color: '#ccbbee', textTransform: 'uppercase' }}>{t?.labels?.name || 'Name'}</Text>
                     <Text style={{ fontSize: 9, color: '#ffffff' }}>{data?.ownerName || '—'}</Text>
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>🏠</Text>
+                    <Text style={{ fontSize: 7, color: '#ccbbee', textTransform: 'uppercase' }}>{t?.labels?.address || 'Adresse'}</Text>
                     <Text style={{ fontSize: 9, color: '#ffffff' }}>{streetLine}, {cityLine}</Text>
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>📞</Text>
+                    <Text style={{ fontSize: 7, color: '#ccbbee', textTransform: 'uppercase' }}>{t?.labels?.phone || 'Tel.'}</Text>
                     <Text style={{ fontSize: 9, color: '#ffffff' }}>{data?.phone || '—'}</Text>
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)' }}>✉️</Text>
+                    <Text style={{ fontSize: 7, color: '#ccbbee', textTransform: 'uppercase' }}>E-Mail</Text>
                     <Text style={{ fontSize: 9, color: '#ffffff' }}>{data?.email || '—'}</Text>
                   </View>
                 </View>
@@ -954,7 +953,7 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
 
               {/* Pet Details Card */}
               <View style={friendlyStyles.card}>
-                <Text style={friendlyStyles.cardTitle}>🐾 {t?.doc?.details || 'Details'}</Text>
+                <Text style={friendlyStyles.cardTitle}>{t?.doc?.details || 'Details'}</Text>
                 <View style={friendlyStyles.detailRow}>
                   <Text style={friendlyStyles.detailLabel}>{t?.labels?.chipId || 'Chip-ID'}</Text>
                   <Text style={friendlyStyles.detailValue}>{data?.chipId || '—'}</Text>
@@ -965,17 +964,17 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
                 </View>
                 <View style={friendlyStyles.detailRow}>
                   <Text style={friendlyStyles.detailLabel}>{t?.labels?.insurance || 'Versicherung'}</Text>
-                  <Text style={friendlyStyles.detailValue}>{data?.insuranceCompany || '—'}</Text>
+                  <Text style={friendlyStyles.detailValue}>{data?.insuranceProvider || '—'}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
-                  <View style={[friendlyStyles.statusBadge, data?.isVaccinated === 'yes' ? friendlyStyles.statusBadgeGreen : friendlyStyles.statusBadgeGray]}>
-                    <Text style={[friendlyStyles.statusText, data?.isVaccinated === 'yes' ? friendlyStyles.statusTextGreen : friendlyStyles.statusTextGray]}>
-                      {data?.isVaccinated === 'yes' ? '✓' : '✗'} {t?.labels?.vaccinated || 'Geimpft'}
+                  <View style={[friendlyStyles.statusBadge, data?.hasVaccination ? friendlyStyles.statusBadgeGreen : friendlyStyles.statusBadgeGray]}>
+                    <Text style={[friendlyStyles.statusText, data?.hasVaccination ? friendlyStyles.statusTextGreen : friendlyStyles.statusTextGray]}>
+                      {data?.hasVaccination ? (t?.labels?.yes || 'Ja') : (t?.labels?.no || 'Nein')} - {t?.labels?.vaccinated || 'Geimpft'}
                     </Text>
                   </View>
-                  <View style={[friendlyStyles.statusBadge, data?.isNeutered === 'yes' ? friendlyStyles.statusBadgeGreen : friendlyStyles.statusBadgeGray]}>
-                    <Text style={[friendlyStyles.statusText, data?.isNeutered === 'yes' ? friendlyStyles.statusTextGreen : friendlyStyles.statusTextGray]}>
-                      {data?.isNeutered === 'yes' ? '✓' : '✗'} {t?.labels?.neutered || 'Kastriert'}
+                  <View style={[friendlyStyles.statusBadge, data?.isNeutered ? friendlyStyles.statusBadgeGreen : friendlyStyles.statusBadgeGray]}>
+                    <Text style={[friendlyStyles.statusText, data?.isNeutered ? friendlyStyles.statusTextGreen : friendlyStyles.statusTextGray]}>
+                      {data?.isNeutered ? (t?.labels?.yes || 'Ja') : (t?.labels?.no || 'Nein')} - {t?.labels?.neutered || 'Kastriert'}
                     </Text>
                   </View>
                 </View>
@@ -986,16 +985,22 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
           {/* Footer */}
           <View style={friendlyStyles.footer}>
             <View style={friendlyStyles.footerContent}>
-              {/* Reference Quote */}
+              {/* References & QR */}
               <View style={friendlyStyles.footerLeft}>
                 {data?.previousLandlordName && (
-                  <View style={{ backgroundColor: '#f7f5f8', padding: 8, borderRadius: 8, borderLeftWidth: 3, borderLeftColor: friendlyColors.primary }}>
-                    <Text style={{ fontSize: 8, color: friendlyColors.muted, fontStyle: 'italic', marginBottom: 4 }}>
-                      "{data?.landlordReference || t?.doc?.landlordReference || 'Guter Mieter mit wohlerzogenem Haustier.'}"
-                    </Text>
-                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: friendlyColors.text }}>
-                      — {data.previousLandlordName}
-                    </Text>
+                  <View style={{ backgroundColor: '#f7f5f8', padding: 8, borderRadius: 8, borderLeftWidth: 3, borderLeftColor: friendlyColors.primary, marginBottom: 8 }}>
+                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: friendlyColors.text }}>{data.previousLandlordName}</Text>
+                    {data?.previousLandlordPhone && <Text style={{ fontSize: 7, color: friendlyColors.muted }}>{data.previousLandlordPhone}</Text>}
+                    {data?.previousDuration && <Text style={{ fontSize: 7, color: friendlyColors.muted, marginTop: 2 }}>{t?.labels?.previousDuration || 'Mietdauer'}: {data.previousDuration}</Text>}
+                  </View>
+                )}
+                {/* QR Code */}
+                {qrUrl && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <Image src={qrUrl} style={{ width: 50, height: 50 }} />
+                    <View>
+                      <Text style={{ fontSize: 7, color: friendlyColors.muted, textTransform: 'uppercase' }}>{t?.doc?.qrLabel ?? 'Kontakt scannen'}</Text>
+                    </View>
                   </View>
                 )}
               </View>
@@ -1007,6 +1012,1379 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
               </View>
             </View>
             <Text style={friendlyStyles.branding}>pet-bewerbung.ch</Text>
+          </View>
+
+          {/* Watermark overlay for unpaid premium templates */}
+          {showWatermark && (
+            <View style={styles.watermarkOverlay} fixed>
+              <Text style={styles.watermarkText}>MUSTER</Text>
+              <Text style={styles.watermarkSubtext}>PREVIEW</Text>
+            </View>
+          )}
+        </Page>
+      </Document>
+    );
+  }
+
+  // ============= PROFESSIONAL TEMPLATE SPECIFIC STYLES =============
+  const professionalColors = {
+    primary: '#000000',
+    accent: '#13ec5b',
+    text: '#111813',
+    muted: '#6b7280',
+    border: '#e5e7eb',
+    light: '#f3f4f6',
+  };
+
+  const professionalStyles = {
+    page: {
+      padding: 32,
+      fontSize: 10,
+      fontFamily: 'Helvetica',
+      backgroundColor: '#ffffff',
+    },
+    // Header
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      borderBottomWidth: 2,
+      borderBottomColor: colors.primary || professionalColors.primary,
+      paddingBottom: 12,
+      marginBottom: 16,
+    },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    headerIcon: {
+      width: 36,
+      height: 36,
+      backgroundColor: colors.primary || professionalColors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    headerTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: colors.primary || professionalColors.primary,
+      textTransform: 'uppercase',
+      letterSpacing: -0.3,
+    },
+    headerSubtitle: {
+      fontSize: 8,
+      color: professionalColors.muted,
+      textTransform: 'uppercase',
+      letterSpacing: 1.5,
+      marginTop: 2,
+    },
+    headerDate: {
+      textAlign: 'right',
+    },
+    headerDateLabel: {
+      fontSize: 7,
+      fontWeight: 'bold',
+      color: professionalColors.muted,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+    },
+    headerDateValue: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      color: professionalColors.text,
+      marginTop: 2,
+    },
+    // Content layout
+    content: {
+      flexDirection: 'row',
+      gap: 20,
+      flex: 1,
+    },
+    leftColumn: {
+      width: '42%',
+      gap: 12,
+    },
+    rightColumn: {
+      width: '58%',
+      gap: 12,
+    },
+    // Photo
+    photoBox: {
+      width: '100%',
+      height: 200,
+      backgroundColor: professionalColors.light,
+      overflow: 'hidden',
+    },
+    // Section title
+    sectionTitle: {
+      fontSize: 9,
+      fontWeight: 'bold',
+      color: colors.primary || professionalColors.primary,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+      borderBottomWidth: 2,
+      borderBottomColor: colors.primary || professionalColors.primary,
+      paddingBottom: 4,
+      marginBottom: 8,
+    },
+    // Pet name
+    petName: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      color: professionalColors.text,
+      marginBottom: 2,
+    },
+    petRefId: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: colors.primary || professionalColors.accent,
+      marginBottom: 8,
+    },
+    // Stats grid
+    statsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      borderTopWidth: 1,
+      borderTopColor: professionalColors.border,
+      paddingTop: 8,
+    },
+    statItem: {
+      width: '50%',
+      marginBottom: 6,
+    },
+    statLabel: {
+      fontSize: 7,
+      color: professionalColors.muted,
+      textTransform: 'uppercase',
+      fontWeight: 'bold',
+    },
+    statValue: {
+      fontSize: 9,
+      fontWeight: 'bold',
+      color: professionalColors.text,
+      marginTop: 1,
+    },
+    // Owner box
+    ownerBox: {
+      backgroundColor: professionalColors.light,
+      padding: 12,
+      borderWidth: 1,
+      borderColor: professionalColors.border,
+    },
+    ownerLabel: {
+      fontSize: 7,
+      color: professionalColors.muted,
+      textTransform: 'uppercase',
+      marginBottom: 1,
+    },
+    ownerValue: {
+      fontSize: 9,
+      fontWeight: 'bold',
+      color: professionalColors.text,
+      marginBottom: 4,
+    },
+    ownerContactRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      marginTop: 2,
+    },
+    ownerContactText: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: professionalColors.text,
+    },
+    // Progress bar
+    progressContainer: {
+      marginBottom: 10,
+    },
+    progressLabelRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 3,
+    },
+    progressLabelText: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: '#374151',
+    },
+    progressLabelValue: {
+      fontSize: 7,
+      color: professionalColors.muted,
+    },
+    progressBar: {
+      height: 4,
+      backgroundColor: '#e5e7eb',
+      width: '100%',
+    },
+    progressFill: {
+      height: 4,
+    },
+    // Tags
+    tag: {
+      paddingHorizontal: 6,
+      paddingVertical: 3,
+      backgroundColor: '#dcfce7',
+      marginRight: 4,
+      marginBottom: 4,
+    },
+    tagText: {
+      fontSize: 7,
+      fontWeight: 'bold',
+      color: '#15803d',
+      textTransform: 'uppercase',
+    },
+    // Description
+    descriptionSection: {
+      borderTopWidth: 1,
+      borderTopColor: professionalColors.border,
+      paddingTop: 12,
+      marginTop: 4,
+    },
+    descriptionTitle: {
+      fontSize: 9,
+      fontWeight: 'bold',
+      color: professionalColors.text,
+      textTransform: 'uppercase',
+      marginBottom: 6,
+    },
+    descriptionText: {
+      fontSize: 9,
+      lineHeight: 1.5,
+      color: '#374151',
+    },
+    // Bottom grid
+    bottomGrid: {
+      flexDirection: 'row',
+      gap: 20,
+      borderTopWidth: 1,
+      borderTopColor: professionalColors.border,
+      paddingTop: 12,
+      marginTop: 4,
+    },
+    // Legal section
+    legalRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 3,
+      borderBottomWidth: 1,
+      borderBottomColor: professionalColors.border,
+      borderBottomStyle: 'dashed',
+    },
+    legalLabel: {
+      fontSize: 8,
+      color: '#4b5563',
+    },
+    legalValue: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: professionalColors.text,
+    },
+    // Status icons
+    statusRow: {
+      flexDirection: 'row',
+      gap: 8,
+      marginTop: 8,
+    },
+    statusBadge: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: 2,
+    },
+    statusCircle: {
+      width: 18,
+      height: 18,
+      borderRadius: 9,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    statusCircleGreen: {
+      backgroundColor: '#dcfce7',
+    },
+    statusText: {
+      fontSize: 6,
+      fontWeight: 'bold',
+      color: professionalColors.muted,
+      textTransform: 'uppercase',
+    },
+    // Reference
+    referenceBox: {
+      backgroundColor: '#eff6ff',
+      padding: 8,
+      borderWidth: 1,
+      borderColor: '#bfdbfe',
+      marginBottom: 6,
+    },
+    referenceLabel: {
+      fontSize: 7,
+      fontWeight: 'bold',
+      color: '#1e40af',
+      textTransform: 'uppercase',
+      marginBottom: 2,
+    },
+    referenceName: {
+      fontSize: 9,
+      fontWeight: 'bold',
+      color: professionalColors.text,
+    },
+    referenceDetail: {
+      fontSize: 7,
+      color: professionalColors.muted,
+      marginTop: 1,
+    },
+    // Footer
+    footer: {
+      marginTop: 'auto',
+      paddingTop: 12,
+      borderTopWidth: 4,
+      borderTopColor: colors.primary || professionalColors.primary,
+    },
+    footerContent: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end',
+    },
+    footerText: {
+      fontSize: 7,
+      color: professionalColors.muted,
+      fontFamily: 'Courier',
+    },
+    footerSign: {
+      width: 140,
+      borderBottomWidth: 1,
+      borderBottomColor: '#d1d5db',
+      paddingBottom: 6,
+    },
+    footerSignText: {
+      fontSize: 7,
+      color: professionalColors.muted,
+      textAlign: 'center',
+      marginTop: 4,
+    },
+    branding: {
+      fontSize: 6,
+      color: '#cbd5e1',
+      textAlign: 'center',
+      marginTop: 6,
+    },
+  };
+
+  // ============= PROFESSIONAL TEMPLATE RENDER =============
+  if (isProfessional) {
+    const profAccent = colors.primary || professionalColors.accent;
+
+    const getNoiseLevelPercent = () => {
+      if (data?.noiseLevel === 'low') return 20;
+      if (data?.noiseLevel === 'high') return 80;
+      return 50;
+    };
+
+    const getAloneTimePercent = () => {
+      const hours = parseInt(data?.aloneTime) || 0;
+      return Math.min(100, Math.max(10, (hours / 8) * 100));
+    };
+
+    return (
+      <Document title={t?.doc?.title ?? 'Pet CV'}>
+        <Page size="A4" style={professionalStyles.page} wrap>
+          {/* Header */}
+          <View style={professionalStyles.header}>
+            <View style={professionalStyles.headerLeft}>
+              <View style={professionalStyles.headerIcon}>
+                {logoUrl ? (
+                  <Image src={logoUrl} style={{ width: 28, height: 28, objectFit: 'contain' }} />
+                ) : (
+                  <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: 'bold' }}>V</Text>
+                )}
+              </View>
+              <View>
+                <Text style={professionalStyles.headerTitle}>{t?.doc?.title ?? 'Pet Dossier'}</Text>
+                <Text style={professionalStyles.headerSubtitle}>{t?.doc?.subtitle ?? 'Application document'}</Text>
+              </View>
+            </View>
+            <View style={professionalStyles.headerDate}>
+              <Text style={professionalStyles.headerDateLabel}>{t?.labels?.date || 'Datum'}</Text>
+              <Text style={professionalStyles.headerDateValue}>{today}</Text>
+            </View>
+          </View>
+
+          {/* Content: 2 columns */}
+          <View style={professionalStyles.content}>
+            {/* Left Column: Photo + Pet Stats */}
+            <View style={professionalStyles.leftColumn}>
+              {/* Photo */}
+              <View style={professionalStyles.photoBox}>
+                {data?.photo && typeof data.photo === 'string' && data.photo.startsWith('data:') ? (
+                  <Image src={data.photo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <View style={{ width: '100%', height: '100%', backgroundColor: professionalColors.light, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 24, color: professionalColors.muted }}>PET</Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Pet Name & Reference ID */}
+              <View>
+                <Text style={professionalStyles.petName}>{data?.name || '---'}</Text>
+                <Text style={professionalStyles.petRefId}>
+                  Referenz-ID: #{(data?.chipId || data?.name || 'XXXX').slice(-4).toUpperCase()}-PET
+                </Text>
+              </View>
+
+              {/* Pet Stats Grid */}
+              <View style={professionalStyles.statsGrid}>
+                <View style={professionalStyles.statItem}>
+                  <Text style={professionalStyles.statLabel}>{t?.labels?.breed ?? 'Breed'}</Text>
+                  <Text style={professionalStyles.statValue}>{data?.breed || '---'}</Text>
+                </View>
+                <View style={professionalStyles.statItem}>
+                  <Text style={professionalStyles.statLabel}>{t?.labels?.gender ?? 'Gender'}</Text>
+                  <Text style={professionalStyles.statValue}>{getGenderLabel(data?.gender, t)}</Text>
+                </View>
+                <View style={professionalStyles.statItem}>
+                  <Text style={professionalStyles.statLabel}>{t?.labels?.age ?? 'Age'}</Text>
+                  <Text style={professionalStyles.statValue}>{data?.age ? `${data.age} ${t?.labels?.years || 'Jahre'}` : '---'}</Text>
+                </View>
+                <View style={professionalStyles.statItem}>
+                  <Text style={professionalStyles.statLabel}>{t?.labels?.weight ?? 'Weight'}</Text>
+                  <Text style={professionalStyles.statValue}>{data?.weight ? `${data.weight} kg` : '---'}</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Right Column: Owner + Behavior */}
+            <View style={professionalStyles.rightColumn}>
+              {/* Owner Info Box */}
+              <View style={professionalStyles.ownerBox}>
+                <Text style={professionalStyles.sectionTitle}>{t?.doc?.sectionOwner ?? 'Owner'}</Text>
+                <View style={{ gap: 4, paddingRight: 60 }}>
+                  <View>
+                    <Text style={professionalStyles.ownerLabel}>{t?.labels?.name ?? 'Name'}</Text>
+                    <Text style={professionalStyles.ownerValue}>{data?.ownerName || '---'}</Text>
+                  </View>
+                  <View>
+                    <Text style={professionalStyles.ownerLabel}>{t?.labels?.address ?? 'Address'}</Text>
+                    <Text style={professionalStyles.ownerValue}>{streetLine}</Text>
+                  </View>
+                  <View>
+                    <Text style={professionalStyles.ownerLabel}>{t?.labels?.city ?? 'City'}</Text>
+                    <Text style={professionalStyles.ownerValue}>{cityLine}</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', gap: 16, marginTop: 4 }}>
+                    <View style={professionalStyles.ownerContactRow}>
+                      <Text style={{ fontSize: 8, color: professionalColors.muted }}>Tel:</Text>
+                      <Text style={professionalStyles.ownerContactText}>{data?.phone || '---'}</Text>
+                    </View>
+                    <View style={professionalStyles.ownerContactRow}>
+                      <Text style={{ fontSize: 8, color: professionalColors.muted }}>E-Mail:</Text>
+                      <Text style={professionalStyles.ownerContactText}>{data?.email || '---'}</Text>
+                    </View>
+                  </View>
+                </View>
+                {/* QR Code in owner box */}
+                {qrUrl && (
+                  <View style={{ position: 'absolute', top: 30, right: 8 }}>
+                    <Image src={qrUrl} style={{ width: 50, height: 50 }} />
+                  </View>
+                )}
+              </View>
+
+              {/* Behavior & Routine */}
+              <View>
+                <Text style={[professionalStyles.sectionTitle, { borderBottomWidth: 2, borderBottomColor: colors.primary || professionalColors.primary }]}>
+                  {t?.labels?.behaviorTitle ?? t?.doc?.sectionBehavior ?? 'Behavior'}
+                </Text>
+
+                {/* Progress bars */}
+                <View style={{ flexDirection: 'row', gap: 16 }}>
+                  <View style={{ flex: 1 }}>
+                    <View style={professionalStyles.progressContainer}>
+                      <View style={professionalStyles.progressLabelRow}>
+                        <Text style={professionalStyles.progressLabelText}>{t?.labels?.noiseLevel ?? 'Noise'}</Text>
+                        <Text style={professionalStyles.progressLabelValue}>
+                          {data?.noiseLevel === 'low' ? (t?.labels?.noiseLow ?? 'Low') : data?.noiseLevel === 'high' ? (t?.labels?.noiseHigh ?? 'High') : (t?.labels?.noiseMedium ?? 'Medium')}
+                        </Text>
+                      </View>
+                      <View style={professionalStyles.progressBar}>
+                        <View style={[professionalStyles.progressFill, { width: `${getNoiseLevelPercent()}%`, backgroundColor: profAccent, opacity: 0.8 }]} />
+                      </View>
+                    </View>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <View style={professionalStyles.progressContainer}>
+                      <View style={professionalStyles.progressLabelRow}>
+                        <Text style={professionalStyles.progressLabelText}>{t?.labels?.aloneTime ?? 'Alone time'}</Text>
+                        <Text style={professionalStyles.progressLabelValue}>{data?.aloneTime ? `${data.aloneTime}h` : '---'}</Text>
+                      </View>
+                      <View style={professionalStyles.progressBar}>
+                        <View style={[professionalStyles.progressFill, { width: `${getAloneTimePercent()}%`, backgroundColor: '#3b82f6', opacity: 0.8 }]} />
+                      </View>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Info boxes */}
+                {(data?.aloneTime || data?.activeHours) && (
+                  <View style={{ flexDirection: 'row', gap: 8, marginBottom: 8 }}>
+                    {data?.aloneTime && (
+                      <View style={{ flex: 1, backgroundColor: professionalColors.light, padding: 6, borderWidth: 1, borderColor: professionalColors.border }}>
+                        <Text style={{ fontSize: 7, color: professionalColors.muted }}>{t?.labels?.aloneTime ?? 'Alone'}</Text>
+                        <Text style={{ fontSize: 10, fontWeight: 'bold', color: professionalColors.text }}>{data.aloneTime} Std.</Text>
+                      </View>
+                    )}
+                    {data?.activeHours && (
+                      <View style={{ flex: 1, backgroundColor: professionalColors.light, padding: 6, borderWidth: 1, borderColor: professionalColors.border }}>
+                        <Text style={{ fontSize: 7, color: professionalColors.muted }}>{t?.labels?.activeHours ?? 'Active'}</Text>
+                        <Text style={{ fontSize: 10, fontWeight: 'bold', color: professionalColors.text }}>{data.activeHours}</Text>
+                      </View>
+                    )}
+                  </View>
+                )}
+
+                {/* Behavior tags */}
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                  {data?.behaviorWithChildren === 'good' && (
+                    <View style={professionalStyles.tag}>
+                      <Text style={professionalStyles.tagText}>{t?.labels?.behaviorWithChildren ?? 'Kinderfreundlich'}</Text>
+                    </View>
+                  )}
+                  {data?.behaviorWithPets === 'good' && (
+                    <View style={professionalStyles.tag}>
+                      <Text style={professionalStyles.tagText}>{t?.labels?.behaviorWithPets ?? 'Tierfreundlich'}</Text>
+                    </View>
+                  )}
+                  <View style={professionalStyles.tag}>
+                    <Text style={professionalStyles.tagText}>{t?.labels?.houseTrained ?? 'Stubenrein'}</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Description - Full Width */}
+          {data?.generatedText && (
+            <View style={professionalStyles.descriptionSection}>
+              <Text style={professionalStyles.descriptionTitle}>{t?.doc?.sectionDescription ?? t?.doc?.sectionAbout ?? 'About'}</Text>
+              <Text style={professionalStyles.descriptionText}>
+                {sanitizeForPdf(data.generatedText)}
+              </Text>
+            </View>
+          )}
+
+          {/* Bottom Grid: Legal & References */}
+          <View style={professionalStyles.bottomGrid}>
+            {/* Legal / Insurance */}
+            <View style={{ flex: 1 }}>
+              <Text style={[professionalStyles.sectionTitle, { fontSize: 8 }]}>
+                {t?.doc?.sectionLegal ?? 'Insurance & Legal'}
+              </Text>
+              <View style={professionalStyles.legalRow}>
+                <Text style={professionalStyles.legalLabel}>{t?.labels?.chipId ?? 'Chip ID'}</Text>
+                <Text style={[professionalStyles.legalValue, { fontFamily: 'Courier' }]}>{withFallback(data?.chipId)}</Text>
+              </View>
+              <View style={professionalStyles.legalRow}>
+                <Text style={professionalStyles.legalLabel}>{t?.labels?.insurance ?? 'Insurance'}</Text>
+                <Text style={professionalStyles.legalValue}>{withFallback(data?.insuranceProvider)}</Text>
+              </View>
+              <View style={professionalStyles.legalRow}>
+                <Text style={professionalStyles.legalLabel}>{t?.labels?.vet ?? 'Vet'}</Text>
+                <Text style={professionalStyles.legalValue}>{withFallback(data?.vetName)}</Text>
+              </View>
+              {/* Status icons row */}
+              <View style={professionalStyles.statusRow}>
+                {data?.hasVaccination && (
+                  <View style={professionalStyles.statusBadge}>
+                    <View style={[professionalStyles.statusCircle, professionalStyles.statusCircleGreen]}>
+                      <Text style={{ fontSize: 10, color: '#15803d' }}>V</Text>
+                    </View>
+                    <Text style={professionalStyles.statusText}>{t?.labels?.vaccinated ?? 'Vaccinated'}</Text>
+                  </View>
+                )}
+                {data?.isNeutered && (
+                  <View style={professionalStyles.statusBadge}>
+                    <View style={[professionalStyles.statusCircle, professionalStyles.statusCircleGreen]}>
+                      <Text style={{ fontSize: 10, color: '#15803d' }}>N</Text>
+                    </View>
+                    <Text style={professionalStyles.statusText}>{t?.labels?.neutered ?? 'Neutered'}</Text>
+                  </View>
+                )}
+                {data?.hasRegistration && (
+                  <View style={professionalStyles.statusBadge}>
+                    <View style={[professionalStyles.statusCircle, professionalStyles.statusCircleGreen]}>
+                      <Text style={{ fontSize: 10, color: '#15803d' }}>R</Text>
+                    </View>
+                    <Text style={professionalStyles.statusText}>AMICUS</Text>
+                  </View>
+                )}
+              </View>
+            </View>
+
+            {/* References */}
+            <View style={{ flex: 1 }}>
+              <Text style={[professionalStyles.sectionTitle, { fontSize: 8 }]}>
+                {t?.labels?.referenceTitle ?? t?.doc?.sectionReference ?? 'References'}
+              </Text>
+              {data?.previousLandlordName && (
+                <View style={professionalStyles.referenceBox}>
+                  <Text style={professionalStyles.referenceLabel}>{t?.labels?.previousLandlord ?? 'Previous landlord'}</Text>
+                  <Text style={professionalStyles.referenceName}>{data.previousLandlordName}</Text>
+                  {data?.previousLandlordPhone && (
+                    <Text style={professionalStyles.referenceDetail}>Tel: {data.previousLandlordPhone}</Text>
+                  )}
+                  {data?.previousDuration && (
+                    <Text style={[professionalStyles.referenceDetail, { fontStyle: 'italic' }]}>
+                      {t?.labels?.previousDuration ?? 'Duration'}: {data.previousDuration}
+                    </Text>
+                  )}
+                </View>
+              )}
+              {data?.emergencyContactName && (
+                <View style={{ marginTop: data?.previousLandlordName ? 0 : 0 }}>
+                  <Text style={{ fontSize: 7, fontWeight: 'bold', color: professionalColors.muted, textTransform: 'uppercase', marginBottom: 2 }}>
+                    {t?.labels?.emergencyContact ?? 'Emergency contact'}
+                  </Text>
+                  <Text style={{ fontSize: 9, fontWeight: 'bold', color: professionalColors.text }}>
+                    {data.emergencyContactName}
+                    {data?.emergencyContactRelation ? ` (${data.emergencyContactRelation})` : ''}
+                  </Text>
+                  {data?.emergencyContactPhone && (
+                    <Text style={{ fontSize: 8, color: professionalColors.muted, marginTop: 1 }}>{data.emergencyContactPhone}</Text>
+                  )}
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* Footer */}
+          <View style={professionalStyles.footer}>
+            <View style={professionalStyles.footerContent}>
+              <Text style={professionalStyles.footerText}>
+                {t?.doc?.footer ?? 'Dokument generiert via Pet-Bewerbung.ch'}
+              </Text>
+              <View>
+                <View style={professionalStyles.footerSign} />
+                <Text style={professionalStyles.footerSignText}>{t?.doc?.sign ?? 'Signature'}</Text>
+              </View>
+            </View>
+            <Text style={professionalStyles.branding}>pet-bewerbung.ch</Text>
+          </View>
+
+          {/* Watermark overlay for unpaid premium templates */}
+          {showWatermark && (
+            <View style={styles.watermarkOverlay} fixed>
+              <Text style={styles.watermarkText}>MUSTER</Text>
+              <Text style={styles.watermarkSubtext}>PREVIEW</Text>
+            </View>
+          )}
+        </Page>
+      </Document>
+    );
+  }
+
+  // ============= EMERGENCY TEMPLATE SPECIFIC STYLES =============
+  const emergencyColors = {
+    primary: '#dc2626',
+    accent: '#fef2f2',
+    text: '#111813',
+    muted: '#6b7280',
+    border: '#e5e7eb',
+    light: '#f3f4f6',
+  };
+
+  const emergencyStyles = {
+    page: {
+      padding: 28,
+      fontSize: 10,
+      fontFamily: 'Helvetica',
+      backgroundColor: '#ffffff',
+    },
+    // Header
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderBottomWidth: 4,
+      borderBottomColor: colors.primary || '#000000',
+      paddingBottom: 10,
+      marginBottom: 14,
+    },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    headerIcon: {
+      width: 42,
+      height: 42,
+      backgroundColor: emergencyColors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    headerTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#000000',
+      textTransform: 'uppercase',
+      letterSpacing: -0.5,
+    },
+    headerSubtitle: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: emergencyColors.primary,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginTop: 2,
+    },
+    headerDate: {
+      textAlign: 'right',
+    },
+    headerDateLabel: {
+      fontSize: 7,
+      fontWeight: 'bold',
+      color: emergencyColors.muted,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+    },
+    headerDateValue: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      color: emergencyColors.text,
+      marginTop: 2,
+    },
+    // Content layout
+    content: {
+      flexDirection: 'row',
+      gap: 16,
+    },
+    leftColumn: {
+      width: '33%',
+      gap: 10,
+    },
+    rightColumn: {
+      width: '67%',
+      gap: 10,
+    },
+    // Photo
+    photoBox: {
+      width: '100%',
+      height: 150,
+      borderWidth: 3,
+      borderColor: '#000000',
+      overflow: 'hidden',
+    },
+    // Pet name
+    petName: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#000000',
+      textTransform: 'uppercase',
+      letterSpacing: -0.5,
+    },
+    petTagsRow: {
+      flexDirection: 'row',
+      gap: 4,
+      marginTop: 4,
+    },
+    petTag: {
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      backgroundColor: '#000000',
+    },
+    petTagText: {
+      fontSize: 7,
+      fontWeight: 'bold',
+      color: '#ffffff',
+      textTransform: 'uppercase',
+    },
+    petTagLight: {
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      backgroundColor: emergencyColors.light,
+      borderWidth: 1,
+      borderColor: '#d1d5db',
+    },
+    petTagLightText: {
+      fontSize: 7,
+      fontWeight: 'bold',
+      color: '#374151',
+      textTransform: 'uppercase',
+    },
+    // Breed info
+    breedInfo: {
+      marginTop: 8,
+    },
+    breedLabel: {
+      fontSize: 7,
+      color: emergencyColors.muted,
+      textTransform: 'uppercase',
+      fontWeight: 'bold',
+      letterSpacing: 1,
+    },
+    breedValue: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      color: '#000000',
+      borderLeftWidth: 3,
+      borderLeftColor: colors.primary || emergencyColors.primary,
+      paddingLeft: 6,
+      marginTop: 2,
+    },
+    // Emergency contact box
+    emergencyBox: {
+      backgroundColor: emergencyColors.accent,
+      padding: 10,
+      borderWidth: 2,
+      borderColor: emergencyColors.primary,
+    },
+    emergencyBoxTitle: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: '#b91c1c',
+      textTransform: 'uppercase',
+      marginBottom: 4,
+    },
+    emergencyName: {
+      fontSize: 12,
+      fontWeight: 'bold',
+      color: '#000000',
+    },
+    emergencyRelation: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: emergencyColors.primary,
+      marginTop: 1,
+    },
+    emergencyPhone: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#ffffff',
+      padding: 6,
+      borderWidth: 1,
+      borderColor: '#fecaca',
+      marginTop: 4,
+      gap: 4,
+    },
+    emergencyPhoneText: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      color: '#000000',
+    },
+    // Owner box
+    ownerBox: {
+      backgroundColor: emergencyColors.light,
+      padding: 10,
+      borderWidth: 1,
+      borderColor: '#d1d5db',
+    },
+    ownerBoxTitle: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: emergencyColors.muted,
+      textTransform: 'uppercase',
+      marginBottom: 4,
+    },
+    ownerName: {
+      fontSize: 12,
+      fontWeight: 'bold',
+      color: '#000000',
+    },
+    ownerCity: {
+      fontSize: 8,
+      color: emergencyColors.muted,
+      marginTop: 1,
+    },
+    ownerContactRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      marginTop: 2,
+    },
+    ownerContactLabel: {
+      fontSize: 7,
+      color: emergencyColors.muted,
+    },
+    ownerContactValue: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: emergencyColors.text,
+    },
+    // Vet box
+    vetBox: {
+      backgroundColor: '#eff6ff',
+      padding: 10,
+      borderWidth: 1,
+      borderColor: '#bfdbfe',
+      flexDirection: 'row',
+      gap: 10,
+    },
+    vetTitle: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: '#1d4ed8',
+      textTransform: 'uppercase',
+      marginBottom: 2,
+    },
+    vetName: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      color: '#000000',
+    },
+    vetPhone: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: emergencyColors.text,
+      marginTop: 2,
+    },
+    chipLabel: {
+      fontSize: 7,
+      color: emergencyColors.muted,
+      textTransform: 'uppercase',
+      fontWeight: 'bold',
+    },
+    chipValue: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      fontFamily: 'Courier',
+      backgroundColor: '#ffffff',
+      borderWidth: 1,
+      borderColor: '#bfdbfe',
+      paddingHorizontal: 4,
+      paddingVertical: 2,
+      marginTop: 2,
+    },
+    // Dark routine section
+    routineBox: {
+      backgroundColor: '#111827',
+      padding: 12,
+    },
+    routineTitle: {
+      fontSize: 9,
+      fontWeight: 'bold',
+      color: colors.primary || emergencyColors.primary,
+      textTransform: 'uppercase',
+      letterSpacing: 1.5,
+      borderBottomWidth: 1,
+      borderBottomColor: 'rgba(255,255,255,0.15)',
+      paddingBottom: 6,
+      marginBottom: 10,
+    },
+    routineGrid: {
+      flexDirection: 'row',
+      gap: 16,
+    },
+    routineItem: {
+      flex: 1,
+    },
+    routineItemLabel: {
+      fontSize: 7,
+      color: '#9ca3af',
+      textTransform: 'uppercase',
+      fontWeight: 'bold',
+    },
+    routineItemValue: {
+      fontSize: 9,
+      fontWeight: 'bold',
+      color: '#ffffff',
+      marginTop: 2,
+    },
+    routineItemSub: {
+      fontSize: 7,
+      color: '#9ca3af',
+      marginTop: 1,
+    },
+    // Behavior section
+    behaviorTitle: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: '#000000',
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      borderBottomWidth: 1,
+      borderBottomColor: '#000000',
+      paddingBottom: 4,
+      marginBottom: 8,
+    },
+    // Bar indicator
+    barContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    barLabel: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: '#4b5563',
+      textTransform: 'uppercase',
+    },
+    barGroup: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 2,
+    },
+    barSegment: {
+      width: 18,
+      height: 3,
+    },
+    barLabelRight: {
+      fontSize: 7,
+      fontWeight: 'bold',
+      color: emergencyColors.muted,
+      marginLeft: 6,
+    },
+    // Behavior tags
+    behaviorTag: {
+      paddingHorizontal: 6,
+      paddingVertical: 3,
+      backgroundColor: '#f0fdf4',
+      borderWidth: 1,
+      borderColor: '#bbf7d0',
+      marginRight: 4,
+      marginBottom: 4,
+    },
+    behaviorTagText: {
+      fontSize: 7,
+      fontWeight: 'bold',
+      color: '#15803d',
+      textTransform: 'uppercase',
+    },
+    // Notes box
+    notesBox: {
+      backgroundColor: emergencyColors.light,
+      padding: 10,
+      borderWidth: 1,
+      borderColor: '#d1d5db',
+      borderStyle: 'dashed',
+    },
+    notesTitle: {
+      fontSize: 8,
+      fontWeight: 'bold',
+      color: '#000000',
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginBottom: 4,
+    },
+    notesText: {
+      fontSize: 8,
+      lineHeight: 1.4,
+      color: '#374151',
+    },
+    // Status bar
+    statusBar: {
+      padding: 8,
+      borderWidth: 1,
+      borderColor: professionalColors.border,
+      backgroundColor: '#fafafa',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: 16,
+      marginTop: 4,
+    },
+    statusItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    statusDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+    },
+    statusDotGreen: {
+      backgroundColor: '#22c55e',
+    },
+    statusDotGray: {
+      backgroundColor: '#d1d5db',
+    },
+    statusItemText: {
+      fontSize: 7,
+      fontWeight: 'bold',
+      color: emergencyColors.muted,
+      textTransform: 'uppercase',
+    },
+    // Footer
+    footer: {
+      marginTop: 'auto',
+      paddingTop: 10,
+      borderTopWidth: 2,
+      borderTopColor: '#000000',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end',
+    },
+    footerText: {
+      fontSize: 7,
+      color: emergencyColors.muted,
+      fontFamily: 'Courier',
+    },
+    footerSign: {
+      width: 130,
+      height: 24,
+      borderBottomWidth: 1,
+      borderBottomColor: '#d1d5db',
+    },
+    footerSignText: {
+      fontSize: 7,
+      fontWeight: 'bold',
+      color: emergencyColors.muted,
+      textTransform: 'uppercase',
+      textAlign: 'center',
+      marginTop: 3,
+    },
+  };
+
+  // ============= EMERGENCY TEMPLATE RENDER =============
+  if (isEmergency) {
+    // Helper for noise level bars
+    const getNoiseBars = () => {
+      const level = data?.noiseLevel || 'low';
+      const levels = { low: 1, medium: 2, high: 4 };
+      const labels = { low: 'QUIET', medium: 'MODERATE', high: 'LOUD' };
+      return { filled: levels[level] || 1, label: labels[level] || 'QUIET' };
+    };
+
+    const getActivityBars = () => {
+      const hours = parseInt(data?.aloneTime) || 0;
+      const filled = hours <= 2 ? 1 : hours <= 4 ? 2 : hours <= 6 ? 3 : 4;
+      const labels = { 1: 'LOW', 2: 'MODERATE', 3: 'HIGH', 4: 'HIGH' };
+      return { filled, label: labels[filled] || 'LOW' };
+    };
+
+    const noise = getNoiseBars();
+    const activity = getActivityBars();
+
+    return (
+      <Document title={t?.doc?.title ?? 'Pet CV'}>
+        <Page size="A4" style={emergencyStyles.page} wrap>
+          {/* Header */}
+          <View style={emergencyStyles.header}>
+            <View style={emergencyStyles.headerLeft}>
+              <View style={emergencyStyles.headerIcon}>
+                <Text style={{ color: '#ffffff', fontSize: 20, fontWeight: 'bold' }}>!</Text>
+              </View>
+              <View>
+                <Text style={emergencyStyles.headerTitle}>{t?.doc?.emergencyTitle ?? 'Emergency Profile'}</Text>
+                <Text style={emergencyStyles.headerSubtitle}>{t?.doc?.emergencySubtitle ?? 'Kritische Informationen'}</Text>
+              </View>
+            </View>
+            <View style={emergencyStyles.headerDate}>
+              <Text style={emergencyStyles.headerDateLabel}>{t?.labels?.date || 'Aktualisiert am'}</Text>
+              <Text style={emergencyStyles.headerDateValue}>{today}</Text>
+            </View>
+          </View>
+
+          {/* Main Grid */}
+          <View style={emergencyStyles.content}>
+            {/* Left Column: Photo + Pet Name */}
+            <View style={emergencyStyles.leftColumn}>
+              {/* Photo */}
+              <View style={emergencyStyles.photoBox}>
+                {data?.photo && typeof data.photo === 'string' && data.photo.startsWith('data:') ? (
+                  <Image src={data.photo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <View style={{ width: '100%', height: '100%', backgroundColor: emergencyColors.light, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 28, color: emergencyColors.muted }}>PET</Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Pet Name & Tags */}
+              <View>
+                <Text style={emergencyStyles.petName}>{data?.name || '---'}</Text>
+                <View style={emergencyStyles.petTagsRow}>
+                  <View style={emergencyStyles.petTag}>
+                    <Text style={emergencyStyles.petTagText}>
+                      {data?.gender === 'm' ? 'MALE' : 'FEMALE'}
+                    </Text>
+                  </View>
+                  <View style={emergencyStyles.petTagLight}>
+                    <Text style={emergencyStyles.petTagLightText}>
+                      {data?.age ? `${data.age} ${(t?.labels?.years || 'YEARS').toUpperCase()}` : '---'}
+                    </Text>
+                  </View>
+                </View>
+                <View style={emergencyStyles.breedInfo}>
+                  <Text style={emergencyStyles.breedLabel}>{t?.labels?.breed ?? 'Breed'}</Text>
+                  <Text style={emergencyStyles.breedValue}>{data?.breed || '---'}</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Right Column: Emergency + Owner + Vet */}
+            <View style={emergencyStyles.rightColumn}>
+              {/* Top row: Emergency Contact + Owner */}
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                {/* Emergency Contact */}
+                <View style={[emergencyStyles.emergencyBox, { flex: 1 }]}>
+                  <Text style={emergencyStyles.emergencyBoxTitle}>
+                    {t?.labels?.emergencyContact ?? 'Notfallkontakt'}
+                  </Text>
+                  <Text style={emergencyStyles.emergencyName}>{data?.emergencyContactName || '---'}</Text>
+                  <Text style={emergencyStyles.emergencyRelation}>{data?.emergencyContactRelation || '---'}</Text>
+                  {data?.emergencyContactPhone && (
+                    <View style={emergencyStyles.emergencyPhone}>
+                      <Text style={{ fontSize: 8, color: emergencyColors.primary }}>TEL</Text>
+                      <Text style={emergencyStyles.emergencyPhoneText}>{data.emergencyContactPhone}</Text>
+                    </View>
+                  )}
+                </View>
+
+                {/* Owner */}
+                <View style={[emergencyStyles.ownerBox, { flex: 1 }]}>
+                  <Text style={emergencyStyles.ownerBoxTitle}>
+                    {t?.doc?.sectionOwner ?? 'Owner'}
+                  </Text>
+                  <Text style={emergencyStyles.ownerName}>{data?.ownerName || '---'}</Text>
+                  <Text style={emergencyStyles.ownerCity}>
+                    {data?.city ? `${data.city}, Schweiz` : '---'}
+                  </Text>
+                  <View style={{ marginTop: 4, gap: 2 }}>
+                    <View style={emergencyStyles.ownerContactRow}>
+                      <Text style={emergencyStyles.ownerContactLabel}>Tel:</Text>
+                      <Text style={emergencyStyles.ownerContactValue}>{data?.phone || '---'}</Text>
+                    </View>
+                    <View style={emergencyStyles.ownerContactRow}>
+                      <Text style={emergencyStyles.ownerContactLabel}>Mail:</Text>
+                      <Text style={emergencyStyles.ownerContactValue}>{data?.email || '---'}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* Vet Info */}
+              <View style={emergencyStyles.vetBox}>
+                {/* QR Code */}
+                {qrUrl && (
+                  <View style={{ backgroundColor: '#ffffff', padding: 4, borderWidth: 1, borderColor: '#bfdbfe' }}>
+                    <Image src={qrUrl} style={{ width: 36, height: 36 }} />
+                  </View>
+                )}
+                <View style={{ flex: 1 }}>
+                  <Text style={emergencyStyles.vetTitle}>{t?.labels?.vet ?? 'Tierarzt'}</Text>
+                  <Text style={emergencyStyles.vetName}>{data?.vetName || '---'}</Text>
+                  <Text style={emergencyStyles.vetPhone}>{data?.vetPhone || '---'}</Text>
+                </View>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={emergencyStyles.chipLabel}>CHIP ID</Text>
+                  <Text style={emergencyStyles.chipValue}>{data?.chipId || '---'}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Dark Routine Section */}
+          <View style={[emergencyStyles.routineBox, { marginTop: 10 }]}>
+            <Text style={emergencyStyles.routineTitle}>Daily Routine & Care</Text>
+            <View style={emergencyStyles.routineGrid}>
+              <View style={emergencyStyles.routineItem}>
+                <Text style={emergencyStyles.routineItemLabel}>Feeding</Text>
+                <Text style={emergencyStyles.routineItemValue}>2x {t?.labels?.daily ?? 'Daily'}</Text>
+                <Text style={emergencyStyles.routineItemSub}>{data?.medicalConditions || 'Standard Futter'}</Text>
+              </View>
+              <View style={emergencyStyles.routineItem}>
+                <Text style={emergencyStyles.routineItemLabel}>Walk</Text>
+                <Text style={emergencyStyles.routineItemValue}>{data?.activeHours || '3x Daily'}</Text>
+                <Text style={emergencyStyles.routineItemSub}>{data?.aloneTime ? `Max. ${data.aloneTime}h allein` : '---'}</Text>
+              </View>
+              <View style={emergencyStyles.routineItem}>
+                <Text style={emergencyStyles.routineItemLabel}>Status</Text>
+                <Text style={emergencyStyles.routineItemValue}>{data?.hasVaccination ? 'Geimpft' : 'Nicht geimpft'}</Text>
+                <Text style={emergencyStyles.routineItemSub}>{data?.isNeutered ? 'Kastriert' : 'Nicht kastriert'}</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Bottom Grid: Behavior + Notes */}
+          <View style={{ flexDirection: 'row', gap: 16, borderTopWidth: 1, borderTopColor: emergencyColors.border, paddingTop: 10, marginTop: 10 }}>
+            {/* Behavior */}
+            <View style={{ flex: 1 }}>
+              <Text style={emergencyStyles.behaviorTitle}>
+                {t?.labels?.behaviorTitle ?? 'Behavior'}
+              </Text>
+              {/* Noise bars */}
+              <View style={emergencyStyles.barContainer}>
+                <Text style={emergencyStyles.barLabel}>{t?.labels?.noiseLevel ?? 'Noise'}</Text>
+                <View style={emergencyStyles.barGroup}>
+                  {[1, 2, 3, 4].map(i => (
+                    <View key={`noise-${i}`} style={[emergencyStyles.barSegment, { backgroundColor: i <= noise.filled ? '#22c55e' : '#e5e7eb' }]} />
+                  ))}
+                  <Text style={emergencyStyles.barLabelRight}>{noise.label}</Text>
+                </View>
+              </View>
+              {/* Activity bars */}
+              <View style={emergencyStyles.barContainer}>
+                <Text style={emergencyStyles.barLabel}>Activity</Text>
+                <View style={emergencyStyles.barGroup}>
+                  {[1, 2, 3, 4].map(i => (
+                    <View key={`act-${i}`} style={[emergencyStyles.barSegment, { backgroundColor: i <= activity.filled ? '#3b82f6' : '#e5e7eb' }]} />
+                  ))}
+                  <Text style={emergencyStyles.barLabelRight}>{activity.label}</Text>
+                </View>
+              </View>
+              {/* Tags */}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 4 }}>
+                {data?.behaviorWithChildren === 'good' && (
+                  <View style={emergencyStyles.behaviorTag}>
+                    <Text style={emergencyStyles.behaviorTagText}>Kid Friendly</Text>
+                  </View>
+                )}
+                {data?.behaviorWithPets === 'good' && (
+                  <View style={emergencyStyles.behaviorTag}>
+                    <Text style={emergencyStyles.behaviorTagText}>Pet Friendly</Text>
+                  </View>
+                )}
+                <View style={emergencyStyles.behaviorTag}>
+                  <Text style={emergencyStyles.behaviorTagText}>Potty Trained</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Notes */}
+            <View style={{ flex: 1 }}>
+              <View style={emergencyStyles.notesBox}>
+                <Text style={emergencyStyles.notesTitle}>
+                  {t?.labels?.importantNotes ?? 'Wichtige Notizen'}
+                </Text>
+                <Text style={emergencyStyles.notesText}>
+                  {sanitizeForPdf(data?.generatedText) || t?.labels?.noDescription || 'Keine Beschreibung'}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Status Bar */}
+          <View style={emergencyStyles.statusBar}>
+            {data?.insuranceProvider && (
+              <View style={emergencyStyles.statusItem}>
+                <View style={[emergencyStyles.statusDot, emergencyStyles.statusDotGreen]} />
+                <Text style={emergencyStyles.statusItemText}>Haftpflicht: {data.insuranceProvider}</Text>
+              </View>
+            )}
+            <View style={emergencyStyles.statusItem}>
+              <View style={[emergencyStyles.statusDot, data?.hasVaccination ? emergencyStyles.statusDotGreen : emergencyStyles.statusDotGray]} />
+              <Text style={emergencyStyles.statusItemText}>
+                {data?.hasVaccination ? 'Geimpft' : 'Nicht geimpft'} & {data?.isNeutered ? 'Kastriert' : 'Nicht kastriert'}
+              </Text>
+            </View>
+            {data?.hasRegistration && (
+              <View style={emergencyStyles.statusItem}>
+                <View style={[emergencyStyles.statusDot, emergencyStyles.statusDotGreen]} />
+                <Text style={emergencyStyles.statusItemText}>Registriert: AMICUS</Text>
+              </View>
+            )}
+          </View>
+
+          {/* Footer */}
+          <View style={emergencyStyles.footer}>
+            <Text style={emergencyStyles.footerText}>
+              {t?.doc?.footer ?? 'Dokument generiert via Pet-Bewerbung.ch'}
+            </Text>
+            <View>
+              <View style={emergencyStyles.footerSign} />
+              <Text style={emergencyStyles.footerSignText}>{t?.doc?.digitalSign ?? 'Digital Signatur Halter'}</Text>
+            </View>
           </View>
 
           {/* Watermark overlay for unpaid premium templates */}
@@ -1419,7 +2797,7 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
                 </View>
                 <View style={gridStyles.detailRow}>
                   <Text style={gridStyles.detailLabel}>{t?.labels?.age || 'Alter'}</Text>
-                  <Text style={gridStyles.detailValue}>{data?.petAge ? `${data.petAge} Jahre` : '—'}</Text>
+                  <Text style={gridStyles.detailValue}>{data?.age ? `${data.age} ${t?.labels?.years || 'Jahre'}` : '—'}</Text>
                 </View>
                 <View style={gridStyles.detailRow}>
                   <Text style={gridStyles.detailLabel}>{t?.labels?.weight || 'Gewicht'}</Text>
@@ -1432,10 +2810,10 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
             <View style={gridStyles.rightColumn}>
               {/* Pet Name */}
               <View>
-                <Text style={gridStyles.petName}>{(data?.petName || 'NAME').toUpperCase()}</Text>
+                <Text style={gridStyles.petName}>{(data?.name || 'NAME').toUpperCase()}</Text>
                 <View style={gridStyles.petTagContainer}>
                   <View style={gridStyles.petTag}>
-                    <Text style={{ color: '#ffffff', fontSize: 8, fontWeight: 'bold' }}>Available for Rent</Text>
+                    <Text style={{ color: '#ffffff', fontSize: 8, fontWeight: 'bold' }}>Pet CV</Text>
                   </View>
                   <Text style={gridStyles.petLocation}>{data?.city || '—'}, Schweiz</Text>
                 </View>
@@ -1443,9 +2821,9 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
 
               {/* Description */}
               <View style={gridStyles.descriptionBox}>
-                <Text style={gridStyles.descriptionTitle}>{t?.doc?.descTitle || 'Charakterbeschreibung'}</Text>
+                <Text style={gridStyles.descriptionTitle}>{t?.doc?.sectionDescription || 'Charakterbeschreibung'}</Text>
                 <Text style={gridStyles.descriptionText}>
-                  {sanitizeForPdf(data?.description || data?.generatedText) || t?.doc?.defaultDescription || 'Hier könnte eine Beschreibung stehen...'}
+                  {sanitizeForPdf(data?.generatedText) || t?.doc?.defaultDescription || 'Hier könnte eine Beschreibung stehen...'}
                 </Text>
               </View>
 
@@ -1544,25 +2922,44 @@ const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, s
               </View>
 
               {/* References */}
-              {data?.previousLandlordName && (
+              {(data?.previousLandlordName || data?.emergencyContactName) && (
                 <View>
-                  <Text style={gridStyles.sectionTitleIcon}>💬 {t?.doc?.referenceTitle || 'Referenzen'}</Text>
-                  <View style={gridStyles.referenceBox}>
-                    <Text style={gridStyles.referenceQuote}>
-                      "{data?.landlordReference || t?.doc?.landlordQuote || 'War ein Vergnügen, dieses Tier im Gebäude zu haben.'}"
-                    </Text>
-                    <View style={gridStyles.referenceName}>
-                      <View style={gridStyles.referenceBar} />
-                      <Text style={gridStyles.referenceNameText}>{data.previousLandlordName}, Früherer Vermieter</Text>
-                    </View>
+                  <Text style={gridStyles.sectionTitleIcon}>📞 {t?.doc?.sectionReference || 'Referenzen'}</Text>
+                  <View style={{ flexDirection: 'row', gap: 12 }}>
+                    {data?.previousLandlordName && (
+                      <View style={[gridStyles.referenceBox, { flex: 1 }]}>
+                        <Text style={{ fontSize: 7, fontWeight: 'bold', color: gridColors.muted, textTransform: 'uppercase', marginBottom: 2 }}>{t?.labels?.previousLandlord || 'Früherer Vermieter'}</Text>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold' }}>{data.previousLandlordName}</Text>
+                        {data?.previousLandlordPhone && <Text style={{ fontSize: 8, color: gridColors.muted }}>{data.previousLandlordPhone}</Text>}
+                        {data?.previousDuration && <Text style={{ fontSize: 7, color: gridColors.muted, marginTop: 2 }}>{t?.labels?.previousDuration || 'Mietdauer'}: {data.previousDuration}</Text>}
+                      </View>
+                    )}
+                    {data?.emergencyContactName && (
+                      <View style={[gridStyles.referenceBox, { flex: 1 }]}>
+                        <Text style={{ fontSize: 7, fontWeight: 'bold', color: gridColors.muted, textTransform: 'uppercase', marginBottom: 2 }}>{t?.labels?.emergencyContact || 'Notfallkontakt'}</Text>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold' }}>{data.emergencyContactName}</Text>
+                        {data?.emergencyContactPhone && <Text style={{ fontSize: 8, color: gridColors.muted }}>{data.emergencyContactPhone}</Text>}
+                        {data?.emergencyContactRelation && <Text style={{ fontSize: 7, color: gridColors.muted, marginTop: 2 }}>{data.emergencyContactRelation}</Text>}
+                      </View>
+                    )}
                   </View>
                 </View>
               )}
             </View>
           </View>
 
-          {/* Footer */}
+          {/* Footer with QR */}
           <View style={gridStyles.footer}>
+            {/* QR Code */}
+            {qrUrl && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Image src={qrUrl} style={{ width: 60, height: 60 }} />
+                <View>
+                  <Text style={{ fontSize: 7, color: gridColors.muted, textTransform: 'uppercase' }}>{t?.doc?.qrLabel ?? 'Kontakt scannen'}</Text>
+                  <Text style={{ fontSize: 6, color: gridColors.muted }}>{t?.doc?.qrHint ?? 'vCard hinzufügen'}</Text>
+                </View>
+              </View>
+            )}
             <View>
               <Text style={gridStyles.footerBrand}>Pet-Bewerbung.ch</Text>
               <Text style={gridStyles.footerCopyright}>Swiss Standard Pet Resume • © {new Date().getFullYear()}</Text>

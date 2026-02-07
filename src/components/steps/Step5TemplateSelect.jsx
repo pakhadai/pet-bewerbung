@@ -15,10 +15,14 @@ const SwissDocument = lazy(() => import('../SwissDocument'));
 
 /** Display names for template cards */
 const TEMPLATE_LABELS = {
-  modern: 'The Modern',
   classic: 'The Classic',
+  modern: 'The Modern',
   compact: 'The Playful',
-  swiss: 'The Minimal'
+  swiss: 'The Minimal',
+  professional: 'The Professional',
+  emergency: 'Emergency Card',
+  friendly: 'The Friendly',
+  grid: 'Swiss Grid'
 };
 
 const TemplateSkeleton = () => (
@@ -72,17 +76,22 @@ const Step5TemplateSelect = React.memo(({
         </p>
       </div>
 
-      {/* Photo preview badge - shows current photo */}
-      {data.photo && (
-        <div className={`mb-6 flex items-center justify-center gap-3 px-4 py-3 rounded-xl border-2 hand-drawn-border ${cardCl}`}>
-          <img 
-            src={data.photo} 
-            alt="Pet" 
-            className="w-12 h-16 rounded-lg object-cover border-2 border-primary"
-          />
-          <span className={`text-sm font-medium ${textMuted}`}>
-            {t?.step5?.photoPreview ?? 'Ihr Foto wird in den Vorlagen angezeigt'}
-          </span>
+      {/* Info box about premium templates */}
+      {!isPremium && (
+        <div className={`mb-8 p-4 rounded-xl border-2 hand-drawn-border ${
+          darkMode ? 'bg-amber-900/20 border-amber-600/50' : 'bg-amber-50 border-amber-200'
+        }`}>
+          <div className="flex items-start gap-3">
+            <Crown size={20} className="text-amber-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className={`text-sm font-bold ${darkMode ? 'text-amber-300' : 'text-amber-800'}`}>
+                {t?.step5?.premiumInfo ?? 'Premium-Vorlagen können gewählt und in der Vorschau angezeigt werden.'}
+              </p>
+              <p className={`text-xs mt-1 ${darkMode ? 'text-amber-200/70' : 'text-amber-700'}`}>
+                {t?.step5?.premiumInfoSub ?? 'Die Zahlung erfolgt erst beim Download.'}
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -205,25 +214,6 @@ const Step5TemplateSelect = React.memo(({
           );
         })}
       </div>
-
-      {/* Info box about premium templates */}
-      {!isPremium && (
-        <div className={`mt-8 p-4 rounded-xl border-2 hand-drawn-border ${
-          darkMode ? 'bg-amber-900/20 border-amber-600/50' : 'bg-amber-50 border-amber-200'
-        }`}>
-          <div className="flex items-start gap-3">
-            <Crown size={20} className="text-amber-500 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className={`text-sm font-bold ${darkMode ? 'text-amber-300' : 'text-amber-800'}`}>
-                {t?.step5?.premiumInfo ?? 'Premium-Vorlagen können gewählt und in der Vorschau angezeigt werden.'}
-              </p>
-              <p className={`text-xs mt-1 ${darkMode ? 'text-amber-200/70' : 'text-amber-700'}`}>
-                {t?.step5?.premiumInfoSub ?? 'Die Zahlung erfolgt erst beim Download.'}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 });

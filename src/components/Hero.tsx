@@ -24,28 +24,28 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
       </h2>
 
       {/* Value Proposition: Problem & Solution */}
-      <div className={`w-full max-w-3xl my-1 p-5 rounded-2xl border-l-4 shadow-sm text-left transition-colors
+      <div className={`w-full max-w-4xl my-4 p-8 rounded-2xl border-l-4 shadow-lg text-left transition-colors
         ${darkMode ? 'bg-gray-800/60 border-primary border-r-0 border-y-0' : 'bg-white/80 border-primary border-r-0 border-y-0'}`}>
-        <div className="flex flex-col md:flex-row gap-4 items-start">
+        <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* Left: Problem */}
           <div className="flex-1">
-            <h3 className={`font-display font-bold text-lg mb-1.5 flex items-center gap-2 ${darkMode ? 'text-red-300' : 'text-red-500'}`}>
-              <span className="material-symbols-outlined text-xl">home_app_logo</span>
+            <h3 className={`font-display font-bold text-xl mb-3 flex items-center gap-2 ${darkMode ? 'text-red-300' : 'text-red-500'}`}>
+              <span className="material-symbols-outlined text-2xl">home_app_logo</span>
               {t?.hero?.problemTitle || "Wohnungssuche mit Haustier?"}
             </h3>
-            <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className={`text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {t?.hero?.problemDesc || "In der Schweiz ist der Wohnungsmarkt hart umkämpft. Viele Vermieter sind skeptisch gegenüber Haustieren."}
             </p>
           </div>
           {/* Divider (desktop only) */}
-          <div className={`hidden md:block w-px h-20 self-center ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
+          <div className={`hidden md:block w-px h-24 self-center ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
           {/* Right: Solution */}
           <div className="flex-1">
-            <h3 className={`font-display font-bold text-lg mb-1.5 flex items-center gap-2 ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
-              <span className="material-symbols-outlined text-xl">verified</span>
+            <h3 className={`font-display font-bold text-xl mb-3 flex items-center gap-2 ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+              <span className="material-symbols-outlined text-2xl">verified</span>
               {t?.hero?.solutionTitle || "Die Lösung: Das Pet-Dossier"}
             </h3>
-            <p className={`text-sm leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className={`text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {t?.hero?.solutionDesc || "Ein professioneller Lebenslauf belegt Versicherung & Erziehung. Erhöhen Sie Ihre Chancen auf die Traumwohnung massiv."}
             </p>
           </div>

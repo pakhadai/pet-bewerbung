@@ -116,13 +116,13 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="theme-card rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b theme-border">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="relative max-w-lg w-full rounded-2xl border-2 hand-drawn-border shadow-xl theme-card overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-gray-300 dark:border-gray-600">
           <h3 className="theme-text font-bold text-lg">Foto zuschneiden</h3>
           <button
             onClick={onCancel}
-            className="p-2 rounded-full theme-bg hover:bg-opacity-80 transition-all"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
           >
             <X size={20} className="theme-text-muted" />
           </button>
@@ -146,40 +146,37 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
           </ReactCrop>
         </div>
         
-        <div className="flex items-center justify-between p-4 border-t theme-border">
+        <div className="flex items-center justify-between p-4 border-t border-gray-300 dark:border-gray-600 gap-2">
           <button
             onClick={resetCrop}
             disabled={isProcessing}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg theme-bg hover:bg-opacity-80 transition-all theme-text-muted disabled:opacity-50"
+            className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border-2 hand-drawn-border theme-card hover:opacity-80 transition-all disabled:opacity-50 h-10"
           >
-            <RotateCcw size={18} />
-            Reset
+            <RotateCcw size={16} className="theme-text-muted" />
+            <span className="text-sm theme-text">Reset</span>
           </button>
           <button
             onClick={useFullImage}
             disabled={isProcessing}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border theme-border theme-text hover:bg-opacity-80 transition-all disabled:opacity-50"
+            className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border-2 hand-drawn-border theme-card hover:opacity-80 transition-all disabled:opacity-50 h-10 text-sm theme-text"
           >
-            {t?.labels?.useFullImage ?? 'Use full image'}
+            Ganzes Bild
           </button>
-          
-          <div className="flex gap-2">
-            <button
-              onClick={onCancel}
-              disabled={isProcessing}
-              className="px-4 py-2 rounded-lg border theme-border theme-text hover:bg-opacity-80 transition-all disabled:opacity-50"
-            >
-              Abbrechen
-            </button>
-            <button
-              onClick={getCroppedImg}
-              disabled={isProcessing || !completedCrop}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-all disabled:opacity-50"
-            >
-              <Check size={18} />
-              {t?.labels?.cropDone ?? 'Crop'}
-            </button>
-          </div>
+          <button
+            onClick={onCancel}
+            disabled={isProcessing}
+            className="flex items-center justify-center px-4 py-2.5 rounded-xl border-2 hand-drawn-border theme-card hover:opacity-80 transition-all disabled:opacity-50 h-10 text-sm theme-text"
+          >
+            Abbrechen
+          </button>
+          <button
+            onClick={getCroppedImg}
+            disabled={isProcessing || !completedCrop}
+            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-white hover:bg-primary-dark transition-all disabled:opacity-50 h-10 text-sm font-medium hand-drawn-button"
+          >
+            <Check size={16} />
+            Fertig
+          </button>
         </div>
       </div>
     </div>

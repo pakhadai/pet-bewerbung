@@ -54,11 +54,15 @@ const INITIAL_DATA = {
     // Fonts
     headerFont: 'helvetica',      // Heading font family
     bodyFont: 'helvetica',        // Body text font family
+    headerFontSize: 9,            // Heading font size (px for HTML, pt for PDF)
+    bodyFontSize: 10,             // Body font size (px for HTML, pt for PDF)
     // Text styles
     headerBold: true,             // Bold headers
     headerItalic: false,          // Italic headers
     bodyBold: false,              // Bold body text
     bodyItalic: false,            // Italic body text
+    // Layout
+    layoutOrder: ['photo', 'owner', 'details', 'behavior', 'description', 'legal', 'reference'],
     // Visibility
     hiddenSections: []            // Sections to hide
   }

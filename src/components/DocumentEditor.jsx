@@ -85,6 +85,17 @@ const FONT_OPTIONS = [
   { id: 'courier', name: 'Courier New', family: '"Courier New", monospace' },
 ];
 
+// Font size options
+const FONT_SIZE_OPTIONS = [
+  { value: 7, label: '7px' },
+  { value: 8, label: '8px' },
+  { value: 9, label: '9px' },
+  { value: 10, label: '10px' },
+  { value: 11, label: '11px' },
+  { value: 12, label: '12px' },
+  { value: 14, label: '14px' },
+];
+
 // Default style values
 const DEFAULT_STYLE = {
   headerColor: '#4a148c',
@@ -93,6 +104,8 @@ const DEFAULT_STYLE = {
   accentColor: '#f3e5f5',
   headerFont: 'helvetica',
   bodyFont: 'helvetica',
+  headerFontSize: 9,
+  bodyFontSize: 10,
   headerBold: true,
   headerItalic: false,
   bodyBold: false,
@@ -186,6 +199,38 @@ const FontSelector = ({ label, value, onChange, options }) => (
         </option>
       ))}
     </select>
+  </div>
+);
+
+// Font size selector
+const FontSizeSelector = ({ label, value, onChange }) => (
+  <div className="space-y-1.5">
+    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+      {label}
+    </label>
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={() => {
+          const idx = FONT_SIZE_OPTIONS.findIndex(o => o.value === value);
+          if (idx > 0) onChange(FONT_SIZE_OPTIONS[idx - 1].value);
+        }}
+        className="size-8 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300"
+      >
+        <span className="material-symbols-outlined text-sm">remove</span>
+      </button>
+      <span className="text-sm font-mono text-gray-700 dark:text-gray-300 w-10 text-center">{value}px</span>
+      <button
+        type="button"
+        onClick={() => {
+          const idx = FONT_SIZE_OPTIONS.findIndex(o => o.value === value);
+          if (idx < FONT_SIZE_OPTIONS.length - 1) onChange(FONT_SIZE_OPTIONS[idx + 1].value);
+        }}
+        className="size-8 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300"
+      >
+        <span className="material-symbols-outlined text-sm">add</span>
+      </button>
+    </div>
   </div>
 );
 
@@ -288,6 +333,8 @@ const DocumentEditor = ({
       textColor: style.textColor,
       headerFont: style.headerFont,
       bodyFont: style.bodyFont,
+      headerFontSize: style.headerFontSize,
+      bodyFontSize: style.bodyFontSize,
       headerBold: style.headerBold,
       headerItalic: style.headerItalic,
       bodyBold: style.bodyBold,
@@ -447,6 +494,7 @@ const DocumentEditor = ({
                   onItalicChange={(v) => updateStyle('headerItalic', v)}
                   t={t}
                 />
+                <FontSizeSelector label={tr.headerFontSize ?? (t?.editor?.headerFontSize ?? 'Überschriften-Größe')} value={style.headerFontSize} onChange={(v) => updateStyle('headerFontSize', v)} />
                 <FontSelector label={tr.bodyFont} value={style.bodyFont} onChange={(v) => updateStyle('bodyFont', v)} options={FONT_OPTIONS} />
                 <TextStyleButtons
                   label={tr.bodyStyle}
@@ -456,6 +504,7 @@ const DocumentEditor = ({
                   onItalicChange={(v) => updateStyle('bodyItalic', v)}
                   t={t}
                 />
+                <FontSizeSelector label={tr.bodyFontSize ?? (t?.editor?.bodyFontSize ?? 'Text-Größe')} value={style.bodyFontSize} onChange={(v) => updateStyle('bodyFontSize', v)} />
               </div>
             </section>
 
@@ -525,7 +574,7 @@ const DocumentEditor = ({
               className="shadow-2xl origin-top transition-transform"
               style={{ transform: `scale(${zoom / 100})` }}
             >
-              <SwissDocument 
+              <SwissDocument
                 data={{
                   ...data,
                   customDesign: {
@@ -536,15 +585,17 @@ const DocumentEditor = ({
                     textColor: style.textColor,
                     headerFont: style.headerFont,
                     bodyFont: style.bodyFont,
+                    headerFontSize: style.headerFontSize,
+                    bodyFontSize: style.bodyFontSize,
                     headerBold: style.headerBold,
                     headerItalic: style.headerItalic,
                     bodyBold: style.bodyBold,
                     bodyItalic: style.bodyItalic,
                     hiddenSections: style.hiddenSections,
                   }
-                }} 
-                t={t} 
-                templateType={selectedTemplate || 'classic'} 
+                }}
+                t={t}
+                templateType={selectedTemplate || 'classic'}
               />
             </div>
           </div>
