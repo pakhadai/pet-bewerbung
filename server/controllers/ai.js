@@ -8,10 +8,13 @@ const {
   GEMINI_API_KEY,
   AI_MODELS,
   AI_MAX_CHARS,
+  AI_MODEL_TIMEOUT_MS,
+  AI_MIN_CHARS,
   AI_RATE_LIMIT_FREE,
   isProduction
 } = require('../config');
 const { sanitizePetData, sanitizeText, sanitizeTone } = require('../utils/sanitize');
+const { validateDeviceId } = require('../utils/validation');
 const {
   checkAIRateLimit,
   refundRateLimit,
@@ -22,12 +25,6 @@ const { verifyPremiumToken } = require('../middleware/premium');
 
 // Initialize Gemini AI
 const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
-
-// Per-model timeout (ms) — skip hanging models fast
-const MODEL_TIMEOUT_MS = 12000;
-
-// Min chars for generated text
-const AI_MIN_CHARS = 450;
 
 // Tone instructions (extended for premium)
 const TONE_INSTRUCTIONS = {
@@ -286,6 +283,11 @@ async function generatePetDescription(req, res) {
     return res.status(400).json({ error: 'Invalid pet name after sanitization' });
   }
 
+  // Validate device ID if premium token is provided
+  if (premiumToken && deviceId && !validateDeviceId(deviceId)) {
+    return res.status(400).json({ error: 'Invalid device ID format' });
+  }
+
   // CRITICAL: Pass deviceId to properly validate premium token
   const rateCheck = await checkAIRateLimit(clientIP, premiumToken, deviceId);
 
@@ -382,6 +384,11 @@ async function improveText(req, res) {
 
   if (!premiumToken || !deviceId) {
     return res.status(401).json({ error: 'Premium token required', code: 'NO_TOKEN' });
+  }
+
+  // Validate device ID format
+  if (!validateDeviceId(deviceId)) {
+    return res.status(400).json({ error: 'Invalid device ID format' });
   }
 
   const verification = await verifyPremiumToken(premiumToken, deviceId);

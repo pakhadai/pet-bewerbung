@@ -129,7 +129,21 @@ function verifyCsrfToken(req, res, next) {
   }
 
   // Verify token using constant-time comparison
-  if (!crypto.timingSafeEqual(Buffer.from(clientToken), Buffer.from(stored.token))) {
+  const clientBuffer = Buffer.from(clientToken);
+  const storedBuffer = Buffer.from(stored.token);
+
+  // Check buffer lengths before comparison (timingSafeEqual requires equal lengths)
+  if (clientBuffer.length !== storedBuffer.length) {
+    if (!isProduction) {
+      console.warn(`⚠️  CSRF token length mismatch for session ${sessionId}`);
+    }
+    return res.status(403).json({
+      error: 'Invalid CSRF token',
+      message: 'CSRF token validation failed',
+    });
+  }
+
+  if (!crypto.timingSafeEqual(clientBuffer, storedBuffer)) {
     if (!isProduction) {
       console.warn(`⚠️  CSRF token mismatch for ${req.method} ${req.path}`);
     }

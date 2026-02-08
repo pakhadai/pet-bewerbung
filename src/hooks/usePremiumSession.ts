@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { TEMPLATE_OPTIONS, PREMIUM_PRICE_CHF } from '../constants';
+import API_ENDPOINTS from '../config';
 
 const PREMIUM_TOKEN_KEY = 'pet-bewerbung-premium-token';
 const PREMIUM_EXPIRY_KEY = 'pet-bewerbung-premium-expiry';
@@ -20,11 +21,11 @@ export interface UsePremiumSessionReturn {
   /** Restore status */
   restoreStatus: string | null;
   /** Activate premium after payment */
-  activate: (paymentId: string, deviceId: string) => Promise<boolean>;
+  activate: (paymentId: string, deviceId: string, csrfToken?: string | null) => Promise<boolean>;
   /** Clear premium data */
   clear: () => void;
   /** Verify current token with server */
-  verifyToken: (deviceId: string) => Promise<boolean>;
+  verifyToken: (deviceId: string, csrfToken?: string | null) => Promise<boolean>;
   /** Check if template is accessible (premium check) */
   isTemplateAccessible: (templateId: string) => boolean;
   /** Get template info with premium status */
@@ -42,11 +43,17 @@ export interface UsePremiumSessionReturn {
  * @returns Premium state and handlers
  */
 export const usePremiumSession = (): UsePremiumSessionReturn => {
+  // Race condition guard for premium activation
+  const activatingRef = useRef(false);
+
   // Load token and expiry from localStorage
   const [premiumToken, setPremiumToken] = useState<string | null>(() => {
     try {
       return localStorage.getItem(PREMIUM_TOKEN_KEY) || null;
     } catch (e) {
+      if (import.meta.env.DEV) {
+        console.error('Failed to load premium token from localStorage:', e);
+      }
       return null;
     }
   });
@@ -56,6 +63,9 @@ export const usePremiumSession = (): UsePremiumSessionReturn => {
       const saved = localStorage.getItem(PREMIUM_EXPIRY_KEY);
       return saved ? parseInt(saved, 10) : null;
     } catch (e) {
+      if (import.meta.env.DEV) {
+        console.error('Failed to load premium expiry from localStorage:', e);
+      }
       return null;
     }
   });
@@ -84,7 +94,9 @@ export const usePremiumSession = (): UsePremiumSessionReturn => {
       localStorage.removeItem(PREMIUM_TOKEN_KEY);
       localStorage.removeItem(PREMIUM_EXPIRY_KEY);
     } catch (e) {
-      // ignore
+      if (import.meta.env.DEV) {
+        console.error('Failed to clear premium data from localStorage:', e);
+      }
     }
     setPremiumToken(null);
     setTokenExpiry(null);
@@ -110,7 +122,14 @@ export const usePremiumSession = (): UsePremiumSessionReturn => {
    * Activate premium after successful payment
    * Accepts either sessionId (Checkout) or paymentIntentId (Payment Elements)
    */
-  const activatePremium = useCallback(async (paymentId: string, deviceId: string): Promise<boolean> => {
+  const activatePremium = useCallback(async (paymentId: string, deviceId: string, csrfToken?: string | null): Promise<boolean> => {
+    // Race condition guard - prevent multiple simultaneous activations
+    if (activatingRef.current) {
+      console.warn('Premium activation already in progress');
+      return false;
+    }
+
+    activatingRef.current = true;
     setIsVerifying(true);
     try {
       // Determine the type of ID and send appropriately
@@ -125,9 +144,16 @@ export const usePremiumSession = (): UsePremiumSessionReturn => {
         body.paymentIntentId = paymentId;
       }
 
-      const response = await fetch('/api/activate-premium', {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+
+      const response = await fetch(API_ENDPOINTS.activatePremium, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(body)
       });
 
@@ -140,7 +166,9 @@ export const usePremiumSession = (): UsePremiumSessionReturn => {
           localStorage.setItem(PREMIUM_TOKEN_KEY, data.token);
           localStorage.setItem(PREMIUM_EXPIRY_KEY, String(expiry));
         } catch (e) {
-          // ignore
+          if (import.meta.env.DEV) {
+            console.error('Failed to save premium data to localStorage:', e);
+          }
         }
 
         setPremiumToken(data.token);
@@ -159,24 +187,32 @@ export const usePremiumSession = (): UsePremiumSessionReturn => {
       }
     } catch (e) {
       if (import.meta.env.DEV) {
-        console.warn('Premium activation error:', e);
+        console.error('Premium activation error:', e);
       }
       return false;
     } finally {
       setIsVerifying(false);
+      activatingRef.current = false;
     }
   }, []);
 
   /**
    * Verify current token with server
    */
-  const verifyToken = useCallback(async (deviceId: string): Promise<boolean> => {
+  const verifyToken = useCallback(async (deviceId: string, csrfToken?: string | null): Promise<boolean> => {
     if (!premiumToken) return false;
 
     try {
-      const response = await fetch('/api/verify-premium', {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+
+      const response = await fetch(API_ENDPOINTS.verifyPremium, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ token: premiumToken, deviceId })
       });
 
@@ -194,12 +230,17 @@ export const usePremiumSession = (): UsePremiumSessionReturn => {
         try {
           localStorage.setItem(PREMIUM_EXPIRY_KEY, String(newExpiry));
         } catch (e) {
-          // ignore
+          if (import.meta.env.DEV) {
+            console.error('Failed to save updated premium expiry:', e);
+          }
         }
       }
 
       return true;
     } catch (e) {
+      if (import.meta.env.DEV) {
+        console.error('Premium token verification error:', e);
+      }
       return false;
     }
   }, [premiumToken, clearPremium]);

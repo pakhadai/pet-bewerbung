@@ -123,22 +123,17 @@ export const useFormData = (defaultLang: string = 'de'): UseFormDataReturn => {
   useEffect(() => {
     if (isLoading) return; // Don't save while loading
 
-    // Clear previous timeout
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
     // Debounce save by 500ms to avoid excessive writes
-    saveTimeoutRef.current = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       saveDataToStorage(data).catch(err => {
         console.error('Failed to save form data:', err);
       });
     }, 500);
 
+    saveTimeoutRef.current = timeoutId;
+
     return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
+      clearTimeout(timeoutId); // Use closure value, not ref
     };
   }, [data, isLoading]);
 
@@ -177,7 +172,9 @@ export const useFormData = (defaultLang: string = 'de'): UseFormDataReturn => {
       await storage.remove('form-data');
       await storage.remove('photo-blob');
     } catch (e) {
-      // ignore
+      if (import.meta.env.DEV) {
+        console.error('Failed to clear storage during form reset:', e);
+      }
     }
   }, [data.lang]);
 

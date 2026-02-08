@@ -32,6 +32,8 @@ export type { UseToastReturn, Toast, ToastType } from './useToast';
 export { useDeviceId } from './useDeviceId';
 export type { UseDeviceIdReturn } from './useDeviceId';
 
+export { useCsrf } from './useCsrf';
+
 // Additional utility hooks
 export { useTemplateSelection } from './useTemplateSelection';
 export type { UseTemplateSelectionReturn } from './useTemplateSelection';

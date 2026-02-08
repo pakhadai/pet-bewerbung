@@ -4,11 +4,12 @@
  */
 
 const Redis = require('ioredis');
-const { 
-  isProduction, 
-  REDIS_URL, 
-  AI_RATE_LIMIT_FREE, 
-  AI_RATE_WINDOW 
+const {
+  isProduction,
+  REDIS_URL,
+  AI_RATE_LIMIT_FREE,
+  AI_RATE_WINDOW,
+  CLEANUP_INTERVAL_MS
 } = require('../config');
 
 // Redis client
@@ -125,8 +126,8 @@ function cleanupInMemoryLimiter() {
   }
 }
 
-// Run cleanup every 5 minutes
-setInterval(cleanupInMemoryLimiter, 5 * 60 * 1000);
+// Run cleanup periodically
+setInterval(cleanupInMemoryLimiter, CLEANUP_INTERVAL_MS);
 
 /**
  * Check rate limit using Redis
@@ -265,8 +266,25 @@ function isRedisAvailable() {
   return redisAvailable;
 }
 
+/**
+ * Close Redis connection (for graceful shutdown)
+ * @returns {Promise<void>}
+ */
+async function closeRedis() {
+  if (redis) {
+    try {
+      await redis.quit();
+      redisAvailable = false;
+      redis = null;
+    } catch (err) {
+      console.error('Error closing Redis connection:', err.message);
+    }
+  }
+}
+
 module.exports = {
   initRedis,
+  closeRedis,
   checkAIRateLimit,
   refundRateLimit,
   getRateLimitStatus,

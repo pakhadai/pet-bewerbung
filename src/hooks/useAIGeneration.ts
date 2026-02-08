@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import API_ENDPOINTS from '../config';
 
 const AI_GENERATIONS_KEY = 'pet-bewerbung-ai-generations';
 const PREMIUM_AI_GENERATIONS_KEY = 'pet-bewerbung-premium-ai-generations';
@@ -62,7 +63,7 @@ export interface UseAIGenerationReturn {
   /** Reset generation count to 0 */
   resetGenerationCount: () => void;
   /** Generate pet description via API */
-  generatePetDescription: (petData: any, isPremium: boolean) => Promise<string>;
+  generatePetDescription: (petData: any, isPremium: boolean, csrfToken?: string | null) => Promise<string>;
 }
 
 /**
@@ -127,11 +128,18 @@ export const useAIGeneration = (isPremium: boolean = false): UseAIGenerationRetu
    * Generate pet description via API
    * Handles rate limiting, error messages, and generation count
    */
-  const generatePetDescription = useCallback(async (petData: any, premium: boolean): Promise<string> => {
+  const generatePetDescription = useCallback(async (petData: any, premium: boolean, csrfToken?: string | null): Promise<string> => {
     try {
-      const response = await fetch('/api/generate-pet-description', {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+
+      const response = await fetch(API_ENDPOINTS.generatePetDescription, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           petData,
           isPremium: premium

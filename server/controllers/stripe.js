@@ -11,12 +11,13 @@ const {
   FRONTEND_URL,
   isProduction 
 } = require('../config');
-const { 
-  createPremiumToken, 
-  generateRestoreToken, 
+const {
+  createPremiumToken,
+  generateRestoreToken,
   verifyRestoreToken,
-  PREMIUM_DURATION_HOURS 
+  PREMIUM_DURATION_HOURS
 } = require('../middleware/premium');
+const { validateDeviceId } = require('../utils/validation');
 
 // Initialize Stripe
 const stripe = STRIPE_SECRET_KEY ? Stripe(STRIPE_SECRET_KEY) : null;
@@ -318,11 +319,16 @@ function handleWebhook(req, res) {
 async function activatePremium(req, res) {
   const { sessionId, paymentIntentId, deviceId } = req.body || {};
   const paymentId = sessionId || paymentIntentId;
-  
+
   if (!paymentId || !deviceId) {
     return res.status(400).json({ error: 'Payment ID and Device ID required' });
   }
-  
+
+  // Validate device ID format
+  if (!validateDeviceId(deviceId)) {
+    return res.status(400).json({ error: 'Invalid device ID format' });
+  }
+
   if (!STRIPE_SECRET_KEY) {
     return res.status(400).json({ error: 'Stripe not configured' });
   }

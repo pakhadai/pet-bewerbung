@@ -149,14 +149,61 @@ app.use((err, req, res, next) => {
 });
 
 // ============================================
+// Global Unhandled Rejection Handler
+// ============================================
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ FATAL: Unhandled Rejection at:', promise);
+  console.error('❌ Reason:', reason);
+  console.error('Stack trace:', reason?.stack || 'No stack trace available');
+  // Exit process to allow restart by process manager
+  process.exit(1);
+});
+
+// ============================================
+// Graceful Shutdown Handler
+// ============================================
+let server;
+const shutdown = async (signal) => {
+  console.log(`\n${signal} received, shutting down gracefully...`);
+
+  // Close HTTP server
+  if (server) {
+    server.close(() => {
+      console.log('✅ HTTP server closed');
+    });
+  }
+
+  // Close Redis connection
+  try {
+    const { closeRedis } = require('./middleware/rateLimit');
+    await closeRedis();
+    console.log('✅ Redis connection closed');
+  } catch (err) {
+    console.error('⚠️  Error closing Redis:', err.message);
+  }
+
+  // Exit process
+  process.exit(0);
+};
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
+
+// ============================================
 // Server Startup
 // ============================================
-initRedis().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Pet-Bewerbung server running on http://localhost:${PORT}`);
-    console.log(`📍 Environment: ${isProduction ? 'PRODUCTION' : 'development'}`);
-    if (!isProduction) {
-      console.log(`📋 Allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
-    }
+initRedis()
+  .then(() => {
+    server = app.listen(PORT, () => {
+      console.log(`🚀 Pet-Bewerbung server running on http://localhost:${PORT}`);
+      console.log(`📍 Environment: ${isProduction ? 'PRODUCTION' : 'development'}`);
+      if (!isProduction) {
+        console.log(`📋 Allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
+      }
+    });
+  })
+  .catch((err) => {
+    console.error('❌ FATAL: Failed to initialize server:', err.message);
+    console.error('Stack trace:', err.stack);
+    process.exit(1);
   });
-});

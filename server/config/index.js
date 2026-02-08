@@ -5,9 +5,11 @@
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// JWT Configuration - CRITICAL: Must be set in production
-if (isProduction && !process.env.JWT_SECRET) {
-  console.error('❌ CRITICAL: JWT_SECRET environment variable is required in production!');
+// JWT Configuration - CRITICAL: Must be set in ALL environments
+if (!process.env.JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET environment variable is REQUIRED in ALL environments!');
+  console.error('   Generate a secure secret: openssl rand -base64 32');
+  console.error('   Add to .env file: JWT_SECRET=your_generated_secret');
   process.exit(1);
 }
 if (isProduction && !process.env.STRIPE_WEBHOOK_SECRET) {
@@ -15,9 +17,7 @@ if (isProduction && !process.env.STRIPE_WEBHOOK_SECRET) {
   process.exit(1);
 }
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'dev-secret-change-in-production-min-32-chars!'
-);
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 const PREMIUM_DURATION_HOURS = parseInt(process.env.PREMIUM_DURATION_HOURS, 10) || 2;
 
 // Rate Limiting
@@ -25,6 +25,13 @@ const AI_RATE_LIMIT = parseInt(process.env.AI_RATE_LIMIT, 10) || 3;
 const AI_RATE_LIMIT_FREE = parseInt(process.env.AI_RATE_LIMIT_FREE, 10) || 1;
 const AI_RATE_WINDOW = 24 * 60 * 60; // 24 hours in seconds
 const AI_MAX_CHARS = 470;
+
+// AI Model Configuration
+const AI_MODEL_TIMEOUT_MS = parseInt(process.env.AI_MODEL_TIMEOUT_MS, 10) || 12000; // 12 seconds
+const AI_MIN_CHARS = parseInt(process.env.AI_MIN_CHARS, 10) || 450;
+
+// Cleanup intervals
+const CLEANUP_INTERVAL_MS = parseInt(process.env.CLEANUP_INTERVAL_MS, 10) || 300000; // 5 minutes
 
 // Redis
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
@@ -84,7 +91,10 @@ module.exports = {
   AI_RATE_LIMIT_FREE,
   AI_RATE_WINDOW,
   AI_MAX_CHARS,
+  AI_MODEL_TIMEOUT_MS,
+  AI_MIN_CHARS,
   AI_MODELS,
+  CLEANUP_INTERVAL_MS,
   REDIS_URL,
   STRIPE_SECRET_KEY,
   STRIPE_PUBLISHABLE_KEY,

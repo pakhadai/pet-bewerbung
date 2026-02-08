@@ -16,7 +16,7 @@ import AppContainer from './AppContainer';
 import API_ENDPOINTS from '../config';
 import compressImage, { toJpegDataUrl } from '../utils/imageCompression';
 import { generateQrDataUrl, getQrContent } from '../utils/qrCode';
-import { useFormWizard, useToast, usePremium, useAIGenerations, usePaymentFlow } from '../hooks';
+import { useFormWizard, useToast, usePremium, useAIGenerations, usePaymentFlow, useCsrf } from '../hooks';
 
 const AppContent: React.FC = () => {
   const { data, updateData } = useFormWizard();
@@ -24,6 +24,7 @@ const AppContent: React.FC = () => {
   const { isPremium, premiumToken, deviceId } = usePremium();
   const { canGenerate: canGenerateAI, incrementGeneration } = useAIGenerations(isPremium);
   const { donationAmount } = usePaymentFlow();
+  const { token: csrfToken } = useCsrf();
 
   const [isGenerating, setIsGenerating] = useState(false);
   const prevLangRef = useRef(data.lang);
@@ -101,9 +102,16 @@ const AppContent: React.FC = () => {
         vaccinated: data.hasVaccination || false,
       };
 
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+
       const res = await fetch(API_ENDPOINTS.generatePetDescription, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           petData,
           lang: data.lang,
