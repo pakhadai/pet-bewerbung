@@ -70,7 +70,8 @@ export async function createCheckoutSession(
       }
 
       return { error: errorMessage, ...errorJson };
-    } catch {
+    } catch (_parseErr) {
+      // Server returned non-JSON error response
       errorMessage = errorText.substring(0, 100) || errorMessage;
       if (import.meta.env.DEV) {
         console.error('Checkout session error (non-JSON):', res.status, errorText.substring(0, 200));

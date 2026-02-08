@@ -6,6 +6,8 @@
 const isProduction = process.env.NODE_ENV === 'production';
 
 // JWT Configuration - CRITICAL: Must be set in ALL environments
+// NOTE: Using console.error here instead of logger to avoid circular dependency
+// (config is imported by logger, so logger can't be used here)
 if (!process.env.JWT_SECRET) {
   console.error('❌ CRITICAL: JWT_SECRET environment variable is REQUIRED in ALL environments!');
   console.error('   Generate a secure secret: openssl rand -base64 32');

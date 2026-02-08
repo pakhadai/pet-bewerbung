@@ -8,15 +8,19 @@ const express = require('express');
 const cors = require('cors');
 
 // Import configuration
-const { 
-  PORT, 
-  isProduction, 
-  ALLOWED_ORIGINS 
+const {
+  PORT,
+  isProduction,
+  ALLOWED_ORIGINS
 } = require('./config');
 
+// Import logger
+const { logger } = require('./utils/logger');
+
 // Import middleware
-const { initRedis } = require('./middleware/rateLimit');
+const { initRedis, getRedisClient } = require('./middleware/rateLimit');
 const {
+  initCsrfRedis,
   provideCsrfToken,
   smartCsrfProtection,
   getCsrfTokenEndpoint
@@ -38,7 +42,7 @@ app.use(cors({
     // SECURITY NOTE: This allows non-browser clients (no CORS protection)
     if (!origin) {
       if (!isProduction) {
-        console.log('ℹ️  Request without Origin header (likely non-browser client)');
+        logger.debug('Request without Origin header (likely non-browser client)');
       }
       // In production, consider blocking or rate-limiting no-origin requests
       // for sensitive endpoints via additional middleware
@@ -51,7 +55,7 @@ app.use(cors({
     }
 
     // Block unrecognized origins
-    console.warn(`⚠️  CORS blocked origin: ${origin}`);
+    logger.warn(`CORS blocked origin: ${origin}`);
     callback(new Error('CORS policy: Origin not allowed'));
   },
   credentials: true,
@@ -69,12 +73,13 @@ app.use(smartCsrfProtection);
 // ============================================
 // Body Parsing Middleware
 // JSON parser for all routes except webhook (webhook needs raw body)
+// SECURITY: Explicit size limits prevent DoS attacks via large payloads
 // ============================================
 app.use((req, res, next) => {
   if (req.originalUrl === '/webhook') {
     next();
   } else {
-    express.json()(req, res, next);
+    express.json({ limit: '1mb' })(req, res, next);
   }
 });
 
@@ -82,11 +87,26 @@ app.use((req, res, next) => {
 // Health Check
 // ============================================
 app.get('/', (req, res) => {
-  res.json({
+  const { isRedisAvailable } = require('./middleware/rateLimit');
+  const health = {
     status: 'ok',
     service: 'pet-bewerbung-server',
-    environment: isProduction ? 'production' : 'development'
-  });
+    environment: isProduction ? 'production' : 'development',
+    timestamp: new Date().toISOString(),
+    uptime: Math.floor(process.uptime()),
+    checks: {
+      redis: isRedisAvailable() ? 'ok' : 'unavailable',
+      stripe: !!require('./config').STRIPE_SECRET_KEY ? 'configured' : 'not_configured',
+      ai: !!require('./config').GEMINI_API_KEY ? 'configured' : 'not_configured',
+    }
+  };
+
+  if (health.checks.redis === 'unavailable' && isProduction) {
+    health.status = 'degraded';
+  }
+
+  const statusCode = health.status === 'ok' ? 200 : 503;
+  res.status(statusCode).json(health);
 });
 
 // ============================================
@@ -102,7 +122,7 @@ app.post('/create-payment-intent', stripe.createPaymentIntent);
 app.get('/stripe-config', stripe.getStripeConfig);
 app.get('/checkout-session/:id', stripe.getCheckoutSession);
 app.get('/payment-status/:id', stripe.getPaymentStatus);
-app.post('/webhook', express.raw({ type: 'application/json' }), stripe.handleWebhook);
+app.post('/webhook', express.raw({ type: 'application/json', limit: '2mb' }), stripe.handleWebhook);
 
 // Premium activation and restoration
 app.post('/activate-premium', stripe.activatePremium);
@@ -129,11 +149,11 @@ app.post('/verify-premium', async (req, res) => {
   }
   
   const result = await verifyPremiumToken(token, deviceId);
-  
+
   if (!isProduction && !result.valid) {
-    console.log(`❌ Premium verification failed: ${result.error}`);
+    logger.debug(`Premium verification failed: ${result.error}`);
   }
-  
+
   res.json(result);
 });
 
@@ -144,7 +164,7 @@ app.use((err, req, res, next) => {
   if (err.message === 'CORS policy: Origin not allowed') {
     return res.status(403).json({ error: 'CORS not allowed' });
   }
-  console.error('Server error:', err.message);
+  logger.error('Server error', { message: err.message, stack: err.stack });
   res.status(500).json({ error: 'Internal server error' });
 });
 
@@ -152,9 +172,11 @@ app.use((err, req, res, next) => {
 // Global Unhandled Rejection Handler
 // ============================================
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ FATAL: Unhandled Rejection at:', promise);
-  console.error('❌ Reason:', reason);
-  console.error('Stack trace:', reason?.stack || 'No stack trace available');
+  logger.error('FATAL: Unhandled Rejection', {
+    promise: String(promise),
+    reason: String(reason),
+    stack: reason?.stack || 'No stack trace available'
+  });
   // Exit process to allow restart by process manager
   process.exit(1);
 });
@@ -164,22 +186,33 @@ process.on('unhandledRejection', (reason, promise) => {
 // ============================================
 let server;
 const shutdown = async (signal) => {
-  console.log(`\n${signal} received, shutting down gracefully...`);
+  logger.info(`${signal} received, shutting down gracefully...`);
 
   // Close HTTP server
   if (server) {
     server.close(() => {
-      console.log('✅ HTTP server closed');
+      logger.info('HTTP server closed');
     });
   }
 
-  // Close Redis connection
+  // Stop cleanup intervals
+  try {
+    const { stopCleanup: stopCsrfCleanup } = require('./middleware/csrf');
+    stopCsrfCleanup();
+    const { stopCleanup: stopRequestLimitsCleanup } = require('./middleware/requestLimits');
+    stopRequestLimitsCleanup();
+    logger.info('Cleanup intervals stopped');
+  } catch (err) {
+    logger.error('Error stopping cleanup intervals', { message: err.message });
+  }
+
+  // Close Redis connection (also stops rate limit cleanup interval)
   try {
     const { closeRedis } = require('./middleware/rateLimit');
     await closeRedis();
-    console.log('✅ Redis connection closed');
+    logger.info('Redis connection closed');
   } catch (err) {
-    console.error('⚠️  Error closing Redis:', err.message);
+    logger.error('Error closing Redis', { message: err.message });
   }
 
   // Exit process
@@ -194,16 +227,22 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 // ============================================
 initRedis()
   .then(() => {
+    // Share Redis client with CSRF module for production token storage
+    const redisClient = getRedisClient();
+    initCsrfRedis(redisClient);
+
     server = app.listen(PORT, () => {
-      console.log(`🚀 Pet-Bewerbung server running on http://localhost:${PORT}`);
-      console.log(`📍 Environment: ${isProduction ? 'PRODUCTION' : 'development'}`);
+      logger.info(`Pet-Bewerbung server running on http://localhost:${PORT}`);
+      logger.info(`Environment: ${isProduction ? 'PRODUCTION' : 'development'}`);
       if (!isProduction) {
-        console.log(`📋 Allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
+        logger.debug(`Allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
       }
     });
   })
   .catch((err) => {
-    console.error('❌ FATAL: Failed to initialize server:', err.message);
-    console.error('Stack trace:', err.stack);
+    logger.error('FATAL: Failed to initialize server', {
+      message: err.message,
+      stack: err.stack
+    });
     process.exit(1);
   });

@@ -194,7 +194,8 @@ const AppContent: React.FC = () => {
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
-    } catch {
+    } catch (err) {
+      if (import.meta.env.DEV) console.warn('Logo fetch failed:', err);
       return null;
     }
   };
@@ -310,7 +311,9 @@ const AppContent: React.FC = () => {
             photoUrl = await toJpegDataUrl(photoUrl);
           }
           pdfData = { ...data, photo: photoUrl };
-        } catch {
+        } catch (err) {
+          // Photo conversion failed - PDF will render without photo
+          if (import.meta.env.DEV) console.warn('Photo conversion failed for PDF:', err);
           pdfData = { ...data, photo: null };
         }
       }
@@ -403,7 +406,9 @@ const AppContent: React.FC = () => {
           photoUrl = await toJpegDataUrl(photoUrl);
         }
         pdfData = { ...data, photo: photoUrl };
-      } catch {
+      } catch (err) {
+        // Photo conversion failed for ZIP template - continue without photo
+        if (import.meta.env.DEV) console.warn('Photo conversion failed for template PDF:', err);
         pdfData = { ...data, photo: null };
       }
     }
@@ -498,7 +503,8 @@ const AppContent: React.FC = () => {
         try {
           const errorJson = JSON.parse(errorText);
           errorMessage = errorJson.error || errorJson.details || errorMessage;
-        } catch {
+        } catch (_parseErr) {
+          // Server returned non-JSON error response - use raw text
           errorMessage = errorText.substring(0, 100) || errorMessage;
         }
         showToast(errorMessage || 'Failed to create checkout session', 'error');
@@ -533,8 +539,6 @@ const AppContent: React.FC = () => {
       onDownloadAllTemplates={handleDownloadAllTemplates}
       onGenerateText={generateText}
       onDonateMethod={handleDonateMethod}
-      onBuyPremium={() => {}}
-      onOpenBuilder={() => {}}
     />
   );
 };

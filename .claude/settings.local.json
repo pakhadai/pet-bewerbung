@@ -24,7 +24,10 @@
       "Bash(cat:*)",
       "Bash(git restore:*)",
       "Bash(npm run dev:all:*)",
-      "Bash(git check-ignore:*)"
+      "Bash(git check-ignore:*)",
+      "Bash(npm audit:*)",
+      "Bash(node -c:*)",
+      "Bash(node:*)"
     ]
   }
 }

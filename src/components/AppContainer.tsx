@@ -18,7 +18,7 @@ import DonateModal from './DonateModal';
 import PaymentModal from './PaymentModal';
 import ErrorBoundary from './ErrorBoundary';
 import { X, Camera } from 'lucide-react';
-import { useFormWizard, useToast, usePremium, useTemplateSelection, usePaymentFlow } from '../hooks';
+import { useFormWizard, useToast, usePremium, useTemplateSelection, usePaymentFlow, useDeviceId, useCsrf } from '../hooks';
 import WizardRoute from '../routes/WizardRoute';
 import HeroRoute from '../routes/HeroRoute';
 import ThankYouRoute from '../routes/ThankYouRoute';
@@ -32,8 +32,6 @@ interface AppContainerProps {
   onDownloadAllTemplates: () => Promise<void>;
   onGenerateText: () => Promise<void>;
   onDonateMethod: (method: string) => Promise<void>;
-  onBuyPremium: () => void;
-  onOpenBuilder: () => void;
 }
 
 export const AppContainer: React.FC<AppContainerProps> = ({
@@ -41,14 +39,14 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   onDownloadAllTemplates,
   onGenerateText,
   onDonateMethod,
-  onBuyPremium,
-  onOpenBuilder,
 }) => {
   // State management
   const { step, data, animDir, updateData, goToStep } = useFormWizard();
   const { showToast } = useToast();
-  const { isPremium, getTemplateInfo, premiumPrice, timeRemaining: premiumTimeRemaining, activatePremium } = usePremium();
-  const { selectedTemplate, setSelectedTemplate, previewOpen, previewTemplate, openPreview, closePreview } = useTemplateSelection();
+  const { isPremium, getTemplateInfo, premiumPrice, timeRemaining: premiumTimeRemaining, activate } = usePremium();
+  const { deviceId } = useDeviceId();
+  const { token: csrfToken } = useCsrf();
+  const { selectedTemplate, setSelectedTemplate, previewOpen, previewTemplate, closePreview } = useTemplateSelection();
   const { donationAmount, setDonationAmount, donateOpen, setDonateOpen, paymentOpen, setPaymentOpen } = usePaymentFlow();
 
   // Local state for modals and theme
@@ -107,6 +105,8 @@ export const AppContainer: React.FC<AppContainerProps> = ({
 
   // Handle URL parameters for payment success/cancel
   useEffect(() => {
+    let mounted = true;
+
     const params = new URLSearchParams(window.location.search);
     const paymentSuccess = params.get('payment_success');
     const premiumSuccess = params.get('premium_success');
@@ -123,13 +123,22 @@ export const AppContainer: React.FC<AppContainerProps> = ({
 
       const sessionToActivate = pendingSession || sessionId;
       if (sessionToActivate) {
-        activatePremium(sessionToActivate).then((success) => {
-          if (success) {
-            showToast('🎉 Premium freigeschaltet! 2 Stunden Zugang.', 'success');
-          } else {
-            showToast('Premium konnte nicht aktiviert werden.', 'error');
-          }
-        });
+        activate(sessionToActivate, deviceId, csrfToken)
+          .then((success) => {
+            if (!mounted) return;
+            if (success) {
+              showToast('🎉 Premium freigeschaltet! 2 Stunden Zugang.', 'success');
+            } else {
+              showToast('Premium konnte nicht aktiviert werden.', 'error');
+            }
+          })
+          .catch((err) => {
+            if (!mounted) return;
+            if (import.meta.env.DEV) {
+              console.error('Premium activation error:', err);
+            }
+            showToast('Fehler bei der Premium-Aktivierung.', 'error');
+          });
       }
 
       goToStep(5);
@@ -152,7 +161,9 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       window.history.replaceState({}, document.title, window.location.pathname);
       showToast('Payment was canceled', 'info');
     }
-  }, [goToStep, showToast, activatePremium]);
+
+    return () => { mounted = false; };
+  }, [goToStep, showToast, activate, deviceId, csrfToken]);
 
   // Get translations from useFormWizard
   const t = useFormWizard()?.t || {};
@@ -186,7 +197,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   // Handle premium payment success (from modal)
   const handlePremiumPaymentSuccess = async (paymentId: string) => {
     setPremiumPaymentOpen(false);
-    const success = await activatePremium(paymentId);
+    const success = await activate(paymentId, deviceId, csrfToken);
 
     if (success) {
       showToast(t?.premium?.purchaseSuccess || '🎉 Premium freigeschaltet! 2 Stunden Zugang.', 'success');

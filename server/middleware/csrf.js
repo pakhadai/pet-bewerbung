@@ -1,14 +1,35 @@
 /**
  * CSRF Protection Middleware
  * Protects against Cross-Site Request Forgery attacks
+ * Uses Redis for token storage in production, falls back to in-memory for development
  */
 
 const crypto = require('crypto');
 const { isProduction } = require('../config');
+const { logger } = require('../utils/logger');
 
-// Store CSRF tokens (in production, use Redis)
+// Token storage backend (Redis or in-memory)
+let redis = null;
+let useRedisStorage = false;
+
+// In-memory fallback store
 const csrfTokens = new Map();
 const TOKEN_EXPIRY_MS = 2 * 60 * 60 * 1000; // 2 hours
+const TOKEN_EXPIRY_SECONDS = 2 * 60 * 60; // 2 hours in seconds (for Redis TTL)
+
+/**
+ * Initialize Redis for CSRF storage (called from server startup)
+ * @param {Object} redisClient - Existing Redis client from rateLimit module
+ */
+function initCsrfRedis(redisClient) {
+  if (redisClient) {
+    redis = redisClient;
+    useRedisStorage = true;
+    logger.info('CSRF: Using Redis for token storage');
+  } else {
+    logger.warn('CSRF: Using in-memory token storage (not suitable for multi-server)');
+  }
+}
 
 /**
  * Generate CSRF token
@@ -19,12 +40,28 @@ function generateCsrfToken() {
 }
 
 /**
- * Get or create CSRF token for session
- * @param {string} sessionId - Session identifier (IP + User-Agent hash)
- * @returns {string} CSRF token
+ * Get or create CSRF token for session (Redis)
  */
-function getOrCreateToken(sessionId) {
-  // Check if token exists and is not expired
+async function getOrCreateTokenRedis(sessionId) {
+  const key = `csrf:${sessionId}`;
+
+  try {
+    const existing = await redis.get(key);
+    if (existing) return existing;
+
+    const token = generateCsrfToken();
+    await redis.setex(key, TOKEN_EXPIRY_SECONDS, token);
+    return token;
+  } catch (err) {
+    logger.error('CSRF Redis error, falling back to in-memory:', err.message);
+    return getOrCreateTokenMemory(sessionId);
+  }
+}
+
+/**
+ * Get or create CSRF token for session (in-memory)
+ */
+function getOrCreateTokenMemory(sessionId) {
   if (csrfTokens.has(sessionId)) {
     const { token, expiresAt } = csrfTokens.get(sessionId);
     if (Date.now() < expiresAt) {
@@ -32,7 +69,6 @@ function getOrCreateToken(sessionId) {
     }
   }
 
-  // Generate new token
   const token = generateCsrfToken();
   csrfTokens.set(sessionId, {
     token,
@@ -40,6 +76,80 @@ function getOrCreateToken(sessionId) {
   });
 
   return token;
+}
+
+/**
+ * Get or create CSRF token (auto-selects storage backend)
+ */
+async function getOrCreateToken(sessionId) {
+  if (useRedisStorage && redis) {
+    return getOrCreateTokenRedis(sessionId);
+  }
+  return getOrCreateTokenMemory(sessionId);
+}
+
+/**
+ * Verify token from Redis
+ */
+async function verifyTokenRedis(sessionId, clientToken) {
+  const key = `csrf:${sessionId}`;
+
+  try {
+    const storedToken = await redis.get(key);
+    if (!storedToken) return { valid: false, reason: 'not_found' };
+
+    const clientBuffer = Buffer.from(clientToken);
+    const storedBuffer = Buffer.from(storedToken);
+
+    if (clientBuffer.length !== storedBuffer.length) {
+      return { valid: false, reason: 'length_mismatch' };
+    }
+
+    if (!crypto.timingSafeEqual(clientBuffer, storedBuffer)) {
+      return { valid: false, reason: 'mismatch' };
+    }
+
+    return { valid: true };
+  } catch (err) {
+    logger.error('CSRF Redis verification error, falling back to in-memory:', err.message);
+    return verifyTokenMemory(sessionId, clientToken);
+  }
+}
+
+/**
+ * Verify token from in-memory store
+ */
+function verifyTokenMemory(sessionId, clientToken) {
+  const stored = csrfTokens.get(sessionId);
+  if (!stored) return { valid: false, reason: 'not_found' };
+
+  if (Date.now() > stored.expiresAt) {
+    csrfTokens.delete(sessionId);
+    return { valid: false, reason: 'expired' };
+  }
+
+  const clientBuffer = Buffer.from(clientToken);
+  const storedBuffer = Buffer.from(stored.token);
+
+  if (clientBuffer.length !== storedBuffer.length) {
+    return { valid: false, reason: 'length_mismatch' };
+  }
+
+  if (!crypto.timingSafeEqual(clientBuffer, storedBuffer)) {
+    return { valid: false, reason: 'mismatch' };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * Verify CSRF token (auto-selects storage backend)
+ */
+async function verifyToken(sessionId, clientToken) {
+  if (useRedisStorage && redis) {
+    return verifyTokenRedis(sessionId, clientToken);
+  }
+  return verifyTokenMemory(sessionId, clientToken);
 }
 
 /**
@@ -53,7 +163,6 @@ function getSessionId(req) {
              'unknown';
   const userAgent = req.headers['user-agent'] || 'unknown';
 
-  // Create hash of IP + User-Agent as session ID
   return crypto
     .createHash('sha256')
     .update(ip + userAgent)
@@ -63,32 +172,27 @@ function getSessionId(req) {
 
 /**
  * Middleware to generate and send CSRF token
- * Use this on GET requests to provide token to client
  */
-function provideCsrfToken(req, res, next) {
-  const sessionId = getSessionId(req);
-  const token = getOrCreateToken(sessionId);
-
-  // Add token to response header
-  res.setHeader('X-CSRF-Token', token);
-
-  // Also make it available on req for easy access
-  req.csrfToken = token;
-
+async function provideCsrfToken(req, res, next) {
+  try {
+    const sessionId = getSessionId(req);
+    const token = await getOrCreateToken(sessionId);
+    res.setHeader('X-CSRF-Token', token);
+    req.csrfToken = token;
+  } catch (err) {
+    logger.error('CSRF token generation error:', err.message);
+  }
   next();
 }
 
 /**
  * Middleware to verify CSRF token
- * Use this on state-changing requests (POST, PUT, DELETE)
  */
-function verifyCsrfToken(req, res, next) {
-  // Skip verification for GET, HEAD, OPTIONS
+async function verifyCsrfToken(req, res, next) {
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
     return next();
   }
 
-  // Skip verification for webhooks (they have their own verification)
   if (req.path === '/webhook' || req.path.startsWith('/webhook')) {
     return next();
   }
@@ -98,7 +202,7 @@ function verifyCsrfToken(req, res, next) {
 
   if (!clientToken) {
     if (!isProduction) {
-      console.warn(`⚠️  Missing CSRF token for ${req.method} ${req.path}`);
+      logger.warn(`Missing CSRF token for ${req.method} ${req.path}`);
     }
     return res.status(403).json({
       error: 'CSRF token missing',
@@ -106,64 +210,29 @@ function verifyCsrfToken(req, res, next) {
     });
   }
 
-  // Get stored token
-  const stored = csrfTokens.get(sessionId);
+  const result = await verifyToken(sessionId, clientToken);
 
-  if (!stored) {
+  if (!result.valid) {
     if (!isProduction) {
-      console.warn(`⚠️  No CSRF token found for session ${sessionId}`);
+      logger.warn(`CSRF validation failed (${result.reason}) for ${req.method} ${req.path}`);
     }
     return res.status(403).json({
       error: 'Invalid CSRF token',
-      message: 'CSRF token not found or expired. Refresh the page.',
+      message: result.reason === 'expired'
+        ? 'CSRF token expired. Refresh the page.'
+        : 'CSRF token validation failed',
     });
   }
 
-  // Check expiry
-  if (Date.now() > stored.expiresAt) {
-    csrfTokens.delete(sessionId);
-    return res.status(403).json({
-      error: 'CSRF token expired',
-      message: 'CSRF token expired. Refresh the page.',
-    });
-  }
-
-  // Verify token using constant-time comparison
-  const clientBuffer = Buffer.from(clientToken);
-  const storedBuffer = Buffer.from(stored.token);
-
-  // Check buffer lengths before comparison (timingSafeEqual requires equal lengths)
-  if (clientBuffer.length !== storedBuffer.length) {
-    if (!isProduction) {
-      console.warn(`⚠️  CSRF token length mismatch for session ${sessionId}`);
-    }
-    return res.status(403).json({
-      error: 'Invalid CSRF token',
-      message: 'CSRF token validation failed',
-    });
-  }
-
-  if (!crypto.timingSafeEqual(clientBuffer, storedBuffer)) {
-    if (!isProduction) {
-      console.warn(`⚠️  CSRF token mismatch for ${req.method} ${req.path}`);
-    }
-    return res.status(403).json({
-      error: 'Invalid CSRF token',
-      message: 'CSRF token validation failed',
-    });
-  }
-
-  // Token valid - continue
   next();
 }
 
 /**
  * Endpoint to get CSRF token
- * Client calls this to get a fresh token
  */
-function getCsrfTokenEndpoint(req, res) {
+async function getCsrfTokenEndpoint(req, res) {
   const sessionId = getSessionId(req);
-  const token = getOrCreateToken(sessionId);
+  const token = await getOrCreateToken(sessionId);
 
   res.json({
     csrfToken: token,
@@ -172,29 +241,46 @@ function getCsrfTokenEndpoint(req, res) {
 }
 
 /**
- * Cleanup expired tokens periodically
+ * Cleanup expired in-memory tokens periodically
  */
-setInterval(() => {
-  const now = Date.now();
-  for (const [sessionId, data] of csrfTokens.entries()) {
-    if (now > data.expiresAt) {
-      csrfTokens.delete(sessionId);
+let cleanupInterval = null;
+
+function startCleanup() {
+  if (cleanupInterval) return;
+  cleanupInterval = setInterval(() => {
+    const now = Date.now();
+    let cleaned = 0;
+    for (const [sessionId, data] of csrfTokens.entries()) {
+      if (now > data.expiresAt) {
+        csrfTokens.delete(sessionId);
+        cleaned++;
+      }
     }
+    if (cleaned > 0 && !isProduction) {
+      logger.debug(`CSRF: Cleaned ${cleaned} expired in-memory tokens`);
+    }
+  }, 15 * 60 * 1000);
+}
+
+function stopCleanup() {
+  if (cleanupInterval) {
+    clearInterval(cleanupInterval);
+    cleanupInterval = null;
   }
-}, 15 * 60 * 1000); // Cleanup every 15 minutes
+}
+
+// Auto-start cleanup for in-memory storage
+startCleanup();
 
 /**
  * Middleware configuration options
  */
 const csrfConfig = {
-  // Paths that should skip CSRF verification
   skipPaths: [
     '/health',
     '/api/stripe-config',
     '/webhook',
   ],
-
-  // Safe methods that don't need CSRF protection
   safeMethods: ['GET', 'HEAD', 'OPTIONS'],
 };
 
@@ -202,24 +288,21 @@ const csrfConfig = {
  * Smart CSRF middleware that auto-skips safe routes
  */
 function smartCsrfProtection(req, res, next) {
-  // Skip safe methods
   if (csrfConfig.safeMethods.includes(req.method)) {
     return next();
   }
-
-  // Skip configured paths
   if (csrfConfig.skipPaths.some((path) => req.path.startsWith(path))) {
     return next();
   }
-
-  // Apply CSRF verification
   return verifyCsrfToken(req, res, next);
 }
 
 module.exports = {
+  initCsrfRedis,
   provideCsrfToken,
   verifyCsrfToken,
   getCsrfTokenEndpoint,
   smartCsrfProtection,
   csrfConfig,
+  stopCleanup,
 };

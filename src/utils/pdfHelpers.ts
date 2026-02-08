@@ -18,7 +18,9 @@ export async function blobUrlToDataUrl(blobUrl: string): Promise<string | null> 
       reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
-  } catch {
+  } catch (err) {
+    // Blob URL conversion failed - caller handles null gracefully
+    if (typeof window !== 'undefined' && import.meta.env?.DEV) console.warn('Blob URL conversion failed:', err);
     return null;
   }
 }
@@ -62,7 +64,9 @@ export async function fetchLogoAsDataUrl(): Promise<string | null> {
       reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
-  } catch {
+  } catch (err) {
+    // Logo fetch is optional - silently fall back
+    if (typeof window !== 'undefined' && import.meta.env?.DEV) console.warn('Logo fetch failed:', err);
     return null;
   }
 }

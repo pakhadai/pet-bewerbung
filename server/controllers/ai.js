@@ -15,6 +15,7 @@ const {
 } = require('../config');
 const { sanitizePetData, sanitizeText, sanitizeTone } = require('../utils/sanitize');
 const { validateDeviceId } = require('../utils/validation');
+const { logger } = require('../utils/logger');
 const {
   checkAIRateLimit,
   refundRateLimit,
@@ -172,7 +173,7 @@ async function generateWithFallback(prompt, config = {}) {
   for (const modelName of AI_MODELS) {
     try {
       if (!isProduction) {
-        console.log(`Trying model: ${modelName}`);
+        logger.debug(`Trying model: ${modelName}`);
       }
 
       const model = genAI.getGenerativeModel({
@@ -193,7 +194,7 @@ async function generateWithFallback(prompt, config = {}) {
       const result = await Promise.race([
         model.generateContent(prompt),
         new Promise((_, reject) =>
-          setTimeout(() => reject(new Error(`Timeout after ${MODEL_TIMEOUT_MS}ms`)), MODEL_TIMEOUT_MS)
+          setTimeout(() => reject(new Error(`Timeout after ${AI_MODEL_TIMEOUT_MS}ms`)), AI_MODEL_TIMEOUT_MS)
         ),
       ]);
 
@@ -201,7 +202,7 @@ async function generateWithFallback(prompt, config = {}) {
       const text = response.text().trim();
 
       if (!isProduction) {
-        console.log(`✅ Success with model: ${modelName} (${text.length} chars)`);
+        logger.debug(` Success with model: ${modelName} (${text.length} chars)`);
       }
 
       return { text, model: modelName };
@@ -212,7 +213,7 @@ async function generateWithFallback(prompt, config = {}) {
 
       if (errorMsg.includes('Timeout')) {
         if (!isProduction) {
-          console.warn(`⏱️ Timeout on ${modelName}, trying next...`);
+          logger.warn(` Timeout on ${modelName}, trying next...`);
         }
         continue;
       }
@@ -223,7 +224,7 @@ async function generateWithFallback(prompt, config = {}) {
           errorMsg.includes('RESOURCE_EXHAUSTED') ||
           errorMsg.includes('Too Many Requests')) {
         if (!isProduction) {
-          console.warn(`⚠️ Rate limit on ${modelName}, trying next...`);
+          logger.warn(` Rate limit on ${modelName}, trying next...`);
         }
         continue;
       }
@@ -233,13 +234,13 @@ async function generateWithFallback(prompt, config = {}) {
           errorMsg.includes('NOT_FOUND') ||
           errorMsg.includes('does not exist')) {
         if (!isProduction) {
-          console.warn(`⚠️ Model ${modelName} not found, trying next...`);
+          logger.warn(` Model ${modelName} not found, trying next...`);
         }
         continue;
       }
 
       if (!isProduction) {
-        console.warn(`⚠️ Error with ${modelName}: ${errorMsg}, trying next...`);
+        logger.warn(` Error with ${modelName}: ${errorMsg}, trying next...`);
       }
       continue;
     }
@@ -329,7 +330,7 @@ async function generatePetDescription(req, res) {
     // For premium: retry once if text is too short
     if (isPremium && text.length < AI_MIN_CHARS) {
       if (!isProduction) {
-        console.log(`⚠️ Text too short (${text.length}), retrying for premium...`);
+        logger.warn(` Text too short (${text.length}), retrying for premium...`);
       }
       const retry = await generateWithFallback(prompt, genConfig);
       const retryText = truncateAtSentence(retry.text, AI_MAX_CHARS);
@@ -340,7 +341,7 @@ async function generatePetDescription(req, res) {
     }
 
     if (!isProduction) {
-      console.log(`✅ AI generated for ${petData.petName} using ${usedModel} (${text.length} chars), remaining: ${rateCheck.remaining}`);
+      logger.debug(` AI generated for ${petData.petName} using ${usedModel} (${text.length} chars), remaining: ${rateCheck.remaining}`);
     }
 
     res.json({
@@ -352,7 +353,7 @@ async function generatePetDescription(req, res) {
     });
 
   } catch (err) {
-    console.error('AI generation error (all models failed):', err.message);
+    logger.error('AI generation error (all models failed):', err.message);
     await refundRateLimit(clientIP);
 
     res.status(500).json({
@@ -450,7 +451,7 @@ Verbesserter Text (${AI_MIN_CHARS}-${AI_MAX_CHARS} Zeichen, behalte Struktur bei
     finalText = truncateAtSentence(finalText, AI_MAX_CHARS);
 
     if (!isProduction) {
-      console.log(`✅ Text improved using ${model} (${originalLength} → ${finalText.length} chars)`);
+      logger.debug(` Text improved using ${model} (${originalLength} → ${finalText.length} chars)`);
     }
 
     res.json({
@@ -460,7 +461,7 @@ Verbesserter Text (${AI_MIN_CHARS}-${AI_MAX_CHARS} Zeichen, behalte Struktur bei
     });
 
   } catch (err) {
-    console.error('Text improvement error:', err.message);
+    logger.error('Text improvement error:', err.message);
     res.status(500).json({ error: 'Failed to improve text' });
   }
 }

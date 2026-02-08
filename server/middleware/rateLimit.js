@@ -11,6 +11,7 @@ const {
   AI_RATE_WINDOW,
   CLEANUP_INTERVAL_MS
 } = require('../config');
+const { logger } = require('../utils/logger');
 
 // Redis client
 let redis = null;
@@ -30,7 +31,7 @@ async function initRedis() {
       maxRetriesPerRequest: 3,
       retryStrategy: (times) => {
         if (times > 3) {
-          console.error('❌ Redis connection failed after 3 retries');
+          logger.error('❌ Redis connection failed after 3 retries');
           return null; // Stop retrying
         }
         return Math.min(times * 200, 1000);
@@ -40,14 +41,14 @@ async function initRedis() {
     
     redis.on('error', (err) => {
       if (redisAvailable) {
-        console.error('❌ Redis connection lost:', err.message);
+        logger.error('❌ Redis connection lost:', err.message);
         redisAvailable = false;
       }
     });
     
     redis.on('connect', () => {
       if (!redisAvailable) {
-        console.log('✅ Redis reconnected');
+        logger.info('✅ Redis reconnected');
         redisAvailable = true;
       }
     });
@@ -56,21 +57,21 @@ async function initRedis() {
     await redis.ping();
     
     redisAvailable = true;
-    console.log('✅ Redis connected');
+    logger.info('✅ Redis connected');
     return true;
   } catch (err) {
     redisAvailable = false;
     
     if (isProduction) {
-      console.error('❌ CRITICAL: Redis is required in production!');
-      console.error('   Please configure REDIS_URL environment variable.');
-      console.error('   Error:', err.message);
+      logger.error('❌ CRITICAL: Redis is required in production!');
+      logger.error('   Please configure REDIS_URL environment variable.');
+      logger.error('   Error:', err.message);
       // In production, exit if Redis is not available
       process.exit(1);
     } else {
-      console.warn('⚠️  Redis unavailable in development mode.');
-      console.warn('   Rate limiting will be DISABLED until Redis is connected.');
-      console.warn('   Start Redis: docker run -d -p 6379:6379 redis:7-alpine');
+      logger.warn('⚠️  Redis unavailable in development mode.');
+      logger.warn('   Rate limiting will be DISABLED until Redis is connected.');
+      logger.warn('   Start Redis: docker run -d -p 6379:6379 redis:7-alpine');
     }
     
     return false;
@@ -126,8 +127,8 @@ function cleanupInMemoryLimiter() {
   }
 }
 
-// Run cleanup periodically
-setInterval(cleanupInMemoryLimiter, CLEANUP_INTERVAL_MS);
+// Run cleanup periodically (store reference for graceful shutdown)
+let memoryCleanupInterval = setInterval(cleanupInMemoryLimiter, CLEANUP_INTERVAL_MS);
 
 /**
  * Check rate limit using Redis
@@ -170,14 +171,14 @@ async function checkAIRateLimit(ip, premiumToken = null, deviceId = null) {
       };
     }
     // If token is invalid/expired, fall through to normal rate limiting
-    console.warn(`⚠️  Invalid premium token attempted from IP ${ip}`);
+    logger.warn(`Invalid premium token attempted from IP ${ip}`);
   }
   
   // If Redis is not available, use in-memory fallback
   if (!redisAvailable || !redis) {
     if (!isProduction) {
       // In dev mode without Redis, use in-memory rate limiting
-      console.warn(`⚠️  Using in-memory rate limiting for IP ${ip} (Redis unavailable)`);
+      logger.warn(`Using in-memory rate limiting for IP ${ip} (Redis unavailable)`);
       return checkRateLimitInMemory(ip, AI_RATE_LIMIT_FREE);
     }
     // This should not happen in production (server exits if no Redis)
@@ -206,7 +207,7 @@ async function refundRateLimit(ip) {
       await redis.decr(key);
     }
   } catch (err) {
-    console.error('Rate limit refund error:', err.message);
+    logger.error('Rate limit refund error:', err.message);
   }
 }
 
@@ -236,7 +237,7 @@ async function getRateLimitStatus(ip) {
       redisAvailable: true
     };
   } catch (err) {
-    console.error('Get rate limit status error:', err.message);
+    logger.error('Get rate limit status error:', err.message);
     return { 
       limit: AI_RATE_LIMIT_FREE, 
       remaining: AI_RATE_LIMIT_FREE, 
@@ -267,17 +268,36 @@ function isRedisAvailable() {
 }
 
 /**
+ * Stop cleanup interval (for graceful shutdown)
+ */
+function stopCleanup() {
+  if (memoryCleanupInterval) {
+    clearInterval(memoryCleanupInterval);
+    memoryCleanupInterval = null;
+  }
+}
+
+/**
+ * Get the Redis client instance (for sharing with other modules like CSRF)
+ * @returns {Object|null} Redis client
+ */
+function getRedisClient() {
+  return redisAvailable && redis ? redis : null;
+}
+
+/**
  * Close Redis connection (for graceful shutdown)
  * @returns {Promise<void>}
  */
 async function closeRedis() {
+  stopCleanup();
   if (redis) {
     try {
       await redis.quit();
       redisAvailable = false;
       redis = null;
     } catch (err) {
-      console.error('Error closing Redis connection:', err.message);
+      logger.error('Error closing Redis connection:', err.message);
     }
   }
 }
@@ -290,4 +310,6 @@ module.exports = {
   getRateLimitStatus,
   getClientIP,
   isRedisAvailable,
+  getRedisClient,
+  stopCleanup,
 };

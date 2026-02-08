@@ -5,37 +5,37 @@
 
 import React from 'react';
 import { INITIAL_DATA } from '../../constants';
+import PetPhoto from '../document/PetPhoto';
+import OwnerInfo from '../document/OwnerInfo';
+import PetDetails from '../document/PetDetails';
+import BehaviorSection from '../document/BehaviorSection';
+import DescriptionSection from '../document/DescriptionSection';
+import LegalSection from '../document/LegalSection';
+import ReferenceSection from '../document/ReferenceSection';
 
 // Section component mapping for dynamic template rendering
 export const SECTION_COMPONENTS = {
-  photo: ({ data, t, variant, customColors }) => {
-    const PetPhoto = require('../document/PetPhoto').default;
-    return <PetPhoto photo={data.photo} petType={data.petType} t={t} variant={variant} customColors={customColors} />;
-  },
-  owner: ({ data, t, variant, customColors }) => {
-    const OwnerInfo = require('../document/OwnerInfo').default;
-    return <OwnerInfo data={data} t={t} variant={variant} customColors={customColors} />;
-  },
-  details: ({ data, t, variant, customColors }) => {
-    const PetDetails = require('../document/PetDetails').default;
-    return <PetDetails data={data} t={t} variant={variant} customColors={customColors} />;
-  },
-  behavior: ({ data, t, variant, customColors }) => {
-    const BehaviorSection = require('../document/BehaviorSection').default;
-    return <BehaviorSection data={data} t={t} variant={variant} customColors={customColors} />;
-  },
-  description: ({ data, t, variant, customColors }) => {
-    const DescriptionSection = require('../document/DescriptionSection').default;
-    return <DescriptionSection text={data.generatedText} t={t} variant={variant} customColors={customColors} />;
-  },
-  legal: ({ data, t, variant, customColors }) => {
-    const LegalSection = require('../document/LegalSection').default;
-    return <LegalSection data={data} t={t} variant={variant} customColors={customColors} />;
-  },
-  reference: ({ data, t, variant, customColors }) => {
-    const ReferenceSection = require('../document/ReferenceSection').default;
-    return <ReferenceSection data={data} t={t} variant={variant} customColors={customColors} />;
-  }
+  photo: ({ data, t, variant, customColors }) => (
+    <PetPhoto photo={data.photo} petType={data.petType} t={t} variant={variant} customColors={customColors} />
+  ),
+  owner: ({ data, t, variant, customColors }) => (
+    <OwnerInfo data={data} t={t} variant={variant} customColors={customColors} />
+  ),
+  details: ({ data, t, variant, customColors }) => (
+    <PetDetails data={data} t={t} variant={variant} customColors={customColors} />
+  ),
+  behavior: ({ data, t, variant, customColors }) => (
+    <BehaviorSection data={data} t={t} variant={variant} customColors={customColors} />
+  ),
+  description: ({ data, t, variant, customColors }) => (
+    <DescriptionSection text={data.generatedText} t={t} variant={variant} customColors={customColors} />
+  ),
+  legal: ({ data, t, variant, customColors }) => (
+    <LegalSection data={data} t={t} variant={variant} customColors={customColors} />
+  ),
+  reference: ({ data, t, variant, customColors }) => (
+    <ReferenceSection data={data} t={t} variant={variant} customColors={customColors} />
+  )
 };
 
 // Default customDesign values for comparison (Midnight Purple theme)

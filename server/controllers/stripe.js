@@ -4,12 +4,12 @@
  */
 
 const Stripe = require('stripe');
-const { 
-  STRIPE_SECRET_KEY, 
-  STRIPE_PUBLISHABLE_KEY, 
+const {
+  STRIPE_SECRET_KEY,
+  STRIPE_PUBLISHABLE_KEY,
   STRIPE_WEBHOOK_SECRET,
   FRONTEND_URL,
-  isProduction 
+  isProduction
 } = require('../config');
 const {
   createPremiumToken,
@@ -18,15 +18,16 @@ const {
   PREMIUM_DURATION_HOURS
 } = require('../middleware/premium');
 const { validateDeviceId } = require('../utils/validation');
+const { logger } = require('../utils/logger');
 
 // Initialize Stripe
 const stripe = STRIPE_SECRET_KEY ? Stripe(STRIPE_SECRET_KEY) : null;
 
 // Warn if not configured
 if (!STRIPE_SECRET_KEY) {
-  console.warn('⚠️  Warning: STRIPE_SECRET_KEY not set. Checkout requests will fail.');
+  logger.warn('STRIPE_SECRET_KEY not set. Checkout requests will fail.');
 } else if (!isProduction) {
-  console.log('✅ STRIPE_SECRET_KEY is configured (length:', STRIPE_SECRET_KEY.length, 'chars)');
+  logger.debug(`STRIPE_SECRET_KEY is configured (length: ${STRIPE_SECRET_KEY.length} chars)`);
 }
 
 /**
@@ -36,14 +37,14 @@ async function createCheckoutSession(req, res) {
   const { amount, currency = 'chf', successUrl, cancelUrl, payment_method = 'card' } = req.body || {};
 
   if (!STRIPE_SECRET_KEY) {
-    if (!isProduction) console.error('❌ STRIPE_SECRET_KEY not configured');
+    if (!isProduction) logger.error(' STRIPE_SECRET_KEY not configured');
     return res.status(400).json({ error: 'STRIPE_SECRET_KEY not configured on server.' });
   }
 
   // Validate amount type and value
   const numAmount = typeof amount === 'string' ? parseInt(amount, 10) : amount;
   if (typeof numAmount !== 'number' || isNaN(numAmount) || numAmount <= 0) {
-    if (!isProduction) console.error('❌ Invalid amount:', amount, 'parsed:', numAmount);
+    if (!isProduction) logger.error(' Invalid amount:', amount, 'parsed:', numAmount);
     return res.status(400).json({ error: 'Invalid amount. Must be a positive number.' });
   }
 
@@ -52,7 +53,7 @@ async function createCheckoutSession(req, res) {
   const sessionCurrency = currency || 'chf';
 
   if (!isProduction) {
-    console.log('Creating checkout session:', { payment_method, currency: sessionCurrency, amount });
+    logger.info('Creating checkout session:', { payment_method, currency: sessionCurrency, amount });
   }
 
   try {
@@ -82,8 +83,8 @@ async function createCheckoutSession(req, res) {
     res.json({ url: session.url, sessionId: session.id });
   } catch (err) {
     if (!isProduction) {
-      console.error('Stripe checkout error:', err.message);
-      console.error('Error details:', {
+      logger.error('Stripe checkout error:', err.message);
+      logger.error('Error details:', {
         type: err.type,
         code: err.code,
         statusCode: err.statusCode,
@@ -128,7 +129,7 @@ async function createPaymentIntent(req, res) {
       paymentIntentId: intent.id 
     });
   } catch (err) {
-    console.error('PaymentIntent error:', err.message);
+    logger.error('PaymentIntent error:', err.message);
     res.status(500).json({ error: err.message || 'Server error' });
   }
 }
@@ -163,7 +164,7 @@ async function getCheckoutSession(req, res) {
       }
     });
   } catch (err) {
-    console.error('Error retrieving session:', err.message);
+    logger.error('Error retrieving session:', err.message);
     res.status(404).json({ id, session: null, error: 'Session not found' });
   }
 }
@@ -201,30 +202,33 @@ async function getPaymentStatus(req, res) {
       // Fallback: try both
       try {
         const intent = await stripe.paymentIntents.retrieve(id);
-        res.json({ 
-          id, 
+        res.json({
+          id,
           type: 'payment_intent',
           status: intent.status,
           amount: intent.amount,
           currency: intent.currency
         });
-      } catch {
+      } catch (piErr) {
+        // PaymentIntent lookup failed, try checkout session as fallback
+        if (!isProduction) logger.debug(`PaymentIntent lookup failed for ${id}: ${piErr.message}`);
         try {
           const session = await stripe.checkout.sessions.retrieve(id);
-          res.json({ 
-            id, 
+          res.json({
+            id,
             type: 'checkout_session',
             status: session.payment_status === 'paid' ? 'completed' : session.payment_status,
             amount: session.amount_total,
             currency: session.currency
           });
-        } catch {
+        } catch (csErr) {
+          if (!isProduction) logger.debug(`Checkout session lookup also failed for ${id}: ${csErr.message}`);
           throw new Error('Invalid payment ID format');
         }
       }
     }
   } catch (err) {
-    console.error('Error retrieving payment status:', err.message);
+    logger.error('Error retrieving payment status:', err.message);
     res.status(404).json({ id, status: null, error: err.message });
   }
 }
@@ -237,15 +241,15 @@ function handleWebhook(req, res) {
 
   if (!STRIPE_WEBHOOK_SECRET) {
     if (isProduction) {
-      console.error('❌ CRITICAL: STRIPE_WEBHOOK_SECRET not set in production!');
+      logger.error(' CRITICAL: STRIPE_WEBHOOK_SECRET not set in production!');
       return res.status(500).send('Webhook secret not configured');
     }
-    console.warn('⚠️  ====== SECURITY WARNING ======');
-    console.warn('⚠️  STRIPE_WEBHOOK_SECRET not set!');
-    console.warn('⚠️  Webhooks can be FORGED in dev mode.');
-    console.warn('⚠️  Set STRIPE_WEBHOOK_SECRET for testing.');
-    console.warn('⚠️  Use: stripe listen --forward-to localhost:4242/webhook');
-    console.warn('⚠️  ===============================');
+    logger.warn('====== SECURITY WARNING ======');
+    logger.warn('STRIPE_WEBHOOK_SECRET not set!');
+    logger.warn('Webhooks can be FORGED in dev mode.');
+    logger.warn('Set STRIPE_WEBHOOK_SECRET for testing.');
+    logger.warn('Use: stripe listen --forward-to localhost:4242/webhook');
+    logger.warn('===============================');
   }
 
   let event;
@@ -260,7 +264,7 @@ function handleWebhook(req, res) {
 
       // Basic validation: Ensure it looks like a Stripe event
       if (!event.type || !event.data || !event.data.object) {
-        console.error('❌ Invalid webhook structure - missing required fields');
+        logger.error(' Invalid webhook structure - missing required fields');
         return res.status(400).send('Invalid webhook structure');
       }
 
@@ -272,41 +276,40 @@ function handleWebhook(req, res) {
       ];
 
       if (sensitiveEvents.includes(event.type)) {
-        console.warn('⚠️  ⚠️  ⚠️  UNVERIFIED SENSITIVE WEBHOOK ⚠️  ⚠️  ⚠️');
-        console.warn(`   Event: ${event.type}`);
-        console.warn('   This could be FORGED! Set STRIPE_WEBHOOK_SECRET.');
+        logger.warn('UNVERIFIED SENSITIVE WEBHOOK', { event: event.type });
+        logger.warn('This could be FORGED! Set STRIPE_WEBHOOK_SECRET.');
       }
 
-      console.warn('⚠️  Processing unverified webhook in development mode');
+      logger.warn('Processing unverified webhook in development mode');
     } else {
       return res.status(400).send('Webhook signature verification required');
     }
   } catch (err) {
-    console.error('⚠️  Webhook signature verification failed:', err.message);
+    logger.error('Webhook signature verification failed', { message: err.message });
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object;
-      console.log(`✅ Checkout session completed. Amount: ${session.amount_total / 100} ${(session.currency || 'CHF').toUpperCase()}`);
+      logger.info(`Checkout session completed. Amount: ${session.amount_total / 100} ${(session.currency || 'CHF').toUpperCase()}`);
       break;
     }
     case 'checkout.session.async_payment_succeeded':
-      console.log('✅ Async payment succeeded');
+      logger.info('Async payment succeeded');
       break;
     case 'checkout.session.async_payment_failed':
-      console.log('❌ Async payment failed');
+      logger.info('Async payment failed');
       break;
     case 'payment_intent.succeeded':
-      console.log('✅ PaymentIntent succeeded');
+      logger.info('PaymentIntent succeeded');
       break;
     case 'payment_intent.payment_failed':
-      console.log('❌ PaymentIntent failed');
+      logger.info('PaymentIntent failed');
       break;
     default:
       if (!isProduction) {
-        console.log(`Unhandled event type: ${event.type}`);
+        logger.debug(`Unhandled event type: ${event.type}`);
       }
   }
 
@@ -348,11 +351,14 @@ async function activatePremium(req, res) {
       try {
         const session = await stripe.checkout.sessions.retrieve(paymentId);
         paymentVerified = session.payment_status === 'paid';
-      } catch {
+      } catch (csErr) {
+        // Checkout session lookup failed, try PaymentIntent as fallback
+        if (!isProduction) logger.debug(`Checkout session lookup failed for activation: ${csErr.message}`);
         try {
           const paymentIntent = await stripe.paymentIntents.retrieve(paymentId);
           paymentVerified = paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing';
-        } catch {
+        } catch (piErr) {
+          if (!isProduction) logger.debug(`PaymentIntent lookup also failed for activation: ${piErr.message}`);
           paymentVerified = false;
         }
       }
@@ -366,7 +372,7 @@ async function activatePremium(req, res) {
     const expiresIn = PREMIUM_DURATION_HOURS * 3600;
     
     if (!isProduction) {
-      console.log(`✅ Premium activated for device ${deviceId.substring(0, 8)}... (${PREMIUM_DURATION_HOURS}h)`);
+      logger.debug(`Premium activated for device ${deviceId.substring(0, 8)}... (${PREMIUM_DURATION_HOURS}h)`);
     }
     
     res.json({ 
@@ -376,7 +382,7 @@ async function activatePremium(req, res) {
     });
     
   } catch (err) {
-    console.error('Premium activation error:', err.message);
+    logger.error('Premium activation error:', err.message);
     res.status(500).json({ error: 'Failed to activate premium' });
   }
 }
@@ -408,7 +414,7 @@ async function verifyRestore(req, res) {
     }
     return res.json({ valid: false, error: 'Payment not completed' });
   } catch (err) {
-    console.error('Restore verification error:', err.message);
+    logger.error('Restore verification error:', err.message);
     return res.status(404).json({ valid: false, error: 'Session not found' });
   }
 }
@@ -445,7 +451,7 @@ async function generateRestoreLink(req, res) {
     });
     
   } catch (err) {
-    console.error('Generate restore link error:', err.message);
+    logger.error('Generate restore link error:', err.message);
     res.status(500).json({ error: 'Failed to generate restore link' });
   }
 }

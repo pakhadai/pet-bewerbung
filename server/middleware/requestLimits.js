@@ -1,9 +1,16 @@
 /**
  * Request Size Limits Middleware
  * Prevents DoS attacks via large payloads
+ *
+ * NOTE: Express body parsers (express.json, express.raw) are configured with:
+ * - JSON body: 1mb limit (server/index.js line 77)
+ * - Webhook raw body: 2mb limit (server/index.js line 105)
+ *
+ * This middleware provides additional per-endpoint limits and tracks total bandwidth usage.
  */
 
 const { isProduction } = require('../config');
+const { logger } = require('../utils/logger');
 
 // Size limits for different endpoints (in bytes)
 const SIZE_LIMITS = {
@@ -37,7 +44,7 @@ function checkRequestSize(req, res, next) {
     const sizeMB = (contentLength / (1024 * 1024)).toFixed(2);
 
     if (!isProduction) {
-      console.warn(`⚠️  Request too large: ${sizeMB}MB exceeds ${limitMB}MB limit for ${req.path}`);
+      logger.warn(`Request too large: ${sizeMB}MB exceeds ${limitMB}MB limit for ${req.path}`);
     }
 
     return res.status(413).json({
@@ -120,7 +127,7 @@ function trackRequestSize(req, res, next) {
 /**
  * Cleanup old trackers periodically
  */
-setInterval(() => {
+let sizeCleanupInterval = setInterval(() => {
   const now = Date.now();
   for (const [ip, tracker] of sizeTracker.entries()) {
     if (now > tracker.resetTime + SIZE_WINDOW_MS) {
@@ -129,9 +136,20 @@ setInterval(() => {
   }
 }, 15 * 60 * 1000); // Cleanup every 15 minutes
 
+/**
+ * Stop cleanup interval (for graceful shutdown)
+ */
+function stopCleanup() {
+  if (sizeCleanupInterval) {
+    clearInterval(sizeCleanupInterval);
+    sizeCleanupInterval = null;
+  }
+}
+
 module.exports = {
   checkRequestSize,
   createSizeLimit,
   trackRequestSize,
+  stopCleanup,
   SIZE_LIMITS,
 };
