@@ -23,7 +23,7 @@ export const useCsrf = () => {
         const data = await response.json();
 
         if (mounted) {
-          setToken(data.token);
+          setToken(data.csrfToken);
           setError(null);
         }
       } catch (err) {

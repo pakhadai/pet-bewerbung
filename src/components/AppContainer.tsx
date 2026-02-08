@@ -18,7 +18,7 @@ import DonateModal from './DonateModal';
 import PaymentModal from './PaymentModal';
 import ErrorBoundary from './ErrorBoundary';
 import { X, Camera } from 'lucide-react';
-import { useFormWizard, useToast, usePremium, useTemplateSelection, usePaymentFlow, useDeviceId, useCsrf } from '../hooks';
+import { useFormWizard, useToast, usePremium, useTemplateSelection, usePaymentFlow, useDeviceId, useCsrf, useFormValidation } from '../hooks';
 import WizardRoute from '../routes/WizardRoute';
 import HeroRoute from '../routes/HeroRoute';
 import ThankYouRoute from '../routes/ThankYouRoute';
@@ -41,13 +41,23 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   onDonateMethod,
 }) => {
   // State management
-  const { step, data, animDir, updateData, goToStep } = useFormWizard();
+  const { step, data, animDir, updateData, goToStep, t, lang, setLang } = useFormWizard();
   const { showToast } = useToast();
   const { isPremium, getTemplateInfo, premiumPrice, timeRemaining: premiumTimeRemaining, activate } = usePremium();
   const { deviceId } = useDeviceId();
   const { token: csrfToken } = useCsrf();
   const { selectedTemplate, setSelectedTemplate, previewOpen, previewTemplate, closePreview } = useTemplateSelection();
   const { donationAmount, setDonationAmount, donateOpen, setDonateOpen, paymentOpen, setPaymentOpen } = usePaymentFlow();
+  const { errors: validationErrors, isValid: isStepValid } = useFormValidation(data, step);
+
+  // Validated navigation: block forward if current step has validation errors
+  const handleNext = () => {
+    if (!isStepValid) {
+      showToast(t?.validation?.fillRequired || 'Bitte füllen Sie die Pflichtfelder aus', 'error');
+      return;
+    }
+    goToStep(step + 1);
+  };
 
   // Local state for modals and theme
   const [darkMode, setDarkMode] = useState<boolean>(() => {
@@ -165,8 +175,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     return () => { mounted = false; };
   }, [goToStep, showToast, activate, deviceId, csrfToken]);
 
-  // Get translations from useFormWizard
-  const t = useFormWizard()?.t || {};
+  // Translations come from the useFormWizard call above (t, lang, setLang)
 
   // Handle premium purchase - opens payment modal
   const handleBuyPremiumClick = () => {
@@ -216,7 +225,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       t={t}
       theme={theme}
       onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
-      onLangChange={(v: string) => updateData('lang', v)}
+      onLangChange={(v: string) => { updateData('lang', v); setLang(v as any); }}
       onLogoClick={() => {
         setShowPaymentSuccess(false);
         goToStep(0);
@@ -232,7 +241,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       t={t}
       theme={theme}
       onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
-      onLangChange={(v: string) => updateData('lang', v)}
+      onLangChange={(v: string) => { updateData('lang', v); setLang(v as any); }}
       onLogoClick={() => goToStep(0)}
       onDownloadPDF={onDownloadPDF}
       onCreateAnother={() => goToStep(0)}
@@ -252,8 +261,8 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       <Header
         darkMode={darkMode}
         toggleDarkMode={() => setDarkMode(!darkMode)}
-        lang={data.lang}
-        onLangChange={(v: string) => updateData('lang', v)}
+        lang={lang}
+        onLangChange={(v: string) => { updateData('lang', v); setLang(v as any); }}
         onLogoClick={() => goToStep(0)}
         t={t}
         isPremium={isPremium}
@@ -290,6 +299,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
               onDownloadAllTemplates={onDownloadAllTemplates}
               onOpenBuilder={handleOpenBuilderClick}
               onNavigationVisibilityChange={setNavigationVisible}
+              validationErrors={validationErrors}
             />
           ) : null}
         </div>
@@ -299,12 +309,12 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       <FloatingNavigation
         step={step}
         onPrev={() => goToStep(step - 1)}
-        onNext={() => goToStep(step + 1)}
+        onNext={handleNext}
         onDownloadPDF={onDownloadPDF}
         onBuyPremium={handleBuyPremiumClick}
         t={t}
         darkMode={darkMode}
-        canProceed={true}
+        canProceed={isStepValid}
         needsPayment={getTemplateInfo(selectedTemplate).isPremium && !isPremium}
         premiumPrice={premiumPrice}
         visible={navigationVisible}
@@ -324,7 +334,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
         open={paymentOpen}
         onClose={() => setPaymentOpen(false)}
         amount={donationAmount}
-        lang={data.lang}
+        lang={lang}
         t={t}
         darkMode={darkMode}
         onSuccess={(paymentId: string) => {
@@ -342,7 +352,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
         open={premiumPaymentOpen}
         onClose={() => setPremiumPaymentOpen(false)}
         amount={String(premiumPrice)}
-        lang={data.lang}
+        lang={lang}
         t={{
           ...t,
           paymentCheckout: {

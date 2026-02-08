@@ -10,9 +10,10 @@ import { Dog, Cat, Bird } from 'lucide-react';
  * @returns {Object} - { streetLine, cityLine }
  */
 export const formatAddress = (street, houseNumber, postal, city) => {
-  const streetLine = (street || '') + (houseNumber ? ' ' + houseNumber : '');
-  const cityLine = (postal ? postal + ' ' : '') + (city || '');
-  return { streetLine, cityLine };
+  const rawStreet = (street || '') + (houseNumber ? ' ' + houseNumber : '');
+  const rawCity = (postal ? postal + ' ' : '') + (city || '');
+  // Return undefined instead of '' to prevent react-pdf empty string child errors
+  return { streetLine: rawStreet || undefined, cityLine: rawCity || undefined };
 };
 
 /**

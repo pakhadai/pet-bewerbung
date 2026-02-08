@@ -47,19 +47,20 @@ const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // AI Models (fallback chain)
+// Note: gemma models don't support systemInstruction, only use Gemini models
 const AI_MODELS = [
-  'gemini-2.5-flash-preview-05-20',
   'gemini-2.0-flash',
   'gemini-1.5-flash',
   'gemini-2.0-flash-lite',
-  'gemma-3-27b-it',
 ];
 
 // CORS Origins
 const DEFAULT_ORIGINS_DEV = [
   'http://localhost:3000',
+  'http://localhost:3001',
   'http://localhost:5173',
   'http://127.0.0.1:3000',
+  'http://127.0.0.1:3001',
   'https://pet.ohmyrevit.pp.ua',
   'https://pet-bewerbung.ch',
   'https://www.pet-bewerbung.ch',

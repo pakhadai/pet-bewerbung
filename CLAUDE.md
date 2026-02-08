@@ -84,13 +84,6 @@ As of the latest refactoring, the frontend has been modularized for better maint
   - `usePaymentFlow`: Donation/payment state
   - `useTemplateSelection`: Template management
 
-**Backup**: Original monolithic file preserved as `src/App.legacy.tsx`
-
-**Documentation**:
-- `docs/ARCHITECTURE.md` - Detailed architecture guide
-- `docs/REFACTORING_GUIDE.md` - Developer guide
-- `REFACTORING_NOTES.md` - Summary of changes
-
 ### Backend Architecture (Modular)
 
 ```
@@ -182,7 +175,6 @@ Changes stored in `localStorage` as `customDesign` object and applied to both HT
 | `src/routes/WizardRoute.tsx` | Steps 1-6 rendering |
 | `src/routes/HeroRoute.tsx` | Landing page (step 0) |
 | `src/routes/ThankYouRoute.tsx` | Thank you page (step 7) |
-| `src/App.legacy.tsx` | Original monolithic file (backup, 44 KB) |
 | `src/constants.js` | Template options, initial data |
 | `src/config.js` | API endpoint configuration |
 | `src/components/SwissDocument.jsx` | HTML document preview (4 templates) |
@@ -326,8 +318,6 @@ stripe listen --forward-to localhost:4242/webhook
 1. **Entry Point**: `src/App.tsx` is now a minimal composition layer (26 lines)
    - Only imports AppProviders and AppContent
    - All logic delegated to child components
-   - Original file backed up as `src/App.legacy.tsx`
-
 2. **Business Logic**: Locate in `src/components/AppContent.tsx`
    - PDF generation functions: `handleDownloadPDF`, `generatePdfBlob`, `handleDownloadAllTemplates`
    - AI text generation: `generateText`, `generateFallbackText`
@@ -350,9 +340,4 @@ stripe listen --forward-to localhost:4242/webhook
 7. **Premium checks**: Use `isPremium` from `usePremium` hook
 8. **PDF changes**: Must update both `SwissDocument.jsx` (HTML) and `SwissDocumentPdf.jsx` (PDF)
 9. **New fields**: Add to `INITIAL_DATA` in `constants.js` and relevant translation files
-10. **Adding features**: See `docs/REFACTORING_GUIDE.md` section "Adding New Features"
-
-### Documentation
-- Read `docs/ARCHITECTURE.md` for detailed architecture
-- Read `docs/REFACTORING_GUIDE.md` for development guide
-- Check `REFACTORING_NOTES.md` for summary of changes
+10. **All step components** receive `data`, `updateData`, `t`, `darkMode` as props (no React Context used)

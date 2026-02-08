@@ -220,7 +220,7 @@ async function generateWithFallback(prompt, config = {}) {
 
       if (errorMsg.includes('429') ||
           errorMsg.includes('quota') ||
-          errorMsg.includes('rate') ||
+          errorMsg.includes('rate limit') ||
           errorMsg.includes('RESOURCE_EXHAUSTED') ||
           errorMsg.includes('Too Many Requests')) {
         if (!isProduction) {

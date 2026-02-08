@@ -277,9 +277,15 @@ const getCustomStyle = (customDesign) => {
  * Supports classic, modern, compact, swiss templates with dynamic section ordering.
  * @param {boolean} showWatermark - If true, shows PREVIEW watermark on document (for unpaid premium)
  */
-const SwissDocumentPdf = ({ data, t, templateType = 'classic', logoUrl, qrUrl, showWatermark = false }) => {
+const SwissDocumentPdf = ({ data: rawData, t, templateType = 'classic', logoUrl, qrUrl, showWatermark = false }) => {
+  // Sanitize data: convert empty strings to undefined so {data?.field && <JSX>} patterns
+  // return false (not '') — react-pdf throws on bare string children outside <Text>
+  const data = rawData ? Object.fromEntries(
+    Object.entries(rawData).map(([k, v]) => [k, v === '' ? undefined : v])
+  ) : {};
+
   const today = new Date().toLocaleDateString(data?.lang === 'de' ? 'de-CH' : data?.lang === 'fr' ? 'fr-CH' : 'en-GB');
-  
+
   // formatAddress returns { streetLine, cityLine } - destructure correctly
   const { streetLine, cityLine } = formatAddress(
     data?.street,

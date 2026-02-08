@@ -15,6 +15,17 @@ export default defineConfig({
       height: 256,
     }),
   ],
+  define: {
+    'global': 'globalThis',
+  },
+  resolve: {
+    alias: {
+      buffer: 'buffer/',
+    },
+  },
+  optimizeDeps: {
+    include: ['buffer'],
+  },
   build: {
     rollupOptions: {
       output: {

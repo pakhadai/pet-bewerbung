@@ -34,6 +34,7 @@ interface WizardRouteProps {
   onDownloadAllTemplates: () => Promise<void>;
   onOpenBuilder: () => void;
   onNavigationVisibilityChange: (visible: boolean) => void;
+  validationErrors?: { [field: string]: boolean };
 }
 
 export const WizardRoute: React.FC<WizardRouteProps> = ({
@@ -55,13 +56,18 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
   onDownloadAllTemplates,
   onOpenBuilder,
   onNavigationVisibilityChange,
+  validationErrors = {},
 }) => {
   switch (step) {
     case 1:
       return (
         <Step1Details
+          data={data}
+          updateData={updateData}
+          t={t}
           animDir={animDir}
-          errors={{}}
+          darkMode={darkMode}
+          errors={validationErrors}
         />
       );
 

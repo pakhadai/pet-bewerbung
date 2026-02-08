@@ -112,7 +112,7 @@ app.get('/', (req, res) => {
 // ============================================
 // CSRF Token Endpoint
 // ============================================
-app.get('/api/csrf-token', getCsrfTokenEndpoint);
+app.get('/csrf-token', getCsrfTokenEndpoint);
 
 // ============================================
 // Stripe Routes
