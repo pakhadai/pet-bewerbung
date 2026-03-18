@@ -1,5 +1,7 @@
-import { useState, useCallback } from 'react';
-import { TRANSLATIONS } from '../translations';
+import { useState, useEffect, useCallback } from 'react';
+
+const SUPPORTED_LANGS = ['de', 'fr', 'it', 'rm', 'en'] as const;
+export type Language = (typeof SUPPORTED_LANGS)[number];
 
 /**
  * Detect user's language from browser settings
@@ -7,14 +9,24 @@ import { TRANSLATIONS } from '../translations';
 const detectLang = (): string => {
   try {
     const nav = (navigator && (navigator.language || (navigator as any).userLanguage) || '').slice(0, 2).toLowerCase();
-    if (['de', 'fr', 'it', 'rm', 'en'].includes(nav)) return nav;
+    if (SUPPORTED_LANGS.includes(nav as Language)) return nav;
   } catch (e) {
     // ignore
   }
   return 'de';
 };
 
-export type Language = 'de' | 'fr' | 'it' | 'rm' | 'en';
+const translationCache: Record<string, any> = {};
+
+/**
+ * Load translation for a language (lazy - only fetches when needed)
+ */
+const loadTranslation = async (lang: Language): Promise<any> => {
+  if (translationCache[lang]) return translationCache[lang];
+  const module = await import(`../translations/${lang}.js`);
+  translationCache[lang] = module.default;
+  return translationCache[lang];
+};
 
 export interface UseTranslationReturn {
   /** Current translations object */
@@ -23,28 +35,39 @@ export interface UseTranslationReturn {
   lang: Language;
   /** Set language */
   setLang: (lang: Language) => void;
+  /** Loading state (true until first translation loads) */
+  isLoading: boolean;
 }
 
 /**
- * Translation hook
- * Manages current language and provides translation object
- * Auto-detects browser language on first load
- *
+ * Translation hook - lazy loads translations to reduce initial bundle
  * @returns Translation state and handlers
  */
 export const useTranslation = (): UseTranslationReturn => {
   const [lang, setLangState] = useState<Language>(() => detectLang() as Language);
+  const [t, setT] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Get translations for current language with fallback to German
-  const t = TRANSLATIONS[lang] || TRANSLATIONS.de;
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoading(true);
+    loadTranslation(lang).then((tr) => {
+      if (!cancelled) {
+        setT(tr);
+        setIsLoading(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [lang]);
 
   const setLang = useCallback((newLang: Language) => {
     setLangState(newLang);
   }, []);
 
   return {
-    t,
+    t: t ?? {},
     lang,
-    setLang
+    setLang,
+    isLoading,
   };
 };

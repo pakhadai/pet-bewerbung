@@ -22,8 +22,8 @@ export function buildVCard(data) {
     'VERSION:3.0',
     name ? `FN:${escapeVCard(name)}` : null,
     name ? `N:${escapeVCard(name)};;;` : null,
-    email ? `EMAIL:${email}` : null,
-    phone ? `TEL:${phone.replace(/\s/g, '')}` : null,
+    email ? `EMAIL:${escapeVCard(email)}` : null,
+    phone ? `TEL:${escapeVCard(phone.replace(/\s/g, ''))}` : null,
     street || city || postal
       ? `ADR:;;${escapeVCard(street)};${escapeVCard(city)};;${escapeVCard(postal)};CH`
       : null,
@@ -35,7 +35,11 @@ export function buildVCard(data) {
 
 function escapeVCard(str) {
   if (!str) return '';
-  return String(str).replace(/[;\\,]/g, '\\$&');
+  return String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/[;,]/g, '\\$&')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '');
 }
 
 /**

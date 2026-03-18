@@ -16,12 +16,8 @@ const TEMPLATE_LABELS = {
   compact: 'Compact'
 };
 
-const Step5Preview = React.memo(({
-  selectedTemplate,
-  onDownloadPDF,
-  onDownloadAllTemplates,
-}) => {
-  const { data, t, animDir, darkMode } = useWizardContext();
+const Step5Preview = React.memo(({ selectedTemplate }) => {
+  const { data, t, animDir, darkMode, onDownloadPDF, onDownloadAllTemplates } = useWizardContext();
   const titleCl = darkMode ? 'text-white' : 'text-text-main';
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary';
   const cardBg = darkMode ? 'bg-gray-800' : 'bg-white';

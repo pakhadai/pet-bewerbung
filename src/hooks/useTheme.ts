@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 const STORAGE_THEME_KEY = 'pet-bewerbung-theme';
 
@@ -61,6 +61,14 @@ export const useTheme = (): UseThemeReturn => {
       return newValue;
     });
   }, []);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   return {
     darkMode,

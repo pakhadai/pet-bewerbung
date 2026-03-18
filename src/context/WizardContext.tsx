@@ -12,6 +12,8 @@ export interface WizardContextValue {
   step: number;
   animDir: 'left' | 'right';
   validationErrors?: Record<string, boolean>;
+  onDownloadPDF: () => Promise<void>;
+  onDownloadAllTemplates: () => Promise<void>;
 }
 
 const WizardContext = createContext<WizardContextValue | null>(null);

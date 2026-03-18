@@ -1,32 +1,29 @@
 /**
  * CSRF Token Hook
  * Fetches and manages CSRF tokens for secure API requests
+ * Includes retry on failure (AbortError/timeout) to avoid silent 403 on flaky connections
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import API_ENDPOINTS from '../config';
+
+const MAX_RETRIES = 2;
+const TIMEOUT_MS = 5000;
 
 /**
  * Fetch with timeout to prevent hanging requests
- * @param url - URL to fetch
- * @param options - Fetch options
- * @param timeoutMs - Timeout in milliseconds (default: 5000ms)
- * @returns Promise that resolves to Response or rejects on timeout
  */
-const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeoutMs: number = 5000): Promise<Response> => {
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeoutMs: number = TIMEOUT_MS): Promise<Response> => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
+    const response = await fetch(url, { ...options, signal: controller.signal });
     clearTimeout(timeoutId);
     return response;
-  } catch (err: any) {
+  } catch (err: unknown) {
     clearTimeout(timeoutId);
-    if (err.name === 'AbortError') {
+    if (err instanceof Error && err.name === 'AbortError') {
       throw new Error(`Request timeout after ${timeoutMs}ms`);
     }
     throw err;
@@ -38,40 +35,42 @@ export const useCsrf = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchToken = async () => {
+  const fetchToken = useCallback(async () => {
+    let lastErr: Error | null = null;
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
       try {
-        // SECURITY: Add 5-second timeout to prevent hanging app initialization
-        const response = await fetchWithTimeout(API_ENDPOINTS.csrfToken, {}, 5000);
-        if (!response.ok) {
-          throw new Error('Failed to fetch CSRF token');
-        }
+        const response = await fetchWithTimeout(API_ENDPOINTS.csrfToken, {}, TIMEOUT_MS);
+        if (!response.ok) throw new Error('Failed to fetch CSRF token');
         const data = await response.json();
-
-        if (mounted) {
-          setToken(data.csrfToken);
-          setError(null);
-        }
+        setToken(data.csrfToken ?? null);
+        setError(null);
+        return;
       } catch (err) {
-        if (mounted) {
-          setError(err instanceof Error ? err : new Error('Unknown error'));
-          console.error('Failed to fetch CSRF token:', err);
-        }
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
+        lastErr = err instanceof Error ? err : new Error('Unknown error');
+        if (attempt < MAX_RETRIES) {
+          await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
         }
       }
-    };
-
-    fetchToken();
-
-    return () => {
-      mounted = false;
-    };
+    }
+    setError(lastErr);
+    setToken(null);
+    console.error('Failed to fetch CSRF token after retries:', lastErr);
   }, []);
 
-  return { token, isLoading, error };
+  useEffect(() => {
+    let mounted = true;
+    const run = async () => {
+      try {
+        await fetchToken();
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    run();
+    return () => { mounted = false; };
+  }, [fetchToken]);
+
+  const isFatal = !isLoading && !token && !!error;
+
+  return { token, isLoading, error, refetch: fetchToken, isFatal };
 };

@@ -2,7 +2,40 @@
  * Image compression utility
  * Compresses images client-side before storing to state.
  * Uses WebP when supported for ~25–35% smaller size than JPEG.
+ * Uses createImageBitmap with imageOrientation: "from-image" for EXIF correction (iPhone photos).
  */
+
+/** Load image with EXIF orientation applied (createImageBitmap) or fallback to Image */
+async function loadImageWithOrientation(source) {
+  if (typeof createImageBitmap !== 'function') {
+    return loadImageLegacy(source);
+  }
+  try {
+    let blob;
+    if (source instanceof Blob || source instanceof File) {
+      blob = source;
+    } else if (typeof source === 'string') {
+      const res = await fetch(source);
+      blob = await res.blob();
+    } else {
+      return loadImageLegacy(source);
+    }
+    const opts = { imageOrientation: 'from-image' };
+    const bitmap = await createImageBitmap(blob, opts);
+    return { bitmap, width: bitmap.width, height: bitmap.height, isBitmap: true };
+  } catch {
+    return loadImageLegacy(source);
+  }
+}
+
+function loadImageLegacy(source) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.onload = () => resolve({ img, width: img.naturalWidth, height: img.naturalHeight, isBitmap: false });
+    img.src = typeof source === 'string' ? source : (source instanceof Blob || source instanceof File) ? URL.createObjectURL(source) : source;
+  });
+}
 
 /** Check if WebP is supported in canvas */
 function supportsWebP() {
@@ -53,22 +86,11 @@ export const compressImage = (file, options = {}) => {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onerror = () => {
-      clearTimeout(timeoutId);
-      reject(new Error('Failed to read file'));
-    };
-
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onerror = () => {
+    const processImage = async () => {
+      try {
+        const loaded = await loadImageWithOrientation(file);
         clearTimeout(timeoutId);
-        reject(new Error('Failed to load image'));
-      };
-
-      img.onload = () => {
-        clearTimeout(timeoutId); // Clear timeout on successful load
-        let { width, height } = img;
+        let { width, height } = loaded;
         if (width > maxWidth) {
           height = (height * maxWidth) / width;
           width = maxWidth;
@@ -84,44 +106,63 @@ export const compressImage = (file, options = {}) => {
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, width, height);
-        ctx.drawImage(img, 0, 0, width, height);
-
-        let currentQuality = quality;
-        let result;
-        try {
-          result = canvas.toDataURL(mime, currentQuality);
-        } catch (err) {
-          console.warn('WebP failed, falling back to JPEG:', err);
-          result = canvas.toDataURL('image/jpeg', currentQuality);
+        if (loaded.isBitmap) {
+          ctx.drawImage(loaded.bitmap, 0, 0, width, height);
+          loaded.bitmap.close();
+        } else {
+          ctx.drawImage(loaded.img, 0, 0, width, height);
         }
 
         const maxSizeBytes = maxSizeKB * 1024;
-        let iterations = 0;
-        const maxIterations = 5;
+        const getBlob = (mimeType, q) =>
+          new Promise((res, rej) => {
+            canvas.toBlob(res, mimeType, q);
+          });
 
-        // Iterative compression with safety limit
-        while (getBase64Size(result) > maxSizeBytes && currentQuality > 0.3 && iterations < maxIterations) {
-          currentQuality -= 0.1;
-          try {
-            result = canvas.toDataURL(mime, currentQuality);
-          } catch (err) {
-            console.warn('Compression iteration failed, falling back to JPEG:', err);
-            result = canvas.toDataURL('image/jpeg', currentQuality);
+        const compressIteratively = async () => {
+          let currentQuality = quality;
+          let blob = null;
+          let effectiveMime = mime;
+          for (let i = 0; i < 5; i++) {
+            try {
+              blob = await getBlob(effectiveMime, currentQuality);
+            } catch (err) {
+              console.warn('toBlob failed, fallback to JPEG:', err);
+              effectiveMime = 'image/jpeg';
+              blob = await getBlob(effectiveMime, currentQuality);
+            }
+            if (blob && (blob.size <= maxSizeBytes || currentQuality <= 0.3)) break;
+            currentQuality -= 0.1;
+            await new Promise((r) => setTimeout(r, 0)); // Yield to main thread
           }
-          iterations++;
-        }
+          if (!blob) blob = await getBlob('image/jpeg', 0.5);
 
-        // Cleanup canvas
-        canvas.width = 0;
-        canvas.height = 0;
+          return new Promise((res, rej) => {
+            const reader = new FileReader();
+            reader.onloadend = () => res(reader.result);
+            reader.onerror = rej;
+            reader.readAsDataURL(blob);
+          });
+        };
 
-        resolve(result);
-      };
-
-      img.src = e.target.result;
+        compressIteratively()
+          .then((result) => {
+            canvas.width = 0;
+            canvas.height = 0;
+            resolve(result);
+          })
+          .catch((err) => {
+            canvas.width = 0;
+            canvas.height = 0;
+            reject(err);
+          });
+      } catch (err) {
+        clearTimeout(timeoutId);
+        reject(err);
+      }
     };
 
-    reader.readAsDataURL(file);
+    processImage();
   });
 };
 
@@ -134,6 +175,40 @@ export async function toJpegDataUrl(dataUrl) {
   if (!dataUrl || !dataUrl.startsWith('data:image/')) return dataUrl;
   if (dataUrl.startsWith('data:image/jpeg')) return dataUrl;
 
+  if (typeof createImageBitmap === 'function') {
+    try {
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const bitmap = await createImageBitmap(blob, { imageOrientation: 'from-image' });
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bitmap, 0, 0);
+      bitmap.close();
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('Failed to convert to JPEG'));
+              return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          },
+          'image/jpeg',
+          0.85
+        );
+      });
+    } catch {
+      /* fallback to Image below */
+    }
+  }
+
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onerror = () => reject(new Error('Failed to load image'));
@@ -145,7 +220,20 @@ export async function toJpegDataUrl(dataUrl) {
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
-      resolve(canvas.toDataURL('image/jpeg', 0.85));
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error('Failed to convert to JPEG'));
+            return;
+          }
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        },
+        'image/jpeg',
+        0.85
+      );
     };
     img.src = dataUrl;
   });

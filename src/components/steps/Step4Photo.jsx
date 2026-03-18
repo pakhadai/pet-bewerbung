@@ -9,6 +9,7 @@
 import React, { useState, useEffect } from 'react';
 import { Crop, Camera, Upload } from 'lucide-react';
 import ImageCropper from '../ImageCropper';
+import compressImage from '../../utils/imageCompression';
 import { useWizardContext } from '../../context/WizardContext';
 
 const Step4Photo = React.memo(({
@@ -19,6 +20,7 @@ const Step4Photo = React.memo(({
   const [showCropper, setShowCropper] = useState(false);
   const [tempImage, setTempImage] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isCompressing, setIsCompressing] = useState(false);
 
   useEffect(() => {
     if (onNavigationVisibilityChange) onNavigationVisibilityChange(!showCropper);
@@ -26,16 +28,38 @@ const Step4Photo = React.memo(({
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-  const processFile = (file) => {
+  const processFile = async (file) => {
     if (!file || !file.type.startsWith('image/')) return;
     if (file.size > MAX_FILE_SIZE) {
       showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error');
       return;
     }
     if (onNavigationVisibilityChange) onNavigationVisibilityChange(false);
-    const r = new FileReader();
-    r.onloadend = () => { setTempImage(r.result); setShowCropper(true); };
-    r.readAsDataURL(file);
+    setIsCompressing(true);
+    try {
+      const compressed = await compressImage(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.8,
+        maxSizeKB: 500,
+      });
+      setTempImage(compressed);
+      setShowCropper(true);
+    } catch (err) {
+      if (file.size <= 2 * 1024 * 1024) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setTempImage(reader.result);
+          setShowCropper(true);
+        };
+        reader.readAsDataURL(file);
+        showToast?.('Komprimierung fehlgeschlagen, Original wird verwendet', 'info');
+      } else {
+        showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Bitte komprimieren Sie das Bild.', 'error');
+      }
+    } finally {
+      setIsCompressing(false);
+    }
   };
 
   const handleFileSelect = (e) => {
@@ -69,9 +93,9 @@ const Step4Photo = React.memo(({
     setTempImage(null);
   };
 
-  const handleCropCancel = () => { 
-    setShowCropper(false); 
-    setTempImage(null); 
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setTempImage(null);
   };
 
   const handleRecrop = () => {
@@ -122,7 +146,8 @@ const Step4Photo = React.memo(({
               type="file"
               accept="image/*"
               onChange={handleFileSelect}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              disabled={isCompressing}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 disabled:cursor-wait"
               id="step4-photo-input"
             />
             

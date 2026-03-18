@@ -1,6 +1,7 @@
 /**
  * StorageManager - Unified storage abstraction layer
  * Automatically selects the appropriate storage adapter based on data size and strategy
+ * Graceful degradation: IndexedDB unavailable in private mode -> fallback to localStorage
  */
 
 import type {
@@ -14,6 +15,14 @@ import { LocalStorageAdapter } from './LocalStorageAdapter';
 import { SessionStorageAdapter } from './SessionStorageAdapter';
 import { IndexedDBAdapter } from './IndexedDBAdapter';
 
+const isIndexedDBAvailable = (): boolean => {
+  try {
+    return typeof window !== 'undefined' && window.indexedDB != null;
+  } catch {
+    return false;
+  }
+};
+
 export class StorageManager {
   private adapters: Map<StorageType, StorageAdapter>;
   private namespace: string;
@@ -22,10 +31,12 @@ export class StorageManager {
     this.namespace = namespace;
     this.adapters = new Map();
 
-    // Initialize adapters
     this.adapters.set('localStorage', new LocalStorageAdapter(namespace));
     this.adapters.set('sessionStorage', new SessionStorageAdapter(namespace));
-    this.adapters.set('indexedDB', new IndexedDBAdapter(namespace));
+    this.adapters.set(
+      'indexedDB',
+      isIndexedDBAvailable() ? new IndexedDBAdapter(namespace) : new LocalStorageAdapter(namespace)
+    );
   }
 
   /**

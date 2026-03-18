@@ -9,7 +9,6 @@ import { INITIAL_DATA } from '../constants';
 import {
   getLocale,
   getCustomColors,
-  isCustomized,
   Watermark,
   getCustomStyle,
   getStyleOverrides,
@@ -17,44 +16,22 @@ import {
   MAIN_SECTIONS,
   SECTION_COMPONENTS
 } from './templates/TemplateBase';
-
-// Template imports (3 free templates)
-import ClassicTemplate, { getClassicConfig } from './templates/ClassicTemplate';
-import ModernTemplate, { getModernConfig } from './templates/ModernTemplate';
-import CompactTemplate, { getCompactConfig } from './templates/CompactTemplate';
+import { getTemplateComponent, getTemplateConfig as getConfig } from './templates/templateRegistry';
 
 const SwissDocument = ({ data, t, templateType = 'classic' }) => {
-  // Get custom design settings
   const customDesign = data.customDesign || INITIAL_DATA.customDesign;
   const today = new Date().toLocaleDateString(getLocale(data.lang));
 
-  // Check if customDesign has been modified
   const hasCustomLayout = customDesign.hiddenSections?.length > 0 ||
                           JSON.stringify(customDesign.layoutOrder) !== JSON.stringify(INITIAL_DATA.customDesign.layoutOrder);
 
-  // Custom colors & styles - available for ANY template when user has customized
   const customColors = useMemo(() => getCustomColors(customDesign), [customDesign]);
 
-  /**
-   * Get template configuration based on templateType
-   */
-  const getTemplateConfig = () => {
-    const configGetters = {
-      classic: getClassicConfig,
-      modern: getModernConfig,
-      compact: getCompactConfig
-    };
-    const configGetter = configGetters[templateType] || configGetters.classic;
-    return configGetter(today);
-  };
-
-  const config = getTemplateConfig();
+  const config = getConfig(templateType, today);
   const styleOverrides = getStyleOverrides(customColors);
 
-  /**
-   * Render template based on templateType
-   */
   const renderTemplate = () => {
+    const TemplateComponent = getTemplateComponent(templateType);
     const templateProps = {
       data,
       t,
@@ -63,15 +40,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
       config,
       styleOverrides
     };
-
-    switch (templateType) {
-      case 'modern':
-        return <ModernTemplate {...templateProps} />;
-      case 'compact':
-        return <CompactTemplate {...templateProps} />;
-      default:
-        return <ClassicTemplate {...templateProps} />;
-    }
+    return <TemplateComponent {...templateProps} />;
   };
 
   const renderCustomLayout = () => {

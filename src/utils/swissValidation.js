@@ -3,23 +3,20 @@
  */
 
 /**
- * Validates Swiss phone number format
- * Accepts: +41 XX XXX XX XX or +41XXXXXXXXX or 0XX XXX XX XX
+ * Validates phone number format (E.164 compatible, international)
+ * Accepts Swiss (+41), German (+49), French (+33), Ukrainian (+380), etc.
  * @param {string} phone - Phone number to validate
  * @returns {boolean} - True if valid
  */
 export const validateSwissPhone = (phone) => {
   if (!phone) return true; // Empty is valid (optional field)
 
-  // Remove all spaces and special characters for validation
+  // Remove spaces, dashes, parentheses for validation
   const cleaned = phone.replace(/[\s\-()]/g, '');
 
-  // Swiss format: +41 followed by 9 digits OR 0 followed by 9 digits
-  // Fixed: Allow any digit after +41 (including area codes like 044, 043, etc.)
-  const intlFormat = /^\+41\d{9}$/; // +41791234567 or +41441234567
-  const localFormat = /^0\d{9}$/; // 0791234567 or 0441234567
-
-  return intlFormat.test(cleaned) || localFormat.test(cleaned);
+  // E.164: optional +, digits, 7-15 chars total (international format)
+  const phoneFormat = /^\+?[0-9]{7,15}$/;
+  return phoneFormat.test(cleaned);
 };
 
 /**
@@ -101,12 +98,12 @@ export const formatSwissAddress = (street, number, postal, city) => {
 };
 
 /**
- * Gets validation error message for Swiss phone
+ * Gets validation error message for phone
  * @param {Object} t - Translations object
  * @returns {string} - Error message
  */
 export const getPhoneErrorMessage = (t) => {
-  return "Format: +41 XX XXX XX XX oder 0XX XXX XX XX";
+  return t?.validation?.phoneFormat ?? "Format: +41 XX XXX XX XX oder internationale Nummer (+49, +33, etc.)";
 };
 
 /**

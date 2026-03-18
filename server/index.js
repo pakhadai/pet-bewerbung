@@ -26,12 +26,19 @@ const {
   smartCsrfProtection,
   getCsrfTokenEndpoint
 } = require('./middleware/csrf');
+const { csrfTokenRateLimit } = require('./middleware/csrfRateLimit');
 
 // Import controllers
 const ai = require('./controllers/ai');
 
 // Initialize Express app
 const app = express();
+
+// ============================================
+// Trust proxy (required for correct req.ip when behind Cloudflare/Nginx)
+// SECURITY: Without this, X-Forwarded-For can be spoofed to bypass rate limiting
+// ============================================
+app.set('trust proxy', 1);
 
 // ============================================
 // Cookie parsing (required for CSRF session isolation)
@@ -43,15 +50,14 @@ app.use(cookieParser());
 // ============================================
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, Postman, etc.)
-    // SECURITY NOTE: This allows non-browser clients (no CORS protection)
+    // Allow requests with no origin only in development (Postman, curl, etc.)
+    // SECURITY: In production, reject requests without Origin to prevent bypass attacks
     if (!origin) {
       if (!isProduction) {
         logger.debug('Request without Origin header (likely non-browser client)');
+        return callback(null, true);
       }
-      // In production, consider blocking or rate-limiting no-origin requests
-      // for sensitive endpoints via additional middleware
-      return callback(null, true);
+      return callback(new Error('CORS policy: Origin required'));
     }
 
     // Check if origin is in allowed list
@@ -79,7 +85,7 @@ app.use(smartCsrfProtection);
 // Body Parsing Middleware
 // SECURITY: Explicit size limits prevent DoS attacks via large payloads
 // ============================================
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '50kb' }));
 
 // ============================================
 // Health Check
@@ -107,9 +113,9 @@ app.get('/', (req, res) => {
 });
 
 // ============================================
-// CSRF Token Endpoint
+// CSRF Token Endpoint (rate limited to prevent Redis DoS)
 // ============================================
-app.get('/csrf-token', getCsrfTokenEndpoint);
+app.get('/csrf-token', csrfTokenRateLimit, getCsrfTokenEndpoint);
 
 // ============================================
 // AI Routes
@@ -121,7 +127,7 @@ app.get('/ai-rate-limit', ai.getAIRateLimitStatus);
 // Error Handling Middleware
 // ============================================
 app.use((err, req, res, next) => {
-  if (err.message === 'CORS policy: Origin not allowed') {
+  if (err.message === 'CORS policy: Origin not allowed' || err.message === 'CORS policy: Origin required') {
     return res.status(403).json({ error: 'CORS not allowed' });
   }
   logger.error('Server error', { message: err.message, stack: err.stack });
@@ -143,15 +149,19 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // ============================================
 // Graceful Shutdown Handler
+// Uses stoppable to close keep-alive connections, not just stop accepting new ones
 // ============================================
+const stoppable = require('stoppable');
 let server;
 const shutdown = async (signal) => {
   logger.info(`${signal} received, shutting down gracefully...`);
 
-  // Close HTTP server
   if (server) {
-    server.close(() => {
-      logger.info('HTTP server closed');
+    await new Promise((resolve) => {
+      server.stop(() => {
+        logger.info('HTTP server closed (all connections terminated)');
+        resolve();
+      });
     });
   }
 
@@ -175,7 +185,6 @@ const shutdown = async (signal) => {
     logger.error('Error closing Redis', { message: err.message });
   }
 
-  // Exit process
   process.exit(0);
 };
 
@@ -187,17 +196,16 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 // ============================================
 initRedis()
   .then(() => {
-    // Share Redis client with CSRF module for production token storage
-    const redisClient = getRedisClient();
-    initCsrfRedis(redisClient);
+    initCsrfRedis(); // Stateless CSRF - no Redis needed
 
-    server = app.listen(PORT, () => {
+    const httpServer = app.listen(PORT, () => {
       logger.info(`Pet-Bewerbung server running on http://localhost:${PORT}`);
       logger.info(`Environment: ${isProduction ? 'PRODUCTION' : 'development'}`);
       if (!isProduction) {
         logger.debug(`Allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
       }
     });
+    server = stoppable(httpServer);
   })
   .catch((err) => {
     logger.error('FATAL: Failed to initialize server', {

@@ -1,9 +1,11 @@
 /**
  * Rate Limiting Middleware
  * Uses Redis for rate limiting. No fallback - Redis is required for production.
+ * In-memory fallback uses LRU cache (O(1)) instead of Map+array (O(N)).
  */
 
 const Redis = require('ioredis');
+const { LRUCache } = require('lru-cache');
 const {
   isProduction,
   REDIS_URL,
@@ -17,11 +19,9 @@ const { logger } = require('../utils/logger');
 let redis = null;
 let redisAvailable = false;
 
-// In-memory fallback rate limiter for development
-// OOM protection: max 10k entries, evict oldest when full
+// In-memory fallback: LRU cache O(1) - no indexOf/splice on every request
 const MAX_IN_MEMORY_ENTRIES = 10000;
-const inMemoryLimiter = new Map();
-const inMemoryAccessOrder = [];
+const inMemoryLimiter = new LRUCache({ max: MAX_IN_MEMORY_ENTRIES });
 
 /**
  * Initialize Redis connection
@@ -81,30 +81,17 @@ async function initRedis() {
 }
 
 /**
- * Check rate limit using in-memory storage (fallback for dev mode)
- * @param {string} ip - Client IP
- * @param {number} limit - Request limit
- * @returns {Object} Rate limit status
+ * Check rate limit using in-memory LRU storage (O(1), fallback for dev mode)
  */
-function evictOldestInMemory() {
-  while (inMemoryLimiter.size >= MAX_IN_MEMORY_ENTRIES && inMemoryAccessOrder.length > 0) {
-    const oldest = inMemoryAccessOrder.shift();
-    if (oldest) inMemoryLimiter.delete(oldest);
-  }
-}
-
 function checkRateLimitInMemory(ip, limit) {
   const now = Date.now();
   const resetTime = now + AI_RATE_WINDOW * 1000;
-
-  evictOldestInMemory();
 
   let entry = inMemoryLimiter.get(ip);
 
   if (!entry || entry.resetTime < now) {
     entry = { count: 1, resetTime };
     inMemoryLimiter.set(ip, entry);
-    inMemoryAccessOrder.push(ip);
     return {
       allowed: true,
       remaining: limit - 1,
@@ -115,9 +102,6 @@ function checkRateLimitInMemory(ip, limit) {
 
   entry.count++;
   inMemoryLimiter.set(ip, entry);
-  const idx = inMemoryAccessOrder.indexOf(ip);
-  if (idx >= 0) inMemoryAccessOrder.splice(idx, 1);
-  inMemoryAccessOrder.push(ip);
 
   return {
     allowed: entry.count <= limit,
@@ -127,21 +111,13 @@ function checkRateLimitInMemory(ip, limit) {
   };
 }
 
-/**
- * Cleanup expired in-memory entries (run periodically)
- */
 function cleanupInMemoryLimiter() {
   const now = Date.now();
-  for (const [ip, entry] of inMemoryLimiter.entries()) {
-    if (entry.resetTime < now) {
-      inMemoryLimiter.delete(ip);
-      const idx = inMemoryAccessOrder.indexOf(ip);
-      if (idx >= 0) inMemoryAccessOrder.splice(idx, 1);
-    }
+  for (const ip of inMemoryLimiter.keys()) {
+    const entry = inMemoryLimiter.get(ip);
+    if (entry && entry.resetTime < now) inMemoryLimiter.delete(ip);
   }
 }
-
-// Run cleanup periodically (store reference for graceful shutdown)
 let memoryCleanupInterval = setInterval(cleanupInMemoryLimiter, CLEANUP_INTERVAL_MS);
 
 /**
@@ -240,14 +216,12 @@ async function getRateLimitStatus(ip) {
 
 /**
  * Extract client IP from request
+ * Uses req.ip when trust proxy is configured (Express parses X-Forwarded-For correctly)
  * @param {Object} req - Express request
  * @returns {string} Client IP
  */
 function getClientIP(req) {
-  return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
-         req.headers['x-real-ip'] || 
-         req.socket.remoteAddress || 
-         'unknown';
+  return req.ip || req.socket.remoteAddress || 'unknown';
 }
 
 /**

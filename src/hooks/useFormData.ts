@@ -23,9 +23,14 @@ const loadSavedData = async (defaultLang: string): Promise<any> => {
       };
 
       // Restore photo from IndexedDB (stored under data.photo)
+      // If IndexedDB was cleared (e.g. iOS Safari) but localStorage has hasPhotoSaved: true, fix mismatch
       if (photoBlob) {
         mergedData.photo = photoBlob;
         mergedData.hasPhotoSaved = true;
+        mergedData.photoTooLarge = false;
+      } else {
+        mergedData.photo = null;
+        mergedData.hasPhotoSaved = false;
         mergedData.photoTooLarge = false;
       }
 
@@ -40,9 +45,28 @@ const loadSavedData = async (defaultLang: string): Promise<any> => {
   return { ...INITIAL_DATA, lang: defaultLang };
 };
 
+const STORAGE_NAMESPACE = 'pet-cv';
+
+/**
+ * Synchronously save form data (without photo) to localStorage.
+ * Used on beforeunload to prevent data loss when user closes tab quickly.
+ */
+const saveFormDataSync = (data: any): void => {
+  try {
+    const dataToSave = { ...data };
+    delete dataToSave.photo; // Photo is in IndexedDB, skip for sync save
+    const key = `${STORAGE_NAMESPACE}:form-data`;
+    localStorage.setItem(key, JSON.stringify(dataToSave));
+  } catch {
+    // Ignore - quota exceeded or private mode
+  }
+};
+
 /**
  * Save form data to storage
  * Saves main data to localStorage and photos to IndexedDB
+ * NOTE: PII (name, address, phone, etc.) is stored unencrypted in localStorage.
+ * Consider encryption (session-scoped key) for DSG/nDSG compliance in Switzerland.
  */
 const saveDataToStorage = async (data: any): Promise<void> => {
   try {
@@ -90,19 +114,31 @@ export interface UseFormDataReturn {
   isLoading: boolean;
 }
 
+export interface UseFormDataOptions {
+  /** Callback when save to storage fails (e.g. IndexedDB quota, private mode) */
+  onSaveError?: (err: Error) => void;
+}
+
 /**
  * Form data management hook
  * Manages form state with automatic storage persistence
  * Uses IndexedDB for large photos and localStorage for form data
  *
  * @param defaultLang - Default language if none saved
+ * @param options - Optional callbacks (onSaveError for storage failures)
  * @returns Form data state and handlers
  */
-export const useFormData = (defaultLang: string = 'de'): UseFormDataReturn => {
+export const useFormData = (
+  defaultLang: string = 'de',
+  options?: UseFormDataOptions
+): UseFormDataReturn => {
+  const { onSaveError } = options ?? {};
   const [data, setData] = useState<any>({ ...INITIAL_DATA, lang: defaultLang });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const prevLangRef = useRef<string>(data.lang);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const dataRef = useRef(data);
+  dataRef.current = data;
 
   // Load data on mount
   useEffect(() => {
@@ -124,6 +160,7 @@ export const useFormData = (defaultLang: string = 'de'): UseFormDataReturn => {
     const timeoutId = setTimeout(() => {
       saveDataToStorage(data).catch(err => {
         console.error('Failed to save form data:', err);
+        onSaveError?.(err);
       });
     }, 500);
 
@@ -132,7 +169,16 @@ export const useFormData = (defaultLang: string = 'de'): UseFormDataReturn => {
     return () => {
       clearTimeout(timeoutId); // Use closure value, not ref
     };
-  }, [data, isLoading]);
+  }, [data, isLoading, onSaveError]);
+
+  // Save form data synchronously on beforeunload to prevent data loss
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      saveFormDataSync(dataRef.current);
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   // Track language changes (text is kept - user can regenerate if needed)
   useEffect(() => {
@@ -178,8 +224,9 @@ export const useFormData = (defaultLang: string = 'de'): UseFormDataReturn => {
   const saveData = useCallback(() => {
     saveDataToStorage(data).catch(err => {
       console.error('Failed to save form data:', err);
+      onSaveError?.(err);
     });
-  }, [data]);
+  }, [data, onSaveError]);
 
   /**
    * Manually reload data from storage

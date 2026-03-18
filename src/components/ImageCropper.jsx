@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { X, Check, RotateCcw } from 'lucide-react';
@@ -14,6 +14,12 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
   const [completedCrop, setCompletedCrop] = useState(null);
   const imgRef = useRef(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
 
   const onImageLoad = useCallback((e) => {
     imgRef.current = e.currentTarget;
@@ -31,53 +37,151 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
     });
   }, [aspectRatio]);
 
-  const getCroppedImg = useCallback(() => {
-    if (!completedCrop || !imgRef.current) return;
+  const getCroppedImg = useCallback(async () => {
+    if (!completedCrop || !imgRef.current || !imageSrc) return;
     setIsProcessing(true);
 
     const image = imgRef.current;
-    const canvas = document.createElement('canvas');
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
+    const drawToCanvas = (source) => {
+      const scaleX = source.naturalWidth ? source.naturalWidth / image.width : 1;
+      const scaleY = source.naturalHeight ? source.naturalHeight / image.height : 1;
+      const srcW = completedCrop.width * scaleX;
+      const srcH = completedCrop.height * scaleY;
+      const maxDim = 800;
+      let outW = Math.min(maxDim, srcW);
+      let outH = Math.min(maxDim, srcH);
+      const cropAspect = srcW / srcH;
+      if (outW / outH !== cropAspect) {
+        if (cropAspect > 1) outH = outW / cropAspect;
+        else outW = outH * cropAspect;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(outW);
+      canvas.height = Math.round(outH);
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const sx = completedCrop.x * scaleX;
+      const sy = completedCrop.y * scaleY;
+      ctx.drawImage(source, sx, sy, srcW, srcH, 0, 0, outW, outH);
+      return canvas;
+    };
 
-    const srcW = completedCrop.width * scaleX;
-    const srcH = completedCrop.height * scaleY;
-    const maxDim = 800;
-    let outW = Math.min(maxDim, srcW);
-    let outH = Math.min(maxDim, srcH);
-    const cropAspect = srcW / srcH;
-    if (outW / outH !== cropAspect) {
-      if (cropAspect > 1) outH = outW / cropAspect;
-      else outW = outH * cropAspect;
+    const finish = (canvas) => {
+      canvas.toBlob(
+        (blob) => {
+          if (!isMountedRef.current) return;
+          if (!blob) {
+            setIsProcessing(false);
+            return;
+          }
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (!isMountedRef.current) return;
+            onCropComplete(reader.result);
+            setIsProcessing(false);
+          };
+          reader.readAsDataURL(blob);
+        },
+        'image/jpeg',
+        0.85
+      );
+    };
+
+    if (typeof createImageBitmap === 'function') {
+      try {
+        const res = await fetch(imageSrc);
+        const blob = await res.blob();
+        const bitmap = await createImageBitmap(blob, { imageOrientation: 'from-image' });
+        const scaleX = bitmap.width / image.width;
+        const scaleY = bitmap.height / image.height;
+        const srcW = completedCrop.width * scaleX;
+        const srcH = completedCrop.height * scaleY;
+        const maxDim = 800;
+        let outW = Math.min(maxDim, srcW);
+        let outH = Math.min(maxDim, srcH);
+        const cropAspect = srcW / srcH;
+        if (outW / outH !== cropAspect) {
+          if (cropAspect > 1) outH = outW / cropAspect;
+          else outW = outH * cropAspect;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(outW);
+        canvas.height = Math.round(outH);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(bitmap, completedCrop.x * scaleX, completedCrop.y * scaleY, srcW, srcH, 0, 0, outW, outH);
+        bitmap.close();
+        finish(canvas);
+        return;
+      } catch {
+        /* fallback to img */
+      }
     }
-    canvas.width = Math.round(outW);
-    canvas.height = Math.round(outH);
+    finish(drawToCanvas(image));
+  }, [completedCrop, onCropComplete, imageSrc]);
 
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(
-      image,
-      completedCrop.x * scaleX,
-      completedCrop.y * scaleY,
-      srcW,
-      srcH,
-      0,
-      0,
-      outW,
-      outH
-    );
-
-    const base64Image = canvas.toDataURL('image/jpeg', 0.85);
-    onCropComplete(base64Image);
-    setIsProcessing(false);
-  }, [completedCrop, onCropComplete]);
-
-  const useFullImage = useCallback(() => {
+  const useFullImage = useCallback(async () => {
     if (!imageSrc) return;
     setIsProcessing(true);
+
+    const finish = (canvas) => {
+      canvas.toBlob(
+        (blob) => {
+          if (!isMountedRef.current) return;
+          if (!blob) {
+            setIsProcessing(false);
+            return;
+          }
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (!isMountedRef.current) return;
+            onCropComplete(reader.result);
+            setIsProcessing(false);
+          };
+          reader.readAsDataURL(blob);
+        },
+        'image/jpeg',
+        0.85
+      );
+    };
+
+    if (typeof createImageBitmap === 'function') {
+      try {
+        const res = await fetch(imageSrc);
+        const blob = await res.blob();
+        const bitmap = await createImageBitmap(blob, { imageOrientation: 'from-image' });
+        if (!isMountedRef.current) {
+          bitmap.close();
+          return;
+        }
+        const maxSize = 800;
+        let { width, height } = bitmap;
+        if (width > maxSize || height > maxSize) {
+          const ratio = Math.min(maxSize / width, maxSize / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(bitmap, 0, 0, width, height);
+        bitmap.close();
+        finish(canvas);
+        return;
+      } catch {
+        /* fallback */
+      }
+    }
 
     const img = new window.Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
+      if (!isMountedRef.current) return;
       const canvas = document.createElement('canvas');
       const maxSize = 800;
       let { width, height } = img;
@@ -89,12 +193,14 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
-      const base64Image = canvas.toDataURL('image/jpeg', 0.85);
-      onCropComplete(base64Image);
-      setIsProcessing(false);
+      finish(canvas);
     };
-    img.onerror = () => setIsProcessing(false);
+    img.onerror = () => {
+      if (isMountedRef.current) setIsProcessing(false);
+    };
     img.src = imageSrc;
   }, [imageSrc, onCropComplete]);
 

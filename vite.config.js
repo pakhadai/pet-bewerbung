@@ -1,11 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import vsharp from 'vite-plugin-vsharp'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    nodePolyfills({
+      include: ['buffer'],
+      globals: { Buffer: true },
+    }),
     vsharp({
       include: /\.(png|jpg|jpeg|webp)$/,
       exclude: ['og-image.jpg.jpg'],
@@ -17,14 +22,6 @@ export default defineConfig({
   ],
   define: {
     'global': 'globalThis',
-  },
-  resolve: {
-    alias: {
-      buffer: 'buffer/',
-    },
-  },
-  optimizeDeps: {
-    include: ['buffer'],
   },
   build: {
     rollupOptions: {

@@ -56,6 +56,21 @@ function containsBypassAfterNormalization(str) {
 const SUSPICIOUS_CHARS = /[{}\\<>|`$]/g;
 
 /**
+ * Strict whitelist sanitization for prompt injection prevention
+ * Allows ONLY letters (incl. Cyrillic), digits, spaces, hyphens
+ * @param {string} str - Input string
+ * @param {number} maxLen - Maximum length
+ * @returns {string} Sanitized string
+ */
+function strictSanitizeAlphaNumeric(str, maxLen = 30) {
+  if (!str) return '';
+  return String(str)
+    .replace(/[^a-zA-Zа-яА-ЯіІїЇєЄґҐ0-9\s\-]/g, '')
+    .slice(0, maxLen)
+    .trim();
+}
+
+/**
  * Sanitize a string field
  * @param {string} str - Input string
  * @param {number} maxLen - Maximum length
@@ -71,8 +86,9 @@ function sanitizeString(str, maxLen = MAX_FIELD_LENGTH) {
     return '';
   }
 
+  // Replace suspicious patterns with space (never empty - avoids creating new bypass words like "igignorenore" -> "ignore")
   for (const pattern of SUSPICIOUS_PATTERNS) {
-    sanitized = sanitized.replace(pattern, '');
+    sanitized = sanitized.replace(pattern, ' ');
   }
 
   sanitized = sanitized
@@ -81,23 +97,29 @@ function sanitizeString(str, maxLen = MAX_FIELD_LENGTH) {
     .replace(/\s{2,}/g, ' ')
     .trim();
 
+  // Re-check after replacements - concatenation may have created new bypass words
+  if (containsBypassAfterNormalization(sanitized)) {
+    return '';
+  }
+
   return sanitized;
 }
 
 /**
  * Sanitize pet data for AI generation
+ * Uses strict whitelist for prompt fields to prevent injection
  * @param {Object} petData - Raw pet data
  * @returns {Object} Sanitized pet data
  */
 function sanitizePetData(petData) {
   return {
-    petName: sanitizeString(petData.petName, MAX_FIELD_LENGTH),
-    petType: sanitizeString(petData.petType, 50),
-    breed: sanitizeString(petData.breed, MAX_FIELD_LENGTH),
-    age: sanitizeString(petData.age, 10),
+    petName: strictSanitizeAlphaNumeric(petData.petName, 30),
+    petType: strictSanitizeAlphaNumeric(petData.petType, 50),
+    breed: strictSanitizeAlphaNumeric(petData.breed, 50),
+    age: strictSanitizeAlphaNumeric(petData.age, 10),
     gender: ['m', 'f'].includes(petData.gender) ? petData.gender : '',
-    weight: sanitizeString(petData.weight, 10),
-    traits: sanitizeString(petData.traits, MAX_TRAITS_LENGTH),
+    weight: strictSanitizeAlphaNumeric(petData.weight, 10),
+    traits: strictSanitizeAlphaNumeric(petData.traits, MAX_TRAITS_LENGTH),
     neutered: Boolean(petData.neutered),
     vaccinated: Boolean(petData.vaccinated),
   };
@@ -119,13 +141,17 @@ function sanitizeText(text, maxLen = 1000) {
   }
 
   for (const pattern of SUSPICIOUS_PATTERNS) {
-    sanitized = sanitized.replace(pattern, '');
+    sanitized = sanitized.replace(pattern, ' ');
   }
 
   sanitized = sanitized
     .replace(SUSPICIOUS_CHARS, '')
     .replace(/\s{2,}/g, ' ')
     .trim();
+
+  if (containsBypassAfterNormalization(sanitized)) {
+    return '';
+  }
 
   return sanitized;
 }
@@ -145,6 +171,7 @@ module.exports = {
   sanitizePetData,
   sanitizeText,
   sanitizeTone,
+  strictSanitizeAlphaNumeric,
   MAX_FIELD_LENGTH,
   MAX_TRAITS_LENGTH,
 };

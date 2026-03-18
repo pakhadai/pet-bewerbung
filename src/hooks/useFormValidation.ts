@@ -13,58 +13,56 @@ export interface FormValidationResult {
 }
 
 /**
- * Form validation hook
- * Validates form data for each step
- *
- * @param data - Form data object
- * @param step - Current step number
- * @returns Validation state with errors and isValid flag
+ * Pure validation function - call synchronously in event handlers (e.g. handleNext)
+ * to avoid stale validation state from React batches.
  */
-export const useFormValidation = (data: any, step: number): FormValidationResult => {
-  const validation = useMemo(() => {
-    const errors: FormValidationErrors = {};
-    let isValid = true;
+export function validateStep(data: Record<string, unknown>, step: number): FormValidationResult {
+  const errors: FormValidationErrors = {};
+  let isValid = true;
 
-    switch (step) {
-      case 1: // Details (Owner + Pet)
-        if (!data.ownerName || data.ownerName.trim().length < 2) {
-          errors.ownerName = true;
-          isValid = false;
-        }
-        if (data.email && !validateEmail(data.email)) {
-          errors.email = true;
-          isValid = false;
-        }
-        if (data.phone && !validateSwissPhone(data.phone)) {
-          errors.phone = true;
-          isValid = false;
-        }
-        if (data.postal && !validateSwissPostal(data.postal)) {
-          errors.postal = true;
-          isValid = false;
-        }
-        if (!data.name || data.name.trim().length < 1) {
-          errors.name = true;
-          isValid = false;
-        }
-        if (!data.petType) {
-          errors.petType = true;
-          isValid = false;
-        }
-        break;
+  switch (step) {
+    case 1:
+      if (!data.ownerName || String(data.ownerName).trim().length < 2) {
+        errors.ownerName = true;
+        isValid = false;
+      }
+      if (data.email && !validateEmail(String(data.email))) {
+        errors.email = true;
+        isValid = false;
+      }
+      if (data.phone && !validateSwissPhone(String(data.phone))) {
+        errors.phone = true;
+        isValid = false;
+      }
+      if (data.postal && !validateSwissPostal(String(data.postal))) {
+        errors.postal = true;
+        isValid = false;
+      }
+      if (!data.name || String(data.name).trim().length < 1) {
+        errors.name = true;
+        isValid = false;
+      }
+      if (!data.petType) {
+        errors.petType = true;
+        isValid = false;
+      }
+      break;
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+      break;
+    default:
+      break;
+  }
 
-      case 2: // Emergency - optional
-      case 3: // Upload & Select - optional
-      case 4: // Summary - no validation
-      case 5: // Preview - no validation
-        break;
+  return { errors, isValid };
+}
 
-      default:
-        break;
-    }
-
-    return { errors, isValid };
-  }, [data, step]);
-
-  return validation;
+/**
+ * Form validation hook - use for UI (errors display).
+ * For navigation handlers, use validateStep(data, step) synchronously.
+ */
+export const useFormValidation = (data: Record<string, unknown>, step: number): FormValidationResult => {
+  return useMemo(() => validateStep(data, step), [data, step]);
 };

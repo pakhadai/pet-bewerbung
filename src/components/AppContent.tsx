@@ -11,66 +11,38 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS, TRANSLATIONS } from '../constants';
+import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS } from '../constants';
 import AppContainer from './AppContainer';
 import API_ENDPOINTS from '../config';
-import compressImage, { toJpegDataUrl } from '../utils/imageCompression';
+import { toJpegDataUrl } from '../utils/imageCompression';
 import { generateQrDataUrl, getQrContent } from '../utils/qrCode';
-import { useFormWizard, useToast, useAIGenerations, useCsrf } from '../hooks';
+import { useFormWizard, useToast, useAIGeneration, useCsrf } from '../hooks';
 
 const AppContent: React.FC = () => {
-  const { data, updateData } = useFormWizard();
+  const { data, updateData, t } = useFormWizard();
   const { showToast } = useToast();
-  const { canGenerate: canGenerateAI, remainingGenerations, incrementGeneration } = useAIGenerations();
-  const { token: csrfToken } = useCsrf();
+  const { canGenerate: canGenerateAI, remainingGenerations, incrementGeneration } = useAIGeneration();
+  const { token: csrfToken, isFatal: csrfFatal, refetch: refetchCsrf } = useCsrf();
 
   const [isGenerating, setIsGenerating] = useState(false);
   const prevLangRef = useRef(data.lang);
+  const currentPdfUrlRef = useRef<string | null>(null);
+  const currentZipUrlRef = useRef<string | null>(null);
 
   // Notify when language changes - keep text, user can regenerate if needed
   useEffect(() => {
     if (prevLangRef.current !== data.lang && data.generatedText && data.generatedText.length > 0) {
       showToast(
-        TRANSLATIONS[data.lang]?.labels?.langChangeKeepText || 'Text bleibt erhalten. Bei Bedarf neu generieren.',
+        t?.labels?.langChangeKeepText || 'Text bleibt erhalten. Bei Bedarf neu generieren.',
         'info'
       );
     }
     prevLangRef.current = data.lang;
   }, [data.lang, data.generatedText, showToast]);
 
-  // Handle file upload and compression (used if passed to a component)
-  const MAX_PHOTO_SIZE = 10 * 1024 * 1024; // 10MB
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > MAX_PHOTO_SIZE) {
-      showToast(TRANSLATIONS[data.lang]?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error');
-      return;
-    }
-    try {
-      const compressedImage = await compressImage(file, {
-        maxWidth: 800,
-        maxHeight: 800,
-        quality: 0.8,
-        maxSizeKB: 500
-      });
-      updateData('photo', compressedImage);
-    } catch (err) {
-      // Only use raw file if under 2MB to avoid browser crash
-      if (file.size <= 2 * 1024 * 1024) {
-        const reader = new FileReader();
-        reader.onloadend = () => updateData('photo', reader.result);
-        reader.readAsDataURL(file);
-        showToast('Image compression failed, using original', 'info');
-      } else {
-        showToast(TRANSLATIONS[data.lang]?.step4?.fileTooLarge ?? 'Datei zu groß. Bitte komprimieren Sie das Bild.', 'error');
-      }
-    }
-  };
-
   // Generate fallback template-based text
   const generateFallbackText = () => {
-    const tmpl = TRANSLATIONS[data.lang]?.templates || TRANSLATIONS.de.templates;
+    const tmpl = t?.templates || {};
     const rawKeywords = (data.keywords || '').split(',').map((s: string) => s.trim()).filter((s: string) => s);
     let middleSection = "";
     if (rawKeywords.length > 0) {
@@ -85,7 +57,6 @@ const AppContent: React.FC = () => {
 
   // Generate AI text description
   const generateText = async () => {
-    const t = TRANSLATIONS[data.lang];
 
     // SECURITY: Prevent duplicate requests - early return if already generating
     if (isGenerating) {
@@ -99,6 +70,21 @@ const AppContent: React.FC = () => {
         'info'
       );
       generateFallbackText();
+      return;
+    }
+
+    if (!csrfToken) {
+      if (csrfFatal) {
+        showToast(
+          t?.ui?.connectionError || 'Verbindungsfehler. Bitte Seite neu laden oder erneut versuchen.',
+          'error'
+        );
+      } else {
+        showToast(
+          t?.ui?.csrfLoading || 'Sicherheitstoken wird geladen. Bitte kurz warten.',
+          'info'
+        );
+      }
       return;
     }
 
@@ -164,7 +150,6 @@ const AppContent: React.FC = () => {
         console.error('AI generation error:', err);
       }
 
-      const t = TRANSLATIONS[data.lang];
       const errorMessage = err.message || 'Unknown error';
       showToast(
         errorMessage.includes('network') || errorMessage.includes('fetch')
@@ -308,7 +293,6 @@ const AppContent: React.FC = () => {
 
   // Download PDF (templateType passed from AppContainer wrapper using selectedTemplate)
   const handleDownloadPDF = async (templateType: string = 'classic') => {
-    const t = TRANSLATIONS[data.lang];
 
     try {
       const filename = `${data.name || 'Pet-CV'}-${new Date().getTime()}.pdf`;
@@ -345,7 +329,9 @@ const AppContent: React.FC = () => {
       const blob = await pdf(
         <SwissDocumentPdf data={pdfData} t={pdfT} templateType={templateType} logoUrl={logoUrl} qrUrl={qrUrl} />
       ).toBlob();
+      if (currentPdfUrlRef.current) URL.revokeObjectURL(currentPdfUrlRef.current);
       const url = URL.createObjectURL(blob);
+      currentPdfUrlRef.current = url;
 
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -375,9 +361,13 @@ const AppContent: React.FC = () => {
       }
 
       // Revoke after safe delay (5min) - browser needs URL for entire download on slow connections
-      setTimeout(() => URL.revokeObjectURL(url), 300000);
+      setTimeout(() => {
+        if (currentPdfUrlRef.current === url) {
+          URL.revokeObjectURL(url);
+          currentPdfUrlRef.current = null;
+        }
+      }, 300000);
     } catch (err: unknown) {
-      const t = TRANSLATIONS[data.lang];
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       console.error('PDF generation error:', err);
 
@@ -406,12 +396,11 @@ const AppContent: React.FC = () => {
   };
 
   // Generate PDF blob for a specific template (used for ZIP download)
-  const generatePdfBlob = async (templateType: string): Promise<Blob> => {
-    const t = TRANSLATIONS[data.lang];
+  // optimizedData: optional pre-converted data (photo already blob→dataURL, webp→jpeg) to avoid N conversions
+  const generatePdfBlob = async (templateType: string, optimizedData?: typeof data): Promise<Blob> => {
+    let pdfData = optimizedData ?? { ...data };
 
-    let pdfData = { ...data };
-
-    if (data.photo && typeof data.photo === 'string') {
+    if (!optimizedData && data.photo && typeof data.photo === 'string') {
       try {
         let photoUrl = data.photo;
         if (data.photo.startsWith('blob:')) {
@@ -422,7 +411,6 @@ const AppContent: React.FC = () => {
         }
         pdfData = { ...data, photo: photoUrl };
       } catch (err) {
-        // Photo conversion failed for ZIP template - continue without photo
         if (import.meta.env.DEV) console.warn('Photo conversion failed for template PDF:', err);
         pdfData = { ...data, photo: null };
       }
@@ -444,12 +432,38 @@ const AppContent: React.FC = () => {
     ).toBlob();
   };
 
-  // Download all templates as ZIP
+  // Download all templates as ZIP (disabled on mobile - OOM risk)
   const handleDownloadAllTemplates = async () => {
-    const t = TRANSLATIONS[data.lang];
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      showToast(
+        t?.premium?.zipMobileDisabled ?? 'ZIP-Download auf Mobilgeräten deaktiviert. Bitte einzelne Vorlagen herunterladen.',
+        'info'
+      );
+      return;
+    }
+
     showToast(t?.premium?.generatingZip || 'Generiere alle Vorlagen...', 'info');
 
     try {
+      // Convert photo once before loop (avoids 3x blob→dataURL, webp→jpeg for each template)
+      let optimizedData: typeof data | undefined;
+      if (data.photo && typeof data.photo === 'string') {
+        try {
+          let photoUrl = data.photo;
+          if (data.photo.startsWith('blob:')) {
+            photoUrl = await blobUrlToDataUrl(data.photo);
+          }
+          if (photoUrl.startsWith('data:image/webp')) {
+            photoUrl = await toJpegDataUrl(photoUrl);
+          }
+          optimizedData = { ...data, photo: photoUrl };
+        } catch (err) {
+          if (import.meta.env.DEV) console.warn('Photo conversion failed for ZIP:', err);
+          optimizedData = { ...data, photo: null };
+        }
+      }
+
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
       const petName = data.name || 'Pet-CV';
@@ -458,7 +472,7 @@ const AppContent: React.FC = () => {
 
       for (const template of TEMPLATE_OPTIONS) {
         try {
-          const blob = await generatePdfBlob(template.id);
+          const blob = await generatePdfBlob(template.id, optimizedData);
           zip.file(`${petName}-${template.id}.pdf`, blob);
           successCount++;
         } catch (err) {
@@ -475,7 +489,9 @@ const AppContent: React.FC = () => {
       }
 
       const zipBlob = await zip.generateAsync({ type: 'blob' });
+      if (currentZipUrlRef.current) URL.revokeObjectURL(currentZipUrlRef.current);
       const url = URL.createObjectURL(zipBlob);
+      currentZipUrlRef.current = url;
 
       const link = document.createElement('a');
       link.href = url;
@@ -485,7 +501,12 @@ const AppContent: React.FC = () => {
       link.click();
       document.body.removeChild(link);
 
-      setTimeout(() => URL.revokeObjectURL(url), 300000); // 5min for ZIP
+      setTimeout(() => {
+        if (currentZipUrlRef.current === url) {
+          URL.revokeObjectURL(url);
+          currentZipUrlRef.current = null;
+        }
+      }, 300000); // 5min for ZIP
 
       // Notify user about results
       if (failedTemplates.length > 0) {
@@ -498,7 +519,6 @@ const AppContent: React.FC = () => {
       if (import.meta.env.DEV) {
         console.error('ZIP generation error:', err);
       }
-      const t = TRANSLATIONS[data.lang];
       showToast(t?.premium?.zipError || 'Fehler beim Erstellen des ZIP-Archivs', 'error');
     }
   };

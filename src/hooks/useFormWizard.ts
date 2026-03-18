@@ -1,9 +1,12 @@
-import { useWizardNavigation } from './useWizardNavigation';
-import { useFormData } from './useFormData';
-import { useAIGeneration } from './useAIGeneration';
-import { useTranslation } from './useTranslation';
-import { useTheme } from './useTheme';
-import { useToast } from './useToast';
+import {
+  useFormDataContext,
+  useTranslationContext,
+  useWizardNavigationContext,
+  useThemeContext,
+  useToastContext,
+  useAIGenerationContext,
+} from '../context/WizardProviders';
+
 export interface UseFormWizardReturn {
   step: number;
   animDir: 'left' | 'right';
@@ -40,12 +43,12 @@ export interface UseFormWizardReturn {
 }
 
 export const useFormWizard = (): UseFormWizardReturn => {
-  const wizardNav = useWizardNavigation();
-  const translation = useTranslation();
-  const formData = useFormData(translation.lang);
-  const ai = useAIGeneration();
-  const theme = useTheme();
-  const toast = useToast();
+  const wizardNav = useWizardNavigationContext();
+  const translation = useTranslationContext();
+  const toast = useToastContext();
+  const formData = useFormDataContext();
+  const ai = useAIGenerationContext();
+  const theme = useThemeContext();
 
   const clearSavedData = () => {
     formData.resetForm();

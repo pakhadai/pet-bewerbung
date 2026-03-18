@@ -8,6 +8,7 @@
 
 import React, { ReactNode } from 'react';
 import ErrorBoundary from './ErrorBoundary';
+import { WizardProviders } from '../context/WizardProviders';
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -15,12 +16,14 @@ interface AppProvidersProps {
 
 /**
  * AppProviders: Wraps app with providers
- * Kept minimal - context providers are typically handled at the hook level
+ * WizardProviders: split contexts (useFormData, useTranslation etc) for direct use
  */
 export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
     <ErrorBoundary>
-      {children}
+      <WizardProviders>
+        {children}
+      </WizardProviders>
     </ErrorBoundary>
   );
 };

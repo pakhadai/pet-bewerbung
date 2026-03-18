@@ -19,8 +19,6 @@ interface WizardRouteProps {
   onSelectTemplate: (templateId: string) => void;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   onGenerateText: () => Promise<void>;
-  onDownloadPDF: () => Promise<void>;
-  onDownloadAllTemplates: () => Promise<void>;
   onNavigationVisibilityChange: (visible: boolean) => void;
   canGenerateAI?: boolean;
   remainingGenerations?: number;
@@ -32,8 +30,6 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
   onSelectTemplate,
   showToast,
   onGenerateText,
-  onDownloadPDF,
-  onDownloadAllTemplates,
   onNavigationVisibilityChange,
   canGenerateAI = true,
   remainingGenerations = 5,
@@ -67,13 +63,7 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
         />
       );
     case 6:
-      return (
-        <Step5Preview
-          selectedTemplate={selectedTemplate}
-          onDownloadPDF={onDownloadPDF}
-          onDownloadAllTemplates={onDownloadAllTemplates}
-        />
-      );
+      return <Step5Preview selectedTemplate={selectedTemplate} />;
     default:
       return null;
   }

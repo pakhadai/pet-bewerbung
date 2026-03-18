@@ -1,6 +1,3 @@
-// Import translations from separate files
-import { TRANSLATIONS } from './translations';
-
 const INITIAL_DATA = {
   lang: 'de',
   petType: 'dog',
@@ -77,34 +74,8 @@ const TEMPLATE_OPTIONS = [
   { id: 'compact', label: 'Compact' }
 ];
 
-// Section definitions for the Template Builder
-const SECTION_DEFINITIONS = [
-  { id: 'photo', label: 'Foto', icon: 'image', required: false },
-  { id: 'owner', label: 'Besitzer Info', icon: 'person', required: true },
-  { id: 'details', label: 'Tier Details', icon: 'pets', required: true },
-  { id: 'behavior', label: 'Verhalten', icon: 'psychology', required: false },
-  { id: 'description', label: 'Beschreibung', icon: 'description', required: false },
-  { id: 'legal', label: 'Rechtliches', icon: 'gavel', required: false },
-  { id: 'reference', label: 'Referenzen', icon: 'contact_phone', required: false }
-];
-
-// Color presets for the builder
-const COLOR_PRESETS = [
-  { id: 'lavender', primary: '#b39ddb', secondary: '#f3e5f5', label: 'Lavender' },
-  { id: 'blue', primary: '#64b5f6', secondary: '#e3f2fd', label: 'Ocean Blue' },
-  { id: 'green', primary: '#81c784', secondary: '#e8f5e9', label: 'Nature Green' },
-  { id: 'amber', primary: '#ffd54f', secondary: '#fff8e1', label: 'Golden Amber' },
-  { id: 'coral', primary: '#ff8a65', secondary: '#fbe9e7', label: 'Coral' },
-  { id: 'teal', primary: '#4db6ac', secondary: '#e0f2f1', label: 'Teal' },
-  { id: 'rose', primary: '#f48fb1', secondary: '#fce4ec', label: 'Rose' },
-  { id: 'slate', primary: '#78909c', secondary: '#eceff1', label: 'Slate' }
-];
-
-export { 
-  TRANSLATIONS, 
-  INITIAL_DATA, 
-  MAX_DESCRIPTION_LENGTH, 
-  TEMPLATE_OPTIONS, 
-  SECTION_DEFINITIONS,
-  COLOR_PRESETS
+export {
+  INITIAL_DATA,
+  MAX_DESCRIPTION_LENGTH,
+  TEMPLATE_OPTIONS,
 };

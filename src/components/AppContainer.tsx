@@ -4,7 +4,7 @@
  * Handles step navigation and orchestrates step rendering
  */
 
-import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import GlobalStyles from './GlobalStyles';
 import Header from './Header';
 import Footer from './Footer';
@@ -15,7 +15,7 @@ import CookieBanner, { COOKIE_CONSENT_KEY } from './CookieBanner';
 import LegalPages from './LegalPages';
 import ErrorBoundary from './ErrorBoundary';
 import { X, Camera } from 'lucide-react';
-import { useFormWizard, useToast, useTemplateSelection, useFormValidation } from '../hooks';
+import { useFormWizard, useToast, useTemplateSelection, useFormValidation, validateStep } from '../hooks';
 import WizardRoute from '../routes/WizardRoute';
 import HeroRoute from '../routes/HeroRoute';
 import ThankYouRoute from '../routes/ThankYouRoute';
@@ -41,41 +41,27 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   canGenerateAI = true,
   remainingGenerations = 5,
 }) => {
-  // State management
-  const { step, data, animDir, updateData, goToStep, t, lang, setLang } = useFormWizard();
+  // State management (single theme source from useFormWizard/useThemeContext)
+  const { step, data, animDir, updateData, goToStep, t, lang, setLang, darkMode, setDarkMode, toggleTheme } = useFormWizard();
   const { showToast } = useToast();
   const { selectedTemplate, setSelectedTemplate, previewOpen, previewTemplate, closePreview } = useTemplateSelection();
-  const { errors: validationErrors, isValid: isStepValid } = useFormValidation(data, step);
+  const { errors: validationErrors } = useFormValidation(data, step);
 
   // Wrap onDownloadPDF to inject selectedTemplate (user's chosen template)
-  const wrappedOnDownloadPDF = () => onDownloadPDF(selectedTemplate);
-  const validationRef = useRef(isStepValid);
-  validationRef.current = isStepValid;
+  const wrappedOnDownloadPDF = useCallback(() => onDownloadPDF(selectedTemplate), [onDownloadPDF, selectedTemplate]);
 
-  // Validated navigation: block forward if current step has validation errors
+  // Validated navigation: sync validation on current data (no validationRef/setTimeout)
   const handleNext = () => {
-    // Sync FormInput values (they only sync on blur) before validation
     if (document.activeElement?.blur) document.activeElement.blur();
-    // Defer to allow blur handler to update state, then read latest validation from ref
-    setTimeout(() => {
-      if (!validationRef.current) {
-        showToast(t?.validation?.fillRequired || 'Bitte füllen Sie die Pflichtfelder aus', 'error');
-        return;
-      }
-      goToStep(step + 1);
-    }, 0);
+    const { isValid } = validateStep(data, step);
+    if (!isValid) {
+      showToast(t?.validation?.fillRequired || 'Bitte füllen Sie die Pflichtfelder aus', 'error');
+      return;
+    }
+    goToStep(step + 1);
   };
 
-  // Local state for modals and theme
-  const [darkMode, setDarkMode] = useState<boolean>(() => {
-    try {
-      const saved = localStorage.getItem('pet-bewerbung-theme');
-      return saved === 'dark';
-    } catch {
-      return false;
-    }
-  });
-
+  // Local state for modals
   const [legalPage, setLegalPage] = useState<string | null>(null);
   const [faqOpen, setFaqOpen] = useState(false);
   const [navigationVisible, setNavigationVisible] = useState(true);
@@ -87,20 +73,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       return null;
     }
   });
-  // Apply dark mode class to document
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    try {
-      localStorage.setItem('pet-bewerbung-theme', darkMode ? 'dark' : 'light');
-    } catch {
-      // ignore
-    }
-  }, [darkMode]);
-
   // Handle cookie consent change
   const handleCookieConsentChange = (consent: 'accepted' | 'declined') => {
     setCookieConsent(consent);
@@ -115,6 +87,22 @@ export const AppContainer: React.FC<AppContainerProps> = ({
 
   // Convert darkMode to theme string
   const theme = darkMode ? 'dark' : 'light';
+
+  // Memoize context value to prevent unnecessary re-renders of all WizardContext consumers
+  const wizardContextValue = useMemo(
+    () => ({
+      data,
+      updateData,
+      t,
+      darkMode,
+      step,
+      animDir,
+      validationErrors,
+      onDownloadPDF: wrappedOnDownloadPDF,
+      onDownloadAllTemplates,
+    }),
+    [data, updateData, t, darkMode, step, animDir, validationErrors, wrappedOnDownloadPDF, onDownloadAllTemplates]
+  );
 
   // GlobalStyles must be at app root so modals (FaqModal, LegalPages) have CSS vars & animations
   const appContent = step === 7 ? (
@@ -135,7 +123,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     <div className="min-h-screen font-sans theme-text theme-bg pb-6 print:bg-white print:p-0">
       <Header
         darkMode={darkMode}
-        toggleDarkMode={() => setDarkMode(!darkMode)}
+        toggleDarkMode={toggleTheme}
         lang={lang}
         onLangChange={(v: string) => { updateData('lang', v); setLang(v as any); }}
         onLogoClick={() => goToStep(0)}
@@ -152,25 +140,13 @@ export const AppContainer: React.FC<AppContainerProps> = ({
           {step === 0 ? (
             <HeroRoute darkMode={darkMode} t={t} onStartClick={() => goToStep(1)} />
           ) : step >= 1 && step <= 6 ? (
-            <WizardProvider
-              value={{
-                data,
-                updateData,
-                t,
-                darkMode,
-                step,
-                animDir,
-                validationErrors,
-              }}
-            >
+            <WizardProvider value={wizardContextValue}>
               <WizardRoute
                 step={step}
                 selectedTemplate={selectedTemplate}
                 onSelectTemplate={setSelectedTemplate}
                 showToast={showToast}
                 onGenerateText={onGenerateText}
-                onDownloadPDF={wrappedOnDownloadPDF}
-                onDownloadAllTemplates={onDownloadAllTemplates}
                 onNavigationVisibilityChange={setNavigationVisible}
                 canGenerateAI={canGenerateAI}
                 remainingGenerations={remainingGenerations}
