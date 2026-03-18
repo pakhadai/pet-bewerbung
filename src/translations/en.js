@@ -350,15 +350,11 @@ export default {
     solutionDesc: "A professional CV shows responsibility, proves insurance coverage and sets you apart from other applicants.",
     cta: "Create Now",
     // Free vs Premium comparison
-    transparencyTitle: "Free vs Premium",
+    transparencyTitle: "All free",
     transparencyBadge1: "Local Data",
     transparencyBadge2: "No Ads",
-    transparencyBadge3: "Premium: 10 CHF",
-    freeTitle: "Free",
-    freeFeatures: ["Classic template", "Manual input", "PDF download"],
-    premiumTitle: "Premium (2 hours)",
-    premiumFeatures: ["8 Pro templates", "Visual Editor", "Unlimited AI texts", "ZIP with all designs"],
-    popularBadge: "Popular"
+    transparencyBadge3: "100% free",
+    freeFeatures: ["3 templates", "AI text generation", "PDF download", "ZIP with all designs"]
   },
   step1Details: {
     ownerSection: "Owner Information",
@@ -443,10 +439,10 @@ export default {
   // Premium/Freemium features
   premium: {
     // AI limits
-    aiLimitReached: 'AI limit reached. Unlock Premium for unlimited generations.',
-    aiLimitBtn: 'Limit reached – Get Premium',
+    aiLimitReached: 'AI limit reached. Try again tomorrow.',
+    aiLimitBtn: 'Limit reached – try again tomorrow',
     aiRemaining: 'AI generation(s) remaining',
-    aiLimitInfo: 'Premium for unlimited AI texts',
+    aiLimitInfo: 'Limit reached – try again tomorrow',
     unlimitedAI: 'Premium – Unlimited AI generations',
     unlimitedAIShort: 'Unlimited AI texts',
     
@@ -606,18 +602,17 @@ export default {
       all: "All",
       general: "General",
       privacy: "Privacy & Security",
-      payment: "Cost & Premium",
+      payment: "Costs",
       tips: "Tips for Finding Housing"
     },
     items: [
       { id: "q1", category: "general", q: "Does this Pet Dossier guarantee I get the apartment?", a: "No, there is no guarantee. But a professional dossier shows the landlord that you take responsibility (insurance, training). In Switzerland, landlords often choose the candidate who poses the least risk – this document minimizes concerns." },
       { id: "q2", category: "privacy", q: "Where are my data stored?", a: "Nowhere on our servers. We use 'Local-First' technology. All data (names, photos, addresses) is processed exclusively in your browser's temporary storage. Once you download the PDF and close the tab, the data is gone (unless you don't clear the browser cache)." },
-      { id: "q3", category: "payment", q: "How much does the service cost?", a: "The Classic template is free and fully functional. For 10 CHF you get 2 hours of Premium access: all 4 professional templates, unlimited AI text generation, and the Character Constructor. Ideal if you're preparing multiple applications." },
-      { id: "q4", category: "payment", q: "What's included in Premium?", a: "Premium (10 CHF, 2 hours) includes: all 4 template designs (Classic, Modern, Compact, Swiss), unlimited AI text generation, the Character Constructor with sliders, Magic Rewrite for text improvement, and ZIP download of all templates at once." },
-      { id: "q5", category: "payment", q: "Why only 2 hours?", a: "We don't store user accounts for privacy reasons. 2 hours is enough to perfect your dossier and download all versions. You can edit and download unlimited times during this period." },
+      { id: "q3", category: "payment", q: "How much does the service cost?", a: "The service is completely free. You get 3 templates (Classic, Modern, Compact), AI text generation (5 requests per day), and can download all templates as ZIP." },
+      { id: "q4", category: "payment", q: "What's included?", a: "All 3 template designs (Classic, Modern, Compact), AI text generation for the description (5 per day per IP), PDF download, and ZIP download of all templates at once." },
       { id: "q6", category: "privacy", q: "Are my data used for AI training?", a: "No. We only send anonymized pet data (breed, age, traits) to the AI to generate the text. Personal data of the owner (name, address) never leaves your device." },
       { id: "q7", category: "tips", q: "Which insurances are important in Switzerland?", a: "For dog owners, private liability insurance (Privathaftpflicht) with coverage for tenant damage is essential. Proof of AMICUS registration is often also required. Our dossier highlights these points." },
-      { id: "q8", category: "general", q: "Can I edit the dossier later?", a: "As long as you don't close the browser or reload the page, your data remains. With Premium, you can edit unlimited times for 2 hours. After closing, you must create a new dossier." }
+      { id: "q8", category: "general", q: "Can I edit the dossier later?", a: "As long as you don't close the browser or reload the page, your data remains. After closing, you must create a new dossier." }
     ],
     footerHint: "Questions about tech or payment? Email support@pet-bewerbung.ch"
   }

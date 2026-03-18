@@ -17,7 +17,7 @@ const FaqModal = ({ isOpen, onClose, t, darkMode }) => {
       onClick={onClose}
     >
       <div
-        className={`w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl shadow-2xl border ${cardBg} overflow-hidden animate-in zoom-in-95 duration-200`}
+        className={`w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl shadow-2xl border ${cardBg} overflow-hidden modal-enter`}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}

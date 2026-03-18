@@ -283,15 +283,11 @@ export default {
     solutionTitle: "Vossa soluziun: il Dossier Pet",
     solutionDesc: "In CV professional mussa responsabilitad, documentescha l'assiguraziun e ta distinguescha d'auters candidats. Augmentai vossas schanzas da chattar l'appartament da voss sogns.",
     cta: "Crear ussa",
-    transparencyTitle: "Gratuit vs Premium",
+    transparencyTitle: "Tut gratuit",
     transparencyBadge1: "Datas localas",
     transparencyBadge2: "Senza reclama",
-    transparencyBadge3: "Premium: 10 CHF",
-    freeTitle: "Gratuit",
-    freeFeatures: ["Model Classic", "Input manual", "Download PDF"],
-    premiumTitle: "Premium (2 uras)",
-    premiumFeatures: ["Editur Visual", "Tut ils 4 models pro", "Generaziun IA", "ZIP cun tut ils designs"],
-    popularBadge: "Popular"
+    transparencyBadge3: "100% gratuit",
+    freeFeatures: ["3 models", "Generaziun IA", "Download PDF", "ZIP cun tut ils designs"]
   },
   step1Details: {
     ownerSection: "Infurmaziuns proprietari",
@@ -358,30 +354,15 @@ export default {
     faqComingSoon: "FAQ — en curt disponibel."
   },
   premium: {
-    title: 'Premium',
-    price: '10 CHF',
-    badge: 'PREMIUM',
-    freeBadge: 'GRATUIT',
-    features: ['Tut ils models', 'IA illimitada', 'Senza filigrana', 'Download ZIP'],
-    buyPremium: 'Cumprar Premium',
-    useFreeTemplate: 'Utilisar model gratuit',
-    premiumTemplate: 'Model Premium',
-    freeTemplate: 'Model Gratuit',
-    unlockAll: 'Debloccar tut',
-    unlockAllDesc: 'Survegnir access cumplettà per 2 uras',
-    sessionInfo: 'Access 2 uras',
-    sessionExpired: 'Sessiun expirà',
-    sessionActive: 'Premium activ',
-    sessionRemaining: 'Temp restant',
-    sessionEnded: 'Vossa sessiun Premium è terminada. Cumprà danovamain per cuntinuar.',
-    previewWatermark: 'PREVISTA',
-    downloadAll: 'Telechargiar tut ils models sco ZIP',
+    aiLimitReached: 'Limita IA cuntanschida. Emprova danovamain damaun.',
+    aiLimitBtn: 'Limita cuntanschida – emprova damaun',
+    aiRemaining: 'generaziun(s) IA restanta(s)',
+    aiLimitInfo: 'Limita cuntanschida – emprova damaun',
+    freeTemplate: 'Gratuit',
+    downloadAllZip: 'Tut sco ZIP',
     generatingZip: 'Generaziun da tut ils models...',
     zipDownloaded: 'ZIP cun tut ils models telechargia!',
-    zipError: 'Errur tar la creaziun dal ZIP',
-    zipRequiresPremium: 'Download ZIP be per Premium',
-    openBuilder: 'Avrir constructor',
-    builderRequiresPremium: 'Il constructor da models pretenda Premium'
+    zipError: 'Errur tar la creaziun dal ZIP'
   },
   builder: {
     title: 'Constructor da models',
@@ -448,16 +429,15 @@ export default {
     title: "Dumondas frequentas",
     searchPlaceholder: "Tschertgar rispostas...",
     noResults: "Nagins resultats per",
-    categories: { all: "Tut", general: "General", privacy: "Protecziun da datas", payment: "Custs & Premium", tips: "Cussegls per tschertgar" },
+    categories: { all: "Tut", general: "General", privacy: "Protecziun da datas", payment: "Custs", tips: "Cussegls per tschertgar" },
     items: [
       { id: "q1", category: "general", q: "Garantescha quest dossier in'acceptaziun?", a: "Na, nagina garantia. Ma in dossier professiunal mussa al patrun che Vus prendais responsabilitad (assicuranza, educaziun). En Svizra tschernan patruns savens il candidat cun il pli pitschen risc." },
       { id: "q2", category: "privacy", q: "Nua vegnan memorisadas mias datas?", a: "Da nagin lieu sin noss servers. Nus duvrain tecnologia 'Local-First'. Tut las datas vegnan elaboradas be en la memoria temporara da Voss navigatur." },
-      { id: "q3", category: "payment", q: "Quant costa il servetsch?", a: "Il model Classic è gratuit e cumplettamain funcziuanel. Per 10 CHF survegnis Vus 2 uras access Premium: tut ils 4 models professiunals, generaziun IA illimitada ed il Constructor da caracter. Ideal sche Vus preparais pliras candidaturas." },
-      { id: "q4", category: "payment", q: "Tge è inclus en Premium?", a: "Premium (10 CHF, 2 uras) includa: tut ils 4 designs da models (Classic, Modern, Compact, Swiss), generaziun IA illimitada, il Constructor da caracter cun sliders, Magic Rewrite per meglierar il text e download ZIP da tut ils models." },
-      { id: "q5", category: "payment", q: "Pertge be 2 uras?", a: "Nus na memorisain nagins contos d'utilisaders per motivs da protecziun da datas. 2 uras bastan per perfecziunar il dossier e telechargiar tut las versiuns. Vus pudais editar e telechargiar illimitadamain durant quest temp." },
+      { id: "q3", category: "payment", q: "Quant costa il servetsch?", a: "Il servetsch è cumplettamain gratuit. Vus survegnis 3 models (Classic, Modern, Compact), generaziun IA (5 dumondas per di) e telechargiada ZIP da tut ils models." },
+      { id: "q4", category: "payment", q: "Tge è inclus?", a: "Tut ils 3 designs (Classic, Modern, Compact), generaziun IA per la descripziun (5 per di per IP), download PDF e ZIP da tut ils models." },
       { id: "q6", category: "privacy", q: "Vegnan mias datas duvradas per l'instrucziun da l'IA?", a: "Na. Nus tramettan be datas anonimisadas davart l'animal. Las datas persunalas dal possessur na bandunan mai Voss apparat." },
       { id: "q7", category: "tips", q: "Tge assicuranzas èn impurtantas en Svizra?", a: "Per possessurs da chauns è ina assicuranza da responsabilitad privata cun cuvertura per donns da locatar essenziala. Savens è er la prova da registraziun AMICUS pretendida." },
-      { id: "q8", category: "general", q: "Poss jau modifitgar il dossier pli tard?", a: "Fin che Vus na serrais betg il navigatur, restan las datas. Cun Premium pudais Vus editar illimitadamain per 2 uras. Suenter serrar ston Vus crear in nov dossier." }
+      { id: "q8", category: "general", q: "Poss jau modifitgar il dossier pli tard?", a: "Fin che Vus na serrais betg il navigatur, restan las datas. Suenter serrar ston Vus crear in nov dossier." }
     ],
     footerHint: "Dumondas davart la tecnica u il pajament? support@pet-bewerbung.ch"
   }

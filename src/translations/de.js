@@ -345,15 +345,11 @@ export default {
     solutionDesc: "Ein professioneller Lebenslauf zeigt Verantwortung, belegt Versicherungsschutz und hebt Sie von anderen Bewerbern ab.",
     cta: "Jetzt erstellen",
     // Free vs Premium comparison
-    transparencyTitle: "Kostenlos vs Premium",
+    transparencyTitle: "Alles kostenlos",
     transparencyBadge1: "Lokale Daten",
     transparencyBadge2: "Keine Werbung",
-    transparencyBadge3: "Premium: 10 CHF",
-    freeTitle: "Kostenlos",
-    freeFeatures: ["Classic-Vorlage", "Manuelle Eingabe", "PDF-Download"],
-    premiumTitle: "Premium (2 Stunden)",
-    premiumFeatures: ["8 Profi-Vorlagen", "Visual Editor", "KI-Texte unbegrenzt", "ZIP mit allen Designs"],
-    popularBadge: "Beliebt"
+    transparencyBadge3: "100% kostenlos",
+    freeFeatures: ["3 Vorlagen", "KI-Textgenerierung", "PDF-Download", "ZIP mit allen Designs"]
   },
   step1Details: {
     ownerSection: "Halterangaben",
@@ -439,11 +435,10 @@ export default {
   },
   // Premium/Freemium features
   premium: {
-    // AI limits
-    aiLimitReached: 'KI-Limit erreicht. Premium für unbegrenzte Generierungen freischalten.',
-    aiLimitBtn: 'Limit erreicht – Premium für mehr',
+    aiLimitReached: 'KI-Limit erreicht. Versuchen Sie es morgen wieder.',
+    aiLimitBtn: 'Limit erreicht – morgen wieder',
     aiRemaining: 'KI-Generierung(en) übrig',
-    aiLimitInfo: 'Premium für unbegrenzte KI-Texte',
+    aiLimitInfo: 'Limit erreicht – morgen wieder',
     unlimitedAI: 'Premium – Unbegrenzte KI-Generierungen',
     unlimitedAIShort: 'Unbegrenzt KI-Texte',
     
@@ -603,19 +598,18 @@ export default {
       all: "Alle",
       general: "Allgemein",
       privacy: "Datenschutz & Sicherheit",
-      payment: "Kosten & Premium",
+      payment: "Kosten",
       tips: "Tipps für die Wohnungssuche"
     },
     items: [
       { id: "q1", category: "general", q: "Garantiert dieses Pet-Dossier eine Wohnungszusage?", a: "Nein, eine Garantie gibt es nicht. Aber ein professionelles Dossier zeigt dem Vermieter, dass Sie Verantwortung übernehmen (Versicherung, Erziehung). In der Schweiz entscheiden sich Vermieter oft für den Kandidaten, der das geringste Risiko darstellt – dieses Dokument minimiert Bedenken." },
       { id: "q2", category: "privacy", q: "Wo werden meine Daten gespeichert?", a: "Nirgendwo auf unseren Servern. Wir nutzen eine 'Local-First'-Technologie. Alle Daten (Namen, Fotos, Adressen) werden ausschliesslich im temporären Speicher Ihres Browsers verarbeitet. Sobald Sie das PDF herunterladen und den Tab schliessen, sind die Daten weg (ausser Sie löschen den Browser-Cache nicht)." },
-      { id: "q3", category: "payment", q: "Was kostet der Service?", a: "Der Classic-Vorlage ist kostenlos und voll funktionsfähig. Für 10 CHF erhalten Sie 2 Stunden Premium-Zugang: alle 4 professionellen Vorlagen, unbegrenzte KI-Textgenerierung und den Charakter-Konstruktor. Ideal, wenn Sie mehrere Bewerbungen vorbereiten." },
-      { id: "q4", category: "payment", q: "Was ist im Premium enthalten?", a: "Premium (10 CHF, 2 Stunden) enthält: alle 4 Vorlagendesigns (Classic, Modern, Compact, Swiss), unbegrenzte KI-Textgenerierung, den Charakter-Konstruktor mit Schiebereglern, Magic Rewrite für Textverbesserung und ZIP-Download aller Vorlagen auf einmal." },
-      { id: "q5", category: "payment", q: "Warum nur 2 Stunden?", a: "Wir speichern keine Benutzerkonten aus Datenschutzgründen. 2 Stunden reichen, um Ihr Dossier zu perfektionieren und alle Versionen herunterzuladen. Sie können unbegrenzt bearbeiten und herunterladen in dieser Zeit." },
+      { id: "q3", category: "payment", q: "Was kostet der Service?", a: "Der Service ist vollständig kostenlos. Sie erhalten 3 Vorlagen (Classic, Modern, Compact), KI-Textgenerierung (5 Anfragen pro Tag) und können alle Vorlagen als ZIP herunterladen." },
+      { id: "q4", category: "payment", q: "Was ist enthalten?", a: "Alle 3 Vorlagendesigns (Classic, Modern, Compact), KI-Textgenerierung für die Beschreibung (5 pro Tag pro IP), PDF-Download und ZIP-Download aller Vorlagen auf einmal." },
       { id: "q6", category: "privacy", q: "Werden meine Daten für KI-Training genutzt?", a: "Nein. Wir senden nur anonymisierte Tierdaten (Rasse, Alter, Merkmale) an die KI, um den Text zu generieren. Persönliche Daten des Halters (Name, Adresse) verlassen niemals Ihr Gerät." },
       { id: "q7", category: "tips", q: "Welche Versicherungen sind in der Schweiz wichtig?", a: "Für Hundehalter ist eine Privathaftpflichtversicherung (Privathaftpflicht) mit Deckung für Mieterschäden essenziell. Oft wird auch der Nachweis der AMICUS-Registrierung verlangt. Unser Dossier hebt diese Punkte hervor." },
-      { id: "q8", category: "general", q: "Kann ich das Dossier nachträglich bearbeiten?", a: "Solange Sie den Browser nicht schliessen oder die Seite neu laden, bleiben Ihre Daten erhalten. Mit Premium können Sie 2 Stunden lang unbegrenzt bearbeiten. Nach dem Schliessen müssen Sie ein neues Dossier erstellen." }
+      { id: "q8", category: "general", q: "Kann ich das Dossier nachträglich bearbeiten?", a: "Solange Sie den Browser nicht schliessen oder die Seite neu laden, bleiben Ihre Daten erhalten. Nach dem Schliessen müssen Sie ein neues Dossier erstellen." }
     ],
-    footerHint: "Fragen zur Technik oder Bezahlung? Schreiben Sie an support@pet-bewerbung.ch"
+    footerHint: "Fragen zum Service? Besuchen Sie pet-bewerbung.ch"
   }
 };

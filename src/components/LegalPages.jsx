@@ -6,11 +6,11 @@ const LegalModal = ({ isOpen, onClose, title, icon: Icon, children }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 print:hidden"
+      className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4 print:hidden"
       onClick={onClose}
     >
       <div
-        className="theme-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col"
+        className="theme-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col modal-enter"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-6 border-b theme-border">

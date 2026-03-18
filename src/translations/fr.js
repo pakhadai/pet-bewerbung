@@ -284,15 +284,11 @@ export default {
     solutionDesc: "Un CV pro démontre votre responsabilité et vous distingue des autres candidats.",
     cta: "Créer maintenant",
     // Free vs Premium comparison
-    transparencyTitle: "Gratuit vs Premium",
+    transparencyTitle: "Tout gratuit",
     transparencyBadge1: "Données locales",
     transparencyBadge2: "Sans pub",
-    transparencyBadge3: "Premium: 10 CHF",
-    freeTitle: "Gratuit",
-    freeFeatures: ["Modèle Classic", "Saisie manuelle", "Téléchargement PDF"],
-    premiumTitle: "Premium (2 heures)",
-    premiumFeatures: ["8 Modèles Pro", "Éditeur Visuel", "Textes IA illimités", "ZIP avec tous les designs"],
-    popularBadge: "Populaire"
+    transparencyBadge3: "100% gratuit",
+    freeFeatures: ["3 modèles", "Génération IA", "Téléchargement PDF", "ZIP avec tous les designs"]
   },
   step1Details: {
     ownerSection: "Informations propriétaire",
@@ -359,30 +355,15 @@ export default {
     faqComingSoon: "FAQ — bientôt disponible."
   },
   premium: {
-    title: 'Premium',
-    price: '10 CHF',
-    badge: 'PREMIUM',
-    freeBadge: 'GRATUIT',
-    features: ['Tous les modèles', 'IA illimitée', 'Sans filigrane', 'Téléchargement ZIP'],
-    buyPremium: 'Acheter Premium',
-    useFreeTemplate: 'Utiliser le modèle gratuit',
-    premiumTemplate: 'Modèle Premium',
-    freeTemplate: 'Modèle Gratuit',
-    unlockAll: 'Débloquer tout',
-    unlockAllDesc: 'Obtenez un accès complet pendant 2 heures',
-    sessionInfo: 'Accès 2 heures',
-    sessionExpired: 'Session expirée',
-    sessionActive: 'Premium actif',
-    sessionRemaining: 'Temps restant',
-    sessionEnded: 'Votre session Premium est terminée. Achetez à nouveau pour continuer.',
-    previewWatermark: 'APERÇU',
-    downloadAll: 'Télécharger tous les modèles en ZIP',
+    aiLimitReached: 'Limite IA atteinte. Réessayez demain.',
+    aiLimitBtn: 'Limite atteinte – réessayez demain',
+    aiRemaining: 'génération(s) IA restante(s)',
+    aiLimitInfo: 'Limite atteinte – réessayez demain',
+    freeTemplate: 'Gratuit',
+    downloadAllZip: 'Tous en ZIP',
     generatingZip: 'Génération de tous les modèles...',
     zipDownloaded: 'ZIP avec tous les modèles téléchargé!',
-    zipError: 'Erreur lors de la création du ZIP',
-    zipRequiresPremium: 'Téléchargement ZIP réservé aux Premium',
-    openBuilder: 'Ouvrir le constructeur',
-    builderRequiresPremium: 'Le constructeur de modèles nécessite Premium'
+    zipError: 'Erreur lors de la création du ZIP'
   },
   builder: {
     title: 'Constructeur de modèles',
@@ -449,16 +430,15 @@ export default {
     title: "Questions fréquentes",
     searchPlaceholder: "Rechercher des réponses...",
     noResults: "Aucun résultat pour",
-    categories: { all: "Tout", general: "Général", privacy: "Confidentialité & Sécurité", payment: "Coûts & Premium", tips: "Conseils pour la recherche" },
+    categories: { all: "Tout", general: "Général", privacy: "Confidentialité & Sécurité", payment: "Coûts", tips: "Conseils pour la recherche" },
     items: [
       { id: "q1", category: "general", q: "Ce dossier garantit-il que j'obtiendrai l'appartement?", a: "Non, aucune garantie. Mais un dossier professionnel montre au propriétaire que vous prenez vos responsabilités (assurance, éducation). En Suisse, les propriétaires choisissent souvent le candidat à moindre risque – ce document minimise les inquiétudes." },
       { id: "q2", category: "privacy", q: "Où sont stockées mes données?", a: "Nulle part sur nos serveurs. Nous utilisons une technologie 'Local-First'. Toutes les données sont traitées uniquement dans le stockage temporaire de votre navigateur. Une fois le PDF téléchargé et l'onglet fermé, les données disparaissent." },
-      { id: "q3", category: "payment", q: "Combien coûte le service?", a: "Le modèle Classic est gratuit et entièrement fonctionnel. Pour 10 CHF, vous obtenez 2 heures d'accès Premium: les 4 modèles professionnels, génération IA illimitée et le Constructeur de caractère. Idéal si vous préparez plusieurs candidatures." },
-      { id: "q4", category: "payment", q: "Qu'est-ce qui est inclus dans Premium?", a: "Premium (10 CHF, 2 heures) comprend: les 4 designs de modèles (Classic, Modern, Compact, Swiss), génération IA illimitée, le Constructeur de caractère avec curseurs, Magic Rewrite pour améliorer le texte et téléchargement ZIP de tous les modèles." },
-      { id: "q5", category: "payment", q: "Pourquoi seulement 2 heures?", a: "Nous ne stockons pas de comptes utilisateur pour des raisons de confidentialité. 2 heures suffisent pour perfectionner votre dossier et télécharger toutes les versions. Vous pouvez éditer et télécharger sans limite pendant cette période." },
+      { id: "q3", category: "payment", q: "Combien coûte le service?", a: "Le service est entièrement gratuit. Vous obtenez 3 modèles (Classic, Modern, Compact), génération IA (5 requêtes par jour) et téléchargement ZIP de tous les modèles." },
+      { id: "q4", category: "payment", q: "Qu'est-ce qui est inclus?", a: "Les 3 designs (Classic, Modern, Compact), génération IA pour la description (5 par jour par IP), téléchargement PDF et ZIP de tous les modèles." },
       { id: "q6", category: "privacy", q: "Mes données sont-elles utilisées pour l'entraînement IA?", a: "Non. Nous n'envoyons que des données anonymisées sur l'animal (race, âge) à l'IA. Les données personnelles du propriétaire ne quittent jamais votre appareil." },
       { id: "q7", category: "tips", q: "Quelles assurances sont importantes en Suisse?", a: "Pour les propriétaires de chiens, une assurance responsabilité civile privée avec couverture des dommages locatifs est essentielle. La preuve d'enregistrement AMICUS est souvent requise." },
-      { id: "q8", category: "general", q: "Puis-je modifier le dossier plus tard?", a: "Tant que vous ne fermez pas le navigateur, vos données restent. Avec Premium, vous pouvez éditer sans limite pendant 2 heures. Après fermeture, vous devez créer un nouveau dossier." }
+      { id: "q8", category: "general", q: "Puis-je modifier le dossier plus tard?", a: "Tant que vous ne fermez pas le navigateur, vos données restent. Après fermeture, vous devez créer un nouveau dossier." }
     ],
     footerHint: "Questions sur la technique ou le paiement? support@pet-bewerbung.ch"
   }

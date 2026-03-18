@@ -284,15 +284,11 @@ export default {
     solutionDesc: "Un CV professionale dimostra responsabilità e ti distingue dagli altri candidati.",
     cta: "Crea ora",
     // Free vs Premium comparison
-    transparencyTitle: "Gratis vs Premium",
+    transparencyTitle: "Tutto gratuito",
     transparencyBadge1: "Dati locali",
     transparencyBadge2: "Niente annunci",
-    transparencyBadge3: "Premium: 10 CHF",
-    freeTitle: "Gratis",
-    freeFeatures: ["Modello Classic", "Inserimento manuale", "Download PDF"],
-    premiumTitle: "Premium (2 ore)",
-    premiumFeatures: ["8 Modelli Pro", "Editor Visuale", "Testi IA illimitati", "ZIP con tutti i design"],
-    popularBadge: "Popolare"
+    transparencyBadge3: "100% gratuito",
+    freeFeatures: ["3 modelli", "Generazione IA", "Download PDF", "ZIP con tutti i design"]
   },
   step1Details: {
     ownerSection: "Informazioni proprietario",
@@ -359,30 +355,15 @@ export default {
     faqComingSoon: "FAQ — disponibile a breve."
   },
   premium: {
-    title: 'Premium',
-    price: '10 CHF',
-    badge: 'PREMIUM',
-    freeBadge: 'GRATIS',
-    features: ['Tutti i modelli', 'IA illimitata', 'Senza filigrana', 'Download ZIP'],
-    buyPremium: 'Acquista Premium',
-    useFreeTemplate: 'Usa modello gratuito',
-    premiumTemplate: 'Modello Premium',
-    freeTemplate: 'Modello Gratuito',
-    unlockAll: 'Sblocca tutto',
-    unlockAllDesc: 'Ottieni accesso completo per 2 ore',
-    sessionInfo: 'Accesso 2 ore',
-    sessionExpired: 'Sessione scaduta',
-    sessionActive: 'Premium attivo',
-    sessionRemaining: 'Tempo rimanente',
-    sessionEnded: 'La tua sessione Premium è terminata. Acquista di nuovo per continuare.',
-    previewWatermark: 'ANTEPRIMA',
-    downloadAll: 'Scarica tutti i modelli come ZIP',
+    aiLimitReached: 'Limite IA raggiunta. Riprova domani.',
+    aiLimitBtn: 'Limite raggiunto – riprova domani',
+    aiRemaining: 'generazione/i IA rimanente/i',
+    aiLimitInfo: 'Limite raggiunto – riprova domani',
+    freeTemplate: 'Gratuito',
+    downloadAllZip: 'Tutti in ZIP',
     generatingZip: 'Generazione di tutti i modelli...',
     zipDownloaded: 'ZIP con tutti i modelli scaricato!',
-    zipError: 'Errore nella creazione dello ZIP',
-    zipRequiresPremium: 'Download ZIP solo per Premium',
-    openBuilder: 'Apri costruttore',
-    builderRequiresPremium: 'Il costruttore di modelli richiede Premium'
+    zipError: 'Errore nella creazione dello ZIP'
   },
   builder: {
     title: 'Costruttore di modelli',
@@ -449,16 +430,15 @@ export default {
     title: "Domande frequenti",
     searchPlaceholder: "Cerca risposte...",
     noResults: "Nessun risultato per",
-    categories: { all: "Tutti", general: "Generale", privacy: "Privacy & Sicurezza", payment: "Costi & Premium", tips: "Consigli per la ricerca" },
+    categories: { all: "Tutti", general: "Generale", privacy: "Privacy & Sicurezza", payment: "Costi", tips: "Consigli per la ricerca" },
     items: [
       { id: "q1", category: "general", q: "Questo dossier garantisce che otterrò l'appartamento?", a: "No, non c'è garanzia. Ma un dossier professionale mostra al proprietario che ti assumi le responsabilità (assicurazione, addestramento). In Svizzera i proprietari scelgono spesso il candidato a minor rischio – questo documento minimizza le preoccupazioni." },
       { id: "q2", category: "privacy", q: "Dove vengono memorizzati i miei dati?", a: "Da nessuna parte sui nostri server. Usiamo tecnologia 'Local-First'. Tutti i dati vengono elaborati solo nella memoria temporanea del browser. Una volta scaricato il PDF e chiusa la scheda, i dati spariscono." },
-      { id: "q3", category: "payment", q: "Quanto costa il servizio?", a: "Il modello Classic è gratuito e completamente funzionale. Per 10 CHF ottieni 2 ore di accesso Premium: tutti i 4 modelli professionali, generazione IA illimitata e il Costruttore di carattere. Ideale se prepari più candidature." },
-      { id: "q4", category: "payment", q: "Cosa include Premium?", a: "Premium (10 CHF, 2 ore) include: tutti i 4 design dei modelli (Classic, Modern, Compact, Swiss), generazione IA illimitata, il Costruttore di carattere con cursori, Magic Rewrite per migliorare il testo e download ZIP di tutti i modelli." },
-      { id: "q5", category: "payment", q: "Perché solo 2 ore?", a: "Non memorizziamo account utente per motivi di privacy. 2 ore sono sufficienti per perfezionare il dossier e scaricare tutte le versioni. Puoi modificare e scaricare senza limiti durante questo periodo." },
+      { id: "q3", category: "payment", q: "Quanto costa il servizio?", a: "Il servizio è completamente gratuito. Ottieni 3 modelli (Classic, Modern, Compact), generazione IA (5 richieste al giorno) e download ZIP di tutti i modelli." },
+      { id: "q4", category: "payment", q: "Cosa è incluso?", a: "I 3 design (Classic, Modern, Compact), generazione IA per la descrizione (5 al giorno per IP), download PDF e ZIP di tutti i modelli." },
       { id: "q6", category: "privacy", q: "I miei dati sono usati per l'addestramento IA?", a: "No. Inviamo solo dati anonimizzati sull'animale (razza, età) all'IA. I dati personali del proprietario non lasciano mai il tuo dispositivo." },
       { id: "q7", category: "tips", q: "Quali assicurazioni sono importanti in Svizzera?", a: "Per i proprietari di cani è essenziale un'assicurazione di responsabilità civile privata con copertura per danni da affitto. Spesso è richiesta anche la prova di registrazione AMICUS." },
-      { id: "q8", category: "general", q: "Posso modificare il dossier in seguito?", a: "Finché non chiudi il browser, i dati restano. Con Premium puoi modificare senza limiti per 2 ore. Dopo la chiusura devi creare un nuovo dossier." }
+      { id: "q8", category: "general", q: "Posso modificare il dossier in seguito?", a: "Finché non chiudi il browser, i dati restano. Dopo la chiusura devi creare un nuovo dossier." }
     ],
     footerHint: "Domande su tecnica o pagamento? support@pet-bewerbung.ch"
   }
