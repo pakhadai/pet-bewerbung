@@ -49,8 +49,6 @@ export interface TemplateConfig {
 export interface TemplateOption {
   id: TemplateType;
   label: string;
-  isPremium?: boolean;
-  price?: number;
   description?: string;
   previewImage?: string;
 }

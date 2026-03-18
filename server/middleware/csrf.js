@@ -152,22 +152,31 @@ async function verifyToken(sessionId, clientToken) {
   return verifyTokenMemory(sessionId, clientToken);
 }
 
+const CSRF_SESSION_COOKIE = 'csrf_session';
+const CSRF_SESSION_MAX_AGE = 2 * 60 * 60; // 2 hours in seconds
+
 /**
- * Get session ID from request
+ * Get or create session ID from request
+ * Uses cookie-based session for proper user isolation (IP+UA is not unique per user)
  * @param {Object} req - Express request
+ * @param {Object} res - Express response (for setting cookie if needed)
  * @returns {string} Session ID
  */
-function getSessionId(req) {
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-             req.socket.remoteAddress ||
-             'unknown';
-  const userAgent = req.headers['user-agent'] || 'unknown';
-
-  return crypto
-    .createHash('sha256')
-    .update(ip + userAgent)
-    .digest('hex')
-    .substring(0, 16);
+function getSessionId(req, res) {
+  let sessionId = req.cookies?.[CSRF_SESSION_COOKIE];
+  if (!sessionId || sessionId.length < 16) {
+    sessionId = crypto.randomBytes(24).toString('hex');
+    if (res && res.cookie) {
+      res.cookie(CSRF_SESSION_COOKIE, sessionId, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'lax',
+        maxAge: CSRF_SESSION_MAX_AGE * 1000,
+        path: '/',
+      });
+    }
+  }
+  return crypto.createHash('sha256').update(sessionId).digest('hex').substring(0, 32);
 }
 
 /**
@@ -175,7 +184,7 @@ function getSessionId(req) {
  */
 async function provideCsrfToken(req, res, next) {
   try {
-    const sessionId = getSessionId(req);
+    const sessionId = getSessionId(req, res);
     const token = await getOrCreateToken(sessionId);
     res.setHeader('X-CSRF-Token', token);
     req.csrfToken = token;
@@ -197,7 +206,7 @@ async function verifyCsrfToken(req, res, next) {
     return next();
   }
 
-  const sessionId = getSessionId(req);
+  const sessionId = getSessionId(req, res);
   const clientToken = req.headers['x-csrf-token'] || req.body?.csrfToken;
 
   if (!clientToken) {
@@ -231,7 +240,7 @@ async function verifyCsrfToken(req, res, next) {
  * Endpoint to get CSRF token
  */
 async function getCsrfTokenEndpoint(req, res) {
-  const sessionId = getSessionId(req);
+  const sessionId = getSessionId(req, res);
   const token = await getOrCreateToken(sessionId);
 
   res.json({

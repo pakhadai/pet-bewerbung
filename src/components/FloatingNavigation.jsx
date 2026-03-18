@@ -85,7 +85,7 @@ const FloatingNavigation = React.memo(({
             type="button"
             onClick={getStep5ActionConfig().handler}
             className={`group flex items-center gap-2 px-4 sm:px-6 py-2 font-display text-lg sm:text-2xl font-bold transition-all hand-drawn-button hover:scale-105 border-2 ${getStep5ActionConfig().className}`}
-            aria-label={needsPayment ? 'Buy premium and download' : 'Download PDF'}
+            aria-label={t?.labels?.download ?? 'Download PDF'}
           >
             <span 
               className="material-symbols-outlined text-lg sm:text-xl"

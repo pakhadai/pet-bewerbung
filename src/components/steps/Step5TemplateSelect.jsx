@@ -5,6 +5,7 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Palette } from 'lucide-react';
 import { TEMPLATE_OPTIONS } from '../../constants';
+import { useWizardContext } from '../../context/WizardContext';
 
 const SwissDocument = lazy(() => import('../SwissDocument'));
 
@@ -21,14 +22,11 @@ const TemplateSkeleton = () => (
 );
 
 const Step5TemplateSelect = React.memo(({
-  data,
-  t,
-  animDir,
   selectedTemplate,
   onSelectTemplate,
   showToast,
-  darkMode,
 }) => {
+  const { data, t, animDir, darkMode } = useWizardContext();
   const [visibleTemplates, setVisibleTemplates] = useState([]);
 
   useEffect(() => {

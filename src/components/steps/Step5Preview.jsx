@@ -6,6 +6,7 @@ import React, { useState, lazy, Suspense } from 'react';
 import { Download, Check, FileArchive, Maximize2, Minimize2 } from 'lucide-react';
 import ErrorBoundary from '../ErrorBoundary';
 import { TEMPLATE_OPTIONS } from '../../constants';
+import { useWizardContext } from '../../context/WizardContext';
 
 const SwissDocument = lazy(() => import('../SwissDocument'));
 
@@ -16,15 +17,11 @@ const TEMPLATE_LABELS = {
 };
 
 const Step5Preview = React.memo(({
-  data,
-  t,
-  animDir,
   selectedTemplate,
-  darkMode,
   onDownloadPDF,
   onDownloadAllTemplates,
-  updateData
 }) => {
+  const { data, t, animDir, darkMode } = useWizardContext();
   const titleCl = darkMode ? 'text-white' : 'text-text-main';
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary';
   const cardBg = darkMode ? 'bg-gray-800' : 'bg-white';

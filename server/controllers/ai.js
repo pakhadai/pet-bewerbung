@@ -182,32 +182,31 @@ async function generateWithFallback(prompt, config = {}) {
     } catch (err) {
       lastError = err;
       const errorMsg = err.message || '';
+      const status = err.status ?? err.statusCode ?? err.code ?? err.response?.status;
 
-      if (errorMsg.includes('Timeout')) {
-        if (!isProduction) {
-          logger.warn(` Timeout on ${modelName}, trying next...`);
-        }
+      const isTimeout = errorMsg.includes('Timeout') || status === 408;
+      const isRateLimit = status === 429 ||
+        errorMsg.includes('429') ||
+        errorMsg.includes('quota') ||
+        errorMsg.includes('rate limit') ||
+        errorMsg.includes('RESOURCE_EXHAUSTED') ||
+        errorMsg.includes('Too Many Requests');
+      const isNotFound = status === 404 ||
+        errorMsg.includes('404') ||
+        errorMsg.includes('not found') ||
+        errorMsg.includes('NOT_FOUND') ||
+        errorMsg.includes('does not exist');
+
+      if (isTimeout) {
+        if (!isProduction) logger.warn(` Timeout on ${modelName}, trying next...`);
         continue;
       }
-
-      if (errorMsg.includes('429') ||
-          errorMsg.includes('quota') ||
-          errorMsg.includes('rate limit') ||
-          errorMsg.includes('RESOURCE_EXHAUSTED') ||
-          errorMsg.includes('Too Many Requests')) {
-        if (!isProduction) {
-          logger.warn(` Rate limit on ${modelName}, trying next...`);
-        }
+      if (isRateLimit) {
+        if (!isProduction) logger.warn(` Rate limit on ${modelName}, trying next...`);
         continue;
       }
-
-      if (errorMsg.includes('404') ||
-          errorMsg.includes('not found') ||
-          errorMsg.includes('NOT_FOUND') ||
-          errorMsg.includes('does not exist')) {
-        if (!isProduction) {
-          logger.warn(` Model ${modelName} not found, trying next...`);
-        }
+      if (isNotFound) {
+        if (!isProduction) logger.warn(` Model ${modelName} not found, trying next...`);
         continue;
       }
 

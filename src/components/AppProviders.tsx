@@ -7,7 +7,6 @@
  */
 
 import React, { ReactNode } from 'react';
-import GlobalStyles from './GlobalStyles';
 import ErrorBoundary from './ErrorBoundary';
 
 interface AppProvidersProps {

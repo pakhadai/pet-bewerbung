@@ -1,74 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
-const GlobalStyles = ({ theme = 'light' }) => {
-  useEffect(() => {
-    // Динамічно оновлюємо CSS змінні при зміні теми
-    const root = document.documentElement;
-    const body = document.body;
-
-    const themeVars = {
-      light: {
-        '--primary': '#4f46e5',
-        '--primary-hover': '#4338ca',
-        '--primary-light': '#a5b4fc',
-        '--bg': '#ffffff',
-        '--bg-secondary': '#f9fafb',
-        '--text': '#1f2937',
-        '--text-secondary': '#374151',
-        '--text-muted': '#6b7280',
-        '--border': '#e5e7eb',
-        '--card-bg': '#ffffff',
-        '--card-bg-hover': '#f9fafb',
-        '--input-bg': '#f8fafc',
-        '--input-border': '#e2e8f0',
-        '--shadow': 'rgba(15, 23, 42, 0.08)',
-        '--shadow-strong': 'rgba(15, 23, 42, 0.15)',
-        '--success': '#10b981',
-        '--error': '#ef4444',
-        '--warning': '#f59e0b',
-        '--button-primary': '#1f2937',
-        '--button-primary-hover': '#111827',
-        '--button-text': '#ffffff',
-        '--header-bg': 'rgba(255, 255, 255, 0.4)',
-        '--header-border': 'rgba(229, 231, 235, 0.5)'
-      },
-      dark: {
-        '--primary': '#6366f1',
-        '--primary-hover': '#818cf8',
-        '--primary-light': '#a5b4fc',
-        '--bg': '#0f172a',
-        '--bg-secondary': '#1e293b',
-        '--text': '#f1f5f9',
-        '--text-secondary': '#cbd5e1',
-        '--text-muted': '#94a3b8',
-        '--border': '#334155',
-        '--card-bg': '#1e293b',
-        '--card-bg-hover': '#334155',
-        '--input-bg': '#1e293b',
-        '--input-border': '#475569',
-        '--shadow': 'rgba(0, 0, 0, 0.3)',
-        '--shadow-strong': 'rgba(0, 0, 0, 0.5)',
-        '--success': '#22c55e',
-        '--error': '#f87171',
-        '--warning': '#fbbf24',
-        '--button-primary': '#6366f1',
-        '--button-primary-hover': '#818cf8',
-        '--button-text': '#ffffff',
-        '--header-bg': 'rgba(30, 41, 59, 0.4)',
-        '--header-border': 'rgba(51, 65, 85, 0.5)'
-      }
-    };
-
-    const vars = themeVars[theme] || themeVars.light;
-    Object.entries(vars).forEach(([key, value]) => {
-      root.style.setProperty(key, value);
-    });
-
-    // Додаємо data-theme атрибут для додаткового стилювання
-    body.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  return (
+/**
+ * GlobalStyles - CSS variables and utility classes
+ * Theme switching via .dark class on html (set by AppContainer)
+ * No JS theme injection - all variables defined in static CSS
+ */
+const GlobalStyles = () => (
   <style>{`
     /* GDPR-compliant: Using system fonts instead of Google Fonts CDN */
     /* To use Inter locally, download from https://rsms.me/inter/ and uncomment below: */
@@ -112,6 +49,7 @@ const GlobalStyles = ({ theme = 'light' }) => {
     :root {
       --primary: #4f46e5;
       --primary-hover: #4338ca;
+      --primary-light: #a5b4fc;
       --bg: #ffffff;
       --bg-secondary: #f9fafb;
       --text: #1f2937;
@@ -124,6 +62,39 @@ const GlobalStyles = ({ theme = 'light' }) => {
       --input-border: #e2e8f0;
       --shadow: rgba(15, 23, 42, 0.08);
       --shadow-strong: rgba(15, 23, 42, 0.15);
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --button-primary: #1f2937;
+      --button-primary-hover: #111827;
+      --button-text: #ffffff;
+      --header-bg: rgba(255, 255, 255, 0.4);
+      --header-border: rgba(229, 231, 235, 0.5);
+    }
+    html.dark, .dark {
+      --primary: #6366f1;
+      --primary-hover: #818cf8;
+      --primary-light: #a5b4fc;
+      --bg: #0f172a;
+      --bg-secondary: #1e293b;
+      --text: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --card-bg: #1e293b;
+      --card-bg-hover: #334155;
+      --input-bg: #1e293b;
+      --input-border: #475569;
+      --shadow: rgba(0, 0, 0, 0.3);
+      --shadow-strong: rgba(0, 0, 0, 0.5);
+      --success: #22c55e;
+      --error: #f87171;
+      --warning: #fbbf24;
+      --button-primary: #6366f1;
+      --button-primary-hover: #818cf8;
+      --button-text: #ffffff;
+      --header-bg: rgba(30, 41, 59, 0.4);
+      --header-border: rgba(51, 65, 85, 0.5);
     }
 
     /* Prefer system UI fonts so emoji (flags) use color emoji fonts when available */
@@ -892,7 +863,6 @@ const GlobalStyles = ({ theme = 'light' }) => {
 
     @media print { @page { size: A4; margin: 0; } body { -webkit-print-color-adjust: exact; background: white; } .print\\:hidden { display: none !important; } }
   `}</style>
-  );
-};
+);
 
 export default GlobalStyles;

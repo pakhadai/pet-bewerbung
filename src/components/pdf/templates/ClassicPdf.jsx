@@ -19,7 +19,6 @@ import {
   getCustomStyle,
   hasCustomDesign,
   getLayoutSections,
-  Watermark,
   getLocale,
   INITIAL_DATA,
 } from '../PdfBase';
@@ -40,7 +39,7 @@ export const getPdfClassicConfig = (data, t) => {
 /**
  * Classic PDF Template Component (also handles Modern, Compact, Swiss variants)
  */
-const ClassicPdf = ({ data, t, logoUrl, qrUrl, showWatermark = false, templateType = 'classic' }) => {
+const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
   const customDesign = data?.customDesign || INITIAL_DATA.customDesign;
   const isCustomized = hasCustomDesign(customDesign);
   const customStyle = isCustomized ? getCustomStyle(customDesign) : null;
@@ -422,7 +421,7 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, showWatermark = false, templateTy
           </View>
         </View>
 
-        {/* Footer - Prominent branding for classic, subtle for premium */}
+        {/* Footer - Prominent branding for classic, subtle for other variants */}
         <View style={footerStyle}>
           {templateType === 'classic' ? (
             <View style={{ flex: 1, alignItems: 'center' }}>
@@ -439,9 +438,6 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, showWatermark = false, templateTy
             <Text>{t?.doc?.sign ?? 'Signature'}</Text>
           </View>
         </View>
-
-        {/* Watermark overlay for unpaid premium templates */}
-        {showWatermark && <Watermark />}
       </Page>
     </Document>
   );

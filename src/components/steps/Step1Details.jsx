@@ -12,9 +12,12 @@
 import React from 'react';
 import { Dog, Cat, Bird } from 'lucide-react';
 import Label from '../Label';
-import Input from '../Input';
+import FormInput from '../FormInput';
+import { useWizardContext } from '../../context/WizardContext';
 
-const Step1Details = React.memo(({ data, updateData, t, animDir, darkMode, errors = {} }) => {
+const Step1Details = React.memo(() => {
+  const { data, updateData, t, animDir, darkMode, validationErrors = {} } = useWizardContext();
+  const errors = validationErrors;
   const petTypes = [
     { id: 'dog', label: t.labels.dog, icon: Dog },
     { id: 'cat', label: t.labels.cat, icon: Cat },
@@ -46,59 +49,59 @@ const Step1Details = React.memo(({ data, updateData, t, animDir, darkMode, error
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <Label required>{t.labels.ownerName}</Label>
-                <Input
+                <FormInput
                   value={data.ownerName}
                   onChange={e => updateData('ownerName', e.target.value)}
                   placeholder={t?.placeholders?.ownerName ?? 'e.g. John Doe'}
-                  error={errors.ownerName}
+                  error={errors?.ownerName}
                 />
-                {errors.ownerName && (
+                {errors?.ownerName && (
                   <span className="text-red-500 text-xs mt-1 block">{t.validation?.ownerNameRequired ?? 'Name is required (min. 2 characters)'}</span>
                 )}
               </div>
               <div>
                 <Label>{t.labels.street}</Label>
-                <Input value={data.street} onChange={e => updateData('street', e.target.value)} placeholder={t?.placeholders?.street ?? 'e.g. Bahnhofstrasse'} />
+                <FormInput value={data.street} onChange={e => updateData('street', e.target.value)} placeholder={t?.placeholders?.street ?? 'e.g. Bahnhofstrasse'} />
               </div>
               <div>
                 <Label>{t.labels.houseNumber}</Label>
-                <Input value={data.houseNumber} onChange={e => updateData('houseNumber', e.target.value)} placeholder="12A" />
+                <FormInput value={data.houseNumber} onChange={e => updateData('houseNumber', e.target.value)} placeholder="12A" />
               </div>
               <div>
                 <Label>{t.labels.postal}</Label>
-                <Input
+                <FormInput
                   value={data.postal}
                   onChange={e => updateData('postal', e.target.value)}
                   placeholder="9000"
-                  error={errors.postal}
+                  error={errors?.postal}
                 />
                 {errors.postal && <span className="text-red-500 text-xs mt-1 block">{t.validation?.postalInvalid ?? 'Invalid'}</span>}
               </div>
               <div>
                 <Label>{t.labels.city}</Label>
-                <Input value={data.city} onChange={e => updateData('city', e.target.value)} placeholder="St. Gallen" />
+                <FormInput value={data.city} onChange={e => updateData('city', e.target.value)} placeholder="St. Gallen" />
               </div>
               <div>
                 <Label>{t.labels.email}</Label>
-                <Input
+                <FormInput
                   type="email"
                   value={data.email}
                   onChange={e => updateData('email', e.target.value)}
                   placeholder="email@example.com"
-                  error={errors.email}
+                  error={errors?.email}
                 />
-                {errors.email && <span className="text-red-500 text-xs mt-1 block">{t.validation?.emailInvalid ?? 'Invalid'}</span>}
+                {errors?.email && <span className="text-red-500 text-xs mt-1 block">{t.validation?.emailInvalid ?? 'Invalid'}</span>}
               </div>
               <div>
                 <Label>{t.labels.phone}</Label>
-                <Input
+                <FormInput
                   type="tel"
                   value={data.phone}
                   onChange={e => updateData('phone', e.target.value)}
                   placeholder="+41 79 123 45 67"
                   error={errors.phone}
                 />
-                {errors.phone && <span className="text-red-500 text-xs mt-1 block">{t.validation?.phoneInvalid ?? 'Invalid'}</span>}
+                {errors?.phone && <span className="text-red-500 text-xs mt-1 block">{t.validation?.phoneInvalid ?? 'Invalid'}</span>}
               </div>
             </div>
           </div>
@@ -130,7 +133,7 @@ const Step1Details = React.memo(({ data, updateData, t, animDir, darkMode, error
               </div>
               <div className="md:col-span-2">
                 <Label required>{t.labels.petName}</Label>
-                <Input
+                <FormInput
                   value={data.name}
                   onChange={e => updateData('name', e.target.value)}
                   placeholder={t?.placeholders?.petName ?? 'e.g. Luna'}
@@ -140,7 +143,7 @@ const Step1Details = React.memo(({ data, updateData, t, animDir, darkMode, error
               </div>
               <div>
                 <Label>{t.labels.breed}</Label>
-                <Input
+                <FormInput
                   value={data.breed}
                   onChange={e => updateData('breed', e.target.value)}
                   placeholder={t?.placeholders?.breed ?? 'e.g. Beagle'}
@@ -148,7 +151,7 @@ const Step1Details = React.memo(({ data, updateData, t, animDir, darkMode, error
               </div>
               <div>
                 <Label>{t.labels.age}</Label>
-                <Input
+                <FormInput
                   type="number"
                   min="0"
                   max="30"
@@ -159,7 +162,7 @@ const Step1Details = React.memo(({ data, updateData, t, animDir, darkMode, error
               </div>
               <div>
                 <Label>{t.labels.weight ?? 'Gewicht (kg)'}</Label>
-                <Input
+                <FormInput
                   type="number"
                   min="0"
                   max="200"

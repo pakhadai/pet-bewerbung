@@ -5,18 +5,25 @@
 import React, { useState } from 'react';
 import { Lock, Sparkles, Info, X } from 'lucide-react';
 import { MAX_DESCRIPTION_LENGTH } from '../../constants';
+import { useWizardContext } from '../../context/WizardContext';
 
 const Step3Description = React.memo(({
-  data,
-  updateData,
-  t,
-  animDir,
-  darkMode,
-  isGenerating,
   onGenerate,
   canGenerateAI = true,
   remainingGenerations = 1,
 }) => {
+  const { data, updateData, t, animDir, darkMode } = useWizardContext();
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerate = async () => {
+    if (!onGenerate || isGenerating) return;
+    setIsGenerating(true);
+    try {
+      await onGenerate();
+    } finally {
+      setIsGenerating(false);
+    }
+  };
   const [showAiDataInfo, setShowAiDataInfo] = useState(false);
   
   const canGenerate = !isGenerating && canGenerateAI && (data.name || data.petType || data.keywords);
@@ -62,7 +69,7 @@ const Step3Description = React.memo(({
           <div className="flex flex-col items-center gap-6 mt-4">
             <button
               type="button"
-              onClick={onGenerate}
+              onClick={handleGenerate}
               disabled={!canGenerate}
               className={`group relative px-8 py-4 text-2xl font-bold font-display hand-drawn-button w-full md:w-auto transition-all disabled:opacity-50 disabled:cursor-not-allowed
                 ${darkMode ? 'text-gray-100 bg-lavender/30 hover:bg-primary border-gray-500 hover:border-primary' : 'text-text-main bg-lavender hover:bg-primary hover:text-white border-gray-400 hover:border-primary'}`}

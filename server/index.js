@@ -6,6 +6,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 // Import configuration
 const {
@@ -31,6 +32,11 @@ const ai = require('./controllers/ai');
 
 // Initialize Express app
 const app = express();
+
+// ============================================
+// Cookie parsing (required for CSRF session isolation)
+// ============================================
+app.use(cookieParser());
 
 // ============================================
 // CORS Configuration

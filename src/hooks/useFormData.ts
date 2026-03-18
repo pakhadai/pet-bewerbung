@@ -22,9 +22,9 @@ const loadSavedData = async (defaultLang: string): Promise<any> => {
         lang: saved.lang || defaultLang
       };
 
-      // Add photo if it exists
+      // Restore photo from IndexedDB (stored under data.photo)
       if (photoBlob) {
-        mergedData.photoPreview = photoBlob;
+        mergedData.photo = photoBlob;
         mergedData.hasPhotoSaved = true;
         mergedData.photoTooLarge = false;
       }
@@ -48,20 +48,17 @@ const saveDataToStorage = async (data: any): Promise<void> => {
   try {
     const dataToSave = { ...data };
 
-    // Handle photo storage separately in IndexedDB
-    if (dataToSave.photoPreview && dataToSave.photoPreview.length > 0) {
-      // Save photo to IndexedDB (supports up to 10MB)
-      await storage.set('photo-blob', dataToSave.photoPreview);
-
-      // Don't include photo in main form data (to keep localStorage small)
-      delete dataToSave.photoPreview;
+    // Handle photo storage separately in IndexedDB (data.photo is the source)
+    const photoData = dataToSave.photo;
+    if (photoData && typeof photoData === 'string' && photoData.length > 0) {
+      await storage.set('photo-blob', photoData);
       dataToSave.hasPhotoSaved = true;
       dataToSave.photoTooLarge = false;
+      delete dataToSave.photo; // Don't store in localStorage (too large)
     } else {
-      // Remove photo from IndexedDB if no photo
       await storage.remove('photo-blob');
-      delete dataToSave.photoPreview;
       dataToSave.hasPhotoSaved = false;
+      delete dataToSave.photo;
     }
 
     // Save main form data to localStorage
@@ -137,13 +134,10 @@ export const useFormData = (defaultLang: string = 'de'): UseFormDataReturn => {
     };
   }, [data, isLoading]);
 
-  // Clear generated text when language changes
+  // Track language changes (text is kept - user can regenerate if needed)
   useEffect(() => {
-    if (prevLangRef.current !== data.lang && data.generatedText && data.generatedText.length > 0) {
-      setData((prev: any) => ({ ...prev, generatedText: '' }));
-    }
     prevLangRef.current = data.lang;
-  }, [data.lang, data.generatedText]);
+  }, [data.lang]);
 
   /**
    * Update a single field in form data

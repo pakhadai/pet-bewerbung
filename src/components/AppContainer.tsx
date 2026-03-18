@@ -4,7 +4,8 @@
  * Handles step navigation and orchestrates step rendering
  */
 
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import GlobalStyles from './GlobalStyles';
 import Header from './Header';
 import Footer from './Footer';
 import FaqModal from './FaqModal';
@@ -14,16 +15,17 @@ import CookieBanner, { COOKIE_CONSENT_KEY } from './CookieBanner';
 import LegalPages from './LegalPages';
 import ErrorBoundary from './ErrorBoundary';
 import { X, Camera } from 'lucide-react';
-import { useFormWizard, useToast, usePremium, useTemplateSelection, useFormValidation } from '../hooks';
+import { useFormWizard, useToast, useTemplateSelection, useFormValidation } from '../hooks';
 import WizardRoute from '../routes/WizardRoute';
 import HeroRoute from '../routes/HeroRoute';
 import ThankYouRoute from '../routes/ThankYouRoute';
+import { WizardProvider } from '../context/WizardContext';
 
 // Lazy load heavy PDF components (only needed in Step 5)
 const SwissDocument = lazy(() => import('./SwissDocument'));
 
 interface AppContainerProps {
-  onDownloadPDF: () => Promise<void>;
+  onDownloadPDF: (templateType?: string) => Promise<void>;
   onDownloadAllTemplates: () => Promise<void>;
   onGenerateText: () => Promise<void>;
   onDonateMethod: (method: string) => Promise<void>;
@@ -42,17 +44,26 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   // State management
   const { step, data, animDir, updateData, goToStep, t, lang, setLang } = useFormWizard();
   const { showToast } = useToast();
-  const { isPremium, getTemplateInfo } = usePremium();
   const { selectedTemplate, setSelectedTemplate, previewOpen, previewTemplate, closePreview } = useTemplateSelection();
   const { errors: validationErrors, isValid: isStepValid } = useFormValidation(data, step);
 
+  // Wrap onDownloadPDF to inject selectedTemplate (user's chosen template)
+  const wrappedOnDownloadPDF = () => onDownloadPDF(selectedTemplate);
+  const validationRef = useRef(isStepValid);
+  validationRef.current = isStepValid;
+
   // Validated navigation: block forward if current step has validation errors
   const handleNext = () => {
-    if (!isStepValid) {
-      showToast(t?.validation?.fillRequired || 'Bitte füllen Sie die Pflichtfelder aus', 'error');
-      return;
-    }
-    goToStep(step + 1);
+    // Sync FormInput values (they only sync on blur) before validation
+    if (document.activeElement?.blur) document.activeElement.blur();
+    // Defer to allow blur handler to update state, then read latest validation from ref
+    setTimeout(() => {
+      if (!validationRef.current) {
+        showToast(t?.validation?.fillRequired || 'Bitte füllen Sie die Pflichtfelder aus', 'error');
+        return;
+      }
+      goToStep(step + 1);
+    }, 0);
   };
 
   // Local state for modals and theme
@@ -105,7 +116,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   // Convert darkMode to theme string
   const theme = darkMode ? 'dark' : 'light';
 
-  // Main app content
+  // GlobalStyles must be at app root so modals (FaqModal, LegalPages) have CSS vars & animations
   const appContent = step === 7 ? (
     <ThankYouRoute
       data={data}
@@ -114,7 +125,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
       onLangChange={(v: string) => { updateData('lang', v); setLang(v as any); }}
       onLogoClick={() => goToStep(0)}
-      onDownloadPDF={onDownloadPDF}
+      onDownloadPDF={wrappedOnDownloadPDF}
       onCreateAnother={() => goToStep(0)}
       onPrev={() => goToStep(6)}
       showToast={showToast}
@@ -141,26 +152,30 @@ export const AppContainer: React.FC<AppContainerProps> = ({
           {step === 0 ? (
             <HeroRoute darkMode={darkMode} t={t} onStartClick={() => goToStep(1)} />
           ) : step >= 1 && step <= 6 ? (
-            <WizardRoute
-              step={step}
-              animDir={animDir}
-              data={data}
-              updateData={updateData}
-              t={t}
-              darkMode={darkMode}
-              isPremium={isPremium}
-              selectedTemplate={selectedTemplate}
-              onSelectTemplate={setSelectedTemplate}
-              showToast={showToast}
-              onGenerateText={onGenerateText}
-              onDownloadPDF={onDownloadPDF}
-              getTemplateInfo={getTemplateInfo}
-              onDownloadAllTemplates={onDownloadAllTemplates}
-              onNavigationVisibilityChange={setNavigationVisible}
-              validationErrors={validationErrors}
-              canGenerateAI={canGenerateAI}
-              remainingGenerations={remainingGenerations}
-            />
+            <WizardProvider
+              value={{
+                data,
+                updateData,
+                t,
+                darkMode,
+                step,
+                animDir,
+                validationErrors,
+              }}
+            >
+              <WizardRoute
+                step={step}
+                selectedTemplate={selectedTemplate}
+                onSelectTemplate={setSelectedTemplate}
+                showToast={showToast}
+                onGenerateText={onGenerateText}
+                onDownloadPDF={wrappedOnDownloadPDF}
+                onDownloadAllTemplates={onDownloadAllTemplates}
+                onNavigationVisibilityChange={setNavigationVisible}
+                canGenerateAI={canGenerateAI}
+                remainingGenerations={remainingGenerations}
+              />
+            </WizardProvider>
           ) : null}
         </div>
       </main>
@@ -170,7 +185,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
         step={step}
         onPrev={() => goToStep(step - 1)}
         onNext={handleNext}
-        onDownloadPDF={onDownloadPDF}
+        onDownloadPDF={wrappedOnDownloadPDF}
         t={t}
         darkMode={darkMode}
         canProceed={isStepValid}
@@ -228,6 +243,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
 
   return (
     <>
+      <GlobalStyles />
       {appContent}
       <FaqModal isOpen={faqOpen} onClose={() => setFaqOpen(false)} t={t} darkMode={darkMode} />
     </>

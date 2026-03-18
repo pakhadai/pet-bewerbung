@@ -9,15 +9,13 @@
 import React, { useState, useEffect } from 'react';
 import { Crop, Camera, Upload } from 'lucide-react';
 import ImageCropper from '../ImageCropper';
+import { useWizardContext } from '../../context/WizardContext';
 
 const Step4Photo = React.memo(({
-  data,
-  updateData,
-  t,
-  animDir,
   onNavigationVisibilityChange,
-  darkMode
+  showToast
 }) => {
+  const { data, updateData, t, animDir, darkMode } = useWizardContext();
   const [showCropper, setShowCropper] = useState(false);
   const [tempImage, setTempImage] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -26,8 +24,14 @@ const Step4Photo = React.memo(({
     if (onNavigationVisibilityChange) onNavigationVisibilityChange(!showCropper);
   }, [showCropper, onNavigationVisibilityChange]);
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
   const processFile = (file) => {
     if (!file || !file.type.startsWith('image/')) return;
+    if (file.size > MAX_FILE_SIZE) {
+      showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error');
+      return;
+    }
     if (onNavigationVisibilityChange) onNavigationVisibilityChange(false);
     const r = new FileReader();
     r.onloadend = () => { setTempImage(r.result); setShowCropper(true); };

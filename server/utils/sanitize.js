@@ -1,39 +1,58 @@
 /**
  * Input Sanitization Utilities
  * Protects against prompt injection and XSS
+ *
+ * NOTE: RegEx alone cannot fully prevent prompt injection. This is defense-in-depth:
+ * - Sanitization reduces obvious attacks
+ * - Gemini systemInstruction enforces role boundaries
+ * - Output validation and length limits add further protection
  */
 
 const MAX_FIELD_LENGTH = 100;
 const MAX_TRAITS_LENGTH = 300;
 
+// Leetspeak / homoglyph normalization (0->o, 1->i/l, 3->e, 4->a, 5->s, @->a, etc.)
+const LEET_MAP = {
+  '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b',
+  '@': 'a', '!': 'i', '|': 'i', '$': 's', '+': 't',
+};
+
+function normalizeBypassAttempts(str) {
+  let s = str.toLowerCase();
+  for (const [char, replacement] of Object.entries(LEET_MAP)) {
+    s = s.split(char).join(replacement);
+  }
+  return s;
+}
+
 // Comprehensive patterns for prompt injection prevention
-// Covers: command injections, role manipulation, instruction overrides
 const SUSPICIOUS_PATTERNS = [
-  // Command/instruction manipulation
   /\b(ignore|forget|disregard|override|bypass|skip)\b/gi,
   /\b(previous|prior|above|earlier)\s+(instruction|prompt|rule|command)/gi,
-
-  // Role manipulation
   /\b(you are|act as|pretend|behave as|roleplay|assume|become)\b/gi,
   /\b(new role|different (role|character|persona|assistant))/gi,
-
-  // System/prompt access attempts
   /\b(system|admin|root|prompt|instruction|rule|command|directive)\b/gi,
-
-  // Direct instruction patterns
   /\b(now (write|tell|say|do|generate|create)|instead (write|tell|say))/gi,
-
-  // Meta-instructions
   /\b(original|real|actual)\s+(task|instruction|prompt|purpose)/gi,
-
-  // Encoding bypass attempts (basic)
-  /[\\\/](n|r|t|x[0-9a-f]{2})/gi, // Escape sequences
-
-  // Repetition attacks (more than 3 repeated chars)
+  /[\\\/](n|r|t|x[0-9a-f]{2})/gi,
   /(.)\1{4,}/gi,
 ];
 
-// Additional suspicious characters that could be used for injection
+// Check normalized string for bypass attempts (catches "1gn0re", "1gnore", etc.)
+const BYPASS_PATTERNS_NORMALIZED = [
+  'ignore', 'forget', 'disregard', 'override', 'bypass',
+  'instruction', 'prompt', 'system', 'admin', 'root',
+  'you are', 'act as', 'pretend', 'roleplay',
+];
+
+function containsBypassAfterNormalization(str) {
+  const normalized = normalizeBypassAttempts(str);
+  return BYPASS_PATTERNS_NORMALIZED.some(p => {
+    const escaped = p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp('\\b' + escaped + '\\b', 'i').test(normalized);
+  });
+}
+
 const SUSPICIOUS_CHARS = /[{}\\<>|`$]/g;
 
 /**
@@ -47,16 +66,19 @@ function sanitizeString(str, maxLen = MAX_FIELD_LENGTH) {
 
   let sanitized = String(str).slice(0, maxLen);
 
-  // Apply all suspicious pattern removals
+  // Reject entirely if normalized string contains bypass attempts
+  if (containsBypassAfterNormalization(sanitized)) {
+    return '';
+  }
+
   for (const pattern of SUSPICIOUS_PATTERNS) {
     sanitized = sanitized.replace(pattern, '');
   }
 
-  // Remove suspicious characters
   sanitized = sanitized
     .replace(SUSPICIOUS_CHARS, '')
-    .replace(/\n+/g, ' ')  // Replace newlines with spaces
-    .replace(/\s{2,}/g, ' ')  // Collapse multiple spaces
+    .replace(/\n+/g, ' ')
+    .replace(/\s{2,}/g, ' ')
     .trim();
 
   return sanitized;
@@ -92,15 +114,17 @@ function sanitizeText(text, maxLen = 1000) {
 
   let sanitized = String(text).slice(0, maxLen);
 
-  // Apply suspicious pattern removals
+  if (containsBypassAfterNormalization(sanitized)) {
+    return '';
+  }
+
   for (const pattern of SUSPICIOUS_PATTERNS) {
     sanitized = sanitized.replace(pattern, '');
   }
 
-  // Remove dangerous characters
   sanitized = sanitized
     .replace(SUSPICIOUS_CHARS, '')
-    .replace(/\s{2,}/g, ' ')  // Collapse multiple spaces
+    .replace(/\s{2,}/g, ' ')
     .trim();
 
   return sanitized;

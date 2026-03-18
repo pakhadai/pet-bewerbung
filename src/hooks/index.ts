@@ -14,9 +14,6 @@ export type { UseWizardNavigationReturn, AnimationDirection } from './useWizardN
 export { useFormData } from './useFormData';
 export type { UseFormDataReturn } from './useFormData';
 
-export { usePremiumSession } from './usePremiumSession';
-export type { UsePremiumSessionReturn } from './usePremiumSession';
-
 export { useAIGeneration } from './useAIGeneration';
 export type { UseAIGenerationReturn } from './useAIGeneration';
 
@@ -29,9 +26,6 @@ export type { UseThemeReturn } from './useTheme';
 export { useToast } from './useToast';
 export type { UseToastReturn, Toast, ToastType } from './useToast';
 
-export { useDeviceId } from './useDeviceId';
-export type { UseDeviceIdReturn } from './useDeviceId';
-
 export { useCsrf } from './useCsrf';
 
 // Additional utility hooks
@@ -43,6 +37,4 @@ export { useScrollVisibility } from './useScrollVisibility';
 export { useFormValidation } from './useFormValidation';
 export type { FormValidationResult, FormValidationErrors } from './useFormValidation';
 
-// Alias exports for backward compatibility
-export { usePremiumSession as usePremium } from './usePremiumSession';
 export { useAIGeneration as useAIGenerations } from './useAIGeneration';

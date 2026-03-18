@@ -4,7 +4,6 @@
  */
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import GlobalStyles from '../GlobalStyles';
 import Header from '../Header';
 import Footer from '../Footer';
 import LegalPages from '../LegalPages';
@@ -27,8 +26,6 @@ const Step6ThankYou = React.memo(({
 
   return (
     <div className="min-h-screen font-sans antialiased pb-6 print:bg-white print:p-0 flex flex-col theme-bg theme-text">
-      <GlobalStyles theme={theme} />
-
       <Header
         darkMode={darkMode}
         toggleDarkMode={() => onThemeChange(darkMode ? 'light' : 'dark')}

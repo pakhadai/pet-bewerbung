@@ -16,44 +16,54 @@ import AppContainer from './AppContainer';
 import API_ENDPOINTS from '../config';
 import compressImage, { toJpegDataUrl } from '../utils/imageCompression';
 import { generateQrDataUrl, getQrContent } from '../utils/qrCode';
-import { useFormWizard, useToast, usePremium, useAIGenerations, useCsrf } from '../hooks';
+import { useFormWizard, useToast, useAIGenerations, useCsrf } from '../hooks';
 
 const AppContent: React.FC = () => {
   const { data, updateData } = useFormWizard();
   const { showToast } = useToast();
-  const { isPremium } = usePremium();
-  const { canGenerate: canGenerateAI, remainingGenerations, incrementGeneration } = useAIGenerations(isPremium);
+  const { canGenerate: canGenerateAI, remainingGenerations, incrementGeneration } = useAIGenerations();
   const { token: csrfToken } = useCsrf();
 
   const [isGenerating, setIsGenerating] = useState(false);
   const prevLangRef = useRef(data.lang);
 
-  // Clear generated text when language changes
+  // Notify when language changes - keep text, user can regenerate if needed
   useEffect(() => {
     if (prevLangRef.current !== data.lang && data.generatedText && data.generatedText.length > 0) {
-      updateData('generatedText', '');
-      showToast(TRANSLATIONS[data.lang]?.labels?.aiPrompt || 'Please regenerate text for the new language', 'info');
+      showToast(
+        TRANSLATIONS[data.lang]?.labels?.langChangeKeepText || 'Text bleibt erhalten. Bei Bedarf neu generieren.',
+        'info'
+      );
     }
     prevLangRef.current = data.lang;
-  }, [data.lang, data.generatedText, updateData, showToast]);
+  }, [data.lang, data.generatedText, showToast]);
 
-  // Handle file upload and compression
+  // Handle file upload and compression (used if passed to a component)
+  const MAX_PHOTO_SIZE = 10 * 1024 * 1024; // 10MB
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      try {
-        const compressedImage = await compressImage(file, {
-          maxWidth: 800,
-          maxHeight: 800,
-          quality: 0.8,
-          maxSizeKB: 500
-        });
-        updateData('photo', compressedImage);
-      } catch (err) {
+    if (!file) return;
+    if (file.size > MAX_PHOTO_SIZE) {
+      showToast(TRANSLATIONS[data.lang]?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error');
+      return;
+    }
+    try {
+      const compressedImage = await compressImage(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.8,
+        maxSizeKB: 500
+      });
+      updateData('photo', compressedImage);
+    } catch (err) {
+      // Only use raw file if under 2MB to avoid browser crash
+      if (file.size <= 2 * 1024 * 1024) {
         const reader = new FileReader();
         reader.onloadend = () => updateData('photo', reader.result);
         reader.readAsDataURL(file);
         showToast('Image compression failed, using original', 'info');
+      } else {
+        showToast(TRANSLATIONS[data.lang]?.step4?.fileTooLarge ?? 'Datei zu groß. Bitte komprimieren Sie das Bild.', 'error');
       }
     }
   };
@@ -296,8 +306,8 @@ const AppContent: React.FC = () => {
     ui: { noDescription: t?.ui?.noDescription ?? '—' },
   });
 
-  // Download PDF
-  const handleDownloadPDF = async () => {
+  // Download PDF (templateType passed from AppContainer wrapper using selectedTemplate)
+  const handleDownloadPDF = async (templateType: string = 'classic') => {
     const t = TRANSLATIONS[data.lang];
 
     try {
@@ -333,7 +343,7 @@ const AppContent: React.FC = () => {
       ]);
 
       const blob = await pdf(
-        <SwissDocumentPdf data={pdfData} t={pdfT} templateType="classic" logoUrl={logoUrl} qrUrl={qrUrl} />
+        <SwissDocumentPdf data={pdfData} t={pdfT} templateType={templateType} logoUrl={logoUrl} qrUrl={qrUrl} />
       ).toBlob();
       const url = URL.createObjectURL(blob);
 
@@ -364,9 +374,8 @@ const AppContent: React.FC = () => {
         showToast('PDF downloaded successfully!', 'success');
       }
 
-      // MEMORY MANAGEMENT: Delay revocation to allow slow downloads to complete
-      // Extended from 5s to 60s to prevent incomplete PDFs on slow connections
-      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      // Revoke after safe delay (5min) - browser needs URL for entire download on slow connections
+      setTimeout(() => URL.revokeObjectURL(url), 300000);
     } catch (err: unknown) {
       const t = TRANSLATIONS[data.lang];
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -476,8 +485,7 @@ const AppContent: React.FC = () => {
       link.click();
       document.body.removeChild(link);
 
-      // MEMORY MANAGEMENT: Delay revocation for slow downloads (ZIP is larger)
-      setTimeout(() => URL.revokeObjectURL(url), 120000); // 2 minutes for ZIP
+      setTimeout(() => URL.revokeObjectURL(url), 300000); // 5min for ZIP
 
       // Notify user about results
       if (failedTemplates.length > 0) {

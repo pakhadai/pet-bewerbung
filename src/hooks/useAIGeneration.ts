@@ -8,17 +8,16 @@ export interface UseAIGenerationReturn {
   canGenerate: boolean;
   remainingGenerations: number;
   freeLimit: number;
-  premiumLimit: number;
   incrementGeneration: () => number;
   resetGenerationCount: () => void;
-  generatePetDescription: (petData: any, _isPremium: boolean, csrfToken?: string | null) => Promise<string>;
+  generatePetDescription: (petData: any, csrfToken?: string | null) => Promise<string>;
 }
 
 /**
  * AI generation hook - uses server rate limit (5 per IP per 24h)
  * Fetches remaining from server on mount
  */
-export const useAIGeneration = (_isPremium: boolean = false): UseAIGenerationReturn => {
+export const useAIGeneration = (): UseAIGenerationReturn => {
   const [remaining, setRemaining] = useState<number>(AI_LIMIT);
   const [limit, setLimit] = useState<number>(AI_LIMIT);
 
@@ -50,7 +49,7 @@ export const useAIGeneration = (_isPremium: boolean = false): UseAIGenerationRet
 
   const canGenerate = remaining > 0;
 
-  const generatePetDescription = useCallback(async (petData: any, _premium: boolean, csrfToken?: string | null): Promise<string> => {
+  const generatePetDescription = useCallback(async (petData: any, csrfToken?: string | null): Promise<string> => {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
 
@@ -71,7 +70,6 @@ export const useAIGeneration = (_isPremium: boolean = false): UseAIGenerationRet
     canGenerate,
     remainingGenerations: remaining,
     freeLimit: AI_LIMIT,
-    premiumLimit: AI_LIMIT,
     incrementGeneration,
     resetGenerationCount,
     generatePetDescription,

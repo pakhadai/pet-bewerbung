@@ -111,6 +111,7 @@ export default {
     registration: "Registrato (AMICUS/ANIS)",
     willingToPayDeposit: "Disposto a pagare un deposito per animali",
     aiPrompt: "Parole chiave (es. tranquillo, pulito)",
+    langChangeKeepText: "Testo conservato. Rigenerare se necessario per la nuova lingua.",
     tellUsAboutPet: "Raccontaci del tuo animale",
     descriptionHint: "Personalità, giochi preferiti o piccole manie.",
     descriptionPlaceholder: "Buddy è un Golden Retriever vivace che ama le coccole e rincorrere gli scoiattoli...",

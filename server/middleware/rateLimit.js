@@ -18,8 +18,10 @@ let redis = null;
 let redisAvailable = false;
 
 // In-memory fallback rate limiter for development
-// Map structure: { ip: { count: number, resetTime: number } }
+// OOM protection: max 10k entries, evict oldest when full
+const MAX_IN_MEMORY_ENTRIES = 10000;
 const inMemoryLimiter = new Map();
+const inMemoryAccessOrder = [];
 
 /**
  * Initialize Redis connection
@@ -84,17 +86,25 @@ async function initRedis() {
  * @param {number} limit - Request limit
  * @returns {Object} Rate limit status
  */
+function evictOldestInMemory() {
+  while (inMemoryLimiter.size >= MAX_IN_MEMORY_ENTRIES && inMemoryAccessOrder.length > 0) {
+    const oldest = inMemoryAccessOrder.shift();
+    if (oldest) inMemoryLimiter.delete(oldest);
+  }
+}
+
 function checkRateLimitInMemory(ip, limit) {
   const now = Date.now();
   const resetTime = now + AI_RATE_WINDOW * 1000;
 
-  // Get or create entry for this IP
+  evictOldestInMemory();
+
   let entry = inMemoryLimiter.get(ip);
 
   if (!entry || entry.resetTime < now) {
-    // Create new entry or reset expired entry
     entry = { count: 1, resetTime };
     inMemoryLimiter.set(ip, entry);
+    inMemoryAccessOrder.push(ip);
     return {
       allowed: true,
       remaining: limit - 1,
@@ -103,9 +113,11 @@ function checkRateLimitInMemory(ip, limit) {
     };
   }
 
-  // Increment counter
   entry.count++;
   inMemoryLimiter.set(ip, entry);
+  const idx = inMemoryAccessOrder.indexOf(ip);
+  if (idx >= 0) inMemoryAccessOrder.splice(idx, 1);
+  inMemoryAccessOrder.push(ip);
 
   return {
     allowed: entry.count <= limit,
@@ -123,6 +135,8 @@ function cleanupInMemoryLimiter() {
   for (const [ip, entry] of inMemoryLimiter.entries()) {
     if (entry.resetTime < now) {
       inMemoryLimiter.delete(ip);
+      const idx = inMemoryAccessOrder.indexOf(ip);
+      if (idx >= 0) inMemoryAccessOrder.splice(idx, 1);
     }
   }
 }

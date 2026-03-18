@@ -3,12 +3,7 @@
  * Contains common styles, colors, helpers, and watermark component used across PDF templates
  */
 
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-} from '@react-pdf/renderer';
+import { StyleSheet } from '@react-pdf/renderer';
 import { INITIAL_DATA } from '../../constants';
 
 // ============= LOCALE HELPERS =============
@@ -119,36 +114,6 @@ export const commonStyles = StyleSheet.create({
     fontSize: 10,
     fontFamily: 'Helvetica',
     position: 'relative',
-  },
-  // Watermark overlay for unpaid premium templates
-  watermarkOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 999,
-  },
-  watermarkText: {
-    fontSize: 72,
-    fontWeight: 'bold',
-    color: '#dc2626',
-    opacity: 0.15,
-    transform: 'rotate(-45deg)',
-    textTransform: 'uppercase',
-    letterSpacing: 8,
-  },
-  watermarkSubtext: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#dc2626',
-    opacity: 0.2,
-    marginTop: 20,
-    transform: 'rotate(-45deg)',
-    textTransform: 'uppercase',
-    letterSpacing: 2,
   },
   header: {
     flexDirection: 'row',
@@ -316,18 +281,6 @@ export const commonStyles = StyleSheet.create({
     objectFit: 'cover',
   },
 });
-
-// ============= WATERMARK COMPONENT =============
-
-/**
- * Watermark Component - Shows MUSTER/PREVIEW overlay for unpaid premium templates
- */
-export const Watermark = () => (
-  <View style={commonStyles.watermarkOverlay} fixed>
-    <Text style={commonStyles.watermarkText}>MUSTER</Text>
-    <Text style={commonStyles.watermarkSubtext}>PREVIEW</Text>
-  </View>
-);
 
 // ============= FONT FAMILIES =============
 

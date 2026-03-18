@@ -16,11 +16,12 @@ import React, { useState } from 'react';
 import { ShieldCheck, ExternalLink } from 'lucide-react';
 import Label from '../Label';
 import Input from '../Input';
+import { useWizardContext } from '../../context/WizardContext';
 
-// Insurance affiliate link from environment variable
 const INSURANCE_AFFILIATE_LINK = import.meta.env.VITE_INSURANCE_AFFILIATE_LINK || '';
 
-const Step2HealthInsurance = React.memo(({ data, updateData, t, animDir, darkMode }) => {
+const Step2HealthInsurance = React.memo(() => {
+  const { data, updateData, t, animDir, darkMode } = useWizardContext();
   const [showMore, setShowMore] = useState(
     !!(data.insuranceProvider || data.chipId || data.medicalConditions || data.previousLandlordName || data.emergencyContactName)
   );

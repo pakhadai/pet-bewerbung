@@ -1,5 +1,21 @@
 import React, { useEffect, useRef } from 'react';
 
+function throttleRAF(fn) {
+  let rafId = null;
+  let lastArgs = null;
+  const tick = () => {
+    rafId = null;
+    if (lastArgs) {
+      fn(...lastArgs);
+      lastArgs = null;
+    }
+  };
+  return (...args) => {
+    lastArgs = args;
+    if (rafId == null) rafId = requestAnimationFrame(tick);
+  };
+}
+
 const Parallax = ({ children }) => {
   const ref = useRef(null);
 
@@ -29,11 +45,14 @@ const Parallax = ({ children }) => {
       });
     };
 
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    const throttledMove = throttleRAF(handleMove);
+    const throttledScroll = throttleRAF(handleScroll);
+
+    window.addEventListener('mousemove', throttledMove);
+    window.addEventListener('scroll', throttledScroll, { passive: true });
     return () => {
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', throttledMove);
+      window.removeEventListener('scroll', throttledScroll);
     };
   }, []);
 
