@@ -12,7 +12,8 @@ const cookieParser = require('cookie-parser');
 const {
   PORT,
   isProduction,
-  ALLOWED_ORIGINS
+  ALLOWED_ORIGINS,
+  COOKIE_SECRET,
 } = require('./config');
 
 // Import logger
@@ -41,9 +42,9 @@ const app = express();
 app.set('trust proxy', process.env.TRUST_PROXY === '1' ? 1 : ['loopback', 'linklocal', 'uniquelocal']);
 
 // ============================================
-// Cookie parsing (required for CSRF session isolation)
+// Cookie parsing with secret (required for signed CSRF cookies)
 // ============================================
-app.use(cookieParser());
+app.use(cookieParser(COOKIE_SECRET || undefined));
 
 // ============================================
 // CORS Configuration
@@ -200,6 +201,9 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 // ============================================
 initRedis()
   .then(() => {
+    if (isProduction && !COOKIE_SECRET) {
+      logger.warn('⚠️  COOKIE_SECRET not set in production - CSRF cookies will be unsigned (less secure)');
+    }
     const httpServer = app.listen(PORT, () => {
       logger.info(`Pet-Bewerbung server running on http://localhost:${PORT}`);
       logger.info(`Environment: ${isProduction ? 'PRODUCTION' : 'development'}`);

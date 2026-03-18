@@ -238,8 +238,8 @@ const GlobalStyles = () => (
       background-clip: text;
     }
 
-    /* Basic entrance */
-    .fade-enter { opacity: 0; transform: translateY(10px); animation: fadeIn 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    /* Basic entrance - 600ms Material-standard for comfortable feel */
+    .fade-enter { opacity: 0; transform: translateY(10px); animation: fadeIn 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards; }
     .stagger-1 { animation-delay: 100ms; }
     .stagger-2 { animation-delay: 200ms; }
     .stagger-3 { animation-delay: 300ms; }
@@ -392,17 +392,17 @@ const GlobalStyles = () => (
     }
     .butter-inner.visible { transform: translateY(0); }
 
-    /* Page transitions */
+    /* Page transitions - 600ms Material-standard easing for smoother feel */
     .page { position: relative; will-change: transform, opacity }
-    .page-enter-left { animation: pageEnterLeft 420ms cubic-bezier(.2,.9,.3,1) both; }
-    .page-enter-right { animation: pageEnterRight 420ms cubic-bezier(.2,.9,.3,1) both; }
-    .page-exit { animation: pageExit 320ms cubic-bezier(.2,.9,.3,1) both; }
-    @keyframes pageEnterLeft { from { opacity: 0; transform: translateX(18px) scale(.995) } to { opacity:1; transform: translateX(0) scale(1) } }
-    @keyframes pageEnterRight { from { opacity: 0; transform: translateX(-18px) scale(.995) } to { opacity:1; transform: translateX(0) scale(1) } }
+    .page-enter-left { animation: pageEnterLeft 600ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+    .page-enter-right { animation: pageEnterRight 600ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+    .page-exit { animation: pageExit 400ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+    @keyframes pageEnterLeft { from { opacity: 0; transform: translateX(12px) scale(.998) } to { opacity:1; transform: translateX(0) scale(1) } }
+    @keyframes pageEnterRight { from { opacity: 0; transform: translateX(-12px) scale(.998) } to { opacity:1; transform: translateX(0) scale(1) } }
     @keyframes pageExit { from { opacity:1; transform: translateY(0) } to { opacity:0; transform: translateY(-8px) scale(.998) } }
 
-    /* subtle reveal on scroll for sections */
-    .reveal { opacity:0; transform: translateY(12px); transition: opacity 520ms ease, transform 520ms ease }
+    /* subtle reveal on scroll for sections - 700ms ease-out for smoother feel */
+    .reveal { opacity:0; transform: translateY(12px); transition: opacity 700ms cubic-bezier(0, 0, 0.2, 1), transform 700ms cubic-bezier(0, 0, 0.2, 1) }
     .reveal.visible { opacity:1; transform: translateY(0) }
 
     /* Parallax layers smoothing */

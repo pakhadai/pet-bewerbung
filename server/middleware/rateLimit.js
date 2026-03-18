@@ -222,11 +222,17 @@ async function getRateLimitStatus(ip) {
 
 /**
  * Extract client IP from request
- * Uses req.ip when trust proxy is configured (Express parses X-Forwarded-For correctly)
+ * SECURITY: Prefer X-Real-IP when Nginx overwrites it (not appends). X-Forwarded-For
+ * can be spoofed by clients; Nginx must use proxy_set_header X-Forwarded-For $remote_addr
+ * to overwrite, or we use X-Real-IP which Nginx sets to actual client.
  * @param {Object} req - Express request
  * @returns {string} Client IP
  */
 function getClientIP(req) {
+  const xRealIp = req.headers['x-real-ip'];
+  if (xRealIp && typeof xRealIp === 'string') {
+    return xRealIp.trim().split(',')[0] || 'unknown';
+  }
   return req.ip || req.socket.remoteAddress || 'unknown';
 }
 

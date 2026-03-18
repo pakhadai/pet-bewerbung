@@ -61,6 +61,9 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'https://pet-bewerbung.ch';
 // Server Port
 const PORT = process.env.PORT || 4242;
 
+// Cookie signing secret (required for CSRF signed cookies - prevents token forgery)
+const COOKIE_SECRET = process.env.COOKIE_SECRET || (isProduction ? null : 'dev-secret-change-in-production');
+
 module.exports = {
   isProduction,
   AI_RATE_LIMIT,
@@ -75,4 +78,5 @@ module.exports = {
   ALLOWED_ORIGINS,
   FRONTEND_URL,
   PORT,
+  COOKIE_SECRET,
 };

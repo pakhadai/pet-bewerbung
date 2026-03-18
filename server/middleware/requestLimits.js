@@ -18,8 +18,9 @@ const BANDWIDTH_TTL_SEC = 3600; // 1 hour
 
 /**
  * Rate limit by request size (prevent abuse)
- * SECURITY: Increment in real-time on req.data to prevent race-condition bypass
- * (10k parallel connections would all see currentBytes=0 if we only updated on finish)
+ * SECURITY: Accumulate bytes in memory during request, update Redis only on req.end.
+ * Updating Redis on every req.on('data') chunk = Slowloris/Chunk DDoS: 1MB at 1 byte/sec
+ * = 1,000,000 Redis ops per connection. Accumulating prevents Redis exhaustion.
  * Must run BEFORE express.json() so req stream is still readable.
  */
 async function trackRequestSize(req, res, next) {
@@ -39,12 +40,24 @@ async function trackRequestSize(req, res, next) {
       });
     }
 
+    let requestBytes = 0;
+
     req.on('data', (chunk) => {
-      redis.pipeline()
-        .incrby(key, chunk.length)
-        .expire(key, BANDWIDTH_TTL_SEC)
-        .exec()
-        .catch(() => {});
+      requestBytes += chunk.length;
+      // Immediate abort if request would exceed limit mid-stream
+      if (currentBytes + requestBytes > MAX_BYTES_PER_HOUR) {
+        req.destroy();
+      }
+    });
+
+    req.on('end', () => {
+      if (requestBytes > 0) {
+        redis.pipeline()
+          .incrby(key, requestBytes)
+          .expire(key, BANDWIDTH_TTL_SEC)
+          .exec()
+          .catch(() => {});
+      }
     });
   }
 

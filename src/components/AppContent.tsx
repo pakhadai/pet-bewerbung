@@ -15,6 +15,7 @@ import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS } from '../constants';
 import AppContainer from './AppContainer';
 import API_ENDPOINTS from '../config';
 import { toJpegDataUrl } from '../utils/imageCompression';
+import { blobUrlToDataUrl } from '../utils/pdfHelpers';
 import { generateQrDataUrl, getQrContent } from '../utils/qrCode';
 import { useFormDataContext, useTranslationContext, useAIGenerationContext, useToastContext } from '../context/WizardProviders';
 import { useCsrf } from '../hooks';
@@ -388,9 +389,9 @@ const AppContent: React.FC = () => {
       try {
         let photoUrl = data.photo;
         if (data.photo.startsWith('blob:')) {
-          photoUrl = await blobUrlToDataUrl(data.photo);
+          photoUrl = (await blobUrlToDataUrl(data.photo)) ?? data.photo;
         }
-        if (photoUrl.startsWith('data:image/webp')) {
+        if (photoUrl && photoUrl.startsWith('data:image/webp')) {
           photoUrl = await toJpegDataUrl(photoUrl);
         }
         pdfData = { ...data, photo: photoUrl };
@@ -456,7 +457,9 @@ const AppContent: React.FC = () => {
           const blob = await generatePdfBlob(template.id, optimizedData);
           zip.file(`${petName}-${template.id}.pdf`, blob);
           successCount++;
-          await new Promise((r) => setTimeout(r, 300)); // Let GC reclaim memory between PDFs (OOM on <=4GB devices)
+          // 800ms pause: GC doesn't run on demand; React-PDF holds large WASM/canvas memory.
+          // Shorter pauses cause OOM on Safari/iOS and low-RAM Android.
+          await new Promise((r) => setTimeout(r, 800));
         } catch (err) {
           failedTemplates.push(template.label || template.id);
           if (import.meta.env.DEV) {

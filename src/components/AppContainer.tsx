@@ -54,7 +54,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   const { darkMode, setDarkMode, toggleTheme } = useThemeContext();
   const { showToast } = useToastContext();
   const { selectedTemplate, setSelectedTemplate, previewOpen, previewTemplate, closePreview } = useTemplateSelection();
-  const { errors: validationErrors } = useFormValidation(data, step);
+  const { errors: validationErrors, isValid: isStepValid } = useFormValidation(data, step);
 
   // Wrap onDownloadPDF to inject selectedTemplate (user's chosen template)
   const wrappedOnDownloadPDF = useCallback(() => onDownloadPDF(selectedTemplate), [onDownloadPDF, selectedTemplate]);

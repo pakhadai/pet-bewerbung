@@ -5,7 +5,7 @@
  */
 
 const crypto = require('crypto');
-const { isProduction } = require('../config');
+const { isProduction, COOKIE_SECRET } = require('../config');
 const { logger } = require('../utils/logger');
 
 const CSRF_COOKIE = 'csrf_token';
@@ -19,20 +19,35 @@ function generateCsrfToken() {
 }
 
 /**
- * Middleware to provide CSRF token (Double Submit Cookie)
- * Sets cookie + header with same token. Client reads cookie and sends in header.
+ * Get CSRF token from request (signed cookie takes precedence when available)
+ */
+function getCsrfTokenFromRequest(req) {
+  if (COOKIE_SECRET && req.signedCookies?.[CSRF_COOKIE]) {
+    return req.signedCookies[CSRF_COOKIE];
+  }
+  return req.cookies?.[CSRF_COOKIE];
+}
+
+/**
+ * Middleware to provide CSRF token (Double Submit Cookie with HMAC-signed cookie)
+ * Signed cookie prevents token forgery: attacker cannot set victim's cookie to match their token.
  */
 function provideCsrfToken(req, res, next) {
-  let token = req.cookies?.[CSRF_COOKIE];
+  let token = getCsrfTokenFromRequest(req);
   if (!token || token.length < 32) {
     token = generateCsrfToken();
-    res.cookie(CSRF_COOKIE, token, {
-      httpOnly: true, // Client gets token from JSON/header only - XSS cannot read cookie
+    const cookieOpts = {
+      httpOnly: true,
       secure: isProduction,
       sameSite: 'lax',
       maxAge: CSRF_MAX_AGE * 1000,
       path: '/',
-    });
+    };
+    if (COOKIE_SECRET) {
+      res.cookie(CSRF_COOKIE, token, { ...cookieOpts, signed: true });
+    } else {
+      res.cookie(CSRF_COOKIE, token, cookieOpts);
+    }
   }
   res.setHeader('X-CSRF-Token', token);
   req.csrfToken = token;
@@ -52,7 +67,7 @@ function verifyCsrfToken(req, res, next) {
     return next();
   }
 
-  const cookieToken = req.cookies?.[CSRF_COOKIE];
+  const cookieToken = getCsrfTokenFromRequest(req);
   const headerToken = req.headers['x-csrf-token'] || req.body?.csrfToken;
 
   if (!cookieToken || !headerToken) {
@@ -78,7 +93,14 @@ function verifyCsrfToken(req, res, next) {
   try {
     const cookieBuf = Buffer.from(cookieToken);
     const headerBuf = Buffer.from(headerToken);
-    if (cookieBuf.length !== headerBuf.length || !crypto.timingSafeEqual(cookieBuf, headerBuf)) {
+    // timingSafeEqual throws if lengths differ - check first
+    if (cookieBuf.length !== headerBuf.length) {
+      return res.status(403).json({
+        error: 'Invalid CSRF token',
+        message: 'CSRF validation failed. Refresh the page.',
+      });
+    }
+    if (!crypto.timingSafeEqual(cookieBuf, headerBuf)) {
       if (!isProduction) {
         logger.warn(`CSRF token mismatch for ${req.method} ${req.path}`);
       }
@@ -102,16 +124,21 @@ function verifyCsrfToken(req, res, next) {
  * Endpoint to get CSRF token (for SPA that fetches token via API)
  */
 function getCsrfTokenEndpoint(req, res) {
-  let token = req.cookies?.[CSRF_COOKIE];
+  let token = getCsrfTokenFromRequest(req);
   if (!token || token.length < 32) {
     token = generateCsrfToken();
-    res.cookie(CSRF_COOKIE, token, {
+    const cookieOpts = {
       httpOnly: true,
       secure: isProduction,
       sameSite: 'lax',
       maxAge: CSRF_MAX_AGE * 1000,
       path: '/',
-    });
+    };
+    if (COOKIE_SECRET) {
+      res.cookie(CSRF_COOKIE, token, { ...cookieOpts, signed: true });
+    } else {
+      res.cookie(CSRF_COOKIE, token, cookieOpts);
+    }
   }
   res.json({
     csrfToken: token,

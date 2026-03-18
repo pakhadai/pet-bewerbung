@@ -57,7 +57,7 @@ const SUSPICIOUS_CHARS = /[{}\\<>|`$]/g;
 
 /**
  * Strict whitelist sanitization for prompt injection prevention
- * Allows ONLY letters (incl. Cyrillic), digits, spaces, hyphens
+ * Allows letters (all Unicode incl. umlauts: Zürich, René, Chien d'arrêt), digits, spaces, hyphens, apostrophes
  * @param {string} str - Input string
  * @param {number} maxLen - Maximum length
  * @returns {string} Sanitized string
@@ -65,7 +65,7 @@ const SUSPICIOUS_CHARS = /[{}\\<>|`$]/g;
 function strictSanitizeAlphaNumeric(str, maxLen = 30) {
   if (!str) return '';
   return String(str)
-    .replace(/[^a-zA-Zа-яА-ЯіІїЇєЄґҐ0-9\s\-]/g, '')
+    .replace(/[^\p{L}\p{N}\s\-']/gu, '')
     .slice(0, maxLen)
     .trim();
 }

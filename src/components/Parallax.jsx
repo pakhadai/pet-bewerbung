@@ -23,6 +23,10 @@ const Parallax = ({ children }) => {
     const el = ref.current;
     if (!el) return;
 
+    // Cache DOM elements - querySelectorAll on every mousemove causes Layout Thrashing
+    const speedElements = Array.from(el.querySelectorAll('[data-speed]'));
+    const scrollElements = Array.from(el.querySelectorAll('[data-scroll]'));
+
     let cachedRect = null;
     const updateRect = () => {
       cachedRect = el.getBoundingClientRect();
@@ -35,7 +39,7 @@ const Parallax = ({ children }) => {
       const cy = cachedRect.top + cachedRect.height / 2;
       const dx = (e.clientX - cx) / cachedRect.width;
       const dy = (e.clientY - cy) / cachedRect.height;
-      el.querySelectorAll('[data-speed]').forEach(layer => {
+      speedElements.forEach((layer) => {
         const speed = parseFloat(layer.getAttribute('data-speed')) || 0.02;
         const tx = dx * speed * 40;
         const ty = dy * speed * 40;
@@ -46,7 +50,7 @@ const Parallax = ({ children }) => {
     const handleScroll = () => {
       updateRect();
       const scrolled = window.scrollY;
-      el.querySelectorAll('[data-scroll]').forEach(layer => {
+      scrollElements.forEach((layer) => {
         const speed = parseFloat(layer.getAttribute('data-scroll')) || 0.2;
         layer.style.transform = `translate3d(0, ${scrolled * speed}px, 0)`;
       });
