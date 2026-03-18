@@ -22,7 +22,6 @@ export const getLocale = (lang) => {
     case 'fr': return 'fr-CH';
     case 'it': return 'it-CH';
     case 'rm': return 'de-CH';
-    case 'ua': return 'uk-UA';
     default: return 'en-GB';
   }
 };

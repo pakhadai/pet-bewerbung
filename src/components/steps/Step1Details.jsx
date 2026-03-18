@@ -22,8 +22,8 @@ const Step1Details = React.memo(({ data, updateData, t, animDir, darkMode, error
   ];
 
   const cardCl = darkMode
-    ? 'bg-gray-800/60 border-gray-600'
-    : 'bg-white/80 border-gray-300';
+    ? 'bg-gray-800 border-gray-600'
+    : 'bg-white border-gray-300';
   const titleCl = darkMode ? 'text-white' : 'text-text-main';
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary';
 

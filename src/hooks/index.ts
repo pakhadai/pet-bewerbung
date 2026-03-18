@@ -38,9 +38,6 @@ export { useCsrf } from './useCsrf';
 export { useTemplateSelection } from './useTemplateSelection';
 export type { UseTemplateSelectionReturn } from './useTemplateSelection';
 
-export { usePaymentFlow } from './usePaymentFlow';
-export type { UsePaymentFlowReturn } from './usePaymentFlow';
-
 export { useScrollVisibility } from './useScrollVisibility';
 
 export { useFormValidation } from './useFormValidation';

@@ -7,7 +7,7 @@ interface FooterProps {
   onFaqClick?: () => void;
 }
 
-const GITHUB_URL = 'https://github.com/pakhadai/pet-bewerbung';
+const GITHUB_URL = 'https://github.com/pet-bewerbung/pet-bewerbung';
 
 const linkClass = "hover:text-primary hover:underline decoration-wavy decoration-primary transition-colors cursor-pointer";
 
@@ -21,8 +21,8 @@ function GitHubIcon({ className }: { className?: string }) {
 
 const Footer: React.FC<FooterProps> = ({ darkMode, t, onOpenLegal, onFaqClick }) => {
   return (
-    <footer className={`pt-5 pb-0 w-full text-center border-t border-dashed backdrop-blur-sm transition-colors
-      ${darkMode ? 'border-gray-700 bg-gray-900/50' : 'border-gray-300 bg-white/50'}`}>
+    <footer className={`pt-5 pb-0 w-full text-center border-t border-dashed transition-colors
+      ${darkMode ? 'border-gray-700 bg-gray-900' : 'border-gray-300 bg-white'}`}>
       
       <p className={`text-base font-display tracking-wide ${darkMode ? 'text-gray-400' : 'text-text-secondary'}`}>
         {t?.footer?.copyright ? (

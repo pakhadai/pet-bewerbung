@@ -3,7 +3,7 @@
  * Complete type definitions for pet CV form data
  */
 
-export type Language = 'de' | 'en' | 'fr' | 'it' | 'rm' | 'ua';
+export type Language = 'de' | 'en' | 'fr' | 'it' | 'rm';
 
 export type PetType = 'dog' | 'cat' | 'other';
 

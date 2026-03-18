@@ -17,12 +17,9 @@ const FloatingNavigation = React.memo(({
   onPrev,
   onNext,
   onDownloadPDF,
-  onBuyPremium,
   t,
   darkMode = false,
   canProceed = true,
-  needsPayment = false, // For step 6: selected premium template without premium
-  premiumPrice = 10,
   visible = true
 }) => {
   // Don't show navigation on step 0 (landing) or step 7 (thank you)
@@ -41,25 +38,14 @@ const FloatingNavigation = React.memo(({
   // Determine if back button should be disabled (on step 1)
   const isBackDisabled = step === 1;
   
-  // For Step 5: Get the action button config
-  const getStep5ActionConfig = () => {
-    if (needsPayment) {
-      return {
-        label: t?.premium?.buyAndDownload ?? `Premium (${premiumPrice} CHF)`,
-        icon: 'workspace_premium',
-        handler: onBuyPremium,
-        className: 'bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white border-amber-400 shadow-lg shadow-amber-500/30'
-      };
-    }
-    return {
-      label: t?.labels?.download ?? 'Download PDF',
-      icon: 'download',
-      handler: onDownloadPDF,
-      className: darkMode 
-        ? 'bg-lavender hover:bg-primary text-primary-dark hover:text-white border-primary/50'
-        : 'bg-lavender hover:bg-primary text-primary-dark hover:text-white border-primary/30'
-    };
-  };
+  const getStep5ActionConfig = () => ({
+    label: t?.labels?.download ?? 'Download PDF',
+    icon: 'download',
+    handler: onDownloadPDF,
+    className: darkMode 
+      ? 'bg-lavender hover:bg-primary text-primary-dark hover:text-white border-primary/50'
+      : 'bg-lavender hover:bg-primary text-primary-dark hover:text-white border-primary/30'
+  });
 
   return (
     <div className="fixed bottom-8 left-0 w-full flex justify-center z-40 pointer-events-none print:hidden">

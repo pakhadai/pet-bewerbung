@@ -19,13 +19,6 @@ interface ThankYouRouteProps {
   onDownloadPDF: () => Promise<void>;
   onCreateAnother: () => void;
   onPrev: () => void;
-  donationAmount: string;
-  setDonationAmount: (amount: string) => void;
-  donateOpen: boolean;
-  setDonateOpen: (open: boolean) => void;
-  paymentOpen: boolean;
-  setPaymentOpen: (open: boolean) => void;
-  onDonate: (method: string) => Promise<void>;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   onFaqClick: () => void;
 }
@@ -40,13 +33,6 @@ export const ThankYouRoute: React.FC<ThankYouRouteProps> = ({
   onDownloadPDF,
   onCreateAnother,
   onPrev,
-  donationAmount,
-  setDonationAmount,
-  donateOpen,
-  setDonateOpen,
-  paymentOpen,
-  setPaymentOpen,
-  onDonate,
   showToast,
   onFaqClick,
 }) => {
@@ -61,13 +47,6 @@ export const ThankYouRoute: React.FC<ThankYouRouteProps> = ({
       onDownloadPDF={onDownloadPDF}
       onCreateAnother={onCreateAnother}
       onPrev={onPrev}
-      donationAmount={donationAmount}
-      setDonationAmount={setDonationAmount}
-      donateOpen={donateOpen}
-      setDonateOpen={setDonateOpen}
-      paymentOpen={paymentOpen}
-      setPaymentOpen={setPaymentOpen}
-      onDonate={onDonate}
       showToast={showToast}
       onFaqClick={onFaqClick}
     />

@@ -28,13 +28,12 @@ interface WizardRouteProps {
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   onGenerateText: () => Promise<void>;
   onDownloadPDF: () => Promise<void>;
-  onBuyPremium: () => void;
   getTemplateInfo: (templateId: string) => any;
-  premiumPrice: number;
   onDownloadAllTemplates: () => Promise<void>;
-  onOpenBuilder: () => void;
   onNavigationVisibilityChange: (visible: boolean) => void;
   validationErrors?: { [field: string]: boolean };
+  canGenerateAI?: boolean;
+  remainingGenerations?: number;
 }
 
 export const WizardRoute: React.FC<WizardRouteProps> = ({
@@ -50,13 +49,12 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
   showToast,
   onGenerateText,
   onDownloadPDF,
-  onBuyPremium,
   getTemplateInfo,
-  premiumPrice,
   onDownloadAllTemplates,
-  onOpenBuilder,
   onNavigationVisibilityChange,
   validationErrors = {},
+  canGenerateAI = true,
+  remainingGenerations = 5,
 }) => {
   switch (step) {
     case 1:
@@ -92,18 +90,8 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
           darkMode={darkMode}
           isGenerating={false}
           onGenerate={onGenerateText}
-          isPremium={isPremium}
-          canGenerateAI={true}
-          remainingGenerations={0}
-          premiumToken={null}
-          deviceId=""
-          onMagicRewrite={(status: string, error?: string) => {
-            if (status === 'success') {
-              showToast(t?.premium?.rewriteSuccess || 'Text verbessert!', 'success');
-            } else if (error) {
-              showToast(error, 'error');
-            }
-          }}
+          canGenerateAI={canGenerateAI}
+          remainingGenerations={remainingGenerations}
         />
       );
 
@@ -129,8 +117,6 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
           onSelectTemplate={onSelectTemplate}
           showToast={showToast}
           darkMode={darkMode}
-          isPremium={isPremium}
-          getTemplateInfo={getTemplateInfo}
         />
       );
 
@@ -142,15 +128,9 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
           animDir={animDir}
           selectedTemplate={selectedTemplate}
           darkMode={darkMode}
-          isPremium={isPremium}
-          getTemplateInfo={getTemplateInfo}
           onDownloadPDF={onDownloadPDF}
-          onBuyPremium={onBuyPremium}
-          premiumPrice={premiumPrice}
           onDownloadAllTemplates={onDownloadAllTemplates}
-          onSelectFreeTemplate={() => onSelectTemplate('classic')}
           updateData={updateData}
-          onOpenBuilder={onOpenBuilder}
         />
       );
 

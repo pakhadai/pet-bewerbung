@@ -27,7 +27,6 @@ const {
 } = require('./middleware/csrf');
 
 // Import controllers
-const stripe = require('./controllers/stripe');
 const ai = require('./controllers/ai');
 
 // Initialize Express app
@@ -72,16 +71,9 @@ app.use(smartCsrfProtection);
 
 // ============================================
 // Body Parsing Middleware
-// JSON parser for all routes except webhook (webhook needs raw body)
 // SECURITY: Explicit size limits prevent DoS attacks via large payloads
 // ============================================
-app.use((req, res, next) => {
-  if (req.originalUrl === '/webhook') {
-    next();
-  } else {
-    express.json({ limit: '1mb' })(req, res, next);
-  }
-});
+app.use(express.json({ limit: '1mb' }));
 
 // ============================================
 // Health Check
@@ -96,7 +88,6 @@ app.get('/', (req, res) => {
     uptime: Math.floor(process.uptime()),
     checks: {
       redis: isRedisAvailable() ? 'ok' : 'unavailable',
-      stripe: !!require('./config').STRIPE_SECRET_KEY ? 'configured' : 'not_configured',
       ai: !!require('./config').GEMINI_API_KEY ? 'configured' : 'not_configured',
     }
   };
@@ -115,47 +106,10 @@ app.get('/', (req, res) => {
 app.get('/csrf-token', getCsrfTokenEndpoint);
 
 // ============================================
-// Stripe Routes
-// ============================================
-app.post('/create-checkout-session', stripe.createCheckoutSession);
-app.post('/create-payment-intent', stripe.createPaymentIntent);
-app.get('/stripe-config', stripe.getStripeConfig);
-app.get('/checkout-session/:id', stripe.getCheckoutSession);
-app.get('/payment-status/:id', stripe.getPaymentStatus);
-app.post('/webhook', express.raw({ type: 'application/json', limit: '2mb' }), stripe.handleWebhook);
-
-// Premium activation and restoration
-app.post('/activate-premium', stripe.activatePremium);
-app.get('/verify-restore/:token', stripe.verifyRestore);
-app.post('/generate-restore-link', stripe.generateRestoreLink);
-
-// ============================================
 // AI Routes
 // ============================================
 app.post('/generate-pet-description', ai.generatePetDescription);
 app.get('/ai-rate-limit', ai.getAIRateLimitStatus);
-app.post('/improve-text', ai.improveText);
-
-// ============================================
-// Premium Verification Route
-// ============================================
-const { verifyPremiumToken } = require('./middleware/premium');
-
-app.post('/verify-premium', async (req, res) => {
-  const { token, deviceId } = req.body || {};
-  
-  if (!token || !deviceId) {
-    return res.status(400).json({ valid: false, error: 'Token and Device ID required' });
-  }
-  
-  const result = await verifyPremiumToken(token, deviceId);
-
-  if (!isProduction && !result.valid) {
-    logger.debug(`Premium verification failed: ${result.error}`);
-  }
-
-  res.json(result);
-});
 
 // ============================================
 // Error Handling Middleware

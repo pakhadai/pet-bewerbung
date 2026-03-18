@@ -18,15 +18,10 @@ import {
   SECTION_COMPONENTS
 } from './templates/TemplateBase';
 
-// Template imports
+// Template imports (3 free templates)
 import ClassicTemplate, { getClassicConfig } from './templates/ClassicTemplate';
 import ModernTemplate, { getModernConfig } from './templates/ModernTemplate';
 import CompactTemplate, { getCompactConfig } from './templates/CompactTemplate';
-import SwissTemplate, { getSwissConfig } from './templates/SwissTemplate';
-import ProfessionalTemplate, { getProfessionalConfig } from './templates/ProfessionalTemplate';
-import EmergencyTemplate, { getEmergencyConfig } from './templates/EmergencyTemplate';
-import FriendlyTemplate, { getFriendlyConfig } from './templates/FriendlyTemplate';
-import GridTemplate, { getGridConfig } from './templates/GridTemplate';
 
 const SwissDocument = ({ data, t, templateType = 'classic' }) => {
   // Get custom design settings
@@ -47,14 +42,8 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     const configGetters = {
       classic: getClassicConfig,
       modern: getModernConfig,
-      compact: getCompactConfig,
-      swiss: getSwissConfig,
-      professional: getProfessionalConfig,
-      emergency: getEmergencyConfig,
-      friendly: getFriendlyConfig,
-      grid: getGridConfig
+      compact: getCompactConfig
     };
-
     const configGetter = configGetters[templateType] || configGetters.classic;
     return configGetter(today);
   };
@@ -75,43 +64,18 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
       styleOverrides
     };
 
-    // Route to specific template
     switch (templateType) {
-      case 'classic':
-        return <ClassicTemplate {...templateProps} />;
-
       case 'modern':
         return <ModernTemplate {...templateProps} />;
-
       case 'compact':
         return <CompactTemplate {...templateProps} />;
-
-      case 'swiss':
-        return <SwissTemplate {...templateProps} />;
-
-      case 'professional':
-        return <ProfessionalTemplate {...templateProps} />;
-
-      case 'emergency':
-        return <EmergencyTemplate {...templateProps} />;
-
-      case 'friendly':
-        return <FriendlyTemplate {...templateProps} />;
-
-      case 'grid':
-        return <GridTemplate {...templateProps} />;
-
       default:
         return <ClassicTemplate {...templateProps} />;
     }
   };
 
-  /**
-   * Render custom layout (when user has reordered/hidden sections)
-   * Only applies to standard templates (classic, modern, compact, swiss)
-   */
   const renderCustomLayout = () => {
-    if (!hasCustomLayout || !['classic', 'modern', 'compact', 'swiss'].includes(templateType)) {
+    if (!hasCustomLayout || !['classic', 'modern', 'compact'].includes(templateType)) {
       return renderTemplate();
     }
 
@@ -166,7 +130,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
     <div className={config.container} style={customStyle}>
       <Watermark />
       <div className="relative z-10 flex flex-col h-full">
-        {hasCustomLayout && ['classic', 'modern', 'compact', 'swiss'].includes(templateType)
+        {hasCustomLayout && ['classic', 'modern', 'compact'].includes(templateType)
           ? renderCustomLayout()
           : renderTemplate()
         }

@@ -6,6 +6,33 @@
 import { useState, useEffect } from 'react';
 import API_ENDPOINTS from '../config';
 
+/**
+ * Fetch with timeout to prevent hanging requests
+ * @param url - URL to fetch
+ * @param options - Fetch options
+ * @param timeoutMs - Timeout in milliseconds (default: 5000ms)
+ * @returns Promise that resolves to Response or rejects on timeout
+ */
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeoutMs: number = 5000): Promise<Response> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new Error(`Request timeout after ${timeoutMs}ms`);
+    }
+    throw err;
+  }
+};
+
 export const useCsrf = () => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,7 +43,8 @@ export const useCsrf = () => {
 
     const fetchToken = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.csrfToken);
+        // SECURITY: Add 5-second timeout to prevent hanging app initialization
+        const response = await fetchWithTimeout(API_ENDPOINTS.csrfToken, {}, 5000);
         if (!response.ok) {
           throw new Error('Failed to fetch CSRF token');
         }

@@ -70,19 +70,11 @@ const INITIAL_DATA = {
 
 const MAX_DESCRIPTION_LENGTH = 470; // limit for generated / manual descriptions
 
-// Simplified Swiss-style templates for 2026
-// 4 professional templates: Classic (FREE), Modern, Compact, Swiss (Premium)
-// Premium users can customize ANY template with the Visual Editor (colors, section order)
-// Premium access: 10 CHF for 2 hours
+// 3 free templates: Classic, Modern, Compact
 const TEMPLATE_OPTIONS = [
-  { id: 'classic', label: 'Classic', isPremium: false, price: 0 },
-  { id: 'modern', label: 'Modern', isPremium: true, price: 10 },
-  { id: 'compact', label: 'Compact', isPremium: true, price: 10 },
-  { id: 'swiss', label: 'Swiss', isPremium: true, price: 10 },
-  { id: 'professional', label: 'Professional', isPremium: true, price: 10 },
-  { id: 'emergency', label: 'Emergency', isPremium: true, price: 10 },
-  { id: 'friendly', label: 'Friendly', isPremium: true, price: 10 },
-  { id: 'grid', label: 'Swiss Grid', isPremium: true, price: 10 }
+  { id: 'classic', label: 'Classic' },
+  { id: 'modern', label: 'Modern' },
+  { id: 'compact', label: 'Compact' }
 ];
 
 // Section definitions for the Template Builder
@@ -108,22 +100,11 @@ const COLOR_PRESETS = [
   { id: 'slate', primary: '#78909c', secondary: '#eceff1', label: 'Slate' }
 ];
 
-// Premium price in CHF (cents for Stripe)
-const PREMIUM_PRICE_CHF = 10;
-const PREMIUM_PRICE_CENTS = PREMIUM_PRICE_CHF * 100;
-
-// Payment success behavior configuration
-// Options: 'show_page' - show PaymentSuccess page, 'redirect_home' - redirect to landing page, 'show_toast' - show toast and stay
-const PAYMENT_SUCCESS_BEHAVIOR = import.meta.env.VITE_PAYMENT_SUCCESS_BEHAVIOR || 'show_page';
-
 export { 
   TRANSLATIONS, 
   INITIAL_DATA, 
   MAX_DESCRIPTION_LENGTH, 
   TEMPLATE_OPTIONS, 
-  PAYMENT_SUCCESS_BEHAVIOR, 
-  PREMIUM_PRICE_CHF, 
-  PREMIUM_PRICE_CENTS,
   SECTION_DEFINITIONS,
   COLOR_PRESETS
 };

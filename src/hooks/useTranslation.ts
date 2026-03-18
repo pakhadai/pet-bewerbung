@@ -3,20 +3,18 @@ import { TRANSLATIONS } from '../translations';
 
 /**
  * Detect user's language from browser settings
- * Maps 'uk' to 'ua' for Ukrainian
  */
 const detectLang = (): string => {
   try {
     const nav = (navigator && (navigator.language || (navigator as any).userLanguage) || '').slice(0, 2).toLowerCase();
-    if (nav === 'uk') return 'ua';
-    if (['de', 'fr', 'it', 'rm', 'en', 'ua'].includes(nav)) return nav;
+    if (['de', 'fr', 'it', 'rm', 'en'].includes(nav)) return nav;
   } catch (e) {
     // ignore
   }
   return 'de';
 };
 
-export type Language = 'de' | 'fr' | 'it' | 'rm' | 'en' | 'ua';
+export type Language = 'de' | 'fr' | 'it' | 'rm' | 'en';
 
 export interface UseTranslationReturn {
   /** Current translations object */

@@ -5,33 +5,30 @@
  */
 
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { PAYMENT_SUCCESS_BEHAVIOR } from '../constants';
 import Header from './Header';
 import Footer from './Footer';
 import FaqModal from './FaqModal';
-import PaymentSuccess from './PaymentSuccess';
 import StepProgress from './StepProgress';
 import FloatingNavigation from './FloatingNavigation';
-import CookieBanner, { COOKIE_CONSENT_KEY, isCookieConsentGiven } from './CookieBanner';
+import CookieBanner, { COOKIE_CONSENT_KEY } from './CookieBanner';
 import LegalPages from './LegalPages';
-import DonateModal from './DonateModal';
-import PaymentModal from './PaymentModal';
 import ErrorBoundary from './ErrorBoundary';
 import { X, Camera } from 'lucide-react';
-import { useFormWizard, useToast, usePremium, useTemplateSelection, usePaymentFlow, useDeviceId, useCsrf, useFormValidation } from '../hooks';
+import { useFormWizard, useToast, usePremium, useTemplateSelection, useFormValidation } from '../hooks';
 import WizardRoute from '../routes/WizardRoute';
 import HeroRoute from '../routes/HeroRoute';
 import ThankYouRoute from '../routes/ThankYouRoute';
 
 // Lazy load heavy PDF components (only needed in Step 5)
 const SwissDocument = lazy(() => import('./SwissDocument'));
-const DocumentEditor = lazy(() => import('./DocumentEditor'));
 
 interface AppContainerProps {
   onDownloadPDF: () => Promise<void>;
   onDownloadAllTemplates: () => Promise<void>;
   onGenerateText: () => Promise<void>;
   onDonateMethod: (method: string) => Promise<void>;
+  canGenerateAI?: boolean;
+  remainingGenerations?: number;
 }
 
 export const AppContainer: React.FC<AppContainerProps> = ({
@@ -39,15 +36,14 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   onDownloadAllTemplates,
   onGenerateText,
   onDonateMethod,
+  canGenerateAI = true,
+  remainingGenerations = 5,
 }) => {
   // State management
   const { step, data, animDir, updateData, goToStep, t, lang, setLang } = useFormWizard();
   const { showToast } = useToast();
-  const { isPremium, getTemplateInfo, premiumPrice, timeRemaining: premiumTimeRemaining, activate } = usePremium();
-  const { deviceId } = useDeviceId();
-  const { token: csrfToken } = useCsrf();
+  const { isPremium, getTemplateInfo } = usePremium();
   const { selectedTemplate, setSelectedTemplate, previewOpen, previewTemplate, closePreview } = useTemplateSelection();
-  const { donationAmount, setDonationAmount, donateOpen, setDonateOpen, paymentOpen, setPaymentOpen } = usePaymentFlow();
   const { errors: validationErrors, isValid: isStepValid } = useFormValidation(data, step);
 
   // Validated navigation: block forward if current step has validation errors
@@ -71,8 +67,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
 
   const [legalPage, setLegalPage] = useState<string | null>(null);
   const [faqOpen, setFaqOpen] = useState(false);
-  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
-  const [paymentSessionId, setPaymentSessionId] = useState<string | null>(null);
   const [navigationVisible, setNavigationVisible] = useState(true);
   const [cookieConsent, setCookieConsent] = useState<'accepted' | 'declined' | null>(() => {
     try {
@@ -82,10 +76,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       return null;
     }
   });
-  const [forceCookieBanner, setForceCookieBanner] = useState(false);
-  const [premiumPaymentOpen, setPremiumPaymentOpen] = useState(false);
-  const [builderOpen, setBuilderOpen] = useState(false);
-
   // Apply dark mode class to document
   useEffect(() => {
     if (darkMode) {
@@ -103,7 +93,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   // Handle cookie consent change
   const handleCookieConsentChange = (consent: 'accepted' | 'declined') => {
     setCookieConsent(consent);
-    setForceCookieBanner(false);
   };
 
   // Reset navigation visibility when step changes
@@ -113,129 +102,11 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     }
   }, [step]);
 
-  // Handle URL parameters for payment success/cancel
-  useEffect(() => {
-    let mounted = true;
-
-    const params = new URLSearchParams(window.location.search);
-    const paymentSuccess = params.get('payment_success');
-    const premiumSuccess = params.get('premium_success');
-    const sessionId = params.get('session_id');
-    const paymentCanceled = params.get('payment_canceled');
-
-    if (premiumSuccess === 'true') {
-      window.history.replaceState({}, document.title, window.location.pathname);
-
-      const pendingSession = sessionStorage.getItem('pending_premium_session');
-      if (pendingSession) {
-        sessionStorage.removeItem('pending_premium_session');
-      }
-
-      const sessionToActivate = pendingSession || sessionId;
-      if (sessionToActivate) {
-        activate(sessionToActivate, deviceId, csrfToken)
-          .then((success) => {
-            if (!mounted) return;
-            if (success) {
-              showToast('🎉 Premium freigeschaltet! 2 Stunden Zugang.', 'success');
-            } else {
-              showToast('Premium konnte nicht aktiviert werden.', 'error');
-            }
-          })
-          .catch((err) => {
-            if (!mounted) return;
-            if (import.meta.env.DEV) {
-              console.error('Premium activation error:', err);
-            }
-            showToast('Fehler bei der Premium-Aktivierung.', 'error');
-          });
-      }
-
-      goToStep(5);
-      return;
-    }
-
-    if (paymentSuccess === 'true' && sessionId) {
-      window.history.replaceState({}, document.title, window.location.pathname);
-
-      if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
-        setShowPaymentSuccess(true);
-        setPaymentSessionId(sessionId);
-      } else if (PAYMENT_SUCCESS_BEHAVIOR === 'redirect_home') {
-        goToStep(0);
-        showToast('Payment successful! Thank you!', 'success');
-      } else if (PAYMENT_SUCCESS_BEHAVIOR === 'show_toast') {
-        showToast('Payment successful! Thank you!', 'success');
-      }
-    } else if (paymentCanceled === 'true') {
-      window.history.replaceState({}, document.title, window.location.pathname);
-      showToast('Payment was canceled', 'info');
-    }
-
-    return () => { mounted = false; };
-  }, [goToStep, showToast, activate, deviceId, csrfToken]);
-
-  // Translations come from the useFormWizard call above (t, lang, setLang)
-
-  // Handle premium purchase - opens payment modal
-  const handleBuyPremiumClick = () => {
-    if (cookieConsent !== 'accepted') {
-      setForceCookieBanner(true);
-      showToast(t?.legal?.cookieRequiredForPayment || 'Bitte akzeptieren Sie Cookies für Zahlungen', 'info');
-      return;
-    }
-    setPremiumPaymentOpen(true);
-  };
-
-  // Handle opening the template builder / visual editor
-  const handleOpenBuilderClick = () => {
-    if (!isPremium) {
-      showToast(t?.premium?.builderRequiresPremium ?? 'Visual Editor benötigt Premium', 'info');
-      handleBuyPremiumClick();
-      return;
-    }
-    setBuilderOpen(true);
-  };
-
-  // Handle applying builder changes
-  const handleApplyBuilder = () => {
-    setBuilderOpen(false);
-    showToast(t?.builder?.applied ?? 'Änderungen angewendet!', 'success');
-  };
-
-  // Handle premium payment success (from modal)
-  const handlePremiumPaymentSuccess = async (paymentId: string) => {
-    setPremiumPaymentOpen(false);
-    const success = await activate(paymentId, deviceId, csrfToken);
-
-    if (success) {
-      showToast(t?.premium?.purchaseSuccess || '🎉 Premium freigeschaltet! 2 Stunden Zugang.', 'success');
-    } else {
-      showToast(t?.premium?.purchaseSuccess || '🎉 Premium freigeschaltet!', 'success');
-    }
-  };
-
   // Convert darkMode to theme string
   const theme = darkMode ? 'dark' : 'light';
 
   // Main app content
-  const appContent = showPaymentSuccess ? (
-    <PaymentSuccess
-      data={data}
-      t={t}
-      theme={theme}
-      onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
-      onLangChange={(v: string) => { updateData('lang', v); setLang(v as any); }}
-      onLogoClick={() => {
-        setShowPaymentSuccess(false);
-        goToStep(0);
-      }}
-      sessionId={paymentSessionId}
-      showToast={showToast}
-      onDownloadPDF={onDownloadPDF}
-      onFaqClick={() => setFaqOpen(true)}
-    />
-  ) : step === 7 ? (
+  const appContent = step === 7 ? (
     <ThankYouRoute
       data={data}
       t={t}
@@ -246,13 +117,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       onDownloadPDF={onDownloadPDF}
       onCreateAnother={() => goToStep(0)}
       onPrev={() => goToStep(6)}
-      donationAmount={donationAmount}
-      setDonationAmount={setDonationAmount}
-      donateOpen={donateOpen}
-      setDonateOpen={setDonateOpen}
-      paymentOpen={paymentOpen}
-      setPaymentOpen={setPaymentOpen}
-      onDonate={onDonateMethod}
       showToast={showToast}
       onFaqClick={() => setFaqOpen(true)}
     />
@@ -265,9 +129,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
         onLangChange={(v: string) => { updateData('lang', v); setLang(v as any); }}
         onLogoClick={() => goToStep(0)}
         t={t}
-        isPremium={isPremium}
-        premiumTimeRemaining={premiumTimeRemaining}
-        onPremiumExpired={() => showToast(t?.premium?.sessionExpired || 'Premium-Sitzung abgelaufen', 'info')}
       />
 
       <main className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 6 ? 'pt-24 md:pt-28' : ''}`}>
@@ -293,13 +154,12 @@ export const AppContainer: React.FC<AppContainerProps> = ({
               showToast={showToast}
               onGenerateText={onGenerateText}
               onDownloadPDF={onDownloadPDF}
-              onBuyPremium={handleBuyPremiumClick}
               getTemplateInfo={getTemplateInfo}
-              premiumPrice={premiumPrice}
               onDownloadAllTemplates={onDownloadAllTemplates}
-              onOpenBuilder={handleOpenBuilderClick}
               onNavigationVisibilityChange={setNavigationVisible}
               validationErrors={validationErrors}
+              canGenerateAI={canGenerateAI}
+              remainingGenerations={remainingGenerations}
             />
           ) : null}
         </div>
@@ -311,81 +171,15 @@ export const AppContainer: React.FC<AppContainerProps> = ({
         onPrev={() => goToStep(step - 1)}
         onNext={handleNext}
         onDownloadPDF={onDownloadPDF}
-        onBuyPremium={handleBuyPremiumClick}
         t={t}
         darkMode={darkMode}
         canProceed={isStepValid}
-        needsPayment={getTemplateInfo(selectedTemplate).isPremium && !isPremium}
-        premiumPrice={premiumPrice}
         visible={navigationVisible}
       />
 
-      <DonateModal
-        open={donateOpen}
-        onClose={() => setDonateOpen(false)}
-        amount={donationAmount}
-        onDonate={onDonateMethod}
-        onOpenPayment={() => {
-          setPaymentOpen(true);
-          setDonateOpen(false);
-        }}
-      />
-      <PaymentModal
-        open={paymentOpen}
-        onClose={() => setPaymentOpen(false)}
-        amount={donationAmount}
-        lang={lang}
-        t={t}
-        darkMode={darkMode}
-        onSuccess={(paymentId: string) => {
-          showToast(t.paymentSuccess?.thankYouMessage || 'Thank you — payment succeeded', 'success');
-          if (PAYMENT_SUCCESS_BEHAVIOR === 'show_page') {
-            setShowPaymentSuccess(true);
-            setPaymentSessionId(paymentId);
-          }
-        }}
-        onFailure={(msg: string) => showToast(`${t.ui?.error || 'Payment failed'}: ${msg}`, 'error')}
-      />
-
-      {/* Premium Payment Modal */}
-      <PaymentModal
-        open={premiumPaymentOpen}
-        onClose={() => setPremiumPaymentOpen(false)}
-        amount={String(premiumPrice)}
-        lang={lang}
-        t={{
-          ...t,
-          paymentCheckout: {
-            ...t?.paymentCheckout,
-            secureCheckout: t?.premium?.securePayment || 'Sichere Zahlung',
-            completeDonation: t?.premium?.completePurchase || 'Premium freischalten',
-            youreDonating: t?.premium?.yourePayingFor || 'Premium-Zugang für 2 Stunden:',
-            toSupport: ''
-          }
-        }}
-        darkMode={darkMode}
-        onSuccess={handlePremiumPaymentSuccess}
-        onFailure={(msg: string) => showToast(`${t.ui?.error || 'Payment failed'}: ${msg}`, 'error')}
-      />
-
-      {/* Visual Document Editor - Premium feature */}
-      {builderOpen && (
-        <Suspense fallback={<div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
-          <DocumentEditor
-            data={data}
-            updateData={updateData}
-            t={t}
-            darkMode={darkMode}
-            selectedTemplate={selectedTemplate}
-            onClose={() => setBuilderOpen(false)}
-            onApply={handleApplyBuilder}
-          />
-        </Suspense>
-      )}
-
       {/* Preview Modal */}
       {previewOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 print:hidden">
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 print:hidden">
           <div className="relative bg-transparent w-full h-full flex flex-col items-center justify-center" onClick={closePreview}>
             <button
               onClick={(e) => {
@@ -428,7 +222,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
 
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
 
-      <CookieBanner t={t} onOpenPrivacy={() => setLegalPage('privacy')} onConsentChange={handleCookieConsentChange} forceShow={forceCookieBanner} />
+      <CookieBanner t={t} onOpenPrivacy={() => setLegalPage('privacy')} onConsentChange={handleCookieConsentChange} />
     </div>
   );
 

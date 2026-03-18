@@ -16,14 +16,13 @@ import AppContainer from './AppContainer';
 import API_ENDPOINTS from '../config';
 import compressImage, { toJpegDataUrl } from '../utils/imageCompression';
 import { generateQrDataUrl, getQrContent } from '../utils/qrCode';
-import { useFormWizard, useToast, usePremium, useAIGenerations, usePaymentFlow, useCsrf } from '../hooks';
+import { useFormWizard, useToast, usePremium, useAIGenerations, useCsrf } from '../hooks';
 
 const AppContent: React.FC = () => {
   const { data, updateData } = useFormWizard();
   const { showToast } = useToast();
-  const { isPremium, premiumToken, deviceId } = usePremium();
-  const { canGenerate: canGenerateAI, incrementGeneration } = useAIGenerations(isPremium);
-  const { donationAmount } = usePaymentFlow();
+  const { isPremium } = usePremium();
+  const { canGenerate: canGenerateAI, remainingGenerations, incrementGeneration } = useAIGenerations(isPremium);
   const { token: csrfToken } = useCsrf();
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -78,9 +77,15 @@ const AppContent: React.FC = () => {
   const generateText = async () => {
     const t = TRANSLATIONS[data.lang];
 
+    // SECURITY: Prevent duplicate requests - early return if already generating
+    if (isGenerating) {
+      console.warn('⚠️  AI generation already in progress, ignoring duplicate request');
+      return;
+    }
+
     if (!canGenerateAI) {
       showToast(
-        t?.premium?.aiLimitReached || 'AI limit erreicht. Premium für unbegrenzte Generierungen freischalten.',
+        t?.premium?.aiLimitReached || 'AI limit erreicht. Versuchen Sie es morgen wieder.',
         'info'
       );
       generateFallbackText();
@@ -115,8 +120,6 @@ const AppContent: React.FC = () => {
         body: JSON.stringify({
           petData,
           lang: data.lang,
-          premiumToken: isPremium ? premiumToken : null,
-          deviceId: deviceId,
           tone: data.aiTone || 'formal'
         }),
       });
@@ -141,10 +144,10 @@ const AppContent: React.FC = () => {
       incrementGeneration();
       updateData('generatedText', json.description);
 
-      if (json.remaining !== undefined && !isPremium) {
-        showToast(`✨ ${json.remaining} AI requests remaining today.`, 'success');
-      } else if (isPremium) {
-        showToast('✨ AI text generated!', 'success');
+      if (json.remaining !== undefined) {
+        showToast(`✨ ${json.remaining} AI-Anfragen heute übrig.`, 'success');
+      } else {
+        showToast('✨ AI-Text generiert!', 'success');
       }
     } catch (err: any) {
       if (import.meta.env.DEV) {
@@ -319,7 +322,8 @@ const AppContent: React.FC = () => {
       }
 
       const pdfT = buildPdfTranslations(t);
-      const logoUrl = await fetchLogoAsDataUrl();
+      // SAFETY: Fallback to undefined if logo fails to load (component handles null/undefined)
+      const logoUrl = (await fetchLogoAsDataUrl()) || undefined;
       const qrContent = getQrContent(pdfData);
       const qrUrl = qrContent ? await generateQrDataUrl(qrContent, { size: 400, margin: 2 }) : null;
 
@@ -360,7 +364,9 @@ const AppContent: React.FC = () => {
         showToast('PDF downloaded successfully!', 'success');
       }
 
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      // MEMORY MANAGEMENT: Delay revocation to allow slow downloads to complete
+      // Extended from 5s to 60s to prevent incomplete PDFs on slow connections
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
     } catch (err: unknown) {
       const t = TRANSLATIONS[data.lang];
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -414,7 +420,8 @@ const AppContent: React.FC = () => {
     }
 
     const pdfT = buildPdfTranslations(t);
-    const logoUrl = await fetchLogoAsDataUrl();
+    // SAFETY: Fallback to undefined if logo fails to load
+    const logoUrl = (await fetchLogoAsDataUrl()) || undefined;
     const qrContent = getQrContent(pdfData);
     const qrUrl = qrContent ? await generateQrDataUrl(qrContent, { size: 400, margin: 2 }) : null;
 
@@ -428,31 +435,34 @@ const AppContent: React.FC = () => {
     ).toBlob();
   };
 
-  // Download all templates as ZIP (Premium feature)
+  // Download all templates as ZIP
   const handleDownloadAllTemplates = async () => {
     const t = TRANSLATIONS[data.lang];
-
-    if (!isPremium) {
-      showToast(t?.premium?.zipRequiresPremium || 'ZIP-Download nur für Premium', 'error');
-      return;
-    }
-
     showToast(t?.premium?.generatingZip || 'Generiere alle Vorlagen...', 'info');
 
     try {
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
       const petName = data.name || 'Pet-CV';
+      const failedTemplates: string[] = [];
+      let successCount = 0;
 
       for (const template of TEMPLATE_OPTIONS) {
         try {
           const blob = await generatePdfBlob(template.id);
           zip.file(`${petName}-${template.id}.pdf`, blob);
+          successCount++;
         } catch (err) {
+          failedTemplates.push(template.label || template.id);
           if (import.meta.env.DEV) {
             console.error(`Failed to generate ${template.id}:`, err);
           }
         }
+      }
+
+      // Check if any templates succeeded
+      if (successCount === 0) {
+        throw new Error('Failed to generate any PDF templates');
       }
 
       const zipBlob = await zip.generateAsync({ type: 'blob' });
@@ -466,8 +476,16 @@ const AppContent: React.FC = () => {
       link.click();
       document.body.removeChild(link);
 
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-      showToast(t?.premium?.zipDownloaded || 'ZIP mit allen Vorlagen heruntergeladen!', 'success');
+      // MEMORY MANAGEMENT: Delay revocation for slow downloads (ZIP is larger)
+      setTimeout(() => URL.revokeObjectURL(url), 120000); // 2 minutes for ZIP
+
+      // Notify user about results
+      if (failedTemplates.length > 0) {
+        const msg = `${successCount}/${TEMPLATE_OPTIONS.length} templates generated. Failed: ${failedTemplates.join(', ')}`;
+        showToast(msg, 'warning');
+      } else {
+        showToast(t?.premium?.zipDownloaded || 'ZIP mit allen Vorlagen heruntergeladen!', 'success');
+      }
     } catch (err) {
       if (import.meta.env.DEV) {
         console.error('ZIP generation error:', err);
@@ -477,68 +495,14 @@ const AppContent: React.FC = () => {
     }
   };
 
-  // Handle donation
-  const handleDonateMethod = async (method: string) => {
-    const parsed = parseFloat(donationAmount || '5');
-    const amount = Math.max(1, Math.round(parsed));
-    const cents = amount * 100;
-    const currency = 'chf';
-
-    try {
-      const res = await fetch(API_ENDPOINTS.createCheckoutSession, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: cents,
-          currency: currency,
-          successUrl: window.location.href,
-          cancelUrl: window.location.href,
-          payment_method: method
-        }),
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        let errorMessage = `Server error (${res.status})`;
-        try {
-          const errorJson = JSON.parse(errorText);
-          errorMessage = errorJson.error || errorJson.details || errorMessage;
-        } catch (_parseErr) {
-          // Server returned non-JSON error response - use raw text
-          errorMessage = errorText.substring(0, 100) || errorMessage;
-        }
-        showToast(errorMessage || 'Failed to create checkout session', 'error');
-        return;
-      }
-
-      const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        showToast('Payment error: Server returned HTML instead of JSON.', 'error');
-        return;
-      }
-
-      const json = await res.json();
-      if (json.url) {
-        window.open(json.url, '_blank');
-        showToast('Opening Checkout...', 'info');
-      } else {
-        const errorMsg = json.error || json.details || 'Failed to create checkout session';
-        showToast(errorMsg, 'error');
-      }
-    } catch (err: any) {
-      if (import.meta.env.DEV) {
-        console.error('Payment error:', err);
-      }
-      showToast('Payment error: ' + (err.message || err), 'error');
-    }
-  };
-
   return (
     <AppContainer
       onDownloadPDF={handleDownloadPDF}
       onDownloadAllTemplates={handleDownloadAllTemplates}
       onGenerateText={generateText}
-      onDonateMethod={handleDonateMethod}
+      onDonateMethod={async () => {}}
+      canGenerateAI={canGenerateAI}
+      remainingGenerations={remainingGenerations}
     />
   );
 };

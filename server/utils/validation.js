@@ -5,6 +5,7 @@
 
 /**
  * Validate device ID format
+ * SECURITY: Requires UUID v4 format for high entropy and brute-force resistance
  * @param {string} deviceId - Device identifier
  * @returns {boolean} True if valid
  */
@@ -13,13 +14,12 @@ function validateDeviceId(deviceId) {
     return false;
   }
 
-  // Check length (UUID v4 is 36 chars, but allow custom formats 10-64 chars)
-  if (deviceId.length < 10 || deviceId.length > 64) {
-    return false;
-  }
+  // CRITICAL SECURITY: Enforce UUID v4 format (128-bit entropy)
+  // Format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+  // where x is any hexadecimal digit and y is one of 8, 9, A, or B
+  const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-  // Only allow alphanumeric characters and hyphens
-  if (!/^[a-zA-Z0-9-]+$/.test(deviceId)) {
+  if (!uuidV4Regex.test(deviceId)) {
     return false;
   }
 

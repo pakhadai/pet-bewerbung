@@ -4,7 +4,6 @@ import fr from './fr';
 import it from './it';
 import rm from './rm';
 import en from './en';
-import ua from './ua';
 
 export const TRANSLATIONS = {
   de,
@@ -12,7 +11,6 @@ export const TRANSLATIONS = {
   it,
   rm,
   en,
-  ua
 };
 
 export default TRANSLATIONS;

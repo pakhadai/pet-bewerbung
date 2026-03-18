@@ -31,7 +31,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-pdf': ['@react-pdf/renderer'],
-          'stripe': ['@stripe/react-stripe-js', '@stripe/stripe-js'],
           'vendor': ['react', 'react-dom'],
         },
       },

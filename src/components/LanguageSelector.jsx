@@ -7,7 +7,6 @@ const LANGUAGES = [
   { id: 'it', label: 'Italiano', flag: 'it' },
   { id: 'rm', label: 'Rumantsch', flag: 'ch' },
   { id: 'en', label: 'English', flag: 'gb' },
-  { id: 'ua', label: 'Українська', flag: 'ua' },
 ];
 
 export default function LanguageSelector({ value, onChange }) {

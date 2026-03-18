@@ -23,38 +23,11 @@ export type {
 export type {
   AIGenerationRequest,
   AIGenerationResponse,
-  AIImproveRequest,
-  AIImproveResponse,
   AIRateLimitStatus,
-  StripeConfigResponse,
-  CreateCheckoutSessionRequest,
-  CreateCheckoutSessionResponse,
-  CreatePaymentIntentRequest,
-  CreatePaymentIntentResponse,
-  PaymentStatusResponse,
-  ActivatePremiumRequest,
-  ActivatePremiumResponse,
-  GenerateRestoreLinkRequest,
-  GenerateRestoreLinkResponse,
-  VerifyRestoreRequest,
-  VerifyRestoreResponse,
   CSRFTokenResponse,
-  StripeWebhookEvent,
   ApiErrorResponse,
   ApiResponse,
 } from './api';
-
-// Premium Types
-export type {
-  PremiumSession,
-  PremiumTokenPayload,
-  PremiumTokenVerification,
-  PremiumFeatures,
-  PremiumStatus,
-  PremiumPricing,
-} from './premium';
-
-export { PREMIUM_DURATION_HOURS, PREMIUM_PRICE_CHF } from './premium';
 
 // Template Types
 export type {

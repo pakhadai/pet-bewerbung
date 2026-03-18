@@ -43,12 +43,8 @@ services:
     env_file:
       - .env
     environment:
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - AI_RATE_LIMIT=${AI_RATE_LIMIT:-3}
-      - AI_RATE_LIMIT_FREE=${AI_RATE_LIMIT_FREE:-1}
+      - AI_RATE_LIMIT=${AI_RATE_LIMIT:-5}
       - REDIS_URL=redis://redis:6379
       - PORT=4242
     healthcheck:

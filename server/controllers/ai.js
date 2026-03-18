@@ -10,11 +10,10 @@ const {
   AI_MAX_CHARS,
   AI_MODEL_TIMEOUT_MS,
   AI_MIN_CHARS,
-  AI_RATE_LIMIT_FREE,
+  AI_RATE_LIMIT,
   isProduction
 } = require('../config');
 const { sanitizePetData, sanitizeText, sanitizeTone } = require('../utils/sanitize');
-const { validateDeviceId } = require('../utils/validation');
 const { logger } = require('../utils/logger');
 const {
   checkAIRateLimit,
@@ -22,7 +21,6 @@ const {
   getRateLimitStatus,
   getClientIP
 } = require('../middleware/rateLimit');
-const { verifyPremiumToken } = require('../middleware/premium');
 
 // Initialize Gemini AI
 const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
@@ -83,11 +81,9 @@ const STRUCTURE_VARIATIONS = [
 /**
  * Build prompt for pet description generation
  */
-function buildPetPrompt(petData, lang, tone = 'formal', isPremium = false) {
+function buildPetPrompt(petData, lang, tone = 'formal') {
   const instructions = LANG_INSTRUCTIONS[lang] || LANG_INSTRUCTIONS.de;
-  const toneInstruction = isPremium
-    ? (TONE_INSTRUCTIONS_PREMIUM[tone] || TONE_INSTRUCTIONS_PREMIUM.formal)
-    : (TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.formal);
+  const toneInstruction = (TONE_INSTRUCTIONS_PREMIUM[tone] || TONE_INSTRUCTIONS_PREMIUM.formal);
   const minChars = AI_MIN_CHARS;
   const maxChars = AI_MAX_CHARS;
 
@@ -106,8 +102,7 @@ function buildPetPrompt(petData, lang, tone = 'formal', isPremium = false) {
 - Kastriert: ${petData.neutered ? 'Ja' : 'Nein'}
 - Geimpft: ${petData.vaccinated ? 'Ja' : 'Nein'}`;
 
-  if (isPremium) {
-    return `Du bist ein erfahrener Schweizer Texter, spezialisiert auf überzeugende Mietbewerbungen mit Haustieren.
+  return `Du bist ein erfahrener Schweizer Texter, spezialisiert auf überzeugende Mietbewerbungen mit Haustieren.
 
 KONTEXT: ${instructions.context}
 TON: ${toneInstruction}
@@ -132,29 +127,6 @@ EINZIGARTIGKEIT: Verwende kreative, abwechslungsreiche Formulierungen. Jeder Tex
 Variation-Seed: ${Date.now()}-${Math.random().toString(36).substring(2, 8)}
 
 Schreibe jetzt den Text (${minChars}-${maxChars} Zeichen, zähle genau):`;
-  }
-
-  // Free tier prompt — simpler but still effective
-  return `Du bist ein Texter für Schweizer Mietbewerbungen mit Haustieren.
-
-KONTEXT: ${instructions.context}
-TON: ${toneInstruction}
-
-REGELN:
-1. Schreibe EXAKT zwischen ${minChars} und ${maxChars} Zeichen (inklusive Leerzeichen)
-2. Ein zusammenhängender Text ohne Absätze
-3. Beschreibe Charakter und Verhalten in der Wohnung
-4. Betone: ruhig, stubenrein, gut erzogen, keine Schäden
-5. Erwähne Verantwortung des Halters
-6. Keine Marketing-Sprache, keine erfundenen Fakten
-7. ${instructions.lang}
-
-${petDataBlock}
-
-STRUKTUR: ${structureHint}
-Variation-Seed: ${Date.now()}-${Math.random().toString(36).substring(2, 8)}
-
-Text (${minChars}-${maxChars} Zeichen):`;
 }
 
 /**
@@ -272,7 +244,7 @@ function truncateAtSentence(text, maxLen) {
  */
 async function generatePetDescription(req, res) {
   const clientIP = getClientIP(req);
-  const { petData: rawPetData, lang = 'de', premiumToken, deviceId, tone = 'formal' } = req.body || {};
+  const { petData: rawPetData, lang = 'de', tone = 'formal' } = req.body || {};
 
   if (!rawPetData || !rawPetData.petName) {
     return res.status(400).json({ error: 'Pet data required' });
@@ -284,22 +256,16 @@ async function generatePetDescription(req, res) {
     return res.status(400).json({ error: 'Invalid pet name after sanitization' });
   }
 
-  // Validate device ID if premium token is provided
-  if (premiumToken && deviceId && !validateDeviceId(deviceId)) {
-    return res.status(400).json({ error: 'Invalid device ID format' });
-  }
+  const rateCheck = await checkAIRateLimit(clientIP);
 
-  // CRITICAL: Pass deviceId to properly validate premium token
-  const rateCheck = await checkAIRateLimit(clientIP, premiumToken, deviceId);
-
-  res.set('X-RateLimit-Limit', AI_RATE_LIMIT_FREE.toString());
+  res.set('X-RateLimit-Limit', AI_RATE_LIMIT.toString());
   res.set('X-RateLimit-Remaining', rateCheck.remaining.toString());
   res.set('X-RateLimit-Reset', new Date(rateCheck.resetTime).toISOString());
 
   if (!rateCheck.allowed) {
     return res.status(429).json({
       error: 'Rate limit exceeded',
-      message: `Maximum ${AI_RATE_LIMIT_FREE} AI request(s) per day on free tier.`,
+      message: `Maximum ${AI_RATE_LIMIT} AI request(s) per day.`,
       resetTime: rateCheck.resetTime,
       remaining: 0
     });
@@ -312,26 +278,16 @@ async function generatePetDescription(req, res) {
     });
   }
 
-  // CRITICAL: Determine premium status from validated rate check, not token presence
-  const isPremium = rateCheck.premium === true;
-
   try {
     const safeTone = sanitizeTone(tone);
-    const prompt = buildPetPrompt(petData, lang, safeTone, isPremium);
+    const prompt = buildPetPrompt(petData, lang, safeTone);
 
-    // Different generation config for premium vs free
-    const genConfig = isPremium
-      ? { maxOutputTokens: 300, temperature: 0.85, topP: 0.93, topK: 25 }
-      : { maxOutputTokens: 300, temperature: 0.7, topP: 0.90, topK: 20 };
-
+    const genConfig = { maxOutputTokens: 300, temperature: 0.85, topP: 0.93, topK: 25 };
     let { text: rawText, model: usedModel } = await generateWithFallback(prompt, genConfig);
     let text = truncateAtSentence(rawText, AI_MAX_CHARS);
 
-    // For premium: retry once if text is too short
-    if (isPremium && text.length < AI_MIN_CHARS) {
-      if (!isProduction) {
-        logger.warn(` Text too short (${text.length}), retrying for premium...`);
-      }
+    if (text.length < AI_MIN_CHARS) {
+      if (!isProduction) logger.warn(` Text too short (${text.length}), retrying...`);
       const retry = await generateWithFallback(prompt, genConfig);
       const retryText = truncateAtSentence(retry.text, AI_MAX_CHARS);
       if (retryText.length >= AI_MIN_CHARS) {
@@ -377,97 +333,7 @@ async function getAIRateLimitStatus(req, res) {
   });
 }
 
-/**
- * Improve text (Premium feature) — polishes without rewriting
- */
-async function improveText(req, res) {
-  const { text, tone = 'formal', premiumToken, deviceId } = req.body || {};
-
-  if (!premiumToken || !deviceId) {
-    return res.status(401).json({ error: 'Premium token required', code: 'NO_TOKEN' });
-  }
-
-  // Validate device ID format
-  if (!validateDeviceId(deviceId)) {
-    return res.status(400).json({ error: 'Invalid device ID format' });
-  }
-
-  const verification = await verifyPremiumToken(premiumToken, deviceId);
-  if (!verification.valid) {
-    return res.status(401).json({
-      error: verification.error === 'expired' ? 'Premium session expired' :
-             verification.error === 'device_mismatch' ? 'Token bound to different device' :
-             'Invalid premium token',
-      code: verification.error?.toUpperCase() || 'INVALID'
-    });
-  }
-
-  if (!text || text.trim().length < 20) {
-    return res.status(400).json({ error: 'Text too short (minimum 20 characters)' });
-  }
-
-  if (!genAI) {
-    return res.status(503).json({ error: 'AI service not configured' });
-  }
-
-  try {
-    const safeTone = sanitizeTone(tone);
-    const toneInstruction = TONE_INSTRUCTIONS_PREMIUM[safeTone] || TONE_INSTRUCTIONS_PREMIUM.formal;
-    const sanitizedText = sanitizeText(text, 1000);
-    const originalLength = sanitizedText.length;
-
-    const prompt = `Du bist ein erfahrener Lektor für Schweizer Mietbewerbungen mit Haustieren.
-
-AUFGABE: Verbessere den folgenden Text — NUR polieren, NICHT umschreiben!
-TON: ${toneInstruction}
-
-STRENGE REGELN:
-1. BEHALTE die Struktur und den Aufbau des Originaltextes bei
-2. BEHALTE alle Informationen, Fakten und Kernaussagen bei
-3. Verbessere NUR: Grammatik, Wortwahl, Satzfluss, Stil
-4. Ersetze schwache Wörter durch stärkere, präzisere Alternativen
-5. Der verbesserte Text MUSS zwischen ${AI_MIN_CHARS} und ${AI_MAX_CHARS} Zeichen lang sein
-6. KÜRZE den Text NICHT — der Originaltext hat ${originalLength} Zeichen, dein Text muss ähnlich lang sein
-7. Füge KEINE neuen Informationen oder Fakten hinzu
-8. KEINE Marketing-Sprache ("perfekt", "ideal", "beste Wahl")
-9. Der Text soll natürlich und authentisch klingen
-
-ORIGINALTEXT (${originalLength} Zeichen):
-"${sanitizedText}"
-
-Verbesserter Text (${AI_MIN_CHARS}-${AI_MAX_CHARS} Zeichen, behalte Struktur bei):`;
-
-    const { text: improvedText, model } = await generateWithFallback(prompt, {
-      maxOutputTokens: 300,
-      temperature: 0.5,
-      topP: 0.90,
-      topK: 15,
-    });
-
-    let finalText = improvedText
-      .replace(/^["']|["']$/g, '')
-      .trim();
-
-    finalText = truncateAtSentence(finalText, AI_MAX_CHARS);
-
-    if (!isProduction) {
-      logger.debug(` Text improved using ${model} (${originalLength} → ${finalText.length} chars)`);
-    }
-
-    res.json({
-      improvedText: finalText,
-      length: finalText.length,
-      model: !isProduction ? model : undefined
-    });
-
-  } catch (err) {
-    logger.error('Text improvement error:', err.message);
-    res.status(500).json({ error: 'Failed to improve text' });
-  }
-}
-
 module.exports = {
   generatePetDescription,
   getAIRateLimitStatus,
-  improveText,
 };

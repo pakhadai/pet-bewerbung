@@ -1,5 +1,4 @@
 import React from 'react';
-import PremiumTimer from './PremiumTimer';
 
 interface HeaderProps {
   darkMode: boolean;
@@ -8,9 +7,6 @@ interface HeaderProps {
   onLangChange: (lang: string) => void;
   onLogoClick: () => void;
   t: any;
-  isPremium?: boolean;
-  premiumTimeRemaining?: number;
-  onPremiumExpired?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -20,13 +16,9 @@ const Header: React.FC<HeaderProps> = ({
   onLangChange, 
   onLogoClick, 
   t,
-  isPremium = false,
-  premiumTimeRemaining = 0,
-  onPremiumExpired
 }) => {
   const languages = [
     { code: 'en', label: 'EN' },
-    { code: 'ua', label: 'UA' },
     { code: 'de', label: 'DE' },
     { code: 'fr', label: 'FR' },
     { code: 'it', label: 'IT' }
@@ -50,18 +42,7 @@ const Header: React.FC<HeaderProps> = ({
         {/* Navigation & Actions */}
         <div className="flex items-center gap-3 lg:gap-6">
           
-          {/* Premium Timer */}
-          {isPremium && premiumTimeRemaining > 0 && (
-            <PremiumTimer
-              timeRemaining={premiumTimeRemaining}
-              isPremium={isPremium}
-              t={t}
-              darkMode={darkMode}
-              onExpired={onPremiumExpired}
-            />
-          )}
-          
-          {/* Language Switcher – font-display як на головній сторінці */}
+          {/* Language Switcher */}
           <div className={`hidden md:flex items-center gap-2 text-lg font-bold font-display ${darkMode ? 'text-gray-300' : 'text-text-main'}`}>
             {languages.map((lng, index) => (
               <React.Fragment key={lng.code}>

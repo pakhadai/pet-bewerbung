@@ -1,12 +1,7 @@
 /**
  * Request Size Limits Middleware
- * Prevents DoS attacks via large payloads
- *
- * NOTE: Express body parsers (express.json, express.raw) are configured with:
- * - JSON body: 1mb limit (server/index.js line 77)
- * - Webhook raw body: 2mb limit (server/index.js line 105)
- *
- * This middleware provides additional per-endpoint limits and tracks total bandwidth usage.
+ * Prevents DoS attacks via large payloads.
+ * Express JSON body limit: 1mb (server/index.js)
  */
 
 const { isProduction } = require('../config');
@@ -14,16 +9,8 @@ const { logger } = require('../utils/logger');
 
 // Size limits for different endpoints (in bytes)
 const SIZE_LIMITS = {
-  // Default limit for most endpoints
   default: 1 * 1024 * 1024, // 1 MB
-
-  // Specific endpoint limits
-  '/api/generate-pet-description': 50 * 1024, // 50 KB (text only)
-  '/api/improve-text': 100 * 1024, // 100 KB
-  '/api/create-checkout-session': 10 * 1024, // 10 KB
-  '/api/create-payment-intent': 10 * 1024, // 10 KB
-  '/api/activate-premium': 10 * 1024, // 10 KB
-  '/webhook': 1 * 1024 * 1024, // 1 MB (Stripe webhooks can be large)
+  '/generate-pet-description': 50 * 1024, // 50 KB (text only)
 };
 
 /**

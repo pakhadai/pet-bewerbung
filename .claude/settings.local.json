@@ -27,7 +27,20 @@
       "Bash(git check-ignore:*)",
       "Bash(npm audit:*)",
       "Bash(node -c:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(head:*)",
+      "Bash(ping:*)",
+      "Bash(npm ls:*)",
+      "Bash(cmd /c \"taskkill /PID 121448 /F & taskkill /PID 132288 /F & taskkill /PID 131352 /F & taskkill /PID 104424 /F\")",
+      "Bash(git status:*)",
+      "Bash(dir /s /b \"c:\\\\Users\\\\Dmytro\\\\Desktop\\\\тест\\\\Wuff-Bewerbung \\(Pet CV\\)\\\\src\\\\*.css\")",
+      "Bash(docker.exe ps:*)",
+      "Bash(\"/mnt/c/Program Files/Docker/Docker/resources/bin/docker.exe\" ps)",
+      "Bash(powershell.exe:*)",
+      "Bash(cmd.exe /c \"docker ps\")",
+      "Bash(\"/c/Program Files/Docker/Docker/resources/bin/docker\" ps)"
     ]
   }
 }

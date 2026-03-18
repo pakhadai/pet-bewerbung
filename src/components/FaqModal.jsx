@@ -13,7 +13,7 @@ const FaqModal = ({ isOpen, onClose, t, darkMode }) => {
 
   return (
     <div
-      className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 print:hidden"
+      className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4 print:hidden"
       onClick={onClose}
     >
       <div

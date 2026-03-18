@@ -114,8 +114,8 @@ const FaqContent = ({ t, darkMode, className = '' }) => {
       </div>
 
       {/* Footer Hint */}
-      <div className={`p-4 border-t text-center text-xs flex-shrink-0 ${darkMode ? 'border-gray-800 bg-gray-900/50 text-gray-500' : 'border-gray-100 bg-gray-50 text-gray-400'}`}>
-        {t?.faq?.footerHint || 'Fragen zur Technik oder Bezahlung? Schreiben Sie an support@pet-bewerbung.ch'}
+      <div className={`p-4 border-t text-center text-xs flex-shrink-0 ${darkMode ? 'border-gray-800 bg-gray-900 text-gray-500' : 'border-gray-100 bg-gray-50 text-gray-400'}`}>
+        {t?.faq?.footerHint || 'Questions about the service? Visit pet-bewerbung.ch'}
       </div>
     </div>
   );
