@@ -152,7 +152,17 @@ export default {
     behaviorAvoid: "À éviter",
     behaviorTitle: "Comportement & Routine",
     referenceTitle: "Références & Contact d'urgence",
-    petType: "Type d'animal"
+    petType: "Type d'animal",
+    aiLimitReached: "Limite IA atteinte. Réessayez demain.",
+    aiLimitBtn: "Limite atteinte – réessayez demain",
+    aiRemaining: "génération(s) IA restante(s)",
+    aiLimitInfo: "Limite atteinte – réessayez demain",
+    zipMobileDisabled: "Téléchargement ZIP désactivé sur mobile. Téléchargez les modèles individuellement.",
+    generatingZip: "Génération de tous les modèles...",
+    zipDownloaded: "ZIP avec tous les modèles téléchargé!",
+    zipError: "Erreur lors de la création du ZIP",
+    freeTemplate: "Gratuit",
+    downloadAllZip: "Tous en ZIP"
   },
   validation: {
     required: "Obligatoire",
@@ -161,7 +171,8 @@ export default {
     emailInvalid: "Adresse e-mail invalide",
     phoneInvalid: "Numéro de téléphone invalide",
     petTypeRequired: "Veuillez sélectionner un type d'animal",
-    petNameRequired: "Le nom est requis"
+    petNameRequired: "Le nom est requis",
+    confirmReset: "Êtes-vous sûr ? Toutes les données seront définitivement supprimées."
   },
   doc: {
     title: "Fiche de Référence Animale",
@@ -265,7 +276,7 @@ export default {
     jurisdiction: "Juridiction",
     jurisdictionText: "Le droit suisse s'applique. Le for juridique est St-Gall, Suisse.",
     cookieBannerTitle: "Notice Cookies",
-    cookieBannerText: "Nous utilisons uniquement des cookies essentiels pour sauvegarder vos préférences de langue et de thème. Pour les dons, Stripe peut définir des cookies supplémentaires.",
+    cookieBannerText: "Nous utilisons uniquement des cookies essentiels pour sauvegarder vos préférences de langue et de thème.",
     learnMore: "En savoir plus",
     accept: "Accepter",
     decline: "Refuser"
@@ -335,7 +346,7 @@ export default {
     step4: {
       title: "Éditeur et export",
       subtitle: "Personnaliser et PDF",
-      badge: "Premium"
+      badge: "Photo"
     },
     step5: {
       title: "Aperçu",
@@ -354,17 +365,6 @@ export default {
     terms: "CGU",
     faq: "FAQ",
     faqComingSoon: "FAQ — bientôt disponible."
-  },
-  premium: {
-    aiLimitReached: 'Limite IA atteinte. Réessayez demain.',
-    aiLimitBtn: 'Limite atteinte – réessayez demain',
-    aiRemaining: 'génération(s) IA restante(s)',
-    aiLimitInfo: 'Limite atteinte – réessayez demain',
-    freeTemplate: 'Gratuit',
-    downloadAllZip: 'Tous en ZIP',
-    generatingZip: 'Génération de tous les modèles...',
-    zipDownloaded: 'ZIP avec tous les modèles téléchargé!',
-    zipError: 'Erreur lors de la création du ZIP'
   },
   builder: {
     title: 'Constructeur de modèles',

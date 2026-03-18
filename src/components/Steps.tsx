@@ -140,8 +140,8 @@ const Steps: React.FC<StepsProps> = ({ darkMode, t }) => {
           rotation="rotate-[2deg]"
           hoverRotation="rotate-[-1deg]"
           badge={{
-            text: t?.stepsNew?.step4?.badge || "Premium",
-            icon: 'workspace_premium'
+            text: t?.stepsNew?.step4?.badge || "Foto",
+            icon: 'photo_camera'
           }}
           darkMode={darkMode}
           animDelay="0.35s"

@@ -95,12 +95,13 @@ class Logger {
 
   /**
    * Log HTTP request
+   * SECURITY: Use req.ip only - never parse X-Forwarded-For (spoofable)
    */
   request(req, meta = {}) {
     this.info('HTTP Request', {
       method: req.method,
       path: req.path,
-      ip: req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress,
+      ip: req.ip,
       userAgent: req.headers['user-agent'],
       ...meta,
     });
@@ -170,7 +171,7 @@ function errorLogger(err, req, res, next) {
     stack: err.stack,
     method: req.method,
     path: req.path,
-    ip: req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress,
+    ip: req.ip,
   });
 
   next(err);

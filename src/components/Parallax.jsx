@@ -23,12 +23,18 @@ const Parallax = ({ children }) => {
     const el = ref.current;
     if (!el) return;
 
+    let cachedRect = null;
+    const updateRect = () => {
+      cachedRect = el.getBoundingClientRect();
+    };
+    updateRect();
+
     const handleMove = (e) => {
-      const rect = el.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const dx = (e.clientX - cx) / rect.width;
-      const dy = (e.clientY - cy) / rect.height;
+      if (!cachedRect) return;
+      const cx = cachedRect.left + cachedRect.width / 2;
+      const cy = cachedRect.top + cachedRect.height / 2;
+      const dx = (e.clientX - cx) / cachedRect.width;
+      const dy = (e.clientY - cy) / cachedRect.height;
       el.querySelectorAll('[data-speed]').forEach(layer => {
         const speed = parseFloat(layer.getAttribute('data-speed')) || 0.02;
         const tx = dx * speed * 40;
@@ -38,6 +44,7 @@ const Parallax = ({ children }) => {
     };
 
     const handleScroll = () => {
+      updateRect();
       const scrolled = window.scrollY;
       el.querySelectorAll('[data-scroll]').forEach(layer => {
         const speed = parseFloat(layer.getAttribute('data-scroll')) || 0.2;
@@ -45,14 +52,18 @@ const Parallax = ({ children }) => {
       });
     };
 
+    const handleResize = () => updateRect();
+
     const throttledMove = throttleRAF(handleMove);
     const throttledScroll = throttleRAF(handleScroll);
 
     window.addEventListener('mousemove', throttledMove);
     window.addEventListener('scroll', throttledScroll, { passive: true });
+    window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('mousemove', throttledMove);
       window.removeEventListener('scroll', throttledScroll);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 

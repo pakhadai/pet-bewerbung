@@ -83,7 +83,7 @@ const Step3Description = React.memo(({
                 ) : !canGenerateAI ? (
                   <>
                     <Lock size={24} className="text-amber-500" />
-                    {t?.premium?.aiLimitBtn ?? 'Limit erreicht – morgen wieder'}
+                    {t?.labels?.aiLimitBtn ?? 'Limit erreicht – morgen wieder'}
                   </>
                 ) : (
                   <>
@@ -105,7 +105,7 @@ const Step3Description = React.memo(({
                 <Lock size={16} className={darkMode ? 'text-amber-400' : 'text-amber-600'} />
               )}
               <span className={`text-xs font-medium ${canGenerateAI ? (darkMode ? 'text-blue-300' : 'text-blue-700') : (darkMode ? 'text-amber-300' : 'text-amber-700')}`}>
-                {canGenerateAI ? (t?.premium?.aiRemaining ?? `${remainingGenerations} KI-Generierung(en) übrig`) : (t?.premium?.aiLimitInfo ?? 'Limit erreicht – morgen wieder')}
+                {canGenerateAI ? (t?.labels?.aiRemaining ?? `${remainingGenerations} KI-Generierung(en) übrig`) : (t?.labels?.aiLimitInfo ?? 'Limit erreicht – morgen wieder')}
               </span>
             </div>
             

@@ -104,7 +104,7 @@ const Step5Preview = React.memo(({ selectedTemplate }) => {
                   <p className={`font-display font-bold ${titleCl}`}>
                     {TEMPLATE_LABELS[selectedTemplate] ?? templateOption?.label}
                   </p>
-                  <p className={`text-xs ${mutedCl}`}>{t?.premium?.freeTemplate ?? 'Kostenlos'}</p>
+                  <p className={`text-xs ${mutedCl}`}>{t?.labels?.freeTemplate ?? 'Kostenlos'}</p>
                 </div>
               </div>
             </div>
@@ -128,7 +128,7 @@ const Step5Preview = React.memo(({ selectedTemplate }) => {
                   }`}
                 >
                   <FileArchive size={16} />
-                  {t?.premium?.downloadAllZip ?? 'Alle als ZIP'}
+                  {t?.labels?.downloadAllZip ?? 'Alle als ZIP'}
                 </button>
               )}
             </div>

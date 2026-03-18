@@ -57,7 +57,7 @@ const getAloneTimePercent = (aloneTime) => {
 };
 
 const GridTemplate = ({ data, t, customColors, config, styleOverrides }) => {
-  const hiddenSections = data?.customDesign?.hiddenSections || [];
+  const hiddenSections = []; // Layout customization removed (premium no longer exists)
 
   return (
     <div className="grid grid-cols-12 gap-8 flex-1 min-h-0 overflow-hidden">

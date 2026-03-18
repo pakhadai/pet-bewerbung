@@ -152,7 +152,17 @@ export default {
     behaviorAvoid: "Sto vegnir evità",
     behaviorTitle: "Cumportament & Rutina",
     referenceTitle: "References & Contact d'urgenza",
-    petType: "Tip d'animal"
+    petType: "Tip d'animal",
+    aiLimitReached: "Limita IA cuntanschida. Emprova danovamain damaun.",
+    aiLimitBtn: "Limita cuntanschida – emprova damaun",
+    aiRemaining: "generaziun(s) IA restanta(s)",
+    aiLimitInfo: "Limita cuntanschida – emprova damaun",
+    zipMobileDisabled: "Telechargiada ZIP deactivada sin mobil. Telechargiai ils models individualmain.",
+    generatingZip: "Generaziun da tut ils models...",
+    zipDownloaded: "ZIP cun tut ils models telechargia!",
+    zipError: "Errur tar la creaziun dal ZIP",
+    freeTemplate: "Gratuit",
+    downloadAllZip: "Tut sco ZIP"
   },
   validation: {
     required: "Obligatori",
@@ -161,7 +171,8 @@ export default {
     emailInvalid: "Adressa e-mail nunvalida",
     phoneInvalid: "Numer da telefon nunvalid",
     petTypeRequired: "Tscherni per plaschair in tip d'animal",
-    petNameRequired: "Il num è necessari"
+    petNameRequired: "Il num è necessari",
+    confirmReset: "Es ti segir? Tut las datas vegnan stizzadas definitivamain."
   },
   doc: {
     title: "Fegl da Referenza per Animals",
@@ -265,7 +276,7 @@ export default {
     jurisdiction: "Giurisdicziun",
     jurisdictionText: "Il dretg svizzer vala. Il lieu da giurisdicziun è Son Gagl, Svizra.",
     cookieBannerTitle: "Avis da Cookies",
-    cookieBannerText: "Nus utilisain mo cookies essenzials per memorisar vossas preferenzas da lingua e design. Per donaziuns po Stripe definir cookies supplementars.",
+    cookieBannerText: "Nus utilisain mo cookies essenzials per memorisar vossas preferenzas da lingua e design.",
     learnMore: "Ulteriuras infurmaziuns",
     accept: "Acceptar",
     decline: "Refusar"
@@ -334,7 +345,7 @@ export default {
     step4: {
       title: "Editur e export",
       subtitle: "Persunalisar e PDF",
-      badge: "Premium"
+      badge: "Foto"
     },
     step5: {
       title: "Prevista",
@@ -353,17 +364,6 @@ export default {
     terms: "Cundiziuns",
     faq: "FAQ",
     faqComingSoon: "FAQ — en curt disponibel."
-  },
-  premium: {
-    aiLimitReached: 'Limita IA cuntanschida. Emprova danovamain damaun.',
-    aiLimitBtn: 'Limita cuntanschida – emprova damaun',
-    aiRemaining: 'generaziun(s) IA restanta(s)',
-    aiLimitInfo: 'Limita cuntanschida – emprova damaun',
-    freeTemplate: 'Gratuit',
-    downloadAllZip: 'Tut sco ZIP',
-    generatingZip: 'Generaziun da tut ils models...',
-    zipDownloaded: 'ZIP cun tut ils models telechargia!',
-    zipError: 'Errur tar la creaziun dal ZIP'
   },
   builder: {
     title: 'Constructor da models',

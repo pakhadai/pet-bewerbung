@@ -39,7 +39,7 @@ const INITIAL_DATA = {
   willingToPayDeposit: true,
   behaviorWithChildren: '', // good, neutral, avoid
   behaviorWithPets: '', // good, neutral, avoid
-  // Custom design settings (Premium feature - Visual Editor)
+  // Custom design settings (Visual Editor)
   // Stored in browser localStorage, not in project
   customDesign: {
     isEdited: false,              // Flag set to true when user applies changes in editor

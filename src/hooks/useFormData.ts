@@ -19,11 +19,16 @@ const loadSavedData = async (defaultLang: string): Promise<any> => {
       const mergedData = {
         ...INITIAL_DATA,
         ...saved,
-        lang: saved.lang || defaultLang
+        lang: saved.lang || defaultLang,
+        customDesign: {
+          ...INITIAL_DATA.customDesign,
+          ...(saved?.customDesign || {})
+        }
       };
+      delete mergedData.hasPhotoSaved;
+      delete mergedData.photo;
 
-      // Restore photo from IndexedDB (stored under data.photo)
-      // If IndexedDB was cleared (e.g. iOS Safari) but localStorage has hasPhotoSaved: true, fix mismatch
+      // Always derive from IndexedDB - never trust hasPhotoSaved from localStorage
       if (photoBlob) {
         mergedData.photo = photoBlob;
         mergedData.hasPhotoSaved = true;
@@ -55,6 +60,7 @@ const saveFormDataSync = (data: any): void => {
   try {
     const dataToSave = { ...data };
     delete dataToSave.photo; // Photo is in IndexedDB, skip for sync save
+    delete dataToSave.hasPhotoSaved; // Never persist - derived from IndexedDB on load (race: tab close before IndexedDB save)
     const key = `${STORAGE_NAMESPACE}:form-data`;
     localStorage.setItem(key, JSON.stringify(dataToSave));
   } catch {
@@ -150,6 +156,23 @@ export const useFormData = (
     };
 
     loadData();
+  }, [defaultLang]);
+
+  // Cross-tab sync: when another tab changes form-data, reload to avoid state corruption
+  useEffect(() => {
+    const key = `${STORAGE_NAMESPACE}:form-data`;
+    const handleStorageChange = async (e: StorageEvent) => {
+      if (e.key === key && e.newValue) {
+        try {
+          const loaded = await loadSavedData(defaultLang);
+          setData(loaded);
+        } catch (err) {
+          if (import.meta.env.DEV) console.warn('Cross-tab sync load failed:', err);
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, [defaultLang]);
 
   // Debounced save to storage when data changes

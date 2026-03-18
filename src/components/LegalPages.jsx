@@ -102,24 +102,8 @@ const PrivacyContent = ({ t }) => (
     </section>
 
     <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.paymentData || 'Payment Data Processing'}</h3>
-      <p className="theme-text-muted">
-        {t.legal?.paymentDataText ||
-          'When you make a voluntary support contribution (Unterstützungsbeitrag), the following data is processed by our payment provider:'}
-      </p>
-      <ul className="theme-text-muted space-y-2 mt-2 list-disc list-inside">
-        <li>Email address (for payment receipt)</li>
-        <li>Payment amount and currency</li>
-        <li>Payment method details (processed by Stripe, not stored by us)</li>
-      </ul>
-    </section>
-
-    <section>
       <h3 className="font-semibold text-base mb-2">{t.legal?.thirdParty || 'Third-Party Services / Drittanbieter'}</h3>
       <ul className="theme-text-muted space-y-3">
-        <li>
-          <strong>Stripe Inc. (USA):</strong> {t.legal?.stripeText || 'For payment processing, we use Stripe. Stripe is compliant with the Swiss-US Data Privacy Framework. When you make a donation, your payment data is processed directly by Stripe according to their privacy policy (stripe.com/privacy). Payment data is transmitted to and processed in the USA.'}
-        </li>
         <li>
           <strong>Cloudflare (USA):</strong> {t.legal?.cloudflareText || 'We use Cloudflare for website delivery and security. Cloudflare may process IP addresses and browser information for security purposes.'}
         </li>
@@ -130,7 +114,7 @@ const PrivacyContent = ({ t }) => (
       <h3 className="font-semibold text-base mb-2">{t.legal?.cookies || 'Cookies'}</h3>
       <p className="theme-text-muted">
         {t.legal?.cookiesText ||
-          'We use only technically necessary cookies and localStorage to store your language preference, theme setting, and form progress. No tracking or advertising cookies are used. Stripe and Cloudflare may set their own cookies for functionality and fraud prevention.'}
+          'We use only technically necessary cookies and localStorage to store your language preference, theme setting, and form progress. No tracking or advertising cookies are used. Cloudflare may set its own cookies for functionality and security.'}
       </p>
     </section>
 
@@ -138,7 +122,7 @@ const PrivacyContent = ({ t }) => (
       <h3 className="font-semibold text-base mb-2">{t.legal?.rights || 'Your Rights / Ihre Rechte'}</h3>
       <p className="theme-text-muted">
         {t.legal?.rightsText ||
-          'Under Swiss data protection law (nFADP/revDSG), you have the right to information, correction, deletion, restriction of processing, and data portability. Since we do not store your pet dossier data on our servers, these rights are automatically fulfilled for that data. For payment-related data processed by Stripe, please contact Stripe directly or us for assistance.'}
+          'Under Swiss data protection law (nFADP/revDSG), you have the right to information, correction, deletion, restriction of processing, and data portability. Since we do not store your pet dossier data on our servers, these rights are automatically fulfilled.'}
       </p>
     </section>
 

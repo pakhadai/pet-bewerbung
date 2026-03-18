@@ -152,7 +152,17 @@ export default {
     behaviorAvoid: "Da evitare",
     behaviorTitle: "Comportamento & Routine",
     referenceTitle: "Riferimenti & Contatto emergenza",
-    petType: "Tipo di animale"
+    petType: "Tipo di animale",
+    aiLimitReached: "Limite IA raggiunta. Riprova domani.",
+    aiLimitBtn: "Limite raggiunto – riprova domani",
+    aiRemaining: "generazione/i IA rimanente/i",
+    aiLimitInfo: "Limite raggiunto – riprova domani",
+    zipMobileDisabled: "Download ZIP disabilitato su mobile. Scarica i modelli singolarmente.",
+    generatingZip: "Generazione di tutti i modelli...",
+    zipDownloaded: "ZIP con tutti i modelli scaricato!",
+    zipError: "Errore nella creazione dello ZIP",
+    freeTemplate: "Gratuito",
+    downloadAllZip: "Tutti in ZIP"
   },
   validation: {
     required: "Obbligatorio",
@@ -161,7 +171,8 @@ export default {
     emailInvalid: "Indirizzo email non valido",
     phoneInvalid: "Numero di telefono non valido",
     petTypeRequired: "Seleziona un tipo di animale",
-    petNameRequired: "Il nome è richiesto"
+    petNameRequired: "Il nome è richiesto",
+    confirmReset: "Sei sicuro? Tutti i dati saranno eliminati definitivamente."
   },
   doc: {
     title: "Scheda di Referenza Animale",
@@ -265,7 +276,7 @@ export default {
     jurisdiction: "Giurisdizione",
     jurisdictionText: "Si applica il diritto svizzero. Il foro competente è San Gallo, Svizzera.",
     cookieBannerTitle: "Avviso Cookie",
-    cookieBannerText: "Utilizziamo solo cookie essenziali per salvare le preferenze di lingua e tema. Per le donazioni, Stripe potrebbe impostare cookie aggiuntivi.",
+    cookieBannerText: "Utilizziamo solo cookie essenziali per salvare le preferenze di lingua e tema.",
     learnMore: "Scopri di più",
     accept: "Accetta",
     decline: "Rifiuta"
@@ -335,7 +346,7 @@ export default {
     step4: {
       title: "Editor ed export",
       subtitle: "Personalizza e PDF",
-      badge: "Premium"
+      badge: "Foto"
     },
     step5: {
       title: "Anteprima",
@@ -354,17 +365,6 @@ export default {
     terms: "Termini",
     faq: "FAQ",
     faqComingSoon: "FAQ — disponibile a breve."
-  },
-  premium: {
-    aiLimitReached: 'Limite IA raggiunta. Riprova domani.',
-    aiLimitBtn: 'Limite raggiunto – riprova domani',
-    aiRemaining: 'generazione/i IA rimanente/i',
-    aiLimitInfo: 'Limite raggiunto – riprova domani',
-    freeTemplate: 'Gratuito',
-    downloadAllZip: 'Tutti in ZIP',
-    generatingZip: 'Generazione di tutti i modelli...',
-    zipDownloaded: 'ZIP con tutti i modelli scaricato!',
-    zipError: 'Errore nella creazione dello ZIP'
   },
   builder: {
     title: 'Costruttore di modelli',

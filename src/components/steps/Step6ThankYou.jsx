@@ -1,37 +1,33 @@
 /**
  * Step6ThankYou.jsx
  * Thank you page after document creation
+ * Uses WizardContext - no prop drilling
  */
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Header from '../Header';
 import Footer from '../Footer';
 import LegalPages from '../LegalPages';
+import { useWizardContext } from '../../context/WizardContext';
 
-const Step6ThankYou = React.memo(({
-  data,
-  t,
-  theme,
-  onThemeChange,
-  onLangChange,
-  onLogoClick,
-  onDownloadPDF,
-  onCreateAnother,
-  onPrev,
-  showToast,
-  onFaqClick,
-}) => {
+const Step6ThankYou = React.memo(({ onFaqClick: onFaqClickProp }) => {
+  const { data, t, darkMode, setDarkMode, setLang, updateData, goToStep, onDownloadPDF, showToast, resetForm } = useWizardContext();
   const [legalPage, setLegalPage] = useState(null);
-  const darkMode = theme === 'dark';
+  const onFaqClick = onFaqClickProp ?? (() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info'));
+
+  const handleLangChange = (v) => {
+    updateData('lang', v);
+    setLang(v);
+  };
 
   return (
     <div className="min-h-screen font-sans antialiased pb-6 print:bg-white print:p-0 flex flex-col theme-bg theme-text">
       <Header
         darkMode={darkMode}
-        toggleDarkMode={() => onThemeChange(darkMode ? 'light' : 'dark')}
+        toggleDarkMode={() => setDarkMode(!darkMode)}
         lang={data.lang}
-        onLangChange={onLangChange}
-        onLogoClick={onLogoClick}
+        onLangChange={handleLangChange}
+        onLogoClick={() => goToStep(0)}
         t={t}
       />
 
@@ -80,10 +76,9 @@ const Step6ThankYou = React.memo(({
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            {onPrev && (
-              <button
+            <button
                 type="button"
-                onClick={onPrev}
+                onClick={() => goToStep(6)}
                 className={`flex items-center gap-2 px-6 py-3 text-lg font-bold font-display hand-drawn-button border-2 transition-all ${
                   darkMode 
                     ? 'border-gray-500 text-gray-300 hover:bg-gray-700' 
@@ -93,21 +88,22 @@ const Step6ThankYou = React.memo(({
                 <ArrowLeft size={20} />
                 {t?.nav?.backToPreview ?? 'Zurück zur Vorschau'}
               </button>
-            )}
-            {onCreateAnother && (
-              <button
+            <button
                 type="button"
-                onClick={onCreateAnother}
+                onClick={() => {
+                  if (window.confirm(t?.ui?.confirmReset ?? t?.validation?.confirmReset ?? 'Are you sure? All data will be permanently deleted.')) {
+                    Promise.resolve(resetForm?.()).then(() => goToStep(0));
+                  }
+                }}
                 className={`text-primary transition-colors font-display text-xl ${darkMode ? 'hover:text-white' : 'hover:text-gray-900'}`}
               >
                 {t?.thankYou?.createAnother ?? t?.nav?.createAnother ?? 'Create another one'}
               </button>
-            )}
           </div>
         </div>
       </main>
 
-      <Footer darkMode={darkMode} t={t} onOpenLegal={setLegalPage} onFaqClick={onFaqClick ?? (() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info'))} />
+      <Footer darkMode={darkMode} t={t} onOpenLegal={setLegalPage} onFaqClick={onFaqClick} />
       <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
     </div>
   );

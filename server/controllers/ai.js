@@ -14,6 +14,7 @@ const {
   isProduction
 } = require('../config');
 const { sanitizePetData, sanitizeText, sanitizeTone } = require('../utils/sanitize');
+const { validatePetData, validateLang } = require('../utils/validation');
 const { logger } = require('../utils/logger');
 const {
   checkAIRateLimit,
@@ -261,8 +262,12 @@ async function generatePetDescription(req, res) {
   const clientIP = getClientIP(req);
   const { petData: rawPetData, lang = 'de', tone = 'formal' } = req.body || {};
 
-  if (!rawPetData || !rawPetData.petName) {
-    return res.status(400).json({ error: 'Pet data required' });
+  const validation = validatePetData(rawPetData);
+  if (!validation.valid) {
+    return res.status(400).json({ error: validation.error });
+  }
+  if (!validateLang(lang)) {
+    return res.status(400).json({ error: 'Invalid language' });
   }
 
   const petData = sanitizePetData(rawPetData);
@@ -316,12 +321,21 @@ async function generatePetDescription(req, res) {
 
   } catch (err) {
     logger.error('AI generation error (all models failed):', err.message);
-    await refundRateLimit(clientIP);
+    const errorMsg = err.message || '';
+    const status = err.status ?? err.statusCode ?? err.code;
+    const isClientError = status === 400 || status === 401 || status === 403 ||
+      errorMsg.includes('400') || errorMsg.includes('401') || errorMsg.includes('403') ||
+      errorMsg.includes('Bad Request') || errorMsg.includes('Unauthorized') ||
+      errorMsg.includes('Forbidden') || errorMsg.includes('SAFETY') ||
+      errorMsg.includes('Safety') || errorMsg.includes('BLOCKED');
+    if (!isClientError) {
+      await refundRateLimit(clientIP);
+    }
 
     res.status(500).json({
       error: 'AI generation failed',
       message: err.message || 'All AI models unavailable. Please try again later.',
-      remaining: rateCheck.remaining + 1
+      remaining: rateCheck.remaining + (isClientError ? 0 : 1)
     });
   }
 }

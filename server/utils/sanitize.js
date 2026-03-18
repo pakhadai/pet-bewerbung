@@ -119,7 +119,7 @@ function sanitizePetData(petData) {
     age: strictSanitizeAlphaNumeric(petData.age, 10),
     gender: ['m', 'f'].includes(petData.gender) ? petData.gender : '',
     weight: strictSanitizeAlphaNumeric(petData.weight, 10),
-    traits: strictSanitizeAlphaNumeric(petData.traits, MAX_TRAITS_LENGTH),
+    traits: sanitizeText(strictSanitizeAlphaNumeric(petData.traits, MAX_TRAITS_LENGTH), MAX_TRAITS_LENGTH),
     neutered: Boolean(petData.neutered),
     vaccinated: Boolean(petData.vaccinated),
   };

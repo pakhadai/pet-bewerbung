@@ -3,11 +3,7 @@
  * Central export point for all application hooks
  */
 
-// Main wizard hook (combines all sub-hooks)
-export { useFormWizard } from './useFormWizard';
-export type { UseFormWizardReturn } from './useFormWizard';
-
-// Individual hooks (can be used separately if needed)
+// Individual hooks - use context hooks from WizardProviders for composition
 export { useWizardNavigation } from './useWizardNavigation';
 export type { UseWizardNavigationReturn, AnimationDirection } from './useWizardNavigation';
 

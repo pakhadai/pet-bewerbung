@@ -56,7 +56,7 @@ const getActivityBars = (aloneTime) => {
 };
 
 const EmergencyTemplate = ({ data, t, customColors, config, styleOverrides }) => {
-  const hiddenSections = data?.customDesign?.hiddenSections || [];
+  const hiddenSections = []; // Layout customization removed (premium no longer exists)
   const primaryColor = customColors?.primary || config?.primaryColor || '#13ec5b';
 
   const noise = getNoiseLevelBars(data.noiseLevel);

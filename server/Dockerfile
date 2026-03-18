@@ -16,4 +16,6 @@ EXPOSE 4242
 # Production environment
 ENV NODE_ENV=production
 
+USER node
+
 CMD ["node", "index.js"]

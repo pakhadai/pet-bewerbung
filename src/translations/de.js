@@ -114,9 +114,7 @@ export default {
     tip3: "Neutraler Hintergrund"
   },
   step5: {
-    photoPreview: "Ihr Foto wird in den Vorlagen angezeigt",
-    premiumInfo: "Premium-Vorlagen können gewählt und in der Vorschau angezeigt werden.",
-    premiumInfoSub: "Die Zahlung erfolgt erst beim Download."
+    photoPreview: "Ihr Foto wird in den Vorlagen angezeigt"
   },
   labels: {
     type: "Tierart",
@@ -195,7 +193,17 @@ export default {
     no: "Nein",
     low: "Ruhig",
     medium: "Mittel",
-    high: "Laut"
+    high: "Laut",
+    aiLimitReached: "KI-Limit erreicht. Versuchen Sie es morgen wieder.",
+    aiLimitBtn: "Limit erreicht – morgen wieder",
+    aiRemaining: "KI-Generierung(en) übrig",
+    aiLimitInfo: "Limit erreicht – morgen wieder",
+    zipMobileDisabled: "ZIP-Download auf Mobilgeräten deaktiviert. Bitte einzelne Vorlagen herunterladen.",
+    generatingZip: "Generiere alle Vorlagen...",
+    zipDownloaded: "ZIP mit allen Vorlagen heruntergeladen!",
+    zipError: "Fehler beim Erstellen des ZIP-Archivs",
+    freeTemplate: "Kostenlos",
+    downloadAllZip: "Alle als ZIP"
   },
   validation: {
     required: "Pflichtfeld",
@@ -204,7 +212,8 @@ export default {
     emailInvalid: "Ungültige E-Mail-Adresse",
     phoneInvalid: "Ungültige Telefonnummer",
     petTypeRequired: "Bitte wählen Sie eine Tierart aus",
-    petNameRequired: "Name ist erforderlich"
+    petNameRequired: "Name ist erforderlich",
+    confirmReset: "Sind Sie sicher? Alle Daten werden unwiderruflich gelöscht."
   },
   doc: {
     title: "Tierhalter-Referenzblatt",
@@ -265,18 +274,6 @@ export default {
     status: "Status",
     completed: "Abgeschlossen",
     goHome: "Zur Startseite",
-    // Premium 2-hour access
-    premiumUnlocked: "Premium freigeschaltet!",
-    premiumAccessInfo: "Sie haben 2 Stunden vollen Zugang zu allen Funktionen: KI-Textgenerierung, alle Vorlagen, Charakter-Konstruktor. Nutzen Sie die Zeit!"
-  },
-  paymentCheckout: {
-    secureCheckout: "Sicherer Checkout",
-    completeDonation: "Beitrag abschliessen",
-    youreDonating: "Ihr Unterstützungsbeitrag",
-    toSupport: "zur Unterstützung des Projekts.",
-    orPayWithCard: "Oder mit Karte zahlen",
-    payAmount: "Zahlen",
-    stripeProtected: "Stripe Protected"
   },
   templates: {
     intro: "Bei dem beschriebenen Tier handelt es sich um einen sehr gepflegten und sozialverträglichen Mitbewohner.",
@@ -306,7 +303,7 @@ export default {
     stripeText: "Für die Abwicklung von Unterstützungsbeiträgen nutzen wir Stripe. Ihre Zahlungsdaten werden direkt von Stripe gemäss deren Datenschutzrichtlinie verarbeitet.",
     fontsText: "Wir verwenden lokal gehostete Schriftarten, um Datenübertragungen an Google-Server zu vermeiden.",
     cookies: "Cookies",
-    cookiesText: "Wir verwenden nur technisch notwendige Cookies, um Ihre Sprach- und Design-Einstellungen zu speichern. Es werden keine Tracking-Cookies verwendet. Stripe kann eigene Cookies für die Zahlungsabwicklung setzen.",
+    cookiesText: "Wir verwenden nur technisch notwendige Cookies, um Ihre Sprach- und Design-Einstellungen zu speichern. Es werden keine Tracking-Cookies verwendet.",
     rights: "Ihre Rechte",
     rightsText: "Nach Schweizer Datenschutzrecht (DSG/nDSG) und DSGVO haben Sie das Recht auf Auskunft, Berichtigung, Löschung und Datenübertragbarkeit. Da wir Ihre Daten nicht speichern, sind diese Rechte automatisch erfüllt.",
     contact: "Kontakt",
@@ -333,8 +330,7 @@ export default {
     decline: "Ablehnen"
   },
   header: {
-    title: "pet-bewerbung.ch",
-    donate: "Unterstützen"
+    title: "pet-bewerbung.ch"
   },
   hero: {
     badge: "Kostenlos starten • Keine Anmeldung",
@@ -434,89 +430,6 @@ export default {
     insuranceTitle: 'Noch keine Haftpflichtversicherung?',
     insuranceDesc: 'Vermieter verlangen oft einen Nachweis. Schützen Sie sich und Ihr Tier ab 5 CHF/Monat.',
     insuranceCta: 'Angebote vergleichen'
-  },
-  // Premium/Freemium features
-  premium: {
-    aiLimitReached: 'KI-Limit erreicht. Versuchen Sie es morgen wieder.',
-    aiLimitBtn: 'Limit erreicht – morgen wieder',
-    aiRemaining: 'KI-Generierung(en) übrig',
-    aiLimitInfo: 'Limit erreicht – morgen wieder',
-    unlimitedAI: 'Premium – Unbegrenzte KI-Generierungen',
-    unlimitedAIShort: 'Unbegrenzt KI-Texte',
-    
-    // Template badges
-    unlocked: 'Freigeschaltet',
-    templateSelected: 'Premium-Vorlage gewählt – Zahlung vor Download nötig',
-    needsPayment: 'Zahlung nötig',
-    freeTemplate: 'Kostenlose Vorlage',
-    premiumTemplate: 'Premium-Vorlage',
-    
-    // Preview comparison
-    compareTitle: 'Was Sie erhalten:',
-    freeVersion: 'Kostenlos (Classic)',
-    basicDesign: 'Einfaches Design',
-    noWatermark: 'Kein Wasserzeichen',
-    proDesign: 'Professionelles Design',
-    allTemplates: 'Alle 4 Vorlagen',
-    supportProject: 'Projekt unterstützen',
-    oneTimePayment: 'Einmalige Zahlung',
-    
-    // Purchase
-    buyAndDownload: 'Kaufen & herunterladen',
-    securePayment: 'Sichere Zahlung via Stripe',
-    orUseFree: 'Oder',
-    useFreeTemplate: 'kostenlose Vorlage verwenden',
-    purchaseSuccess: '🎉 Premium freigeschaltet! Viel Spaß mit allen Templates.',
-    
-    // Restore
-    restoreTitle: 'Premium wiederherstellen',
-    restoreDesc: 'Geben Sie die E-Mail ein, mit der Sie gekauft haben',
-    restoreSuccess: 'Premium erfolgreich wiederhergestellt!',
-    restoreError: 'Wiederherstellung fehlgeschlagen. Token ungültig oder abgelaufen.',
-    restoreLoading: 'Wird wiederhergestellt...',
-    
-    // JWT Session (2-hour access)
-    sessionInfo: 'Premium-Zugang für 2 Stunden',
-    timeRemaining: 'Verbleibend',
-    sessionExpired: 'Premium-Sitzung abgelaufen',
-    deviceMismatch: 'Dieser Token ist an ein anderes Gerät gebunden',
-    activationError: 'Premium konnte nicht aktiviert werden',
-    
-    // Character Builder (Sliders)
-    characterBuilder: 'Premium: Charakter-Konstruktor',
-    toneLabel: 'Schreibstil',
-    sliders: {
-      energy: 'Energie',
-      energyLow: 'Gemütlich',
-      energyHigh: 'Energiegeladen',
-      noise: 'Lautstärke',
-      noiseLow: 'Leise',
-      noiseHigh: 'Bellfreudig',
-      sociability: 'Geselligkeit',
-      sociabilityLow: 'Einzelgänger',
-      sociabilityHigh: 'Liebt alle'
-    },
-    tones: {
-      formal: 'Offiziell',
-      humorous: 'Mit Humor',
-      cute: 'Niedlich'
-    },
-    
-    // Magic Rewrite
-    magicRewrite: 'Text verbessern',
-    rewriting: 'Verbessere...',
-    rewriteSuccess: 'Text wurde verbessert!',
-    
-    // ZIP Download
-    downloadAll: 'Alle Vorlagen als ZIP',
-    generatingZip: 'Generiere alle Vorlagen...',
-    zipDownloaded: 'ZIP mit allen Vorlagen heruntergeladen!',
-    zipError: 'Fehler beim Erstellen des ZIP-Archivs',
-    zipRequiresPremium: 'ZIP-Download nur für Premium',
-    
-    // Template Builder / Visual Editor
-    openBuilder: 'Visual Editor öffnen',
-    builderRequiresPremium: 'Visual Editor benötigt Premium'
   },
   // Template Builder / Visual Editor
   builder: {

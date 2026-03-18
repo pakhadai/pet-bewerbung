@@ -65,12 +65,19 @@ export const useAIGenerationContext = (): AIGenerationContextValue => {
   return ctx;
 };
 
+// Throttle save-error toasts (Safari Private / quota = toast bomb every 500ms)
+let saveErrorShownAt = 0;
+const SAVE_ERROR_THROTTLE_MS = 60000;
+
 // --- Provider component ---
 export const WizardProviders: React.FC<{ children: ReactNode }> = ({ children }) => {
   const translation = useTranslation();
   const toast = useToast();
   const formData = useFormData(translation.lang, {
     onSaveError: (err) => {
+      const now = Date.now();
+      if (now - saveErrorShownAt < SAVE_ERROR_THROTTLE_MS) return;
+      saveErrorShownAt = now;
       const msg =
         err.name === 'QuotaExceededError' || err.message?.includes('quota')
           ? translation.t?.labels?.storageQuotaError ?? 'Speicher voll oder Privatmodus. Daten konnten nicht gespeichert werden.'

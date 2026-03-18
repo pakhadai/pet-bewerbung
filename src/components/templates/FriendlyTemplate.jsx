@@ -44,7 +44,7 @@ export const getFriendlyConfig = (today) => ({
 });
 
 const FriendlyTemplate = ({ data, t, customColors, config, styleOverrides }) => {
-  const hiddenSections = data?.customDesign?.hiddenSections || [];
+  const hiddenSections = []; // Layout customization removed (premium no longer exists)
   const primaryColor = customColors?.primary || config?.primaryColor || '#6400f0';
   const accentColor = customColors?.secondary || config?.accentColor || '#efe5fd';
 

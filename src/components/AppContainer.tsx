@@ -4,7 +4,7 @@
  * Handles step navigation and orchestrates step rendering
  */
 
-import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense } from 'react';
 import GlobalStyles from './GlobalStyles';
 import Header from './Header';
 import Footer from './Footer';
@@ -15,20 +15,28 @@ import CookieBanner, { COOKIE_CONSENT_KEY } from './CookieBanner';
 import LegalPages from './LegalPages';
 import ErrorBoundary from './ErrorBoundary';
 import { X, Camera } from 'lucide-react';
-import { useFormWizard, useToast, useTemplateSelection, useFormValidation, validateStep } from '../hooks';
+import {
+  useFormDataContext,
+  useTranslationContext,
+  useWizardNavigationContext,
+  useThemeContext,
+  useToastContext,
+} from '../context/WizardProviders';
+import { useTemplateSelection, useFormValidation, validateStep } from '../hooks';
 import WizardRoute from '../routes/WizardRoute';
 import HeroRoute from '../routes/HeroRoute';
 import ThankYouRoute from '../routes/ThankYouRoute';
 import { WizardProvider } from '../context/WizardContext';
 
 // Lazy load heavy PDF components (only needed in Step 5)
-const SwissDocument = lazy(() => import('./SwissDocument'));
+// lazyRetry: on chunk 404 (after deploy), force-reload to fetch new assets
+import { lazyRetry } from '../utils/lazyRetry';
+const SwissDocument = lazyRetry(() => import('./SwissDocument'));
 
 interface AppContainerProps {
   onDownloadPDF: (templateType?: string) => Promise<void>;
   onDownloadAllTemplates: () => Promise<void>;
   onGenerateText: () => Promise<void>;
-  onDonateMethod: (method: string) => Promise<void>;
   canGenerateAI?: boolean;
   remainingGenerations?: number;
 }
@@ -37,13 +45,14 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   onDownloadPDF,
   onDownloadAllTemplates,
   onGenerateText,
-  onDonateMethod,
   canGenerateAI = true,
   remainingGenerations = 5,
 }) => {
-  // State management (single theme source from useFormWizard/useThemeContext)
-  const { step, data, animDir, updateData, goToStep, t, lang, setLang, darkMode, setDarkMode, toggleTheme } = useFormWizard();
-  const { showToast } = useToast();
+  const { data, updateData } = useFormDataContext();
+  const { t, lang, setLang } = useTranslationContext();
+  const { step, animDir, goToStep } = useWizardNavigationContext();
+  const { darkMode, setDarkMode, toggleTheme } = useThemeContext();
+  const { showToast } = useToastContext();
   const { selectedTemplate, setSelectedTemplate, previewOpen, previewTemplate, closePreview } = useTemplateSelection();
   const { errors: validationErrors } = useFormValidation(data, step);
 
@@ -88,7 +97,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   // Convert darkMode to theme string
   const theme = darkMode ? 'dark' : 'light';
 
-  // Memoize context value to prevent unnecessary re-renders of all WizardContext consumers
+  const { resetForm } = useFormDataContext();
   const wizardContextValue = useMemo(
     () => ({
       data,
@@ -100,25 +109,19 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       validationErrors,
       onDownloadPDF: wrappedOnDownloadPDF,
       onDownloadAllTemplates,
+      goToStep,
+      setLang,
+      setDarkMode,
+      showToast,
+      resetForm,
     }),
-    [data, updateData, t, darkMode, step, animDir, validationErrors, wrappedOnDownloadPDF, onDownloadAllTemplates]
+    [data, updateData, t, darkMode, step, animDir, validationErrors, wrappedOnDownloadPDF, onDownloadAllTemplates, goToStep, setLang, setDarkMode, showToast, resetForm]
   );
 
-  // GlobalStyles must be at app root so modals (FaqModal, LegalPages) have CSS vars & animations
   const appContent = step === 7 ? (
-    <ThankYouRoute
-      data={data}
-      t={t}
-      theme={theme}
-      onThemeChange={(newTheme: string) => setDarkMode(newTheme === 'dark')}
-      onLangChange={(v: string) => { updateData('lang', v); setLang(v as any); }}
-      onLogoClick={() => goToStep(0)}
-      onDownloadPDF={wrappedOnDownloadPDF}
-      onCreateAnother={() => goToStep(0)}
-      onPrev={() => goToStep(6)}
-      showToast={showToast}
-      onFaqClick={() => setFaqOpen(true)}
-    />
+    <WizardProvider value={wizardContextValue}>
+      <ThankYouRoute onFaqClick={() => setFaqOpen(true)} />
+    </WizardProvider>
   ) : (
     <div className="min-h-screen font-sans theme-text theme-bg pb-6 print:bg-white print:p-0">
       <Header

@@ -1,5 +1,5 @@
 /**
- * Compact Template - Minimalist premium template
+ * Compact Template - Minimalist template
  * Layout: Standard sidebar + main content (narrower margins)
  * Theme: Minimal gray/white, space-efficient design
  */

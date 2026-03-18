@@ -59,8 +59,53 @@ function validateUrl(url) {
   }
 }
 
+/**
+ * Validate pet data structure for AI generation
+ * SECURITY: Enforce types and limits before feeding to LLM
+ * @param {Object} petData - Raw pet data from request
+ * @returns {{ valid: boolean, error?: string }}
+ */
+function validatePetData(petData) {
+  if (!petData || typeof petData !== 'object') {
+    return { valid: false, error: 'Pet data required' };
+  }
+  if (!petData.petName || typeof petData.petName !== 'string' || petData.petName.trim().length < 2) {
+    return { valid: false, error: 'Pet name required (min 2 chars)' };
+  }
+  const maxLen = 100;
+  const strFields = ['petType', 'breed', 'age', 'weight', 'traits'];
+  for (const f of strFields) {
+    if (petData[f] != null && typeof petData[f] !== 'string') {
+      return { valid: false, error: `Invalid type for ${f}` };
+    }
+    if (petData[f] && String(petData[f]).length > maxLen) {
+      return { valid: false, error: `${f} too long` };
+    }
+  }
+  if (petData.gender != null && !['m', 'f', ''].includes(petData.gender)) {
+    return { valid: false, error: 'Invalid gender' };
+  }
+  if (petData.neutered != null && typeof petData.neutered !== 'boolean') {
+    return { valid: false, error: 'Invalid neutered' };
+  }
+  if (petData.vaccinated != null && typeof petData.vaccinated !== 'boolean') {
+    return { valid: false, error: 'Invalid vaccinated' };
+  }
+  return { valid: true };
+}
+
+/**
+ * Validate lang code for AI generation
+ */
+function validateLang(lang) {
+  const allowed = ['de', 'en', 'fr', 'it', 'ua', 'rm'];
+  return typeof lang === 'string' && allowed.includes(lang);
+}
+
 module.exports = {
   validateDeviceId,
   validateEmail,
   validateUrl,
+  validatePetData,
+  validateLang,
 };

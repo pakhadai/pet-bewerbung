@@ -2,7 +2,7 @@
  * App.tsx - Main Application Component
  *
  * Refactored modular structure:
- * - AppProviders: All context providers (theme, translations, premium, toast)
+ * - AppProviders: All context providers (theme, translations, toast)
  * - AppContent: Main business logic orchestration
  *
  * This keeps App.tsx clean and focused on composition,

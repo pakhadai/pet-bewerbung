@@ -1,5 +1,5 @@
 /**
- * Swiss Template - Swiss-themed premium template
+ * Swiss Template - Swiss-themed template
  * Layout: Standard sidebar + main content
  * Theme: Red accents (Swiss flag #D80000), professional Swiss style
  */

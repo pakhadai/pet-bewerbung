@@ -16,12 +16,14 @@ import AppContainer from './AppContainer';
 import API_ENDPOINTS from '../config';
 import { toJpegDataUrl } from '../utils/imageCompression';
 import { generateQrDataUrl, getQrContent } from '../utils/qrCode';
-import { useFormWizard, useToast, useAIGeneration, useCsrf } from '../hooks';
+import { useFormDataContext, useTranslationContext, useAIGenerationContext, useToastContext } from '../context/WizardProviders';
+import { useCsrf } from '../hooks';
 
 const AppContent: React.FC = () => {
-  const { data, updateData, t } = useFormWizard();
-  const { showToast } = useToast();
-  const { canGenerate: canGenerateAI, remainingGenerations, incrementGeneration } = useAIGeneration();
+  const { data, updateData } = useFormDataContext();
+  const { t } = useTranslationContext();
+  const { showToast } = useToastContext();
+  const { canGenerate: canGenerateAI, remainingGenerations, incrementGeneration } = useAIGenerationContext();
   const { token: csrfToken, isFatal: csrfFatal, refetch: refetchCsrf } = useCsrf();
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -66,7 +68,7 @@ const AppContent: React.FC = () => {
 
     if (!canGenerateAI) {
       showToast(
-        t?.premium?.aiLimitReached || 'AI limit erreicht. Versuchen Sie es morgen wieder.',
+        t?.labels?.aiLimitReached || 'AI limit erreicht. Versuchen Sie es morgen wieder.',
         'info'
       );
       generateFallbackText();
@@ -162,21 +164,6 @@ const AppContent: React.FC = () => {
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  // Convert blob URL to data URL
-  const blobUrlToDataUrl = (blobUrl: string): Promise<string> => {
-    return fetch(blobUrl)
-      .then((r) => r.blob())
-      .then(
-        (blob) =>
-          new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          })
-      );
   };
 
   // Fetch logo as data URL
@@ -301,9 +288,6 @@ const AppContent: React.FC = () => {
       if (data.photo && typeof data.photo === 'string') {
         try {
           let photoUrl = data.photo;
-          if (data.photo.startsWith('blob:')) {
-            photoUrl = await blobUrlToDataUrl(data.photo);
-          }
           if (photoUrl.startsWith('data:image/webp')) {
             photoUrl = await toJpegDataUrl(photoUrl);
           }
@@ -437,13 +421,13 @@ const AppContent: React.FC = () => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (isMobile) {
       showToast(
-        t?.premium?.zipMobileDisabled ?? 'ZIP-Download auf Mobilgeräten deaktiviert. Bitte einzelne Vorlagen herunterladen.',
+        t?.labels?.zipMobileDisabled ?? 'ZIP-Download auf Mobilgeräten deaktiviert. Bitte einzelne Vorlagen herunterladen.',
         'info'
       );
       return;
     }
 
-    showToast(t?.premium?.generatingZip || 'Generiere alle Vorlagen...', 'info');
+    showToast(t?.labels?.generatingZip || 'Generiere alle Vorlagen...', 'info');
 
     try {
       // Convert photo once before loop (avoids 3x blob→dataURL, webp→jpeg for each template)
@@ -451,9 +435,6 @@ const AppContent: React.FC = () => {
       if (data.photo && typeof data.photo === 'string') {
         try {
           let photoUrl = data.photo;
-          if (data.photo.startsWith('blob:')) {
-            photoUrl = await blobUrlToDataUrl(data.photo);
-          }
           if (photoUrl.startsWith('data:image/webp')) {
             photoUrl = await toJpegDataUrl(photoUrl);
           }
@@ -475,6 +456,7 @@ const AppContent: React.FC = () => {
           const blob = await generatePdfBlob(template.id, optimizedData);
           zip.file(`${petName}-${template.id}.pdf`, blob);
           successCount++;
+          await new Promise((r) => setTimeout(r, 300)); // Let GC reclaim memory between PDFs (OOM on <=4GB devices)
         } catch (err) {
           failedTemplates.push(template.label || template.id);
           if (import.meta.env.DEV) {
@@ -519,7 +501,7 @@ const AppContent: React.FC = () => {
       if (import.meta.env.DEV) {
         console.error('ZIP generation error:', err);
       }
-      showToast(t?.premium?.zipError || 'Fehler beim Erstellen des ZIP-Archivs', 'error');
+      showToast(t?.labels?.zipError || 'Fehler beim Erstellen des ZIP-Archivs', 'error');
     }
   };
 
@@ -528,7 +510,6 @@ const AppContent: React.FC = () => {
       onDownloadPDF={handleDownloadPDF}
       onDownloadAllTemplates={handleDownloadAllTemplates}
       onGenerateText={generateText}
-      onDonateMethod={async () => {}}
       canGenerateAI={canGenerateAI}
       remainingGenerations={remainingGenerations}
     />

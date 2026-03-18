@@ -70,18 +70,23 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
     const finish = (canvas) => {
       canvas.toBlob(
         (blob) => {
-          if (!isMountedRef.current) return;
-          if (!blob) {
-            setIsProcessing(false);
-            return;
-          }
-          const reader = new FileReader();
-          reader.onloadend = () => {
+          try {
             if (!isMountedRef.current) return;
-            onCropComplete(reader.result);
-            setIsProcessing(false);
-          };
-          reader.readAsDataURL(blob);
+            if (!blob) {
+              setIsProcessing(false);
+              return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              if (!isMountedRef.current) return;
+              onCropComplete(reader.result);
+              setIsProcessing(false);
+            };
+            reader.readAsDataURL(blob);
+          } finally {
+            canvas.width = 0;
+            canvas.height = 0;
+          }
         },
         'image/jpeg',
         0.85
@@ -89,10 +94,12 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
     };
 
     if (typeof createImageBitmap === 'function') {
+      let bitmap;
+      const canvas = document.createElement('canvas');
       try {
         const res = await fetch(imageSrc);
         const blob = await res.blob();
-        const bitmap = await createImageBitmap(blob, { imageOrientation: 'from-image' });
+        bitmap = await createImageBitmap(blob, { imageOrientation: 'from-image' });
         const scaleX = bitmap.width / image.width;
         const scaleY = bitmap.height / image.height;
         const srcW = completedCrop.width * scaleX;
@@ -105,7 +112,6 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
           if (cropAspect > 1) outH = outW / cropAspect;
           else outW = outH * cropAspect;
         }
-        const canvas = document.createElement('canvas');
         canvas.width = Math.round(outW);
         canvas.height = Math.round(outH);
         const ctx = canvas.getContext('2d');
@@ -113,13 +119,17 @@ const ImageCropper = ({ imageSrc, onCropComplete, onCancel, aspectRatio = 1, t }
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(bitmap, completedCrop.x * scaleX, completedCrop.y * scaleY, srcW, srcH, 0, 0, outW, outH);
         bitmap.close();
+        bitmap = null;
         finish(canvas);
         return;
       } catch {
         /* fallback to img */
+      } finally {
+        if (bitmap) bitmap.close();
       }
     }
-    finish(drawToCanvas(image));
+    const fallbackCanvas = drawToCanvas(image);
+    finish(fallbackCanvas);
   }, [completedCrop, onCropComplete, imageSrc]);
 
   const useFullImage = useCallback(async () => {

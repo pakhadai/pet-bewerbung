@@ -82,9 +82,7 @@ export const FONT_FAMILIES = {
 export const isCustomized = (customDesign) => {
   const hasCustomColors = customDesign.primaryColor !== DEFAULT_COLORS.primaryColor ||
                           customDesign.secondaryColor !== DEFAULT_COLORS.secondaryColor;
-  const hasCustomLayout = customDesign.hiddenSections?.length > 0 ||
-                          JSON.stringify(customDesign.layoutOrder) !== JSON.stringify(INITIAL_DATA.customDesign.layoutOrder);
-  return customDesign.isEdited || hasCustomColors || hasCustomLayout;
+  return customDesign.isEdited || hasCustomColors;
 };
 
 /**

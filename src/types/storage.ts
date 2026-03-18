@@ -58,8 +58,7 @@ export type StorageKey =
   | 'photo-thumbnail'
 
   // Cache
-  | 'csrf-token'
-  | 'stripe-config';
+  | 'csrf-token';
 
 export interface StorageStrategy {
   maxSize: number; // bytes
@@ -84,7 +83,6 @@ export const STORAGE_STRATEGIES: Record<StorageKey, StorageStrategy> = {
   // Temporary data → sessionStorage
   'form-draft': { maxSize: 10000, adapter: 'sessionStorage', ttl: 3600 },
   'csrf-token': { maxSize: 200, adapter: 'sessionStorage', ttl: 3600 },
-  'stripe-config': { maxSize: 500, adapter: 'sessionStorage', ttl: 3600 },
 
   // Large data → IndexedDB
   'photo-blob': { maxSize: 10485760, adapter: 'indexedDB' }, // 10 MB

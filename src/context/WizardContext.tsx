@@ -14,6 +14,11 @@ export interface WizardContextValue {
   validationErrors?: Record<string, boolean>;
   onDownloadPDF: () => Promise<void>;
   onDownloadAllTemplates: () => Promise<void>;
+  goToStep: (step: number) => void;
+  setLang: (lang: string) => void;
+  setDarkMode: (value: boolean) => void;
+  showToast: (msg: string, type?: 'info' | 'success' | 'error' | 'warning') => void;
+  resetForm: () => Promise<void>;
 }
 
 const WizardContext = createContext<WizardContextValue | null>(null);

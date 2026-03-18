@@ -12,13 +12,6 @@ const CSRF_COOKIE = 'csrf_token';
 const CSRF_MAX_AGE = 2 * 60 * 60; // 2 hours in seconds
 
 /**
- * Initialize Redis (no-op for stateless CSRF - kept for API compatibility)
- */
-function initCsrfRedis() {
-  logger.info('CSRF: Using stateless Double Submit Cookie (no server storage)');
-}
-
-/**
  * Generate CSRF token
  */
 function generateCsrfToken() {
@@ -34,7 +27,7 @@ function provideCsrfToken(req, res, next) {
   if (!token || token.length < 32) {
     token = generateCsrfToken();
     res.cookie(CSRF_COOKIE, token, {
-      httpOnly: false, // Must be readable by JS for X-CSRF-Token header
+      httpOnly: true, // Client gets token from JSON/header only - XSS cannot read cookie
       secure: isProduction,
       sameSite: 'lax',
       maxAge: CSRF_MAX_AGE * 1000,
@@ -113,7 +106,7 @@ function getCsrfTokenEndpoint(req, res) {
   if (!token || token.length < 32) {
     token = generateCsrfToken();
     res.cookie(CSRF_COOKIE, token, {
-      httpOnly: false,
+      httpOnly: true,
       secure: isProduction,
       sameSite: 'lax',
       maxAge: CSRF_MAX_AGE * 1000,
@@ -142,7 +135,6 @@ function smartCsrfProtection(req, res, next) {
 }
 
 module.exports = {
-  initCsrfRedis,
   provideCsrfToken,
   verifyCsrfToken,
   getCsrfTokenEndpoint,

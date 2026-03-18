@@ -48,9 +48,20 @@ export function validateStep(data: Record<string, unknown>, step: number): FormV
       }
       break;
     case 2:
+      // Emergency contacts optional
+      break;
     case 3:
+      // Description: need generated text (from AI or manual)
+      if (!data.generatedText?.trim()) {
+        errors.generatedText = true;
+        isValid = false;
+      }
+      break;
     case 4:
+      // Photo optional (PDF can render without)
+      break;
     case 5:
+      // Template selection optional
       break;
     default:
       break;

@@ -1,5 +1,5 @@
 /**
- * Modern Template - Premium template with sleek design
+ * Modern Template - Sleek design
  * Layout: Standard sidebar + main content
  * Theme: Gray/blue tones, soft borders, modern aesthetics
  */

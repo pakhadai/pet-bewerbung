@@ -42,7 +42,7 @@ export const getProfessionalConfig = (today) => ({
 });
 
 const ProfessionalTemplate = ({ data, t, customColors, config, styleOverrides }) => {
-  const hiddenSections = data?.customDesign?.hiddenSections || [];
+  const hiddenSections = []; // Layout customization removed (premium no longer exists)
   const primaryColor = customColors?.primary || config?.primaryColor || '#13ec5b';
 
   return (

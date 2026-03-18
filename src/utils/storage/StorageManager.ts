@@ -15,6 +15,10 @@ import { LocalStorageAdapter } from './LocalStorageAdapter';
 import { SessionStorageAdapter } from './SessionStorageAdapter';
 import { IndexedDBAdapter } from './IndexedDBAdapter';
 
+/**
+ * IndexedDB availability - Safari Private has indexedDB but open() may fail (QuotaExceededError).
+ * Adapters handle errors; get/set return null on failure.
+ */
 const isIndexedDBAvailable = (): boolean => {
   try {
     return typeof window !== 'undefined' && window.indexedDB != null;

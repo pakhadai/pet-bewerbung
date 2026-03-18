@@ -18,10 +18,11 @@ const BANDWIDTH_TTL_SEC = 3600; // 1 hour
 
 /**
  * Rate limit by request size (prevent abuse)
- * Uses Redis INCRBY + EXPIRE - no memory exhaustion, no blocking cleanup
+ * SECURITY: Increment in real-time on req.data to prevent race-condition bypass
+ * (10k parallel connections would all see currentBytes=0 if we only updated on finish)
+ * Must run BEFORE express.json() so req stream is still readable.
  */
 async function trackRequestSize(req, res, next) {
-  const initialBytes = req.socket.bytesRead || 0;
   const ip = getClientIP(req);
   const redis = getRedisClient();
 
@@ -38,10 +39,12 @@ async function trackRequestSize(req, res, next) {
       });
     }
 
-    res.on('finish', () => {
-      const finalBytes = req.socket.bytesRead || 0;
-      const actualBytes = Math.max(0, finalBytes - initialBytes);
-      redis.incrby(key, actualBytes).then(() => redis.expire(key, BANDWIDTH_TTL_SEC)).catch(() => {});
+    req.on('data', (chunk) => {
+      redis.pipeline()
+        .incrby(key, chunk.length)
+        .expire(key, BANDWIDTH_TTL_SEC)
+        .exec()
+        .catch(() => {});
     });
   }
 

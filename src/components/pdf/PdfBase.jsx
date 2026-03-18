@@ -91,17 +91,12 @@ export const getCustomStyle = (customDesign) => {
 };
 
 /**
- * Get layout sections from customDesign
+ * Get layout sections (fixed default - layout customization removed, premium no longer exists)
  */
-export const getLayoutSections = (customDesign) => {
-  const layoutOrder = customDesign?.layoutOrder || DEFAULT_LAYOUT_ORDER;
-  const hiddenSections = customDesign?.hiddenSections || [];
-
-  // Filter visible sections and split into sidebar/main
-  const visibleSections = layoutOrder.filter(id => !hiddenSections.includes(id));
+export const getLayoutSections = () => {
+  const visibleSections = [...DEFAULT_LAYOUT_ORDER];
   const sidebarSections = visibleSections.filter(id => SIDEBAR_SECTION_IDS.includes(id));
   const mainSections = visibleSections.filter(id => MAIN_SECTION_IDS.includes(id));
-
   return { sidebarSections, mainSections, visibleSections };
 };
 
@@ -249,8 +244,7 @@ export const commonStyles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
   },
-  // Premium template branding - subtle
-  footerBrandingPremium: {
+  footerBrandingAlt: {
     fontSize: 6,
     color: '#cbd5e1',
     letterSpacing: 0.3,

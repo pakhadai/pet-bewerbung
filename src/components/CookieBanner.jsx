@@ -16,29 +16,38 @@ const CookieBanner = ({ t, onOpenPrivacy, onConsentChange, forceShow = false }) 
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Force show if requested (e.g., when trying to pay with cookies declined)
     if (forceShow) {
       setIsVisible(true);
       return;
     }
-    
-    // Check if user has already consented
-    const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
-    if (!consent) {
-      // Show banner after a short delay for better UX
-      const timer = setTimeout(() => setIsVisible(true), 1000);
-      return () => clearTimeout(timer);
+    try {
+      const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+      if (!consent) {
+        const timer = setTimeout(() => setIsVisible(true), 1000);
+        return () => clearTimeout(timer);
+      }
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('Storage disabled', e);
+      setIsVisible(true);
     }
   }, [forceShow]);
 
   const handleAccept = () => {
-    localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
+    try {
+      localStorage.setItem(COOKIE_CONSENT_KEY, 'accepted');
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('Storage disabled (private mode?)', e);
+    }
     setIsVisible(false);
     onConsentChange?.('accepted');
   };
 
   const handleDecline = () => {
-    localStorage.setItem(COOKIE_CONSENT_KEY, 'declined');
+    try {
+      localStorage.setItem(COOKIE_CONSENT_KEY, 'declined');
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('Storage disabled (private mode?)', e);
+    }
     setIsVisible(false);
     onConsentChange?.('declined');
   };
@@ -63,7 +72,7 @@ const CookieBanner = ({ t, onOpenPrivacy, onConsentChange, forceShow = false }) 
               </h3>
               <p className="text-sm theme-text-muted">
                 {t.legal?.cookieBannerText ||
-                  'We use only essential cookies to save your language and theme preferences. For donations, Stripe may set additional cookies.'}
+                  'We use only essential cookies to save your language and theme preferences.'}
                 {' '}
                 <button
                   onClick={onOpenPrivacy}

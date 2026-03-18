@@ -9,7 +9,7 @@
  * 
  * Note: The file name is correct - this is the first step in the wizard.
  */
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Dog, Cat, Bird } from 'lucide-react';
 import Label from '../Label';
 import FormInput from '../FormInput';
@@ -18,6 +18,8 @@ import { useWizardContext } from '../../context/WizardContext';
 const Step1Details = React.memo(() => {
   const { data, updateData, t, animDir, darkMode, validationErrors = {} } = useWizardContext();
   const errors = validationErrors;
+  const [touched, setTouched] = useState({});
+  const markTouched = useCallback((field) => setTouched((prev) => ({ ...prev, [field]: true })), []);
   const petTypes = [
     { id: 'dog', label: t.labels.dog, icon: Dog },
     { id: 'cat', label: t.labels.cat, icon: Cat },
@@ -52,10 +54,11 @@ const Step1Details = React.memo(() => {
                 <FormInput
                   value={data.ownerName}
                   onChange={e => updateData('ownerName', e.target.value)}
+                  onBlur={() => markTouched('ownerName')}
                   placeholder={t?.placeholders?.ownerName ?? 'e.g. John Doe'}
-                  error={errors?.ownerName}
+                  error={touched.ownerName && errors?.ownerName}
                 />
-                {errors?.ownerName && (
+                {touched.ownerName && errors?.ownerName && (
                   <span className="text-red-500 text-xs mt-1 block">{t.validation?.ownerNameRequired ?? 'Name is required (min. 2 characters)'}</span>
                 )}
               </div>
@@ -72,10 +75,11 @@ const Step1Details = React.memo(() => {
                 <FormInput
                   value={data.postal}
                   onChange={e => updateData('postal', e.target.value)}
+                  onBlur={() => markTouched('postal')}
                   placeholder="9000"
-                  error={errors?.postal}
+                  error={touched.postal && errors?.postal}
                 />
-                {errors.postal && <span className="text-red-500 text-xs mt-1 block">{t.validation?.postalInvalid ?? 'Invalid'}</span>}
+                {touched.postal && errors?.postal && <span className="text-red-500 text-xs mt-1 block">{t.validation?.postalInvalid ?? 'Invalid'}</span>}
               </div>
               <div>
                 <Label>{t.labels.city}</Label>
@@ -87,10 +91,11 @@ const Step1Details = React.memo(() => {
                   type="email"
                   value={data.email}
                   onChange={e => updateData('email', e.target.value)}
+                  onBlur={() => markTouched('email')}
                   placeholder="email@example.com"
-                  error={errors?.email}
+                  error={touched.email && errors?.email}
                 />
-                {errors?.email && <span className="text-red-500 text-xs mt-1 block">{t.validation?.emailInvalid ?? 'Invalid'}</span>}
+                {touched.email && errors?.email && <span className="text-red-500 text-xs mt-1 block">{t.validation?.emailInvalid ?? 'Invalid'}</span>}
               </div>
               <div>
                 <Label>{t.labels.phone}</Label>
@@ -98,10 +103,11 @@ const Step1Details = React.memo(() => {
                   type="tel"
                   value={data.phone}
                   onChange={e => updateData('phone', e.target.value)}
+                  onBlur={() => markTouched('phone')}
                   placeholder="+41 79 123 45 67"
-                  error={errors.phone}
+                  error={touched.phone && errors?.phone}
                 />
-                {errors?.phone && <span className="text-red-500 text-xs mt-1 block">{t.validation?.phoneInvalid ?? 'Invalid'}</span>}
+                {touched.phone && errors?.phone && <span className="text-red-500 text-xs mt-1 block">{t.validation?.phoneInvalid ?? 'Invalid'}</span>}
               </div>
             </div>
           </div>
@@ -114,12 +120,12 @@ const Step1Details = React.memo(() => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <Label required>{t.labels.petType ?? 'Pet Type'}</Label>
-                <div className={`grid grid-cols-3 gap-3 ${errors.petType ? 'ring-2 ring-red-500 rounded-xl p-1' : ''}`}>
+                <div className={`grid grid-cols-3 gap-3 ${touched.petType && errors?.petType ? 'ring-2 ring-red-500 rounded-xl p-1' : ''}`}>
                   {petTypes.map(type => (
                     <button
                       key={type.id}
                       type="button"
-                      onClick={() => updateData('petType', type.id)}
+                      onClick={() => { updateData('petType', type.id); markTouched('petType'); }}
                       className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all hand-drawn-border ${
                         data.petType === type.id ? 'border-primary bg-primary/10' : 'theme-border theme-card hover:theme-card-bg-hover'
                       }`}
@@ -129,17 +135,18 @@ const Step1Details = React.memo(() => {
                     </button>
                   ))}
                 </div>
-                {errors.petType && <span className="text-red-500 text-xs mt-1 block">{t.validation?.petTypeRequired ?? 'Please select a pet type'}</span>}
+                {touched.petType && errors?.petType && <span className="text-red-500 text-xs mt-1 block">{t.validation?.petTypeRequired ?? 'Please select a pet type'}</span>}
               </div>
               <div className="md:col-span-2">
                 <Label required>{t.labels.petName}</Label>
                 <FormInput
                   value={data.name}
                   onChange={e => updateData('name', e.target.value)}
+                  onBlur={() => markTouched('name')}
                   placeholder={t?.placeholders?.petName ?? 'e.g. Luna'}
-                  error={errors.name}
+                  error={touched.name && errors?.name}
                 />
-                {errors.name && <span className="text-red-500 text-xs mt-1 block">{t.validation?.petNameRequired ?? 'Required'}</span>}
+                {touched.name && errors?.name && <span className="text-red-500 text-xs mt-1 block">{t.validation?.petNameRequired ?? 'Required'}</span>}
               </div>
               <div>
                 <Label>{t.labels.breed}</Label>

@@ -190,7 +190,17 @@ export default {
     behaviorAvoid: "Should be avoided",
     behaviorTitle: "Behavior & Routine",
     referenceTitle: "References & Emergency Contact",
-    petType: "Pet Type"
+    petType: "Pet Type",
+    aiLimitReached: "AI limit reached. Try again tomorrow.",
+    aiLimitBtn: "Limit reached – try again tomorrow",
+    aiRemaining: "AI generation(s) remaining",
+    aiLimitInfo: "Limit reached – try again tomorrow",
+    zipMobileDisabled: "ZIP download disabled on mobile. Please download templates individually.",
+    generatingZip: "Generating all templates...",
+    zipDownloaded: "ZIP with all templates downloaded!",
+    zipError: "Error creating ZIP archive",
+    freeTemplate: "Free",
+    downloadAllZip: "All as ZIP"
   },
   validation: {
     required: "Required",
@@ -199,7 +209,8 @@ export default {
     emailInvalid: "Invalid email address",
     phoneInvalid: "Invalid phone number",
     petTypeRequired: "Please select a pet type",
-    petNameRequired: "Name is required"
+    petNameRequired: "Name is required",
+    confirmReset: "Are you sure? All data will be permanently deleted."
   },
   doc: {
     title: "Pet Reference Sheet",
@@ -260,9 +271,6 @@ export default {
     pawsome: "You're Pawsome!",
     supportFuels: "Your support fuels our mission",
     thankYouBanner: "THANK YOU!",
-    // Premium 2-hour access
-    premiumUnlocked: "Premium Unlocked!",
-    premiumAccessInfo: "You have 2 hours of full access to all features: AI text generation, all templates, character builder. Make the most of it!",
     generosityQuote: '"Your generosity helps us keep PetCV.io free and private for pet owners worldwide. From the whiskers of our cats to the wags of our dogs, we thank you!"',
     lifetimeBadge: "Lifetime Supporter Badge Earned",
     shareLove: "Share Love",
@@ -273,15 +281,6 @@ export default {
     linkCopied: "Link copied!",
     shareError: "Could not share",
     thanks: "Thank you!"
-  },
-  paymentCheckout: {
-    secureCheckout: "Secure Checkout",
-    completeDonation: "Complete your donation",
-    youreDonating: "You're donating",
-    toSupport: "to support pet privacy.",
-    orPayWithCard: "Or pay with card",
-    payAmount: "Pay",
-    stripeProtected: "Stripe Protected"
   },
   templates: {
     intro: "The described animal is a very well-groomed and socially compatible companion.",
@@ -308,10 +307,10 @@ export default {
     paymentData: "Payment Data",
     paymentDataText: "When you make a voluntary support contribution, the following data is processed by our payment provider:",
     thirdParty: "Third-Party Services",
-    stripeText: "For support contribution processing, we use Stripe. Your payment data is processed directly by Stripe according to their privacy policy.",
+    stripeText: "Voluntary support contributions do not involve stored payment data.",
     fontsText: "We use locally hosted fonts to avoid data transfer to Google servers.",
     cookies: "Cookies",
-    cookiesText: "We use only technically necessary cookies to store your language and theme preferences. No tracking cookies are used. Stripe may set its own cookies for payment processing.",
+    cookiesText: "We use only technically necessary cookies to store your language and theme preferences. No tracking cookies are used.",
     rights: "Your Rights",
     rightsText: "Under Swiss data protection law (DSG/nDSG) and GDPR, you have the right to information, correction, deletion, and data portability. Since we do not store your data, these rights are automatically fulfilled.",
     contact: "Contact",
@@ -332,14 +331,13 @@ export default {
     jurisdiction: "Jurisdiction",
     jurisdictionText: "Swiss law applies. Place of jurisdiction is St. Gallen, Switzerland.",
     cookieBannerTitle: "Cookie Notice",
-    cookieBannerText: "We use only essential cookies to save your language and theme preferences. For support contributions, Stripe may set additional cookies.",
+    cookieBannerText: "We use only essential cookies to save your language and theme preferences.",
     learnMore: "Learn more",
     accept: "Accept",
     decline: "Decline"
   },
   header: {
-    title: "pet-bewerbung.ch",
-    donate: "Support"
+    title: "pet-bewerbung.ch"
   },
   hero: {
     badge: "Free Start • No Signup",
@@ -437,90 +435,6 @@ export default {
     insuranceTitle: 'No liability insurance yet?',
     insuranceDesc: 'Landlords often require proof. Protect yourself and your pet from 5 CHF/month.',
     insuranceCta: 'Compare offers'
-  },
-  // Premium/Freemium features
-  premium: {
-    // AI limits
-    aiLimitReached: 'AI limit reached. Try again tomorrow.',
-    aiLimitBtn: 'Limit reached – try again tomorrow',
-    aiRemaining: 'AI generation(s) remaining',
-    aiLimitInfo: 'Limit reached – try again tomorrow',
-    unlimitedAI: 'Premium – Unlimited AI generations',
-    unlimitedAIShort: 'Unlimited AI texts',
-    
-    // Template badges
-    unlocked: 'Unlocked',
-    templateSelected: 'Premium template selected – Payment required before download',
-    needsPayment: 'Payment required',
-    freeTemplate: 'Free template',
-    premiumTemplate: 'Premium template',
-    
-    // Preview comparison
-    compareTitle: 'What you get:',
-    freeVersion: 'Free (Classic)',
-    basicDesign: 'Basic design',
-    noWatermark: 'No watermark',
-    proDesign: 'Professional design',
-    allTemplates: 'All 4 templates',
-    supportProject: 'Support the project',
-    oneTimePayment: 'One-time payment',
-    
-    // Purchase
-    buyAndDownload: 'Buy & download',
-    securePayment: 'Secure payment via Stripe',
-    orUseFree: 'Or',
-    useFreeTemplate: 'use free template',
-    purchaseSuccess: '🎉 Premium unlocked! Enjoy all templates.',
-    
-    // Restore
-    restoreTitle: 'Restore Premium',
-    restoreDesc: 'Enter the email you used for purchase',
-    restoreSuccess: 'Premium successfully restored!',
-    restoreError: 'Restore failed. Token invalid or expired.',
-    restoreLoading: 'Restoring...',
-    
-    // JWT Session (2-hour access)
-    sessionInfo: 'Premium access for 2 hours',
-    timeRemaining: 'Remaining',
-    sessionExpired: 'Premium session expired',
-    deviceMismatch: 'This token is bound to a different device',
-    activationError: 'Could not activate Premium',
-    
-    // Character Builder (Sliders)
-    characterBuilder: 'Premium: Character Builder',
-    toneLabel: 'Writing style',
-    sliders: {
-      energy: 'Energy',
-      energyLow: 'Relaxed',
-      energyHigh: 'Energetic',
-      noise: 'Noise level',
-      noiseLow: 'Quiet',
-      noiseHigh: 'Barks at doorbell',
-      sociability: 'Sociability',
-      sociabilityLow: 'Loner',
-      sociabilityHigh: 'Loves everyone'
-    },
-    tones: {
-      formal: 'Formal',
-      humorous: 'Humorous',
-      cute: 'Cute'
-    },
-    
-    // Magic Rewrite
-    magicRewrite: 'Improve text',
-    rewriting: 'Improving...',
-    rewriteSuccess: 'Text improved!',
-    
-    // ZIP Download
-    downloadAll: 'Download all templates as ZIP',
-    generatingZip: 'Generating all templates...',
-    zipDownloaded: 'ZIP with all templates downloaded!',
-    zipError: 'Error creating ZIP archive',
-    zipRequiresPremium: 'ZIP download only for Premium',
-    
-    // Template Builder / Visual Editor
-    openBuilder: 'Open Visual Editor',
-    builderRequiresPremium: 'Visual Editor requires Premium'
   },
   // Template Builder / Visual Editor
   builder: {

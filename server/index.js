@@ -21,12 +21,12 @@ const { logger } = require('./utils/logger');
 // Import middleware
 const { initRedis, getRedisClient } = require('./middleware/rateLimit');
 const {
-  initCsrfRedis,
   provideCsrfToken,
   smartCsrfProtection,
   getCsrfTokenEndpoint
 } = require('./middleware/csrf');
 const { csrfTokenRateLimit } = require('./middleware/csrfRateLimit');
+const { trackRequestSize } = require('./middleware/requestLimits');
 
 // Import controllers
 const ai = require('./controllers/ai');
@@ -35,10 +35,10 @@ const ai = require('./controllers/ai');
 const app = express();
 
 // ============================================
-// Trust proxy (required for correct req.ip when behind Cloudflare/Nginx)
-// SECURITY: Without this, X-Forwarded-For can be spoofed to bypass rate limiting
+// Trust proxy: only local/proxy IPs (prevents X-Forwarded-For spoofing)
+// Use TRUST_PROXY=1 env to allow any proxy (e.g. Cloudflare) - less secure
 // ============================================
-app.set('trust proxy', 1);
+app.set('trust proxy', process.env.TRUST_PROXY === '1' ? 1 : ['loopback', 'linklocal', 'uniquelocal']);
 
 // ============================================
 // Cookie parsing (required for CSRF session isolation)
@@ -80,6 +80,12 @@ app.use(provideCsrfToken);
 
 // Protect state-changing requests (POST, PUT, DELETE)
 app.use(smartCsrfProtection);
+
+// ============================================
+// Request size tracking (bandwidth DoS protection)
+// MUST run BEFORE body parsing so req.on('data') receives chunks in real-time
+// ============================================
+app.use(trackRequestSize);
 
 // ============================================
 // Body Parsing Middleware
@@ -167,8 +173,6 @@ const shutdown = async (signal) => {
 
   // Stop cleanup intervals
   try {
-    const { stopCleanup: stopCsrfCleanup } = require('./middleware/csrf');
-    stopCsrfCleanup();
     const { stopCleanup: stopRequestLimitsCleanup } = require('./middleware/requestLimits');
     stopRequestLimitsCleanup();
     logger.info('Cleanup intervals stopped');
@@ -196,8 +200,6 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 // ============================================
 initRedis()
   .then(() => {
-    initCsrfRedis(); // Stateless CSRF - no Redis needed
-
     const httpServer = app.listen(PORT, () => {
       logger.info(`Pet-Bewerbung server running on http://localhost:${PORT}`);
       logger.info(`Environment: ${isProduction ? 'PRODUCTION' : 'development'}`);

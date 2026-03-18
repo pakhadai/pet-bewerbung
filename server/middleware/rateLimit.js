@@ -120,6 +120,13 @@ function cleanupInMemoryLimiter() {
 }
 let memoryCleanupInterval = setInterval(cleanupInMemoryLimiter, CLEANUP_INTERVAL_MS);
 
+// Atomic INCR + EXPIRE (only on first request) to avoid permanent keys on crash
+const RATE_LIMIT_SCRIPT = `
+  local c = redis.call('INCR', KEYS[1])
+  if c == 1 then redis.call('EXPIRE', KEYS[1], ARGV[1]) end
+  return c
+`;
+
 /**
  * Check rate limit using Redis
  * @param {string} ip - Client IP
@@ -128,8 +135,7 @@ let memoryCleanupInterval = setInterval(cleanupInMemoryLimiter, CLEANUP_INTERVAL
  */
 async function checkRateLimitRedis(ip, limit) {
   const key = `ai:ratelimit:${ip}`;
-  const count = await redis.incr(key);
-  if (count === 1) await redis.expire(key, AI_RATE_WINDOW);
+  const count = await redis.eval(RATE_LIMIT_SCRIPT, 1, key, AI_RATE_WINDOW);
   const ttl = await redis.ttl(key);
   return {
     allowed: count <= limit,

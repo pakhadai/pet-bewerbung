@@ -8,7 +8,6 @@
  * - Step 6: Back + Download/Buy Premium button (preview - based on template & premium status)
  * - Step 7: Not shown (thank you page)
  * 
- * Premium logic for AI (step 3) and template toast (step 5) is handled in respective components.
  */
 import React from 'react';
 
@@ -79,7 +78,7 @@ const FloatingNavigation = React.memo(({
           <span className="hidden sm:inline">{backLabel}</span>
         </button>
 
-        {/* Step 6: Download/Buy Premium Button */}
+        {/* Step 6: Download Button */}
         {isPreviewStep && (
           <button
             type="button"

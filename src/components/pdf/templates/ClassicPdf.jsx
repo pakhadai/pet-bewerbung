@@ -64,8 +64,8 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
   const headerFontSize = customDesign?.headerFontSize || 9;
   const bodyFontSize = customDesign?.bodyFontSize || 10;
 
-  // Get layout sections
-  const { sidebarSections, mainSections } = getLayoutSections(customDesign);
+  // Get layout sections (fixed default)
+  const { sidebarSections, mainSections } = getLayoutSections();
 
   // Format address
   const { streetLine, cityLine } = formatAddress(
@@ -123,7 +123,7 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
   // Photo Section
   const renderPhotoSection = () => (
     <View style={[commonStyles.sectionBlock, commonStyles.photoContainer, { height: photoHeight }]} key="photo">
-      {data?.photo && typeof data.photo === 'string' && data.photo.startsWith('data:') ? (
+      {data?.photo && typeof data.photo === 'string' && (data.photo.startsWith('data:') || data.photo.startsWith('blob:')) ? (
         <Image src={data.photo} style={[commonStyles.photoImg, { height: photoHeight }]} />
       ) : (
         <View style={[commonStyles.photoPlaceholder, { height: photoHeight }]}>
@@ -430,7 +430,7 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
               </Text>
             </View>
           ) : (
-            <Text style={commonStyles.footerBrandingPremium}>
+            <Text style={commonStyles.footerBrandingAlt}>
               pet-bewerbung.ch
             </Text>
           )}
