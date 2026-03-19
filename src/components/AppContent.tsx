@@ -1,7 +1,7 @@
 /**
  * AppContent Component
  * Static SPA - template-based text generation, PDF export.
- * No backend, no AI - all processing client-side.
+ * No backend - all processing client-side.
  */
 
 import React, { useEffect, useRef } from 'react';
