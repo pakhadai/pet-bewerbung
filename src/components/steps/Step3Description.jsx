@@ -5,6 +5,7 @@
 import React from 'react';
 import { MAX_DESCRIPTION_LENGTH } from '../../constants';
 import { useWizardContext } from '../../context/WizardContext';
+import FormInput from '../FormInput';
 
 const Step3Description = React.memo(({ onGenerate }) => {
   const { data, updateData, t, animDir, darkMode } = useWizardContext();
@@ -45,7 +46,22 @@ const Step3Description = React.memo(({ onGenerate }) => {
             />
           </div>
 
-          <div className="flex flex-col items-center gap-4 mt-4">
+          {/* Keywords input — feeds into template text generation */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="pet-keywords" className={`text-sm font-medium ${mutedCl}`}>
+              {t?.labels?.aiPrompt ?? 'Stichworte (z.B. ruhig, stubenrein)'}
+            </label>
+            <FormInput
+              id="pet-keywords"
+              value={data.keywords || ''}
+              onChange={v => updateData('keywords', v)}
+              placeholder="ruhig, stubenrein, verspielt, kinderlieb..."
+              className={`w-full p-3 hand-drawn-border border-2 rounded-xl outline-none transition-all text-sm
+                ${darkMode ? 'bg-gray-800/80 border-gray-600 text-white placeholder:text-gray-500' : 'bg-white/90 border-gray-400 text-text-main placeholder:text-gray-400'}`}
+            />
+          </div>
+
+          <div className="flex flex-col items-center gap-4 mt-2">
             <button
               type="button"
               onClick={onGenerate}

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Phone, Mail } from 'lucide-react';
 import { formatAddress, withFallback } from '../../utils/documentHelpers.jsx';
+import { generateQrDataUrl, getQrContent } from '../../utils/qrCode';
 
 /**
  * OwnerInfo component - displays owner information
@@ -8,6 +9,21 @@ import { formatAddress, withFallback } from '../../utils/documentHelpers.jsx';
  */
 const OwnerInfo = ({ data, t, variant = 'classic' }) => {
   const { streetLine, cityLine } = formatAddress(data.street, data.houseNumber, data.postal, data.city);
+
+  const [qrDataUrl, setQrDataUrl] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    const content = getQrContent(data);
+    if (content) {
+      generateQrDataUrl(content, { size: 120, margin: 1 }).then(url => {
+        if (!cancelled) setQrDataUrl(url);
+      });
+    } else {
+      setQrDataUrl(null);
+    }
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.ownerName, data.email, data.phone, data.street, data.houseNumber, data.postal, data.city]);
 
   const getVariantStyles = () => {
     switch (variant) {
@@ -81,6 +97,17 @@ const OwnerInfo = ({ data, t, variant = 'classic' }) => {
             <span className="break-words">{withFallback(data.email)}</span>
           </p>
         </div>
+        {qrDataUrl && (
+          <div className="mt-2 pt-2 border-t border-dashed border-slate-200">
+            <p className="text-[7px] uppercase tracking-wider text-slate-400 mb-1">
+              {t?.doc?.qrLabel ?? 'Kontakt scannen'}
+            </p>
+            <img src={qrDataUrl} alt="QR vCard" width={56} height={56} className="w-14 h-14" />
+            <p className="text-[6px] text-slate-400 mt-0.5">
+              {t?.doc?.qrHint ?? 'vCard hinzufügen'}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

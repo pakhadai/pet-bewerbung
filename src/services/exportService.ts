@@ -85,11 +85,6 @@ export async function downloadAllTemplatesAsZip(
     zipError?: string;
   } = {}
 ): Promise<{ successCount: number; failedTemplates: string[] }> {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if (isMobile) {
-    throw new Error(options.zipMobileDisabled ?? 'ZIP download disabled on mobile. Please download templates individually.');
-  }
-
   // Convert photo once before loop (avoids N conversions per template)
   let optimizedData: Record<string, any> | undefined;
   if (data.photo && typeof data.photo === 'string') {

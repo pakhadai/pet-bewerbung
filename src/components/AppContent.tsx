@@ -31,15 +31,29 @@ const AppContent: React.FC = () => {
 
   const generateText = () => {
     const tmpl = t?.templates || {};
+    const lbl = t?.labels || {};
+
+    // Build opening with name + breed
+    const petLabel = [data.name, data.breed].filter(Boolean).join(' – ');
+    const introBase = tmpl.intro || 'Das beschriebene Tier ist ein sehr gepflegter und sozialverträglicher Mitbewohner.';
+    const intro = petLabel ? `${petLabel}: ${introBase} ` : `${introBase} `;
+
+    // Add user-entered keywords
     const rawKeywords = (data.keywords || '').split(',').map((s: string) => s.trim()).filter(Boolean);
-    let middleSection = '';
+    let keywordsSection = '';
     if (rawKeywords.length > 0) {
-      const formattedKeywords = rawKeywords.join(', ');
-      middleSection = `${tmpl.keywords || 'Eigenschaften: '}${formattedKeywords}. `;
+      keywordsSection = `${tmpl.keywords || 'Besondere Eigenschaften: '}${rawKeywords.join(', ')}. `;
     }
-    const petInfo = [data.name, data.breed].filter(Boolean).join(', ');
-    const intro = petInfo ? `${petInfo} ist ein wunderbares Haustier. ` : (tmpl.intro || '');
-    const fullText = `${intro}${middleSection}${tmpl.outro || ''}`;
+
+    // Add noise level context if set
+    let noiseNote = '';
+    if (data.noiseLevel === 'low') {
+      noiseNote = `${lbl.noiseLow || 'Ruhig, selten laut'}. `;
+    } else if (data.noiseLevel === 'medium') {
+      noiseNote = `${lbl.noiseMedium || 'Gelegentlich laut bei Besuch'}. `;
+    }
+
+    const fullText = `${intro}${keywordsSection}${noiseNote}${tmpl.outro || ''}`;
     updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
     showToast('✨ Text generiert!', 'success');
   };

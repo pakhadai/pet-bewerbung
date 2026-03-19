@@ -147,14 +147,34 @@ export const AppContainer: React.FC<AppContainerProps> = ({
             <HeroRoute darkMode={darkMode} t={t} onStartClick={() => goToStep(1)} />
           ) : step >= 1 && step <= 6 ? (
             <WizardProvider value={wizardContextValue}>
-              <WizardRoute
-                step={step}
-                selectedTemplate={selectedTemplate}
-                onSelectTemplate={setSelectedTemplate}
-                showToast={showToast}
-                onGenerateText={onGenerateText}
-                onNavigationVisibilityChange={setNavigationVisible}
-              />
+              {/* Steps 1–4 are form-heavy: wrap in <form> so Enter key advances to next step */}
+              {step >= 1 && step <= 4 ? (
+                <form
+                  onSubmit={(e) => { e.preventDefault(); handleNext(); }}
+                  noValidate
+                  style={{ display: 'contents' }}
+                >
+                  <WizardRoute
+                    step={step}
+                    selectedTemplate={selectedTemplate}
+                    onSelectTemplate={setSelectedTemplate}
+                    showToast={showToast}
+                    onGenerateText={onGenerateText}
+                    onNavigationVisibilityChange={setNavigationVisible}
+                  />
+                  {/* Hidden submit button — triggers form on Enter in any text input */}
+                  <button type="submit" className="sr-only" aria-hidden="true" tabIndex={-1} />
+                </form>
+              ) : (
+                <WizardRoute
+                  step={step}
+                  selectedTemplate={selectedTemplate}
+                  onSelectTemplate={setSelectedTemplate}
+                  showToast={showToast}
+                  onGenerateText={onGenerateText}
+                  onNavigationVisibilityChange={setNavigationVisible}
+                />
+              )}
             </WizardProvider>
           ) : null}
         </div>
