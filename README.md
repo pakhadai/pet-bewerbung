@@ -14,10 +14,14 @@ professional PDF document in 5 minutes that builds landlord trust. The document 
 - Owner data and contacts
 - Pet data (breed, age, weight, gender, chip ID)
 - Insurance and veterinary information
-- Character and behaviour description (AI-generated)
+- Character and behaviour description (template-based, generated locally)
 - Pet photo
 - QR code with owner vCard contact
 - References from previous landlords
+
+**Privacy by design:** We deliberately do not collect or store personal data. That is why all processing happens in the user's browser — no servers, no databases, no transfer of information to third parties. Your data never leaves your device.
+
+**Completely free:** The service is 100% free. All templates and features are available without payment or registration.
 
 ---
 
@@ -26,9 +30,6 @@ professional PDF document in 5 minutes that builds landlord trust. The document 
 | Component | Technology |
 |-----------|------------|
 | Frontend | React 18, Vite 4, TypeScript, Tailwind CSS |
-| Backend | Node.js 18, Express 4 |
-| AI | Google Gemini (gemini-2.0-flash, 1.5-flash, 2.0-flash-lite) |
-| Rate limiting | Redis (ioredis) |
 | PDF rendering | @react-pdf/renderer |
 | ZIP export | JSZip |
 | Image handling | react-image-crop, vite-plugin-vsharp |
@@ -36,25 +37,22 @@ professional PDF document in 5 minutes that builds landlord trust. The document 
 | Icons | Lucide React |
 | Deploy | Docker, Nginx, Cloudflare Tunnel |
 
+**Local-First:** No backend, no database, no AI API. All processing happens in the browser.
+
 ---
 
 ## Frontend structure
 
 ```
 src/
-|-- App.tsx                       # Entry (26 lines): AppProviders + AppContent
+|-- App.tsx                       # Entry: AppProviders + AppContent
 |-- components/
 |   |-- AppProviders.tsx          # ErrorBoundary wrapper
-|   |-- AppContent.tsx            # All business logic:
-|   |                             #   handleDownloadPDF() -> download single template
-|   |                             #   generatePdfBlob() -> blob for ZIP
+|   |-- AppContent.tsx            # Business logic:
+|   |                             #   generateText() -> template-based text (local)
+|   |                             #   handleDownloadPDF() -> single template PDF
 |   |                             #   handleDownloadAllTemplates() -> ZIP of all 3
-|   |                             #   generateText() -> AI fetch + fallback text
-|   |-- AppContainer.tsx          # UI orchestration:
-|   |                             #   step-based routing (0-7)
-|   |                             #   dark/light theme (localStorage)
-|   |                             #   modals: FAQ, Template Preview, Legal
-|   |                             #   FloatingNavigation (Prev/Next)
+|   |-- AppContainer.tsx          # UI orchestration: steps, theme, modals
 |   |-- Header.tsx                # Logo, language selector, theme toggle
 |   |-- Footer.tsx                # Legal links, FAQ link
 |   |-- Hero.tsx                  # Landing page (step 0)
@@ -70,89 +68,47 @@ src/
 |   |-- steps/
 |   |   |-- Step1Details.jsx      # Step 1: Owner + Pet basics
 |   |   |-- Step2HealthInsurance.jsx  # Step 2: Health, insurance, references
-|   |   |-- Step3Description.jsx  # Step 3: AI description + manual edit
+|   |   |-- Step3Description.jsx  # Step 3: Template-based text + manual edit
 |   |   |-- Step4Photo.jsx        # Step 4: Photo upload
 |   |   |-- Step5TemplateSelect.jsx   # Step 5: Template selection
-|   |   `-- Step5Preview.jsx      # Step 6: Preview + download
-|   `-- document/                 # HTML document sections (lazy Suspense)
-|       |-- OwnerInfo.jsx
-|       |-- PetDetails.jsx
-|       |-- PetPhoto.jsx
-|       |-- BehaviorSection.jsx
-|       |-- DescriptionSection.jsx
-|       |-- LegalSection.jsx
-|       `-- ReferenceSection.jsx
-|-- routes/
-|   |-- HeroRoute.tsx             # Step 0 (landing)
-|   |-- WizardRoute.tsx           # Steps 1-6 (switch on step number)
-|   `-- ThankYouRoute.tsx         # Step 7 (thank you page)
+|   |   |-- Step5Preview.jsx      # Step 6: Preview + download
+|   |   |-- Step6ThankYou.jsx     # Step 7: Success screen
+|   |-- document/                 # HTML document sections (lazy Suspense)
+|   |-- templates/                 # Classic, Modern, Compact templates
+|   `-- pdf/                      # PDF template components
+|-- context/
+|   |-- WizardContext.tsx         # Shared wizard state
+|   `-- WizardProviders.tsx       # Translation, FormData, Navigation, Theme, Toast
 |-- hooks/
-|   |-- index.ts                  # Re-exports all hooks
-|   |-- useFormWizard.ts          # Master hook: combines all sub-hooks
-|   |-- useFormData.ts            # Form state + persist to localStorage/IndexedDB
+|   |-- useFormData.ts            # Form state + persist (visibilitychange, beforeunload)
 |   |-- useWizardNavigation.ts    # step, animDir, goToStep, nextStep, prevStep
-|   |-- useTranslation.ts         # lang, t, setLang (auto-detect from browser)
-|   |-- useTheme.ts               # darkMode, toggleTheme, setDarkMode
-|   |-- useToast.ts               # showToast(message, type) notifications
-|   |-- usePremiumSession.ts      # Stub: always returns isPremium=true (all free)
-|   |-- useAIGeneration.ts        # AI request counter + remaining from server
-|   |-- useDeviceId.ts            # Unique deviceId (uuid in localStorage)
-|   |-- useCsrf.ts                # Fetches CSRF token on app mount
-|   |-- useTemplateSelection.ts   # Selected template ID + preview modal state
-|   |-- useFormValidation.ts      # Field validation rules per step
-|   `-- useScrollVisibility.ts    # Element visibility on scroll
+|   |-- useTranslation.ts        # lang, t, setLang (auto-detect from browser)
+|   |-- useTheme.ts              # darkMode, toggleTheme
+|   |-- useToast.ts              # showToast(message, type) notifications
+|   |-- useTemplateSelection.ts  # Selected template ID + preview modal state
+|   |-- useFormValidation.ts     # Field validation rules per step
+|   |-- useFormWizard.ts         # Master hook: combines all sub-hooks
+|   `-- useScrollVisibility.ts   # Element visibility on scroll
 |-- translations/
-|   |-- de.js                     # German (default)
-|   |-- fr.js                     # French
-|   |-- it.js                     # Italian
-|   |-- rm.js                     # Romansh
-|   |-- en.js                     # English
-|   |-- ua.js                     # Ukrainian
-|   `-- index.js                  # TRANSLATIONS map export
+|   |-- de.js, en.js, fr.js, it.js, rm.js
+|   `-- index.js                 # TRANSLATIONS map export
 |-- types/
-|   |-- index.ts                  # Central re-export
-|   |-- form.ts                   # PetData, Language, CustomDesign, etc.
-|   |-- api.ts                    # AIGenerationRequest/Response, etc.
-|   |-- template.ts               # TemplateConfig, TemplateOption, etc.
-|   `-- storage.ts                # StorageAdapter, StorageKey, STORAGE_STRATEGIES
+|   |-- form.ts, template.ts, storage.ts
+|   `-- index.ts                 # Central re-export
+|-- services/
+|   |-- pdfService.tsx           # buildPdfTranslations, PDF generation
+|   |-- exportService.ts         # downloadPdf, downloadAllTemplatesAsZip
+|   `-- index.ts
 |-- utils/
 |   |-- imageCompression.js       # Compress to 800x800, JPEG 0.8, max 500KB
-|   |-- qrCode.js                 # QR code: vCard 3.0 builder + PNG data URL
-|   |-- swissValidation.js        # Phone (+41), PLZ (1000-9999), email, cantons
-|   |-- documentHelpers.jsx       # HTML document helper functions
-|   |-- pdfHelpers.ts             # PDF utility functions
-|   |-- aiHelpers.ts              # AI prompt helpers
-|   |-- sanitization.ts           # Frontend input sanitization
-|   `-- storage/
-|       |-- StorageManager.ts     # Auto-selects adapter by STORAGE_STRATEGIES
-|       |-- LocalStorageAdapter.ts
-|       |-- SessionStorageAdapter.ts
-|       |-- IndexedDBAdapter.ts
-|       `-- index.ts
-|-- constants.js                  # INITIAL_DATA, TEMPLATE_OPTIONS, MAX_DESCRIPTION_LENGTH
-`-- config.js                     # API_ENDPOINTS, IMAGE_COMPRESSION
-```
-
----
-
-## Backend structure
-
-```
-server/
-|-- index.js                 # Express, CORS, CSRF middleware, routes, graceful shutdown
-|-- config/
-|   `-- index.js             # All env vars, AI_RATE_LIMIT, AI_MODELS fallback list
-|-- controllers/
-|   |-- index.js             # Re-exports controllers
-|   `-- ai.js                # generatePetDescription(), getAIRateLimitStatus()
-|-- middleware/
-|   |-- rateLimit.js         # Redis rate limiting: 5/24h per IP
-|   |-- csrf.js              # CSRF: generate + validate tokens (Redis or in-memory)
-|   `-- requestLimits.js     # Body size limits (DoS protection), bandwidth tracker
-`-- utils/
-    |-- sanitize.js          # Prompt injection protection for AI inputs
-    |-- validation.js        # Input validation helpers
-    `-- logger.js            # Structured logger
+|   |-- qrCode.js                # QR code: vCard 3.0 builder + PNG data URL
+|   |-- swissValidation.js       # Phone (+41), PLZ (1000-9999), email, cantons
+|   |-- documentHelpers.jsx      # HTML document helper functions
+|   |-- pdfHelpers.ts            # PDF utility functions
+|   |-- sanitization.ts          # Frontend input sanitization
+|   `-- storage/                 # StorageManager, LocalStorage, SessionStorage, IndexedDB
+|-- constants.js                 # INITIAL_DATA, TEMPLATE_OPTIONS, MAX_DESCRIPTION_LENGTH
+`-- config.js                    # IMAGE_COMPRESSION settings
 ```
 
 ---
@@ -164,19 +120,19 @@ Step 0 = HeroRoute, Steps 1-6 = WizardRoute, Step 7 = ThankYouRoute.
 | Step | Component | Content |
 |------|-----------|---------|
 | 0 | Hero.tsx | Landing: problem section, solution section, CTA button |
-| 1 | Step1Details.jsx | Owner: name (required), email, phone, address (street, number, PLZ, city). Pet: type required (dog/cat/other), name required, breed, age, weight, gender |
-| 2 | Step2HealthInsurance.jsx | Vet name + phone; insurance provider; chip ID; neutered/vaccinated/registered toggles; noise level (low/medium/high); alone time (hours/day); active hours schedule; behavior with children and pets; previous landlord (name, phone, email, duration); primary + secondary emergency contacts |
-| 3 | Step3Description.jsx | AI text generation button (POST /api/generate-pet-description) + manual textarea. Tones: formal / humorous / cute. Shows X remaining generations today. Fallback template text on AI error. Max 470 chars. |
-| 4 | Step4Photo.jsx | Photo upload + crop (react-image-crop). Compressed to 800x800, JPEG 0.8, max 500KB. Photo stored in IndexedDB (not localStorage). |
-| 5 | Step5TemplateSelect.jsx | Template selection: Classic / Modern / Compact. Click template card to preview in modal. |
-| 6 | Step5Preview.jsx | HTML preview (SwissDocument, lazy Suspense). Download PDF (selected template). Download All ZIP (all 3 templates). Enlarge/minimize preview. |
-| 7 | Step6ThankYou.jsx | Success screen + Download PDF button + Create Another button |
+| 1 | Step1Details.jsx | Owner: name (required), email, phone, address. Pet: type (dog/cat/other), name, breed, age, weight, gender |
+| 2 | Step2HealthInsurance.jsx | Vet, insurance, chip ID; neutered/vaccinated/registered; noise level; alone time; behaviour; previous landlord; emergency contacts |
+| 3 | Step3Description.jsx | Template-based text generation (local) + manual textarea. Max 470 chars. "100% Privat" badge. |
+| 4 | Step4Photo.jsx | Photo upload + crop. Compressed to 800x800, JPEG 0.8, max 500KB. Stored in IndexedDB. |
+| 5 | Step5TemplateSelect.jsx | Template selection: Classic / Modern / Compact. Preview in modal. |
+| 6 | Step5Preview.jsx | HTML preview. Download PDF (selected template). Download All ZIP (all 3 templates). |
+| 7 | Step6ThankYou.jsx | Success screen + Download PDF + Create Another |
 
 ---
 
 ## PDF templates
 
-All 3 templates are free, no payment required.
+All 3 templates are free.
 
 | ID | Name | Style |
 |----|------|-------|
@@ -184,90 +140,56 @@ All 3 templates are free, no payment required.
 | modern | Modern | Minimalist modern design |
 | compact | Compact | Dense one-page layout |
 
-Each template has two versions:
-- **HTML** (SwissDocument.jsx): browser preview, A4 size (210mm x 297mm), CSS-based layout
-- **PDF** (SwissDocumentPdf.jsx): @react-pdf/renderer, same content, downloadable
+Each template has:
+- **HTML** (SwissDocument.jsx): browser preview, A4 size
+- **PDF** (SwissDocumentPdf.jsx): @react-pdf/renderer, downloadable
 
 PDF features:
-- Logo loaded from /logo.png at build time
-- QR code generated from owner contact data (vCard 3.0: name, email, phone, address)
-- Photo converted from blob URL or WebP to JPEG data URL before PDF generation
-- PDF generated fully client-side, never uploaded to server
+- Logo from /logo.png
+- QR code from owner contact (vCard 3.0)
+- Photo converted to JPEG data URL before PDF generation
+- Generated fully client-side
 
 ---
 
-## AI description generation
+## Text generation (Local-First)
 
-### Flow: AppContent.tsx -> backend -> Gemini API
+Step 3 uses **template-based** text generation. No API calls, no data sent to any server.
 
-1. User clicks Generate on step 3
-2. Frontend sends POST /api/generate-pet-description with X-CSRF-Token header
-3. Backend checks Redis rate limit (key: ai:ratelimit:{ip}, window: 24h)
-4. Backend sanitizes input (sanitize.js): strips prompt injection patterns
-5. Backend builds prompt (buildPetPrompt()): targets 450-470 characters
-6. Gemini API called with fallback model chain:
-   gemini-2.0-flash -> gemini-1.5-flash -> gemini-2.0-flash-lite
-7. Each model has per-model timeout (AI_MODEL_TIMEOUT_MS, default 12s)
-8. Text truncated at sentence boundary (truncateAtSentence())
-9. If text length < 450 chars: automatic retry with same prompt
-10. On server error: rate limit auto-refunded (refundRateLimit())
-11. Response includes remaining count + resetTime
-
-### Prompt parameters
-
-- Language: de/fr/it/rm/en/ua (matches UI language)
-- Tone: formal / humorous / cute (user-selected)
-- Structure: one of 8 random structural variations (for uniqueness)
-- Length target: 450-470 characters
-- Safety: BLOCK_LOW_AND_ABOVE on all harm categories
-- System instruction: hard-coded role restriction
-
----
-
-## Rate limiting (Redis)
-
-- Redis key: `ai:ratelimit:{ip}`, TTL set to 24h on first request
-- Limit: 5 requests per IP (configurable via AI_RATE_LIMIT env var)
-- Development fallback: in-memory Map if Redis unavailable
-- Production: Redis required — server calls process.exit(1) if Redis fails to connect
-- Response headers on every AI request: X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
-- Auto-refund: if AI generation fails after rate limit was already consumed, counter is decremented
-
----
-
-## CSRF protection
-
-- Frontend: `useCsrf` hook fetches token via GET /api/csrf-token on app startup
-- Token sent as `X-CSRF-Token` header on every POST request
-- Backend middleware `provideCsrfToken`: sets csrf-session cookie + returns token in JSON
-- Backend middleware `smartCsrfProtection`: validates X-CSRF-Token against stored token
-- Token stored in Redis (2h TTL) in production, in-memory Map in development
-- Session identified by `csrf-session` cookie
+1. User enters pet name, breed, keywords (comma-separated traits)
+2. Clicks "Text automatisch generieren"
+3. `generateText()` in AppContent.tsx builds text from translation templates:
+   - Intro: pet name + breed
+   - Middle: keywords from user input
+   - Outro: generic closing phrase
+4. Text is truncated to MAX_DESCRIPTION_LENGTH (470 chars)
+5. User can edit the result manually
 
 ---
 
 ## Data persistence
 
-The server stores nothing. All state lives in the browser.
+All state lives in the browser. Nothing is sent to a server.
 
-| Data | Storage | Key/Namespace |
-|------|---------|---------------|
+| Data | Storage | Notes |
+|------|---------|-------|
 | Form data (all fields except photo) | localStorage | pet-cv:form-data |
 | Photo | IndexedDB | pet-cv:photo-blob |
-| Dark/light theme | localStorage | pet-bewerbung-theme |
-| Cookie consent | localStorage | (CookieBanner key) |
+| Form draft (during session) | sessionStorage | Cleared when tab closes |
+| Theme, language, cookie consent | localStorage | UI preferences |
 
-`StorageManager` automatically selects adapter based on `STORAGE_STRATEGIES` map:
-- Form data -> LocalStorageAdapter
-- Photos -> IndexedDBAdapter (supports up to ~10MB)
-- Session-only data -> SessionStorageAdapter
+`StorageManager` selects adapter from `STORAGE_STRATEGIES`:
+- Form data → LocalStorageAdapter
+- Photos → IndexedDBAdapter (~10MB)
+- Session-only → SessionStorageAdapter
+
+**Mobile-friendly:** `visibilitychange` + `beforeunload` save form data when user switches tabs or closes the page.
 
 ---
 
 ## Form validation
 
-`useFormValidation(data, step)` validates only the current step.
-Forward navigation is blocked if `isValid === false`.
+`useFormValidation(data, step)` validates the current step. Forward navigation blocked if invalid.
 
 | Step | Field | Rule |
 |------|-------|------|
@@ -279,86 +201,17 @@ Forward navigation is blocked if `isValid === false`.
 | 1 | postal | Optional, Swiss PLZ: 1000-9999 |
 | 2-6 | (all) | No required fields |
 
-On validation error: Next button blocked + toast notification shown.
-
----
-
-## API endpoints
-
-Frontend uses `/api` prefix. Vite proxy (dev) / Nginx rewrite (prod) strips it before reaching the backend.
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| / | GET | Health check: Redis status, AI configured, uptime |
-| /api/csrf-token | GET | Returns CSRF token for current session |
-| /api/generate-pet-description | POST | Generate AI pet description |
-| /api/ai-rate-limit | GET | Current rate limit status for caller IP |
-
-### POST /api/generate-pet-description
-
-Request body:
-```json
-{
-  "petData": {
-    "petName": "Buddy",
-    "petType": "dog",
-    "breed": "Labrador",
-    "age": "3",
-    "gender": "m",
-    "weight": "28",
-    "traits": "ruhig, freundlich",
-    "neutered": true,
-    "vaccinated": true
-  },
-  "lang": "de",
-  "tone": "formal"
-}
-```
-
-Success (200):
-```json
-{
-  "description": "Buddy ist ein ruhiger, freundlicher Labrador...",
-  "length": 462,
-  "remaining": 4,
-  "resetTime": 1710000000000
-}
-```
-
-Rate limit exceeded (429):
-```json
-{
-  "error": "Rate limit exceeded",
-  "message": "Maximum 5 AI request(s) per day.",
-  "resetTime": 1710000000000,
-  "remaining": 0
-}
-```
-
-AI not configured (503):
-```json
-{
-  "error": "AI service not configured",
-  "message": "GEMINI_API_KEY not set on server"
-}
-```
-
 ---
 
 ## Environment variables
 
-Copy `.env.example` to `.env` and fill in values.
+Copy `.env.example` to `.env` for local overrides.
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| REDIS_URL | Yes (production) | redis://localhost:6379 | Redis connection URL |
-| GEMINI_API_KEY | No | - | Google Gemini API key. AI disabled without it (503 returned). |
-| AI_RATE_LIMIT | No | 5 | AI requests per 24h per IP |
-| PORT | No | 4242 | Express server port |
-| NODE_ENV | No | development | Set to `production` for strict mode |
-| FRONTEND_URL | No | https://pet-bewerbung.ch | Frontend URL (used in CORS) |
-| ALLOWED_ORIGINS | No | (see config/index.js) | Comma-separated CORS origins |
-| CLOUDFLARE_TUNNEL_TOKEN | No | - | Cloudflare Tunnel token |
+| Variable | Required | Description |
+|----------|----------|-------------|
+| CLOUDFLARE_TUNNEL_TOKEN | Yes (for tunnel) | Cloudflare Tunnel token for HTTPS |
+
+No backend = no Redis, no API keys, no database.
 
 ---
 
@@ -368,7 +221,7 @@ Copy `.env.example` to `.env` and fill in values.
 
 - Linux VPS (Ubuntu 22.04+ recommended)
 - Docker + Docker Compose v2
-- Domain with DNS pointed to server IP, or Cloudflare Tunnel
+- Cloudflare Tunnel (or domain + SSL)
 
 ### Steps
 
@@ -382,80 +235,45 @@ cd pet-bewerbung
 ```bash
 cp .env.example .env
 nano .env
-# Required: GEMINI_API_KEY
-# Optional: CLOUDFLARE_TUNNEL_TOKEN
+# Set CLOUDFLARE_TUNNEL_TOKEN
 ```
 
-**3. Start all services:**
+**3. Start services:**
 ```bash
 docker compose up -d --build
 ```
 
 **4. Verify:**
 ```bash
-docker compose ps          # all services: healthy
-curl http://localhost:4242  # backend health check -> {"status":"ok",...}
+docker compose ps          # frontend + tunnel healthy
+curl http://localhost:3000 # Frontend served by Nginx
 ```
 
 ### Docker services
 
 | Service | Image | Exposed port | Description |
 |---------|-------|-------------|-------------|
-| frontend | nginx:alpine | 3000 | Vite build served by Nginx + /api reverse proxy |
-| backend | node:18-alpine | internal 4242 | Express API |
-| redis | redis:7-alpine | internal 6379 | Rate limiting + CSRF token storage |
-| tunnel | cloudflare/cloudflared | - | HTTPS via Cloudflare (no SSL cert needed) |
+| frontend | nginx:alpine | 3000 | Vite build served by Nginx |
+| tunnel | cloudflare/cloudflared | - | HTTPS via Cloudflare |
 
 ### Nginx config (nginx.conf)
 
-Key behaviours:
-- **SPA routing**: `try_files $uri $uri/ /index.html` (all non-asset paths -> React app)
-- **API proxy**: `location /api/ { rewrite ^/api/(.*) /$1 break; proxy_pass backend:4242; }`
-- **Security headers**: X-Frame-Options SAMEORIGIN, X-Content-Type-Options nosniff, CSP
-- **Cache strategy**: assets with content hash -> 1 year immutable; index.html -> no-cache
-
-### Without Cloudflare Tunnel
-
-If you have a public IP and want standard SSL:
-1. Point DNS A record to your VPS IP
-2. Add certbot/Let's Encrypt to the nginx container or use a separate nginx on the host
-3. Or expose frontend port 80 directly and handle SSL at Cloudflare proxy level
+- **SPA routing**: `try_files $uri $uri/ /index.html` (all non-asset paths → React app)
+- **Security headers**: X-Frame-Options, X-Content-Type-Options, Referrer-Policy, CSP
+- **Cache**: assets with content hash → 1 year immutable; index.html → no-cache
 
 ---
 
 ## Local development
 
 ```bash
-# Install all dependencies
 npm install
-cd server && npm install && cd ..
-
-# Start Redis locally
-docker run -d -p 6379:6379 redis:7-alpine
-
-# Start both frontend and backend
-npm run dev:all
+npm run dev
 ```
 
-URLs:
 - Frontend: http://localhost:3000 (Vite with HMR)
-- Backend: http://localhost:4242
-- Proxy: /api/* in frontend -> http://localhost:4242/*
-
-Individual commands:
-```bash
-npm run dev          # Vite frontend only
-npm run build        # Production build -> dist/
-npm run preview      # Serve the production build
-
-cd server
-node index.js        # Backend only
-```
-
-Docker dev mode (with hot reload):
-```bash
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up
-```
+- Build: `npm run build` → dist/
+- Preview: `npm run preview` (serve production build)
 
 ---
 
@@ -464,16 +282,14 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 pet-bewerbung/
 |-- src/                    # Frontend (React + TypeScript)
-|-- server/                 # Backend (Node.js + Express)
 |-- public/                 # Static assets (favicon, logo.png, manifest)
-|-- Dockerfile              # Multi-stage: node build -> nginx:alpine
-|-- docker-compose.yml      # Production: frontend, backend, redis, tunnel
-|-- docker-compose.dev.yml  # Dev override: volumes + hot reload
-|-- nginx.conf              # Nginx config (SPA routing + /api proxy)
-|-- vite.config.js          # Vite: /api proxy, manual chunks, image compression
+|-- Dockerfile              # Multi-stage: node build → nginx:alpine
+|-- docker-compose.yml      # Production: frontend + tunnel
+|-- nginx.conf              # Nginx config (SPA routing, no API proxy)
+|-- vite.config.js          # Vite config
 |-- tailwind.config.js      # Tailwind CSS config
 |-- tsconfig.json           # TypeScript config
-|-- package.json            # Frontend dependencies
+|-- package.json            # Dependencies
 |-- .env.example            # Environment variable template
 `-- README.md               # This file
 ```
@@ -484,20 +300,17 @@ pet-bewerbung/
 
 | Mechanism | Implementation |
 |-----------|---------------|
-| CSRF | Token per session (Redis/in-memory), X-CSRF-Token header on POST |
-| Prompt injection | 8 regex patterns + suspicious chars strip + Gemini systemInstruction |
-| AI rate limiting | Redis: 5 req/24h/IP, in-memory fallback in dev |
-| Body size limit | Express: 1MB JSON limit + per-endpoint limits in requestLimits.js |
+| No server storage | All data stays in browser. PDF generated client-side. |
 | Security headers | Nginx: X-Frame-Options, X-Content-Type-Options, Referrer-Policy, CSP |
-| CORS | Origin whitelist (dev: localhost; prod: pet-bewerbung.ch) |
-| No server storage | PDF generated client-side, no DB, no file storage on server |
+| Input sanitization | Frontend sanitization for user inputs |
+| Image compression | Max 800x800, JPEG 0.8, max 500KB to prevent abuse |
+| Blob URL cleanup | URL.revokeObjectURL after download (1–2s delay) |
 
 ---
 
 ## Privacy
 
 - All form data stored **only in the user browser** (localStorage + IndexedDB)
-- PDF generated entirely **client-side** — no document data sent to server
-- AI requests contain only sanitized pet attributes (name, breed, age, traits)
-- Owner personal data (address, email, phone) never leaves the browser
-- No database, no server-side session storage beyond ephemeral CSRF tokens
+- PDF generated entirely **client-side** — no document data sent anywhere
+- Text generation is **template-based** — no AI, no external APIs
+- No database, no server-side storage, no cookies beyond consent (if any)
