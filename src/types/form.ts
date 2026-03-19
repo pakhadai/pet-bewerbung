@@ -35,7 +35,7 @@ export interface PetData {
   vetName: string;
   vetPhone: string;
   insuranceProvider: string;
-  insuranceNumber: string;
+  insuranceNumber?: string;
   chipId: string;
   hasVaccination: boolean;
   isNeutered: boolean;
@@ -46,30 +46,39 @@ export interface PetData {
   noiseLevel: NoiseLevel;
   aloneTime: number | string;
   activeHours: string;
-  behaviorWithChildren: BehaviorLevel;
-  behaviorWithPets: BehaviorLevel;
-  behaviorNotes: string;
+  behaviorWithChildren: BehaviorLevel | '';
+  behaviorWithPets: BehaviorLevel | '';
+  behaviorNotes?: string;
 
   // References
   previousLandlordName: string;
   previousLandlordPhone: string;
+  previousLandlordEmail?: string;
   previousDuration: string;
   emergencyContactName: string;
   emergencyContactPhone: string;
   emergencyContactRelation: string;
+  secondaryEmergencyContact?: string;
 
-  // Step 3: AI Generated Description
+  // Step 3: Description
+  keywords?: string;
   generatedText: string;
 
   // Step 4: Photo & Template
-  photo: string; // Base64 or URL
-  selectedTemplate: TemplateType;
+  photo: string | null;
+  selectedTemplate?: TemplateType;
+
+  // Extra
+  willingToPayDeposit?: boolean;
 
   // Metadata
   lang: Language;
   createdAt?: string;
   updatedAt?: string;
 }
+
+/** Form data as stored in Zustand - flexible shape for form state */
+export type FormData = Partial<PetData> & Record<string, unknown>;
 
 export type TemplateType = 'classic' | 'modern' | 'compact';
 

@@ -19,14 +19,14 @@ const detectLang = (): string => {
 const translationCache: Record<string, any> = {};
 
 // Vite glob import - enables code-splitting per language, avoids dynamic import path issues
-const translationLoaders = import.meta.glob<{ default: any }>('../translations/*.js');
+const translationLoaders = import.meta.glob<{ default: Record<string, unknown> }>('../translations/*.ts');
 
 /**
  * Load translation for a language (lazy - only fetches when needed)
  */
-const loadTranslation = async (lang: Language): Promise<any> => {
+const loadTranslation = async (lang: Language): Promise<Record<string, unknown>> => {
   if (translationCache[lang]) return translationCache[lang];
-  const loader = translationLoaders[`../translations/${lang}.js`];
+  const loader = translationLoaders[`../translations/${lang}.ts`];
   if (!loader) throw new Error(`No translation for ${lang}`);
   const module = await loader();
   translationCache[lang] = module.default;

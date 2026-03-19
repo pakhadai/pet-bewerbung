@@ -1,0 +1,51 @@
+import type { FormData } from './types/form';
+
+export const INITIAL_DATA: FormData & Record<string, unknown> = {
+  lang: 'de',
+  petType: 'dog',
+  ownerName: '',
+  email: '',
+  phone: '',
+  street: '',
+  houseNumber: '',
+  postal: '',
+  city: '',
+  name: '',
+  breed: '',
+  age: '',
+  weight: '',
+  gender: 'm',
+  photo: null,
+  chipId: '',
+  insuranceProvider: '',
+  vetName: '',
+  vetPhone: '',
+  medicalConditions: '',
+  isNeutered: false,
+  hasVaccination: true,
+  hasRegistration: true,
+  keywords: '',
+  generatedText: '',
+  noiseLevel: 'low',
+  aloneTime: '',
+  activeHours: '',
+  previousLandlordName: '',
+  previousLandlordPhone: '',
+  previousLandlordEmail: '',
+  previousDuration: '',
+  emergencyContactName: '',
+  emergencyContactPhone: '',
+  emergencyContactRelation: '',
+  secondaryEmergencyContact: '',
+  willingToPayDeposit: true,
+  behaviorWithChildren: '',
+  behaviorWithPets: '',
+};
+
+export const MAX_DESCRIPTION_LENGTH = 470;
+
+export const TEMPLATE_OPTIONS = [
+  { id: 'classic', label: 'Classic' },
+  { id: 'modern', label: 'Modern' },
+  { id: 'compact', label: 'Compact' },
+] as const;
