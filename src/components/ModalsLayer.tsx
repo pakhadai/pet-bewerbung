@@ -1,12 +1,11 @@
 /**
  * ModalsLayer - Renders all app modals in one place
- * FaqModal, LegalPages, PreviewModal, CookieBanner
+ * FaqModal, LegalPages, PreviewModal
  */
 import React, { Suspense } from 'react';
 import { X, Camera } from 'lucide-react';
 import FaqModal from './FaqModal';
 import LegalPages from './LegalPages';
-import CookieBanner, { COOKIE_CONSENT_KEY } from './CookieBanner';
 import ErrorBoundary from './ErrorBoundary';
 import { lazyRetry } from '../utils/lazyRetry';
 
@@ -23,9 +22,7 @@ export interface ModalsLayerProps {
   previewTemplate: string;
   closePreview: () => void;
   data: Record<string, unknown>;
-  cookieConsent: 'accepted' | 'declined' | null;
-  onCookieConsentChange: (consent: 'accepted' | 'declined') => void;
-  /** When false (e.g. step 7 ThankYou), hide CookieBanner and LegalPages */
+  /** When false (e.g. step 7 ThankYou), hide LegalPages */
   showLayoutModals?: boolean;
 }
 
@@ -40,8 +37,6 @@ const ModalsLayer: React.FC<ModalsLayerProps> = ({
   previewTemplate,
   closePreview,
   data,
-  cookieConsent,
-  onCookieConsentChange,
   showLayoutModals = true,
 }) => (
   <>
@@ -90,10 +85,8 @@ const ModalsLayer: React.FC<ModalsLayerProps> = ({
     )}
 
     {showLayoutModals && (
-      <CookieBanner t={t} onOpenPrivacy={() => setLegalPage('privacy')} onConsentChange={onCookieConsentChange} />
+      null
     )}
   </>
 );
-
-export { COOKIE_CONSENT_KEY };
 export default ModalsLayer;

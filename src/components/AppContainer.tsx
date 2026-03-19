@@ -8,7 +8,7 @@ import Header from './Header';
 import Footer from './Footer';
 import StepProgress from './StepProgress';
 import FloatingNavigation from './FloatingNavigation';
-import ModalsLayer, { COOKIE_CONSENT_KEY } from './ModalsLayer';
+import ModalsLayer from './ModalsLayer';
 import ErrorBoundary from './ErrorBoundary';
 import {
   useTranslationContext,
@@ -73,18 +73,11 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   const [legalPage, setLegalPage] = useState<string | null>(null);
   const [faqOpen, setFaqOpen] = useState(false);
   const [navigationVisible, setNavigationVisible] = useState(true);
-  const [cookieConsent, setCookieConsent] = useState<'accepted' | 'declined' | null>(() => {
-    try {
-      const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
-      return consent as 'accepted' | 'declined' | null;
-    } catch {
-      return null;
-    }
-  });
 
-  const handleCookieConsentChange = (consent: 'accepted' | 'declined') => {
-    setCookieConsent(consent);
-  };
+  // A11y: keep <html lang="..."> in sync with the active UI language.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   useEffect(() => {
     if (step !== 4) setNavigationVisible(true);
@@ -136,8 +129,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
           previewTemplate={previewTemplate}
           closePreview={closePreview}
           data={data}
-          cookieConsent={cookieConsent}
-          onCookieConsentChange={handleCookieConsentChange}
           showLayoutModals={false}
         />
       </>
@@ -207,8 +198,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
         previewTemplate={previewTemplate}
         closePreview={closePreview}
         data={data}
-        cookieConsent={cookieConsent}
-        onCookieConsentChange={handleCookieConsentChange}
         showLayoutModals
       />
     </>

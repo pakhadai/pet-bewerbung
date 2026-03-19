@@ -68,7 +68,7 @@ const PdfDocument: React.FC<PdfDocumentProps> = ({ data, t, logoUrl, qrUrl, temp
   return (
     <Document title={t.doc.title ?? 'Pet CV'}>
       <Page size="A4" style={pageStyle} wrap>
-        <PdfHeader today={today} logoUrl={logoUrl} t={t} templateConfig={templateConfig} />
+        <PdfHeader today={today} city={data.city} logoUrl={logoUrl} t={t} templateConfig={templateConfig} />
 
         <View style={commonStyles.mainRow}>
           <View style={commonStyles.sidebar}>

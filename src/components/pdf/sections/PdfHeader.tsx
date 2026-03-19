@@ -6,18 +6,21 @@ import type { PdfTranslations } from '../../../services/pdfService';
 
 export interface PdfHeaderProps {
   today: string;
+  city?: string;
   logoUrl?: string;
   t: PdfTranslations;
   templateConfig: PdfTemplateConfig;
 }
 
-export const PdfHeader: React.FC<PdfHeaderProps> = ({ today, logoUrl, t, templateConfig }) => {
+export const PdfHeader: React.FC<PdfHeaderProps> = ({ today, city, logoUrl, t, templateConfig }) => {
   const colors = templateConfig.colors;
   const headerStyle = [commonStyles.header, { borderBottomColor: colors.primary }];
   const headerIconStyle = [
     commonStyles.headerIcon,
     logoUrl && { backgroundColor: 'white', padding: 2 },
   ];
+
+  const dateText = city?.trim() ? `${city.trim()}, ${today}` : today;
 
   return (
     <View style={headerStyle}>
@@ -34,7 +37,7 @@ export const PdfHeader: React.FC<PdfHeaderProps> = ({ today, logoUrl, t, templat
           <Text style={commonStyles.headerSubtitle}>{t.doc.subtitle ?? 'Application document'}</Text>
         </View>
       </View>
-      <Text style={commonStyles.headerDate}>{today}</Text>
+      <Text style={commonStyles.headerDate}>{dateText}</Text>
     </View>
   );
 };
