@@ -109,17 +109,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     }
   }, [step]);
 
-  // Block render until translations are ready — prevents crashes like t.labels.xxx on empty object
-  if (isTranslationLoading) {
-    return (
-      <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
-        <div className="flex flex-col items-center gap-4 text-slate-400">
-          <span className="material-symbols-outlined animate-spin text-4xl">progress_activity</span>
-        </div>
-      </div>
-    );
-  }
-
   // Convert darkMode to theme string
   const theme = darkMode ? 'dark' : 'light';
 
@@ -142,6 +131,17 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     }),
     [t, darkMode, step, animDir, validationErrors, wrappedOnDownloadPDF, onDownloadAllTemplates, goToStep, setLang, setDarkMode, showToast, resetForm]
   );
+
+  // ALL hooks are above this line — safe to return early now (Rules of Hooks satisfied)
+  if (isTranslationLoading) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
+        <div className="flex flex-col items-center gap-4 text-slate-400">
+          <span className="material-symbols-outlined animate-spin text-4xl">progress_activity</span>
+        </div>
+      </div>
+    );
+  }
 
   const appContent = step === 7 ? (
     <WizardProvider value={wizardContextValue}>
