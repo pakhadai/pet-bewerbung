@@ -1,34 +1,75 @@
 /**
  * Rate limiter for /csrf-token endpoint
- * Uses LRUCache to prevent memory exhaustion from spoofed IPs.
+ * Uses Redis (same as AI rate limit) - LRUCache allows IP spoofing bypass via eviction.
+ * Fallback to in-memory only when Redis unavailable (dev mode).
  */
 
-const { LRUCache } = require('lru-cache');
-const { getClientIP } = require('./rateLimit');
+const { getClientIP, getRedisClient, isRedisAvailable } = require('./rateLimit');
+const { isProduction } = require('../config');
 const { logger } = require('../utils/logger');
 
-const CSRF_TOKEN_WINDOW_MS = 60 * 1000; // 1 minute
+const CSRF_TOKEN_WINDOW_SEC = 60;
 const CSRF_TOKEN_MAX_PER_IP = 100;
 
-const csrfTokenAttempts = new LRUCache({ max: 5000, ttl: CSRF_TOKEN_WINDOW_MS });
+// In-memory fallback for dev (no LRU eviction - use Map with cleanup)
+const inMemoryCounts = new Map();
+let lastCleanup = Date.now();
+const CLEANUP_INTERVAL_MS = 60000;
 
-function csrfTokenRateLimit(req, res, next) {
-  const ip = getClientIP(req);
+function cleanupInMemory() {
   const now = Date.now();
+  if (now - lastCleanup < CLEANUP_INTERVAL_MS) return;
+  lastCleanup = now;
+  const cutoff = now - CSRF_TOKEN_WINDOW_SEC * 1000;
+  for (const [ip, entry] of inMemoryCounts.entries()) {
+    if (entry.firstRequest < cutoff) inMemoryCounts.delete(ip);
+  }
+}
 
-  let entry = csrfTokenAttempts.get(ip);
-  if (!entry) {
-    csrfTokenAttempts.set(ip, { count: 1, firstRequest: now });
-    return next();
+async function csrfTokenRateLimit(req, res, next) {
+  const ip = getClientIP(req);
+  const redis = getRedisClient();
+
+  if (redis && isRedisAvailable()) {
+    try {
+      const key = `csrf_rl:${ip}`;
+      const count = await redis.incr(key);
+      if (count === 1) await redis.expire(key, CSRF_TOKEN_WINDOW_SEC);
+
+      if (count > CSRF_TOKEN_MAX_PER_IP) {
+        const ttl = await redis.ttl(key);
+        return res.status(429).json({
+          error: 'Too many requests',
+          message: 'Please wait before requesting another token.',
+          retryAfter: Math.max(1, ttl),
+        });
+      }
+      return next();
+    } catch (err) {
+      logger.error('CSRF rate limit Redis error:', err.message);
+      if (isProduction) {
+        return res.status(503).json({ error: 'Service temporarily unavailable' });
+      }
+      // Fall through to in-memory for dev
+    }
   }
 
+  // In-memory fallback (dev only)
+  cleanupInMemory();
+  const now = Date.now();
+  let entry = inMemoryCounts.get(ip);
+  if (!entry || now - entry.firstRequest > CSRF_TOKEN_WINDOW_SEC * 1000) {
+    entry = { count: 1, firstRequest: now };
+    inMemoryCounts.set(ip, entry);
+    return next();
+  }
   entry.count++;
   if (entry.count > CSRF_TOKEN_MAX_PER_IP) {
-    logger.warn(`CSRF token rate limit exceeded for IP ${ip}`);
+    const retryAfter = Math.ceil((entry.firstRequest + CSRF_TOKEN_WINDOW_SEC * 1000 - now) / 1000);
     return res.status(429).json({
       error: 'Too many requests',
       message: 'Please wait before requesting another token.',
-      retryAfter: Math.ceil((entry.firstRequest + CSRF_TOKEN_WINDOW_MS - now) / 1000),
+      retryAfter: Math.max(1, retryAfter),
     });
   }
   next();

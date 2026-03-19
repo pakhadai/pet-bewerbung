@@ -5,9 +5,6 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 
-# ВАЖЛИВО: Вказуємо, що API буде доступне по шляху /api
-ENV VITE_STRIPE_API_URL=/api
-
 RUN npm run build
 
 # Етап 2: Запуск (Run)

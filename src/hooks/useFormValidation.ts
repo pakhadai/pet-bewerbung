@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { validateSwissPhone, validateSwissPostal, validateEmail } from '../utils/swissValidation';
+import { MIN_PET_NAME_LENGTH, MIN_OWNER_NAME_LENGTH } from '../constants/validation';
 
 export interface FormValidationErrors {
   [field: string]: boolean;
@@ -22,7 +23,7 @@ export function validateStep(data: Record<string, unknown>, step: number): FormV
 
   switch (step) {
     case 1:
-      if (!data.ownerName || String(data.ownerName).trim().length < 2) {
+      if (!data.ownerName || String(data.ownerName).trim().length < MIN_OWNER_NAME_LENGTH) {
         errors.ownerName = true;
         isValid = false;
       }
@@ -38,7 +39,7 @@ export function validateStep(data: Record<string, unknown>, step: number): FormV
         errors.postal = true;
         isValid = false;
       }
-      if (!data.name || String(data.name).trim().length < 1) {
+      if (!data.name || String(data.name).trim().length < MIN_PET_NAME_LENGTH) {
         errors.name = true;
         isValid = false;
       }

@@ -29,14 +29,16 @@ const inMemoryLimiter = new LRUCache({ max: MAX_IN_MEMORY_ENTRIES });
  */
 async function initRedis() {
   try {
-    redis = new Redis(REDIS_URL, { 
-      maxRetriesPerRequest: 3,
+    redis = new Redis(REDIS_URL, {
+      // Production: never give up - keep retrying so orchestrator can restart if needed
+      // Dev: unlimited retries with backoff
+      maxRetriesPerRequest: null,
       retryStrategy: (times) => {
-        if (times > 3) {
-          logger.error('❌ Redis connection failed after 3 retries');
-          return null; // Stop retrying
+        const delay = Math.min(times * 500, 5000); // Exponential backoff, max 5s
+        if (isProduction && times > 1) {
+          logger.warn(`Redis reconnecting (attempt ${times})...`);
         }
-        return Math.min(times * 200, 1000);
+        return delay;
       },
       lazyConnect: true,
     });

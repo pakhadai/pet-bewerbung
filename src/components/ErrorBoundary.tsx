@@ -52,8 +52,8 @@ class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
 
-      const title = this.props.fallbackTitle || 'Something went wrong';
-      const message = this.props.fallbackMessage || 'An unexpected error occurred. Please try again.';
+      const title = this.props.fallbackTitle || 'Etwas ist schiefgelaufen';
+      const message = this.props.fallbackMessage || 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
 
       return (
         <div className="flex flex-col items-center justify-center p-8 theme-card rounded-2xl border theme-border">
@@ -67,7 +67,7 @@ class ErrorBoundary extends Component<Props, State> {
             className="flex items-center gap-2 px-4 py-2 rounded-lg theme-button-primary transition-all hover:scale-105"
           >
             <RefreshCw size={16} />
-            Try Again
+            Erneut versuchen
           </button>
         </div>
       );

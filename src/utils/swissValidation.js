@@ -70,7 +70,8 @@ export const validateEmail = (email) => {
   // - Requires @ symbol
   // - Requires domain with at least one dot
   // - TLD must be at least 2 characters
-  const emailPattern = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  // Include '+' for plus-addressing (e.g. my.name+pets@gmail.com)
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   // Additional checks
   if (!emailPattern.test(email)) return false;

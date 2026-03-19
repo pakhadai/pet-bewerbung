@@ -26,12 +26,12 @@ const Step4Photo = React.memo(({
     if (onNavigationVisibilityChange) onNavigationVisibilityChange(!showCropper);
   }, [showCropper, onNavigationVisibilityChange]);
 
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB - reduces Image Bomb risk (zip bomb JPEG can expand to GB in RAM)
 
   const processFile = async (file) => {
     if (!file || !file.type.startsWith('image/')) return;
     if (file.size > MAX_FILE_SIZE) {
-      showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error');
+      showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 3 MB.', 'error');
       return;
     }
     if (onNavigationVisibilityChange) onNavigationVisibilityChange(false);
@@ -46,7 +46,7 @@ const Step4Photo = React.memo(({
       setTempImage(compressed);
       setShowCropper(true);
     } catch (err) {
-      if (file.size <= 2 * 1024 * 1024) {
+      if (file.size <= MAX_FILE_SIZE) {
         const reader = new FileReader();
         reader.onloadend = () => {
           setTempImage(reader.result);

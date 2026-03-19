@@ -17,7 +17,6 @@ export const API_ENDPOINTS = {
   // AI
   generatePetDescription: `${API_BASE}/generate-pet-description`,
   aiRateLimit: `${API_BASE}/ai-rate-limit`,
-  getAIRateLimitStatus: `${API_BASE}/ai-rate-limit`,
 };
 
 export default API_ENDPOINTS;

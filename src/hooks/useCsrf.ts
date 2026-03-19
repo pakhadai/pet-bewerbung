@@ -39,7 +39,7 @@ export const useCsrf = () => {
     let lastErr: Error | null = null;
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
       try {
-        const response = await fetchWithTimeout(API_ENDPOINTS.csrfToken, {}, TIMEOUT_MS);
+        const response = await fetchWithTimeout(API_ENDPOINTS.csrfToken, { credentials: 'include' }, TIMEOUT_MS);
         if (!response.ok) throw new Error('Failed to fetch CSRF token');
         const data = await response.json();
         setToken(data.csrfToken ?? null);

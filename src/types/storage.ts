@@ -63,7 +63,6 @@ export type StorageKey =
 export interface StorageStrategy {
   maxSize: number; // bytes
   adapter: StorageType;
-  ttl?: number; // seconds
 }
 
 export const STORAGE_STRATEGIES: Record<StorageKey, StorageStrategy> = {
@@ -80,9 +79,9 @@ export const STORAGE_STRATEGIES: Record<StorageKey, StorageStrategy> = {
   'ai-generations': { maxSize: 1000, adapter: 'localStorage' },
   'ai-last-reset': { maxSize: 100, adapter: 'localStorage' },
 
-  // Temporary data → sessionStorage
-  'form-draft': { maxSize: 10000, adapter: 'sessionStorage', ttl: 3600 },
-  'csrf-token': { maxSize: 200, adapter: 'sessionStorage', ttl: 3600 },
+  // Temporary data → sessionStorage (cleared when tab closes)
+  'form-draft': { maxSize: 10000, adapter: 'sessionStorage' },
+  'csrf-token': { maxSize: 200, adapter: 'sessionStorage' },
 
   // Large data → IndexedDB
   'photo-blob': { maxSize: 10485760, adapter: 'indexedDB' }, // 10 MB

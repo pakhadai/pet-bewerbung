@@ -13,8 +13,12 @@ const CSRF_MAX_AGE = 2 * 60 * 60; // 2 hours in seconds
 
 /**
  * Generate CSRF token
+ * Uses crypto.randomUUID() - faster than randomBytes, V8-optimized. 122-bit entropy.
  */
 function generateCsrfToken() {
+  if (typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
+  }
   return crypto.randomBytes(32).toString('hex');
 }
 

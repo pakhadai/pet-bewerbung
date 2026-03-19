@@ -137,6 +137,15 @@ app.use((err, req, res, next) => {
   if (err.message === 'CORS policy: Origin not allowed' || err.message === 'CORS policy: Origin required') {
     return res.status(403).json({ error: 'CORS not allowed' });
   }
+  // 413 Payload Too Large - body-parser throws entity.too.large
+  if (err.type === 'entity.too.large' || err.status === 413) {
+    logger.warn(`Payload too large from ${req.ip || 'unknown'}`);
+    return res.status(413).json({ error: 'Payload too large', message: 'Request body exceeds 50KB limit.' });
+  }
+  // 400 Invalid JSON - body-parser SyntaxError
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({ error: 'Invalid JSON', message: 'Malformed request body.' });
+  }
   logger.error('Server error', { message: err.message, stack: err.stack });
   res.status(500).json({ error: 'Internal server error' });
 });

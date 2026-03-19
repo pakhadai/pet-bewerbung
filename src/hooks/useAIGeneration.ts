@@ -23,7 +23,7 @@ export const useAIGeneration = (): UseAIGenerationReturn => {
 
   const fetchRateLimit = useCallback(async () => {
     try {
-      const res = await fetch(API_ENDPOINTS.aiRateLimit);
+      const res = await fetch(API_ENDPOINTS.aiRateLimit, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
         setRemaining(data.remaining ?? AI_LIMIT);
@@ -55,6 +55,7 @@ export const useAIGeneration = (): UseAIGenerationReturn => {
 
     const res = await fetch(API_ENDPOINTS.generatePetDescription, {
       method: 'POST',
+      credentials: 'include',
       headers,
       body: JSON.stringify({ petData, lang: 'de', tone: 'formal' }),
     });
