@@ -52,8 +52,9 @@ const Step1Details = React.memo(() => {
               <div className="md:col-span-2">
                 <Label required>{t.labels.ownerName}</Label>
                 <FormInput
+                  field="ownerName"
                   value={data.ownerName}
-                  onChange={e => updateData('ownerName', e.target.value)}
+                  onChange={val => updateData('ownerName', val)}
                   onBlur={() => markTouched('ownerName')}
                   placeholder={t?.placeholders?.ownerName ?? 'e.g. John Doe'}
                   error={touched.ownerName && errors?.ownerName}
@@ -64,17 +65,18 @@ const Step1Details = React.memo(() => {
               </div>
               <div>
                 <Label>{t.labels.street}</Label>
-                <FormInput value={data.street} onChange={e => updateData('street', e.target.value)} placeholder={t?.placeholders?.street ?? 'e.g. Bahnhofstrasse'} />
+                <FormInput field="street" value={data.street} onChange={val => updateData('street', val)} placeholder={t?.placeholders?.street ?? 'e.g. Bahnhofstrasse'} />
               </div>
               <div>
                 <Label>{t.labels.houseNumber}</Label>
-                <FormInput value={data.houseNumber} onChange={e => updateData('houseNumber', e.target.value)} placeholder="12A" />
+                <FormInput field="houseNumber" value={data.houseNumber} onChange={val => updateData('houseNumber', val)} placeholder="12A" />
               </div>
               <div>
                 <Label>{t.labels.postal}</Label>
                 <FormInput
+                  field="postal"
                   value={data.postal}
-                  onChange={e => updateData('postal', e.target.value)}
+                  onChange={val => updateData('postal', val)}
                   onBlur={() => markTouched('postal')}
                   placeholder="9000"
                   error={touched.postal && errors?.postal}
@@ -83,14 +85,15 @@ const Step1Details = React.memo(() => {
               </div>
               <div>
                 <Label>{t.labels.city}</Label>
-                <FormInput value={data.city} onChange={e => updateData('city', e.target.value)} placeholder="St. Gallen" />
+                <FormInput field="city" value={data.city} onChange={val => updateData('city', val)} placeholder="St. Gallen" />
               </div>
               <div>
                 <Label>{t.labels.email}</Label>
                 <FormInput
+                  field="email"
                   type="email"
                   value={data.email}
-                  onChange={e => updateData('email', e.target.value)}
+                  onChange={val => updateData('email', val)}
                   onBlur={() => markTouched('email')}
                   placeholder="email@example.com"
                   error={touched.email && errors?.email}
@@ -100,9 +103,10 @@ const Step1Details = React.memo(() => {
               <div>
                 <Label>{t.labels.phone}</Label>
                 <FormInput
+                  field="phone"
                   type="tel"
                   value={data.phone}
-                  onChange={e => updateData('phone', e.target.value)}
+                  onChange={val => updateData('phone', val)}
                   onBlur={() => markTouched('phone')}
                   placeholder="+41 79 123 45 67"
                   error={touched.phone && errors?.phone}
@@ -140,8 +144,9 @@ const Step1Details = React.memo(() => {
               <div className="md:col-span-2">
                 <Label required>{t.labels.petName}</Label>
                 <FormInput
+                  field="name"
                   value={data.name}
-                  onChange={e => updateData('name', e.target.value)}
+                  onChange={val => updateData('name', val)}
                   onBlur={() => markTouched('name')}
                   placeholder={t?.placeholders?.petName ?? 'e.g. Luna'}
                   error={touched.name && errors?.name}
@@ -151,19 +156,21 @@ const Step1Details = React.memo(() => {
               <div>
                 <Label>{t.labels.breed}</Label>
                 <FormInput
+                  field="breed"
                   value={data.breed}
-                  onChange={e => updateData('breed', e.target.value)}
+                  onChange={val => updateData('breed', val)}
                   placeholder={t?.placeholders?.breed ?? 'e.g. Beagle'}
                 />
               </div>
               <div>
                 <Label>{t.labels.age}</Label>
                 <FormInput
+                  field="age"
                   type="number"
                   min="0"
                   max="30"
                   value={data.age}
-                  onChange={e => updateData('age', e.target.value)}
+                  onChange={val => updateData('age', val)}
                   placeholder="0"
                 />
               </div>
@@ -175,7 +182,8 @@ const Step1Details = React.memo(() => {
                   max="200"
                   step="0.1"
                   value={data.weight}
-                  onChange={e => updateData('weight', e.target.value)}
+                  field="weight"
+                  onChange={val => updateData('weight', val)}
                   placeholder="0"
                 />
               </div>

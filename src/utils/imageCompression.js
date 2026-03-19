@@ -141,7 +141,8 @@ const WEBP_SUPPORTED = typeof document !== 'undefined' && supportsWebP();
  * @param {number} options.maxSizeKB - Target max file size in KB (default: 500)
  * @param {string} options.format - 'webp' | 'jpeg' (default: 'webp' if supported)
  * @param {number} options.timeout - Timeout in ms (default: 10000)
- * @returns {Promise<string>} - Base64 data URL of compressed image
+ * @param {boolean} options.returnBlob - If true, returns Blob instead of data URL (saves RAM, use with URL.createObjectURL)
+ * @returns {Promise<string|Blob>} - Base64 data URL or Blob of compressed image
  */
 export const compressImage = (file, options = {}) => {
   const {
@@ -151,6 +152,7 @@ export const compressImage = (file, options = {}) => {
     maxSizeKB = 500,
     format = WEBP_SUPPORTED ? 'webp' : 'jpeg',
     timeout = 10000, // 10 second timeout
+    returnBlob = false,
   } = options;
 
   const mime = format === 'webp' ? 'image/webp' : 'image/jpeg';
@@ -224,6 +226,9 @@ export const compressImage = (file, options = {}) => {
           }
           if (!bestBlob) bestBlob = await getBlob('image/jpeg', 0.5);
 
+          if (returnBlob) {
+            return bestBlob;
+          }
           return new Promise((res, rej) => {
             const reader = new FileReader();
             reader.onloadend = () => res(reader.result);

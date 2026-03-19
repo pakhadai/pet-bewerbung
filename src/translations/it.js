@@ -115,7 +115,7 @@ export default {
     tellUsAboutPet: "Raccontaci del tuo animale",
     descriptionHint: "Personalità, giochi preferiti o piccole manie.",
     descriptionPlaceholder: "Buddy è un Golden Retriever vivace che ama le coccole e rincorrere gli scoiattoli...",
-    aiGenerateBtn: "Genera descrizione IA (470 caratteri)",
+    aiGenerateBtn: "Genera testo automaticamente (modello)",
     localPrivacy: "Generazione locale • Privacy",
     generating: "Generazione in corso...",
     aiBtn: "Generare testo",

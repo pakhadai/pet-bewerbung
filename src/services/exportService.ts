@@ -31,7 +31,7 @@ function downloadBlob(blob: Blob, filename: string): void {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  setTimeout(() => URL.revokeObjectURL(url), 1000); // 1s sufficient for OS to start download; avoids memory leak on repeated downloads
+  setTimeout(() => URL.revokeObjectURL(url), 60000); // 60s allows slow devices / "Save as" dialog; avoids memory leak on repeated downloads
 }
 
 /**

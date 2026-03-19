@@ -115,7 +115,7 @@ export default {
     tellUsAboutPet: "Racontai da vies animal",
     descriptionHint: "Persunalitad, gieus preferids u pitschnas manias.",
     descriptionPlaceholder: "Buddy è in Golden Retriever viv da char che amescha las carezzas e suandar squerrs...",
-    aiGenerateBtn: "Generar descripziun IA (470 caracters)",
+    aiGenerateBtn: "Generar text automaticamain (model)",
     localPrivacy: "Generaziun locala • Sfera privata",
     generating: "Generaziun...",
     aiBtn: "Generar text",

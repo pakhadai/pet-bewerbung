@@ -74,12 +74,21 @@ export class StorageManager {
 
   /**
    * Get value from storage
+   * Falls back to localStorage when IndexedDB fails (Safari Private Mode)
    */
   async get<T>(key: StorageKey, options?: StorageOptions): Promise<T | null> {
     try {
       const adapter = this.getAdapterForKey(key, options);
       return await adapter.get<T>(key);
     } catch (error) {
+      const strategy = STORAGE_STRATEGIES[key];
+      if (strategy?.adapter === 'indexedDB') {
+        try {
+          return await this.adapters.get('localStorage')!.get<T>(key);
+        } catch {
+          /* ignore */
+        }
+      }
       console.error(`[StorageManager] Error getting key "${key}":`, error);
       return null;
     }
@@ -87,12 +96,22 @@ export class StorageManager {
 
   /**
    * Set value in storage
+   * Falls back to localStorage when IndexedDB fails (Safari Private Mode)
    */
   async set<T>(key: StorageKey, value: T, options?: StorageOptions): Promise<void> {
     try {
       const adapter = this.getAdapterForKey(key, options);
       await adapter.set<T>(key, value);
     } catch (error) {
+      const strategy = STORAGE_STRATEGIES[key];
+      if (strategy?.adapter === 'indexedDB') {
+        try {
+          await this.adapters.get('localStorage')!.set<T>(key, value);
+          return;
+        } catch (fallbackErr) {
+          if (import.meta.env.DEV) console.warn('[StorageManager] IndexedDB failed, localStorage fallback failed:', fallbackErr);
+        }
+      }
       console.error(`[StorageManager] Error setting key "${key}":`, error);
       throw error;
     }

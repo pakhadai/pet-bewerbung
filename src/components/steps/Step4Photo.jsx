@@ -26,6 +26,13 @@ const Step4Photo = React.memo(({
     if (onNavigationVisibilityChange) onNavigationVisibilityChange(!showCropper);
   }, [showCropper, onNavigationVisibilityChange]);
 
+  // Revoke blob URL on unmount (prevents memory leak)
+  useEffect(() => () => {
+    if (tempImage && typeof tempImage === 'string' && tempImage.startsWith('blob:')) {
+      URL.revokeObjectURL(tempImage);
+    }
+  }, [tempImage]);
+
   const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB - reduces Image Bomb risk (zip bomb JPEG can expand to GB in RAM)
 
   const processFile = async (file) => {
@@ -37,26 +44,20 @@ const Step4Photo = React.memo(({
     if (onNavigationVisibilityChange) onNavigationVisibilityChange(false);
     setIsCompressing(true);
     try {
-      const compressed = await compressImage(file, {
+      const blob = await compressImage(file, {
         maxWidth: 800,
         maxHeight: 800,
         quality: 0.8,
         maxSizeKB: 500,
+        returnBlob: true,
       });
-      setTempImage(compressed);
+      const url = URL.createObjectURL(blob);
+      setTempImage(url);
       setShowCropper(true);
     } catch (err) {
-      if (file.size <= MAX_FILE_SIZE) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setTempImage(reader.result);
-          setShowCropper(true);
-        };
-        reader.readAsDataURL(file);
-        showToast?.('Komprimierung fehlgeschlagen, Original wird verwendet', 'info');
-      } else {
-        showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Bitte komprimieren Sie das Bild.', 'error');
-      }
+      setIsCompressing(false);
+      showToast?.(t?.step4?.invalidImage ?? 'Ungültige Bilddatei. Bitte laden Sie eine gültige JPG- oder PNG-Datei hoch.', 'error');
+      return;
     } finally {
       setIsCompressing(false);
     }
@@ -90,11 +91,17 @@ const Step4Photo = React.memo(({
   const handleCropComplete = (img) => {
     updateData('photo', img);
     setShowCropper(false);
+    if (tempImage && typeof tempImage === 'string' && tempImage.startsWith('blob:')) {
+      URL.revokeObjectURL(tempImage);
+    }
     setTempImage(null);
   };
 
   const handleCropCancel = () => {
     setShowCropper(false);
+    if (tempImage && typeof tempImage === 'string' && tempImage.startsWith('blob:')) {
+      URL.revokeObjectURL(tempImage);
+    }
     setTempImage(null);
   };
 

@@ -19,16 +19,6 @@ export type {
   FormValidationResult,
 } from './form';
 
-// API Types
-export type {
-  AIGenerationRequest,
-  AIGenerationResponse,
-  AIRateLimitStatus,
-  CSRFTokenResponse,
-  ApiErrorResponse,
-  ApiResponse,
-} from './api';
-
 // Template Types
 export type {
   TemplateConfig,

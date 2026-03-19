@@ -87,10 +87,14 @@ export const withFallback = (value, fallback = '—') => {
  * @param {string} text - Raw text
  * @returns {string} - Sanitized text safe for PDF
  */
+/** Max chars without space before forcing break (prevents Yoga layout DOS on long unbroken strings) */
+const PDF_WORD_BREAK_THRESHOLD = 50;
+
 export const sanitizeForPdf = (text) => {
   if (!text || typeof text !== 'string') return '';
   return text
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // Remove control chars
     .replace(/\uFFFD/g, '') // Remove replacement char
+    .replace(new RegExp(`([^\\s]{${PDF_WORD_BREAK_THRESHOLD}})`, 'g'), '$1\u200B') // Break long words (DOS fix)
     .trim();
 };

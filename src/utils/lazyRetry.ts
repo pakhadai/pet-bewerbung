@@ -38,7 +38,7 @@ export const lazyRetry = <T extends React.ComponentType<any>>(
       if (!alreadyRefreshed && typeof window !== 'undefined' && isChunkLoadError(error)) {
         sessionStorage.setItem(FORCE_REFRESH_KEY, 'true');
         window.location.reload();
-        return new Promise(() => {}); // Never resolves - page is reloading
+        return Promise.reject(new Error('Reloading page to fetch new chunks...'));
       }
       // Clear flag only when throwing due to non-ChunkLoadError (firewall, etc).
       // Keeps flag when ChunkLoadError after reload - prevents infinite reload on Try Again.

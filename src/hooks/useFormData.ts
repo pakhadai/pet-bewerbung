@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { INITIAL_DATA } from '../constants';
 import { storage } from '../utils/storage';
+import { getPendingFormValues, FLUSH_EVENT } from '../utils/formInputFlush';
 
 /**
  * Load saved form data from storage
@@ -58,7 +59,7 @@ const STORAGE_NAMESPACE = 'pet-cv';
  */
 const saveFormDataSync = (data: any): void => {
   try {
-    const dataToSave = { ...data };
+    const dataToSave = { ...data, updatedAt: Date.now() };
     delete dataToSave.photo; // Photo is in IndexedDB, skip for sync save
     delete dataToSave.hasPhotoSaved; // Never persist - derived from IndexedDB on load (race: tab close before IndexedDB save)
     const key = `${STORAGE_NAMESPACE}:form-data`;
@@ -76,7 +77,7 @@ const saveFormDataSync = (data: any): void => {
  */
 const saveDataToStorage = async (data: any): Promise<void> => {
   try {
-    const dataToSave = { ...data };
+    const dataToSave = { ...data, updatedAt: Date.now() };
 
     // Handle photo storage separately in IndexedDB (data.photo is the source)
     const photoData = dataToSave.photo;
@@ -143,6 +144,7 @@ export const useFormData = (
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const prevLangRef = useRef<string>(data.lang);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSavingOrPendingRef = useRef<boolean>(false);
   const dataRef = useRef(data);
   dataRef.current = data;
 
@@ -158,14 +160,16 @@ export const useFormData = (
     loadData();
   }, [defaultLang]);
 
-  // Cross-tab sync: when another tab changes form-data, reload to avoid state corruption
+  // Cross-tab sync: only apply if loaded data is newer (avoids overwriting active edits)
   useEffect(() => {
     const key = `${STORAGE_NAMESPACE}:form-data`;
     const handleStorageChange = async (e: StorageEvent) => {
       if (e.key === key && e.newValue) {
         try {
           const loaded = await loadSavedData(defaultLang);
-          setData(loaded);
+          setData((prev: any) =>
+            (loaded?.updatedAt ?? 0) > (prev?.updatedAt ?? 0) ? loaded : prev
+          );
         } catch (err) {
           if (import.meta.env.DEV) console.warn('Cross-tab sync load failed:', err);
         }
@@ -179,25 +183,45 @@ export const useFormData = (
   useEffect(() => {
     if (isLoading) return; // Don't save while loading
 
+    isSavingOrPendingRef.current = true;
+
     // Debounce save by 500ms to avoid excessive writes
     const timeoutId = setTimeout(() => {
-      saveDataToStorage(data).catch(err => {
-        console.error('Failed to save form data:', err);
-        onSaveError?.(err);
-      });
+      saveDataToStorage(data)
+        .catch(err => {
+          console.error('Failed to save form data:', err);
+          onSaveError?.(err);
+        })
+        .finally(() => {
+          isSavingOrPendingRef.current = false;
+        });
     }, 500);
 
     saveTimeoutRef.current = timeoutId;
 
     return () => {
-      clearTimeout(timeoutId); // Use closure value, not ref
+      clearTimeout(timeoutId);
+      // If effect cleaned up before save ran, we're no longer pending (component unmount)
+      if (saveTimeoutRef.current === timeoutId) {
+        saveTimeoutRef.current = null;
+      }
     };
   }, [data, isLoading, onSaveError]);
 
-  // Save form data on tab close/background (beforeunload unreliable on mobile; visibilitychange catches app minimize)
+  // Save form data on tab close/background; block close if IndexedDB save in progress (prevents photo loss)
   useEffect(() => {
-    const save = () => saveFormDataSync(dataRef.current);
-    const handleBeforeUnload = () => save();
+    const save = () => {
+      window.dispatchEvent(new CustomEvent(FLUSH_EVENT));
+      const merged = { ...dataRef.current, ...getPendingFormValues() };
+      saveFormDataSync(merged);
+    };
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      save();
+      if (isSavingOrPendingRef.current) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') save();
     };

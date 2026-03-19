@@ -48,7 +48,6 @@ const Parallax = ({ children }) => {
     };
 
     const handleScroll = () => {
-      updateRect();
       const scrolled = window.scrollY;
       scrollElements.forEach((layer) => {
         const speed = parseFloat(layer.getAttribute('data-scroll')) || 0.2;
