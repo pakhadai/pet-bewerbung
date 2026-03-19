@@ -3,6 +3,7 @@ import StatusItem from '../StatusItem';
 import { withFallback } from '../../utils/documentHelpers';
 import type { FormData } from '../../types/form';
 import type { DocumentVariant } from './OwnerInfo';
+import { getShowAdvancedHealthInfo } from '../../utils/getShowAdvancedHealthInfo';
 
 export interface LegalSectionProps {
   data: FormData;
@@ -26,6 +27,7 @@ interface VariantStyles {
  * Simplified for Swiss style 2026 with proper alignment
  */
 const LegalSection: React.FC<LegalSectionProps> = ({ data, t, variant = 'classic' }) => {
+  if (!getShowAdvancedHealthInfo(data)) return null;
   const getVariantStyles = (): VariantStyles => {
     switch (variant) {
       case 'classic':

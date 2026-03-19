@@ -2,6 +2,7 @@ import React from 'react';
 import { Phone, Mail, AlertCircle } from 'lucide-react';
 import type { FormData } from '../../types/form';
 import type { DocumentVariant } from './OwnerInfo';
+import { getShowAdvancedHealthInfo } from '../../utils/getShowAdvancedHealthInfo';
 
 export interface ReferenceSectionProps {
   data: FormData;
@@ -28,6 +29,7 @@ interface VariantStyles {
  * 2-column layout for better space usage on A4
  */
 const ReferenceSection: React.FC<ReferenceSectionProps> = ({ data, t, variant = 'classic' }) => {
+  if (!getShowAdvancedHealthInfo(data)) return null;
   const hasLandlordInfo = data.previousLandlordName || data.previousLandlordPhone || data.previousLandlordEmail;
   const hasEmergencyInfo = data.emergencyContactName || data.emergencyContactPhone || data.secondaryEmergencyContact;
 

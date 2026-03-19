@@ -86,7 +86,7 @@ export interface StyleOverrides {
 }
 
 export interface TranslationObject {
-  doc: {
+  doc?: {
     title: string;
     subtitle: string;
     footer: string;
@@ -98,7 +98,7 @@ export interface TranslationObject {
     sectionReference: string;
     [key: string]: string;
   };
-  labels: {
+  labels?: {
     name: string;
     address: string;
     city: string;
@@ -131,7 +131,7 @@ export interface TranslationObject {
     previousDuration: string;
     [key: string]: string;
   };
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type TemplateConfigGetter = (today: string) => TemplateConfig;

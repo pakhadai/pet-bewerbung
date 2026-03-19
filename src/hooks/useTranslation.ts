@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import type { TranslationObject } from '../types/template';
 
 const SUPPORTED_LANGS = ['de', 'fr', 'it', 'rm', 'en'] as const;
 export type Language = (typeof SUPPORTED_LANGS)[number];
@@ -6,26 +7,28 @@ export type Language = (typeof SUPPORTED_LANGS)[number];
 /**
  * Detect user's language from browser settings
  */
-const detectLang = (): string => {
+const detectLang = (): Language => {
   try {
-    const nav = (navigator && (navigator.language || (navigator as any).userLanguage) || '').slice(0, 2).toLowerCase();
-    if (SUPPORTED_LANGS.includes(nav as Language)) return nav;
+    const nav = (navigator && navigator.language ? navigator.language : '').slice(0, 2).toLowerCase();
+    const found = SUPPORTED_LANGS.find((l) => l === nav);
+    if (found) return found;
   } catch (e) {
     // ignore
   }
   return 'de';
 };
 
-const translationCache: Record<string, any> = {};
+const translationCache: Partial<Record<Language, TranslationObject>> = {};
 
 // Vite glob import - enables code-splitting per language, avoids dynamic import path issues
-const translationLoaders = import.meta.glob<{ default: Record<string, unknown> }>('../translations/*.ts');
+const translationLoaders = import.meta.glob<{ default: TranslationObject }>('../translations/*.ts');
 
 /**
  * Load translation for a language (lazy - only fetches when needed)
  */
-const loadTranslation = async (lang: Language): Promise<Record<string, unknown>> => {
-  if (translationCache[lang]) return translationCache[lang];
+const loadTranslation = async (lang: Language): Promise<TranslationObject> => {
+  const cached = translationCache[lang];
+  if (cached) return cached;
   const loader = translationLoaders[`../translations/${lang}.ts`];
   if (!loader) throw new Error(`No translation for ${lang}`);
   const module = await loader();
@@ -35,7 +38,7 @@ const loadTranslation = async (lang: Language): Promise<Record<string, unknown>>
 
 export interface UseTranslationReturn {
   /** Current translations object */
-  t: any;
+  t: TranslationObject;
   /** Current language code */
   lang: Language;
   /** Set language */
@@ -49,8 +52,8 @@ export interface UseTranslationReturn {
  * @returns Translation state and handlers
  */
 export const useTranslation = (): UseTranslationReturn => {
-  const [lang, setLangState] = useState<Language>(() => detectLang() as Language);
-  const [t, setT] = useState<any>(null);
+  const [lang, setLangState] = useState<Language>(() => detectLang());
+  const [t, setT] = useState<TranslationObject>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -70,7 +73,7 @@ export const useTranslation = (): UseTranslationReturn => {
   }, []);
 
   return {
-    t: t ?? {},
+    t,
     lang,
     setLang,
     isLoading,

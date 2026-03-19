@@ -6,19 +6,18 @@
 import { create } from 'zustand';
 import { INITIAL_DATA } from '../constants';
 import { simpleStorage } from '../utils/simpleStorage';
+import type { PetData } from '../types/form';
 
 const SAVE_DEBOUNCE_MS = 500;
 export const STORAGE_FAILED_EVENT = 'storage-failed';
 
-type FormData = Record<string, unknown>;
-
 interface FormState {
-  data: FormData;
+  data: PetData;
   isLoading: boolean;
   prevPhoto: string | null | undefined;
-  updateData: (field: string, value: unknown) => void;
-  updateMultipleData: (updates: Record<string, unknown>) => void;
-  setData: (data: FormData) => void;
+  updateData: <K extends keyof PetData>(field: K, value: PetData[K]) => void;
+  updateMultipleData: (updates: Partial<PetData>) => void;
+  setData: (data: PetData) => void;
   resetForm: () => Promise<void>;
   loadDraft: (defaultLang: string) => Promise<void>;
   saveData: () => Promise<void>;
@@ -27,9 +26,9 @@ interface FormState {
 let saveTimeoutId: ReturnType<typeof setTimeout> | null = null;
 let isSavingRef = false;
 
-const saveDraftSync = (data: FormData): void => {
+const saveDraftSync = (data: PetData): void => {
   try {
-    const { photo, hasPhotoSaved, ...rest } = data;
+    const { photo: _photo, ...rest } = data;
     simpleStorage.saveDraft({ ...rest, updatedAt: Date.now() });
   } catch {
     /* ignore */
@@ -37,10 +36,10 @@ const saveDraftSync = (data: FormData): void => {
 };
 
 const saveDraftAsync = async (
-  data: FormData,
+  data: PetData,
   prevPhoto: string | null | undefined
 ): Promise<void> => {
-  const currentPhoto = data.photo as string | null | undefined;
+  const currentPhoto = data.photo;
   if (currentPhoto !== prevPhoto) {
     await simpleStorage.savePhoto(
       currentPhoto && typeof currentPhoto === 'string' ? currentPhoto : null
@@ -76,7 +75,7 @@ export const useFormStore = create<FormState>((set, get) => ({
 
   resetForm: async () => {
     const { data } = get();
-    const currentLang = (data.lang as string) || 'de';
+    const currentLang = data.lang || 'de';
     const resetData = { ...INITIAL_DATA, lang: currentLang };
     set({ data: resetData, prevPhoto: null });
     await simpleStorage.clearAll();
@@ -86,7 +85,7 @@ export const useFormStore = create<FormState>((set, get) => ({
     set({ isLoading: true });
 
     // Isolate text and photo loading: a photo storage failure must NOT wipe text data.
-    let saved = null;
+    let saved: Partial<PetData> | null = null;
     try {
       saved = simpleStorage.loadDraft();
     } catch (e) {
@@ -100,13 +99,10 @@ export const useFormStore = create<FormState>((set, get) => ({
       if (import.meta.env.DEV) console.warn('loadDraft: failed to load photo (text draft preserved)', e);
     }
 
-    const merged: FormData = saved
-      ? { ...INITIAL_DATA, ...saved, lang: (saved.lang as string) || defaultLang }
-      : { ...INITIAL_DATA, lang: defaultLang };
-    delete merged.hasPhotoSaved;
-    merged.photo = photo;
-    merged.hasPhotoSaved = !!photo;
-    set({ data: merged, isLoading: false, prevPhoto: photo });
+    const savedLang = typeof saved?.lang === 'string' ? saved.lang : defaultLang;
+    const merged = saved ? { ...INITIAL_DATA, ...saved, lang: savedLang } : { ...INITIAL_DATA, lang: defaultLang };
+    const dataWithPhoto: PetData = { ...merged, photo, lang: savedLang };
+    set({ data: dataWithPhoto, isLoading: false, prevPhoto: photo });
   },
 
   saveData: async () => {
@@ -114,7 +110,7 @@ export const useFormStore = create<FormState>((set, get) => ({
     isSavingRef = true;
     try {
       await saveDraftAsync(data, prevPhoto);
-      set({ prevPhoto: data.photo as string | null });
+      set({ prevPhoto: data.photo });
     } catch (err) {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent(STORAGE_FAILED_EVENT));
@@ -134,7 +130,7 @@ function scheduleSave(get: () => FormState) {
     isSavingRef = true;
     try {
       await saveDraftAsync(data, prevPhoto);
-      useFormStore.setState({ prevPhoto: data.photo as string | null });
+      useFormStore.setState({ prevPhoto: data.photo });
     } catch (err) {
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent(STORAGE_FAILED_EVENT));

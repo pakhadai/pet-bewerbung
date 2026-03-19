@@ -1,24 +1,29 @@
 /**
  * Step2HealthInsurance - Vet, insurance, behavior, references
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ShieldCheck, ExternalLink } from 'lucide-react';
 import Label from '../Label';
 import Input from '../Input';
 import { useWizardContext } from '../../context/WizardContext';
 import { useFormStore } from '../../stores/formStore';
 import type { FormData } from '../../types/form';
+import { getShowAdvancedHealthInfo } from '../../utils/getShowAdvancedHealthInfo';
 
 const INSURANCE_AFFILIATE_LINK = import.meta.env.VITE_INSURANCE_AFFILIATE_LINK || '';
 
 const Step2HealthInsurance: React.FC = () => {
   const data = useFormStore((s) => s.data) as FormData;
   const updateData = useFormStore((s) => s.updateData);
-  const updateMultipleData = useFormStore((s) => s.updateMultipleData);
   const { t, animDir, darkMode } = useWizardContext();
-  const [showMore, setShowMore] = useState(
-    !!(data.insuranceProvider || data.chipId || data.medicalConditions || data.previousLandlordName || data.emergencyContactName)
-  );
+  const [showMore, setShowMore] = useState<boolean>(() => getShowAdvancedHealthInfo(data));
+
+  // Backward compatibility for drafts created before the toggle existed.
+  useEffect(() => {
+    if (typeof data.showAdvancedHealthInfo !== 'boolean') {
+      updateData('showAdvancedHealthInfo', showMore);
+    }
+  }, [data.showAdvancedHealthInfo, showMore, updateData]);
 
   const cardCl = darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300';
   const titleCl = darkMode ? 'text-white' : 'text-text-main';
@@ -70,26 +75,9 @@ const Step2HealthInsurance: React.FC = () => {
               role="switch"
               aria-checked={showMore}
               onClick={() => {
-                if (showMore) {
-                  updateMultipleData({
-                    insuranceProvider: '',
-                    chipId: '',
-                    noiseLevel: 'low',
-                    aloneTime: '',
-                    activeHours: '',
-                    behaviorWithChildren: '',
-                    behaviorWithPets: '',
-                    previousLandlordName: '',
-                    previousLandlordPhone: '',
-                    previousLandlordEmail: '',
-                    previousDuration: '',
-                    emergencyContactName: '',
-                    emergencyContactRelation: '',
-                    emergencyContactPhone: '',
-                    medicalConditions: '',
-                  });
-                }
-                setShowMore(!showMore);
+                const next = !showMore;
+                updateData('showAdvancedHealthInfo', next);
+                setShowMore(next);
               }}
               className={`relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 hand-drawn-border transition-colors ${
                 showMore ? 'bg-primary border-primary' : darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-400'

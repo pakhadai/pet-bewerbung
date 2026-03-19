@@ -71,6 +71,9 @@ export interface PetData {
   // Extra
   willingToPayDeposit?: boolean;
 
+  // Step 2: advanced health info visibility toggle (controls HTML preview + PDF blocks)
+  showAdvancedHealthInfo?: boolean;
+
   // Metadata
   lang: Language;
   createdAt?: string;

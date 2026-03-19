@@ -5,9 +5,10 @@
  * so only the active step re-renders on keystrokes — not Header / Footer / nav.
  */
 import React, { createContext, useContext, ReactNode, useMemo } from 'react';
+import type { TranslationObject } from '../types/template';
 
 export interface WizardContextValue {
-  t: any;
+  t: TranslationObject;
   darkMode: boolean;
   step: number;
   animDir: 'left' | 'right';

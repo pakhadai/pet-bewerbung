@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import type { PetData, TemplateType } from '../types/form';
 import { toJpegDataUrl } from '../utils/imageCompression';
 import { blobUrlToDataUrl } from '../utils/pdfHelpers';
 import { generateQrDataUrl, getQrContent } from '../utils/qrCode';
@@ -132,7 +133,7 @@ export async function fetchLogoAsDataUrl(): Promise<string | null> {
 /**
  * Prepare form data for PDF (photo conversion: blob→dataURL, webp→jpeg)
  */
-export async function preparePdfData(data: Record<string, any>): Promise<Record<string, any>> {
+export async function preparePdfData(data: PetData): Promise<PetData> {
   if (!data.photo || typeof data.photo !== 'string') {
     return { ...data };
   }
@@ -158,8 +159,8 @@ export async function preparePdfData(data: Record<string, any>): Promise<Record<
  * @param pdfT - Translations from buildPdfTranslations
  */
 export async function generatePdfBlob(
-  data: Record<string, any>,
-  templateType: string,
+  data: PetData,
+  templateType: TemplateType,
   pdfT: PdfTranslations
 ): Promise<Blob> {
   const logoUrl = (await fetchLogoAsDataUrl()) || undefined;

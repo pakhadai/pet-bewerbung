@@ -38,6 +38,7 @@ export const INITIAL_DATA: FormData & Record<string, unknown> = {
   emergencyContactRelation: '',
   secondaryEmergencyContact: '',
   willingToPayDeposit: true,
+  showAdvancedHealthInfo: false,
   behaviorWithChildren: '',
   behaviorWithPets: '',
 };

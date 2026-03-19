@@ -4,6 +4,7 @@
  */
 
 import { get, set, del } from 'idb-keyval';
+import type { PetData } from '../types/form';
 
 const DRAFT_KEY = 'pet_cv_draft';
 const PHOTO_KEY = 'pet_cv_photo';
@@ -21,10 +22,10 @@ export const simpleStorage = {
     }
   },
 
-  loadDraft(): Record<string, unknown> | null {
+  loadDraft(): Partial<PetData> | null {
     try {
       const raw = sessionStorage.getItem(DRAFT_KEY);
-      return raw ? JSON.parse(raw) : null;
+      return raw ? (JSON.parse(raw) as Partial<PetData>) : null;
     } catch {
       return null;
     }

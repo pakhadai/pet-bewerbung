@@ -1,6 +1,10 @@
 import QRCode from 'qrcode';
 
-export function buildVCard(data: Record<string, unknown>): string {
+import type { PetData } from '../types/form';
+
+type QrDataInput = Partial<PetData>;
+
+export function buildVCard(data: QrDataInput): string {
   const name = String(data?.ownerName || '').trim();
   const email = String(data?.email || '').trim();
   const phone = String(data?.phone || '').trim().replace(/\s/g, '');
@@ -54,7 +58,7 @@ export async function generateQrDataUrl(content: string, options: QrOptions = {}
   }
 }
 
-export function getQrContent(data: Record<string, unknown>): string | null {
+export function getQrContent(data: QrDataInput): string | null {
   const hasContact = data?.ownerName || data?.email || data?.phone;
   if (!hasContact) return null;
   return buildVCard(data);

@@ -3,6 +3,7 @@ import { Clock, Volume2 } from 'lucide-react';
 import { withFallback } from '../../utils/documentHelpers';
 import type { FormData } from '../../types/form';
 import type { DocumentVariant } from './OwnerInfo';
+import { getShowAdvancedHealthInfo } from '../../utils/getShowAdvancedHealthInfo';
 
 export interface BehaviorSectionProps {
   data: FormData;
@@ -31,6 +32,7 @@ interface VariantStyles {
  * Simplified for Swiss style 2026
  */
 const BehaviorSection: React.FC<BehaviorSectionProps> = ({ data, t, variant = 'classic' }) => {
+  if (!getShowAdvancedHealthInfo(data)) return null;
   const getVariantStyles = (): VariantStyles => {
     switch (variant) {
       case 'classic':
