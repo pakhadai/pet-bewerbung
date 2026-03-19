@@ -7,7 +7,58 @@ import React from 'react';
  */
 const GlobalStyles: React.FC = () => (
   <style>{`
-    /* GDPR-compliant: Using system fonts instead of Google Fonts CDN */
+    /* Self-hosted fonts (privacy by design) */
+    /* Self-hosted fonts (privacy by design): loaded from /public/fonts */
+    @font-face {
+      font-family: 'Amatic SC';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/TUZyzwprpvBS1izr_vO0DQ.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Amatic SC';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('/fonts/TUZ3zwprpvBS1izr_vOMscG6eQ.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Quicksand';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkP8o18E.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Quicksand';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkM0o18E.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Quicksand';
+      font-style: normal;
+      font-weight: 600;
+      font-display: swap;
+      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkCEv18E.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Quicksand';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkBgv18E.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Material Symbols Outlined';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/kJF1BvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzByHX9rA6RzaxHMPdY43zj-jCxv3fzvRNU22ZXGJpEpjC_1v-p_4MrImHCIJIZrDCvHOem.ttf') format('truetype');
+    }
+
     /* To use Inter locally, download from https://rsms.me/inter/ and uncomment below: */
     /*
     @font-face {
@@ -118,6 +169,21 @@ const GlobalStyles: React.FC = () => (
       font-family: "Quicksand", system-ui, -apple-system, "Segoe UI", sans-serif;
       color: var(--text);
       transition: background 300ms, color 300ms;
+    }
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-style: normal;
+      font-weight: 400;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     /* Theme-aware utility classes */
