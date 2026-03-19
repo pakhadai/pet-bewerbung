@@ -113,10 +113,10 @@ const PrivacyContent: React.FC<ImpressumContentProps> = ({ t }) => {
       </section>
 
       <section>
-        <h3 className="font-semibold text-base mb-2">{legal?.aiProcessing || 'Text Generation / Textgenerierung'}</h3>
+        <h3 className="font-semibold text-base mb-2">{legal?.textGeneration || 'Automatic text generation / Automatische Textgenerierung'}</h3>
         <p className="theme-text-muted">
-          {legal?.aiProcessingText ||
-            'Text generation is done entirely in your browser using template-based logic. No data is sent to any server. Your pet dossier is created locally on your device.'}
+          {legal?.textGenerationText ||
+            'Automatic text generation is done entirely in your browser using template-based logic. No data is sent to any server. Your pet dossier is created locally on your device.'}
         </p>
       </section>
 

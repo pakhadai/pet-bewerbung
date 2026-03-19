@@ -55,7 +55,7 @@ const Step3Description: React.FC<Step3DescriptionProps> = ({ onGenerate }) => {
 
           <div className="flex flex-col gap-2">
             <label htmlFor="pet-keywords" className={`text-sm font-medium ${mutedCl}`}>
-              {t?.labels?.aiPrompt ?? 'Stichworte (z.B. ruhig, stubenrein)'}
+              {t?.labels?.autoTextPrompt ?? 'Keywords (e.g. quiet, clean)'}
             </label>
             <FormInput
               id="pet-keywords"
@@ -77,7 +77,7 @@ const Step3Description: React.FC<Step3DescriptionProps> = ({ onGenerate }) => {
             >
               <span className="flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined text-2xl">edit_note</span>
-                {t?.labels?.aiGenerateBtn ?? 'Text automatisch generieren'}
+                {t?.labels?.autoGenerateTextBtn ?? 'Automatic text generation'}
               </span>
             </button>
 

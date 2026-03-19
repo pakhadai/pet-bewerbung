@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "cun in Pet CV.",
     heroSub: "In servetsch divertent per surprender voss patrun e s'extrar da la concurrenza. Creei in dossier professiunal per voss animal cun tut las infurmaziuns impurtantas – quai pudess augmentar vossas chanzas dad obtegnair in affit cun voss amit a quatter peis.",
     cta: "Crear Pet CV",
-    trust: "Cumenzar gratuit • Senza registraziun",
+    trust: "100% Gratuit • Nagina registraziun",
     features: [
       { title: "S'extrar", desc: "Surprender ils patruns cun in Pet CV unic e professiunal." },
       { title: "Infurmaziuns cumplettas", desc: "Preschentar tut ils detagls impurtants davart voss animal in in'egliada." },
@@ -54,11 +54,8 @@ export default {
     preview: "Prevista",
     previewMode: "Modus Prevista",
     cancel: "Annullar",
-    pay: "Pajar",
     loading: "Chargia…",
     error: "Errur",
-    emailComingSoon: "Funcziun email vegn agiuntada en cuort",
-    emailInDevelopment: "Funcziun email en svilup",
     freeSuccess: "Grazia! Buns Succès tar tschertgar.",
     insuranceInfoDog: "Per chauns èn AMICUS e l'assicuranza da responsabladad savens obligatoris en Svizra.",
     insuranceInfoCat: "Era per gliats vegn in'assicuranza savens recumandada (donns da locaziun).",
@@ -110,16 +107,14 @@ export default {
     vaccination: "Vaccinà",
     registration: "Registrà (AMICUS/ANIS)",
     willingToPayDeposit: "Pront da pajar ina cauziun per animals",
-    aiPrompt: "Pleds-clav (p.ex. quiets, net)",
+    autoTextPrompt: "Pleds-clav (p.ex. quiets, net)",
     langChangeKeepText: "Text restà. Regenerar sche basegn per la nova lingua.",
     tellUsAboutPet: "Racontai da vies animal",
     descriptionHint: "Persunalitad, gieus preferids u pitschnas manias.",
     descriptionPlaceholder: "Buddy è in Golden Retriever viv da char che amescha las carezzas e suandar squerrs...",
-    aiGenerateBtn: "Generar text automaticamain (model)",
+    autoGenerateTextBtn: "Generar text automaticamain (model)",
     localPrivacy: "Generaziun locala • Sfera privata",
     generating: "Generaziun...",
-    aiBtn: "Generar text",
-    aiResult: "Text per il locatari",
     recrop: "Cropir maletg",
     useFullImage: "Utilisar maletg entir",
     cropDone: "Cropir",
@@ -213,8 +208,8 @@ export default {
     privacyIntroText: "Nus prendain la protecziun da vossas datas persunalas serius.",
     dataCollection: "Collecziun da datas",
     dataCollectionText: "Tuttas datas che vus dais vegnan elavuradas exclusivamain en voss navigatur. Naginas datas persunalas vegnan transmessas u memorisadas sin noss servers. La generaziun da PDF e text succeda cumplettamain offline sin voss apparat.",
-    aiProcessing: "Generaziun da text",
-    aiProcessingText: "La generaziun da text succeda cumplettamain local en voss navigatur. Naginas datas vegnan tramessas a servers u terzs.",
+    textGeneration: "Generaziun automatica dal text",
+    textGenerationText: "La generaziun automatica dal text succeda cumplettamain local en voss navigatur. Naginas datas vegnan tramessas a servers u terzs.",
     thirdParty: "Servetschs da terzs",
     fontsText: "Nus utilisain scrittiras localas per evitar transferiments da datas a servers da Google.",
     cookies: "Cookies",
@@ -247,7 +242,7 @@ export default {
     donate: "Sustegn"
   },
   hero: {
-    badge: "Cumenzar gratuit • Nagina registraziun",
+    badge: "100% Gratuit • Nagina registraziun",
     title: "Creatur CV per Animals",
     privacyTitle: "Scut da Protecziun da Datas",
     privacyDesc: "Vossas datas na vegnan mai memorisadas. Tut succeda en voss navigatur.",
@@ -260,7 +255,7 @@ export default {
     transparencyBadge1: "Datas localas",
     transparencyBadge2: "Senza reclama",
     transparencyBadge3: "100% gratuit",
-    freeFeatures: ["3 models", "Generaziun IA", "Download PDF", "ZIP cun tut ils designs"]
+    freeFeatures: ["3 models", "Generaziun automatica dal text", "Download PDF", "ZIP cun tut ils designs"]
   },
   step1Details: {
     ownerSection: "Infurmaziuns proprietari",
@@ -296,7 +291,7 @@ export default {
     },
     step2: {
       title: "Descripziun",
-      subtitle: "Caracter e text IA"
+      subtitle: "Caracter e text automatic"
     },
     step3: {
       title: "Foto e design",
@@ -331,12 +326,15 @@ export default {
     categories: { all: "Tut", general: "General", privacy: "Protecziun da datas", cost: "Custs", tips: "Cussegls per tschertgar" },
     items: [
       { id: "q1", category: "general", q: "Garantescha quest dossier in'acceptaziun?", a: "Na, nagina garantia. Ma in dossier professiunal mussa al patrun che Vus prendais responsabilitad (assicuranza, educaziun). En Svizra tschernan patruns savens il candidat cun il pli pitschen risc." },
-      { id: "q2", category: "privacy", q: "Nua vegnan memorisadas mias datas?", a: "Da nagin lieu sin noss servers. Nus duvrain tecnologia 'Local-First'. Tut las datas vegnan elaboradas be en la memoria temporara da Voss navigatur." },
-      { id: "q3", category: "cost", q: "Quant costa il servetsch?", a: "Il servetsch è cumplettamain gratuit. Vus survegnis 3 models (Classic, Modern, Compact) e pudais quels telechargiar sco PDF u ZIP." },
-      { id: "q4", category: "cost", q: "Tge è inclus?", a: "Tut ils 3 designs, generaziun automatica dal text e download PDF e ZIP." },
-      { id: "q6", category: "privacy", q: "Bandunan mias datas mes apparat?", a: "Na. Tut succeda local en voss navigatur (Local-First). La generaziun da text e PDF na basegna nagins servers." },
-      { id: "q7", category: "tips", q: "Tge assicuranzas èn impurtantas en Svizra?", a: "Per possessurs da chauns è ina assicuranza da responsabilitad privata cun cuvertura per donns da locatar essenziala. Savens è er la prova da registraziun AMICUS pretendida." },
-      { id: "q8", category: "general", q: "Poss jau modifitgar il dossier pli tard?", a: "Fin che Vus na serrais betg il navigatur, restan las datas. Suenter serrar ston Vus crear in nov dossier." }
+      { id: "q2", category: "privacy", q: "Nua vegnan memorisadas mias datas, e bandunan ellas miu apparat?", a: "Da nagin lieu sin noss servers. Cun 'Local-First' succeda tut mo en voss navigatur. Suenter che Vus telechargià il PDF e serrai la pagina, las datas vegnan stizzadas." },
+      { id: "q3", category: "cost", q: "Quant costa il servetsch?", a: "Il servetsch è cumplettamain gratuit. Vus survegnis 3 models (Classic, Modern, Compact) e pudais telechargiar els sco PDF (e ZIP sin desktop)." },
+      { id: "q4", category: "cost", q: "Tge è inclus?", a: "Tut ils 3 designs, generaziun automatica dal text, download PDF e download ZIP sin desktop." },
+      { id: "q5", category: "privacy", q: "Cura vegn creada la descripziun? Legian servetschs extèrns mias datas?", a: "La descripziun vegn creada automaticamain en voss navigatur tras logica da templates. Nus duvrain betg servetschs extèrns da generaziun da text; las datas vegnan mai tramessas a terzs." },
+      { id: "q6", category: "tips", q: "Pertge na po jau betg telechargiar ZIP sin il miu telefon?", a: "La creaziun da plirs PDF a medem temp pretenda blera memoria. Per evitar crashs dal navigatur (OOM), nus disactivain ZIP sin apparats mobiles." },
+      { id: "q7", category: "privacy", q: "È il telechargiar da mia foto segir?", a: "Igen. La foto vegn elavurada e cumpressada localmain sin voss apparat avant ch'ella vegn integrada en il PDF. Ella na vegn betg tramessa a servetschs." },
+      { id: "q8", category: "tips", q: "Tge assicuranzas èn impurtantas en Svizra?", a: "Per possessurs da chauns è ina assicuranza da responsabilitad privata cun cuvertura per donns da locatar essenziala. Savens è er la prova da registraziun AMICUS pretendida." },
+      { id: "q9", category: "general", q: "Poss jau modifitgar il dossier pli tard?", a: "Fin che Vus na serrais betg il navigatur, restan las datas. Suenter serrar ston Vus crear in nov dossier." },
+      { id: "q10", category: "general", q: "Ston jau suttascriver il Pet CV?", a: "Ina suttascripziun n'è betg obligatorica giuridicamain. Nus recumandain dentant da stampar il PDF e suttascriver quel sez (u d'udir ina suttascripziun scannada/digitall) per rinforzar la fidaivladad." }
     ],
     footerHint: "Dumondas davart il servetsch? Visitar pet-bewerbung.ch"
   }

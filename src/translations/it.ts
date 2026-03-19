@@ -7,7 +7,7 @@ export default {
     heroTitleSuffix: "con un Pet CV.",
     heroSub: "Un servizio divertente per sorprendere il tuo proprietario e distinguerti dalla concorrenza. Crea un dossier professionale per il tuo animale con tutte le informazioni importanti – potrebbe aumentare le tue possibilità di ottenere un affitto con il tuo amico a quattro zampe.",
     cta: "Crea Pet CV",
-    trust: "Inizia gratis • Senza registrazione",
+    trust: "100% Gratuito • Nessuna registrazione",
     features: [
       { title: "Distinguiti", desc: "Sorprendi i proprietari con un Pet CV unico e professionale." },
       { title: "Informazioni complete", desc: "Presenta tutti i dettagli importanti sul tuo animale a colpo d'occhio." },
@@ -54,11 +54,8 @@ export default {
     preview: "Anteprima",
     previewMode: "Modalità Anteprima",
     cancel: "Annulla",
-    pay: "Paga",
     loading: "Caricamento…",
     error: "Errore",
-    emailComingSoon: "Funzione email verrà aggiunta presto",
-    emailInDevelopment: "Funzione email in sviluppo",
     freeSuccess: "Grazie! Buona fortuna con la ricerca.",
     insuranceInfoDog: "Per i cani, AMICUS e l'assicurazione di responsabilità civile sono spesso obbligatori in Svizzera.",
     insuranceInfoCat: "Anche per i gatti, un'assicurazione è spesso consigliata (danni locativi).",
@@ -110,16 +107,14 @@ export default {
     vaccination: "Vaccinato",
     registration: "Registrato (AMICUS/ANIS)",
     willingToPayDeposit: "Disposto a pagare un deposito per animali",
-    aiPrompt: "Parole chiave (es. tranquillo, pulito)",
+    autoTextPrompt: "Parole chiave (es. tranquillo, pulito)",
     langChangeKeepText: "Testo conservato. Rigenerare se necessario per la nuova lingua.",
     tellUsAboutPet: "Raccontaci del tuo animale",
     descriptionHint: "Personalità, giochi preferiti o piccole manie.",
     descriptionPlaceholder: "Buddy è un Golden Retriever vivace che ama le coccole e rincorrere gli scoiattoli...",
-    aiGenerateBtn: "Genera testo automaticamente (modello)",
+    autoGenerateTextBtn: "Genera testo automaticamente (modello)",
     localPrivacy: "Generazione locale • Privacy",
     generating: "Generazione in corso...",
-    aiBtn: "Generare testo",
-    aiResult: "Testo per il proprietario",
     recrop: "Ritaglia immagine",
     useFullImage: "Usa immagine intera",
     cropDone: "Ritaglia",
@@ -213,8 +208,8 @@ export default {
     privacyIntroText: "Prendiamo seriamente la protezione dei vostri dati personali. Questa policy spiega come gestiamo le vostre informazioni.",
     dataCollection: "Raccolta dati",
     dataCollectionText: "Tutti i dati inseriti vengono elaborati esclusivamente nel vostro browser. Nessun dato personale viene trasmesso o memorizzato sui nostri server. La generazione PDF e testo avviene interamente offline sul vostro dispositivo.",
-    aiProcessing: "Generazione testo",
-    aiProcessingText: "La generazione del testo avviene interamente in locale nel vostro browser. Nessun dato viene inviato a server o terzi.",
+    textGeneration: "Generazione automatica del testo",
+    textGenerationText: "La generazione automatica del testo avviene interamente in locale nel vostro browser. Nessun dato viene inviato a server o terzi.",
     thirdParty: "Servizi di terze parti",
     fontsText: "Utilizziamo font ospitati localmente per evitare il trasferimento di dati ai server Google.",
     cookies: "Cookie",
@@ -247,7 +242,7 @@ export default {
     donate: "Sostieni"
   },
   hero: {
-    badge: "Inizio gratuito • Nessuna registrazione",
+    badge: "100% Gratuito • Nessuna registrazione",
     title: "Creatore CV per Animali",
     privacyTitle: "Scudo Privacy Dati",
     privacyDesc: "I tuoi dati non vengono mai memorizzati. Tutto avviene nel tuo browser.",
@@ -261,7 +256,7 @@ export default {
     transparencyBadge1: "Dati locali",
     transparencyBadge2: "Niente annunci",
     transparencyBadge3: "100% gratuito",
-    freeFeatures: ["3 modelli", "Generazione IA", "Download PDF", "ZIP con tutti i design"]
+    freeFeatures: ["3 modelli", "Generazione automatica del testo", "Download PDF", "ZIP con tutti i design"]
   },
   step1Details: {
     ownerSection: "Informazioni proprietario",
@@ -297,7 +292,7 @@ export default {
     },
     step2: {
       title: "Descrizione",
-      subtitle: "Carattere e testo IA"
+      subtitle: "Carattere e testo automatico"
     },
     step3: {
       title: "Foto e design",
@@ -332,12 +327,15 @@ export default {
     categories: { all: "Tutti", general: "Generale", privacy: "Privacy & Sicurezza", cost: "Costi", tips: "Consigli per la ricerca" },
     items: [
       { id: "q1", category: "general", q: "Questo dossier garantisce che otterrò l'appartamento?", a: "No, non c'è garanzia. Ma un dossier professionale mostra al proprietario che ti assumi le responsabilità (assicurazione, addestramento). In Svizzera i proprietari scelgono spesso il candidato a minor rischio – questo documento minimizza le preoccupazioni." },
-      { id: "q2", category: "privacy", q: "Dove vengono memorizzati i miei dati?", a: "Da nessuna parte sui nostri server. Usiamo tecnologia 'Local-First'. Tutti i dati vengono elaborati solo nella memoria temporanea del browser. Una volta scaricato il PDF e chiusa la scheda, i dati spariscono." },
-      { id: "q3", category: "cost", q: "Quanto costa il servizio?", a: "Il servizio è completamente gratuito. Ottieni 3 modelli (Classic, Modern, Compact) e puoi scaricarli come PDF o ZIP." },
-      { id: "q4", category: "cost", q: "Cosa è incluso?", a: "I 3 design, generazione automatica del testo e download PDF e ZIP." },
-      { id: "q6", category: "privacy", q: "I miei dati lasciano il mio dispositivo?", a: "No. Tutto avviene localmente nel browser (Local-First). La generazione di testo e PDF non richiede server." },
-      { id: "q7", category: "tips", q: "Quali assicurazioni sono importanti in Svizzera?", a: "Per i proprietari di cani è essenziale un'assicurazione di responsabilità civile privata con copertura per danni da affitto. Spesso è richiesta anche la prova di registrazione AMICUS." },
-      { id: "q8", category: "general", q: "Posso modificare il dossier in seguito?", a: "Finché non chiudi il browser, i dati restano. Dopo la chiusura devi creare un nuovo dossier." }
+      { id: "q2", category: "privacy", q: "Dove vengono memorizzati i miei dati, e lasciano il mio dispositivo?", a: "Da nessuna parte sui nostri server. Con 'Local-First', tutti i tuoi dati (nomi, foto, indirizzi) vengono elaborati solo nel browser. Una volta scaricato il PDF e chiusa la scheda, i dati spariscono." },
+      { id: "q3", category: "cost", q: "Quanto costa il servizio?", a: "Il servizio è completamente gratuito. Ottieni 3 modelli (Classic, Modern, Compact) e puoi scaricarli come PDF (e ZIP su desktop)." },
+      { id: "q4", category: "cost", q: "Cosa è incluso?", a: "I 3 design, generazione automatica del testo, download PDF e download ZIP su desktop." },
+      { id: "q5", category: "privacy", q: "Come viene creata la descrizione? Alcuni servizi esterni leggono i miei dati?", a: "La descrizione viene creata automaticamente nel tuo browser usando logica basata su modelli. Non utilizziamo servizi esterni per la generazione del testo, quindi i tuoi dati non vengono inviati a terze parti." },
+      { id: "q6", category: "tips", q: "Perché non posso scaricare ZIP sul mio telefono?", a: "Creare più PDF contemporaneamente richiede molta memoria. Per mantenere l'app stabile ed evitare crash del browser (OOM), gli ZIP sono disattivati sui dispositivi mobili." },
+      { id: "q7", category: "privacy", q: "Caricare la mia foto è sicuro?", a: "Sì. La tua foto viene elaborata e compressa localmente sul tuo dispositivo prima di essere incorporata nel PDF. Non viene caricata su alcun server." },
+      { id: "q8", category: "tips", q: "Quali assicurazioni sono importanti in Svizzera?", a: "Per i proprietari di cani è essenziale un'assicurazione di responsabilità civile privata con copertura per danni da affitto. Spesso è richiesta anche la prova di registrazione AMICUS." },
+      { id: "q9", category: "general", q: "Posso modificare il dossier in seguito?", a: "Finché non chiudi il browser o non ricarichi la pagina, i dati restano. Dopo la chiusura devi creare un nuovo dossier." },
+      { id: "q10", category: "general", q: "Devo firmare il Pet CV?", a: "La firma non è obbligatoria per il servizio. Tuttavia, consigliamo di stampare e firmare il PDF da soli (oppure aggiungere una firma scansionata/digitale) per aumentare la fiducia del proprietario." }
     ],
     footerHint: "Domande sul servizio? Visita pet-bewerbung.ch"
   }
