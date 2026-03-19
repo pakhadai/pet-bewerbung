@@ -18,7 +18,6 @@ export type { UseToastReturn, Toast, ToastType } from './useToast';
 export { useTemplateSelection } from './useTemplateSelection';
 export type { UseTemplateSelectionReturn } from './useTemplateSelection';
 
-export { useScrollVisibility } from './useScrollVisibility';
 
 export { useFormValidation, validateStep } from './useFormValidation';
 export type { FormValidationResult, FormValidationErrors } from './useFormValidation';

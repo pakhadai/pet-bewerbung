@@ -12,8 +12,12 @@ import { downloadPdf, downloadAllTemplatesAsZip } from '../services/exportServic
 import { useTranslationContext, useToastContext } from '../context/WizardProviders';
 import { useFormStore } from '../stores/formStore';
 
+const selectData = (s: ReturnType<typeof useFormStore.getState>) => s.data;
+const selectUpdateData = (s: ReturnType<typeof useFormStore.getState>) => s.updateData;
+
 const AppContent: React.FC = () => {
-  const { data, updateData } = useFormStore();
+  const data = useFormStore(selectData);
+  const updateData = useFormStore(selectUpdateData);
   const { t } = useTranslationContext();
   const { showToast } = useToastContext();
   const prevLangRef = useRef(data.lang);

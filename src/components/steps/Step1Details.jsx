@@ -21,9 +21,9 @@ const Step1Details = React.memo(() => {
   const [touched, setTouched] = useState({});
   const markTouched = useCallback((field) => setTouched((prev) => ({ ...prev, [field]: true })), []);
   const petTypes = [
-    { id: 'dog', label: t.labels.dog, icon: Dog },
-    { id: 'cat', label: t.labels.cat, icon: Cat },
-    { id: 'other', label: t.labels.other, icon: Bird }
+    { id: 'dog', label: t?.labels?.dog ?? 'Hund', icon: Dog },
+    { id: 'cat', label: t?.labels?.cat ?? 'Katze', icon: Cat },
+    { id: 'other', label: t?.labels?.other ?? 'Anderes', icon: Bird }
   ];
 
   const cardCl = darkMode

@@ -2,7 +2,7 @@
  * Step5TemplateSelect.jsx
  * Template selection - 3 free templates
  */
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Palette } from 'lucide-react';
 import { TEMPLATE_OPTIONS } from '../../constants';
 import { useWizardContext } from '../../context/WizardContext';
@@ -27,18 +27,8 @@ const Step5TemplateSelect = React.memo(({
   showToast,
 }) => {
   const { data, t, animDir, darkMode } = useWizardContext();
-  const [visibleTemplates, setVisibleTemplates] = useState([]);
-
-  useEffect(() => {
-    let m = true;
-    const load = async () => {
-      if (m) setVisibleTemplates(TEMPLATE_OPTIONS.slice(0, 2).map(x => x.id));
-      await new Promise(r => setTimeout(r, 100));
-      if (m) setVisibleTemplates(TEMPLATE_OPTIONS.map(x => x.id));
-    };
-    load();
-    return () => { m = false; };
-  }, []);
+  // All templates render immediately; Suspense handles per-card loading state.
+  const visibleTemplates = TEMPLATE_OPTIONS.map(x => x.id);
 
   const textMain = darkMode ? 'text-white' : 'text-text-main';
   const textMuted = darkMode ? 'text-gray-400' : 'text-text-secondary';

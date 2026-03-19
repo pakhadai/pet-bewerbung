@@ -3,7 +3,7 @@
  * Form data: Zustand store (useFormStore) - no Context.
  */
 
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect, useRef } from 'react';
 import {
   useTranslation,
   useWizardNavigation,
@@ -55,9 +55,14 @@ export const WizardProviders: React.FC<{ children: ReactNode }> = ({ children })
   const wizardNav = useWizardNavigation();
   const theme = useTheme();
 
+  // Load draft only once on mount - lang is passed so initial data has correct lang fallback.
+  // Do NOT re-load on lang change: that would overwrite unsaved form state.
+  const hasLoadedRef = useRef(false);
   useEffect(() => {
+    if (hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
     useFormStore.getState().loadDraft(translation.lang);
-  }, [translation.lang]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const handler = () => {

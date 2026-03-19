@@ -11,6 +11,7 @@ const FormInput = React.forwardRef(({ value = '', onChange, ...rest }, ref) => {
   const [localValue, setLocalValue] = useState(value);
   const lastSentRef = useRef(value);
   const localValueRef = useRef(localValue);
+  const mountedRef = useRef(true);
   localValueRef.current = localValue;
 
   useEffect(() => {
@@ -40,13 +41,18 @@ const FormInput = React.forwardRef(({ value = '', onChange, ...rest }, ref) => {
     rest.onBlur?.(e);
   };
 
-  // Flush pending value on unmount (prevents data loss when user clicks "Next" before debounce)
-  useEffect(() => () => {
-    const v = localValueRef.current;
-    if (v !== lastSentRef.current && onChange) {
-      lastSentRef.current = v;
-      onChange(v);
-    }
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      // Flush pending value on unmount (prevents data loss when user clicks "Next" before debounce fires).
+      // Uses React.startTransition so the update is deferred and won't conflict with the unmount cycle.
+      const v = localValueRef.current;
+      if (v !== lastSentRef.current && onChange) {
+        lastSentRef.current = v;
+        React.startTransition(() => onChange(v));
+      }
+    };
   }, [onChange]);
 
   return (

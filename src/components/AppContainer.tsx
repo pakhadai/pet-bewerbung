@@ -22,6 +22,12 @@ import {
   useToastContext,
 } from '../context/WizardProviders';
 import { useFormStore } from '../stores/formStore';
+
+// Granular selectors - AppContainer re-renders only when these specific slices change.
+// Avoids full re-render on every debounced form update.
+const selectData = (s: ReturnType<typeof useFormStore.getState>) => s.data;
+const selectUpdateData = (s: ReturnType<typeof useFormStore.getState>) => s.updateData;
+const selectResetForm = (s: ReturnType<typeof useFormStore.getState>) => s.resetForm;
 import { useTemplateSelection, useFormValidation, validateStep } from '../hooks';
 import WizardRoute from '../routes/WizardRoute';
 import HeroRoute from '../routes/HeroRoute';
@@ -44,7 +50,9 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   onDownloadAllTemplates,
   onGenerateText,
 }) => {
-  const { data, updateData, resetForm } = useFormStore();
+  const data = useFormStore(selectData);
+  const updateData = useFormStore(selectUpdateData);
+  const resetForm = useFormStore(selectResetForm);
   const { t, lang, setLang } = useTranslationContext();
   const { step, animDir, goToStep } = useWizardNavigationContext();
   const { darkMode, setDarkMode, toggleTheme } = useThemeContext();
