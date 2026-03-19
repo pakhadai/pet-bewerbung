@@ -11,6 +11,8 @@ const FormInput = React.memo(({ value = '', onChange, ...rest }) => {
   const [localValue, setLocalValue] = useState(value);
   const debounceRef = useRef(null);
   const lastSentRef = useRef(value);
+  const localValueRef = useRef(localValue);
+  localValueRef.current = localValue;
 
   useEffect(() => {
     if (value !== localValue && value !== lastSentRef.current) {
@@ -51,9 +53,14 @@ const FormInput = React.memo(({ value = '', onChange, ...rest }) => {
     rest.onBlur?.(e);
   };
 
+  // Flush pending debounced value on unmount (prevents data loss when user clicks "Next" before debounce fires)
   useEffect(() => () => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-  }, []);
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+      flushToParent(localValueRef.current);
+    }
+  }, [flushToParent]);
 
   const { onBlur: _ob, ...inputRest } = rest;
   return (

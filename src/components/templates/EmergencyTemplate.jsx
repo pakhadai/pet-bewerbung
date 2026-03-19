@@ -56,7 +56,6 @@ const getActivityBars = (aloneTime) => {
 };
 
 const EmergencyTemplate = ({ data, t, customColors, config, styleOverrides }) => {
-  const hiddenSections = []; // Layout customization removed (premium no longer exists)
   const primaryColor = customColors?.primary || config?.primaryColor || '#13ec5b';
 
   const noise = getNoiseLevelBars(data.noiseLevel);
@@ -69,7 +68,7 @@ const EmergencyTemplate = ({ data, t, customColors, config, styleOverrides }) =>
         {/* Left Column: Pet Photo & Name (4 columns) */}
         <div className="col-span-4 flex flex-col gap-3">
           {/* Pet Photo */}
-          {!hiddenSections.includes('photo') && (
+          {(
             <div className="relative aspect-square w-full rounded-lg overflow-hidden border-4 border-black shadow-lg">
               {data.photo ? (
                 <img src={data.photo} className="w-full h-full object-cover" alt="" />
@@ -82,7 +81,7 @@ const EmergencyTemplate = ({ data, t, customColors, config, styleOverrides }) =>
           )}
 
           {/* Pet Name & Basic Info */}
-          {!hiddenSections.includes('details') && (
+          {(
             <div>
               <h2 className="text-3xl font-black text-black uppercase tracking-tighter">{data.name || '–'}</h2>
               <div className="flex gap-2 mt-1">
@@ -120,7 +119,7 @@ const EmergencyTemplate = ({ data, t, customColors, config, styleOverrides }) =>
             </div>
 
             {/* Owner Info */}
-            {!hiddenSections.includes('owner') && (
+            {(
               <div className="bg-gray-50 p-3 border border-gray-300 rounded-sm">
                 <h3 className="text-[10px] font-black text-gray-500 uppercase mb-2 flex items-center gap-1">
                   <span className="material-symbols-outlined text-sm">person</span> {t?.doc?.sectionOwner || 'Halter'}
@@ -142,7 +141,7 @@ const EmergencyTemplate = ({ data, t, customColors, config, styleOverrides }) =>
           </div>
 
           {/* Veterinarian Info */}
-          {!hiddenSections.includes('legal') && (
+          {(
             <div className="bg-blue-50 p-3 border border-blue-200 rounded-sm flex items-start gap-3">
               {/* QR Code */}
               <div className="bg-white p-1.5 rounded-sm border border-blue-100 shadow-sm hidden sm:block">
@@ -221,7 +220,7 @@ const EmergencyTemplate = ({ data, t, customColors, config, styleOverrides }) =>
       {/* Bottom Grid: Behavior + Notes (2 columns) */}
       <div className="grid grid-cols-2 gap-5 border-t border-gray-200 pt-3">
         {/* Behavior */}
-        {!hiddenSections.includes('behavior') && (
+        {(
           <div>
             <h3 className="text-[10px] font-black text-black uppercase mb-3 tracking-widest border-b border-black pb-1">
               {t?.labels?.behaviorTitle || 'Verhalten'}
@@ -270,7 +269,7 @@ const EmergencyTemplate = ({ data, t, customColors, config, styleOverrides }) =>
         )}
 
         {/* Notes */}
-        {!hiddenSections.includes('description') && (
+        {(
           <div className="bg-gray-50 p-3 border border-dashed border-gray-300 rounded-sm">
             <h3 className="text-[10px] font-black text-black uppercase mb-1.5 tracking-widest">
               {t?.labels?.importantNotes || 'Wichtige Notizen'}

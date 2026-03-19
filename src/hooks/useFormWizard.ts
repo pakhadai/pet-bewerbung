@@ -4,7 +4,6 @@ import {
   useWizardNavigationContext,
   useThemeContext,
   useToastContext,
-  useAIGenerationContext,
 } from '../context/WizardProviders';
 
 export interface UseFormWizardReturn {
@@ -22,12 +21,6 @@ export interface UseFormWizardReturn {
   setData: (data: any) => void;
   clearSavedData: () => void;
   isLoading: boolean;
-
-  aiGenerations: number;
-  canGenerate: boolean;
-  aiRemaining: number;
-  generateDescription: (petData: any) => Promise<string>;
-  resetAICount: () => void;
 
   t: any;
   lang: string;
@@ -47,7 +40,6 @@ export const useFormWizard = (): UseFormWizardReturn => {
   const translation = useTranslationContext();
   const toast = useToastContext();
   const formData = useFormDataContext();
-  const ai = useAIGenerationContext();
   const theme = useThemeContext();
 
   const clearSavedData = () => {
@@ -70,12 +62,6 @@ export const useFormWizard = (): UseFormWizardReturn => {
     setData: formData.setData,
     clearSavedData,
     isLoading: formData.isLoading,
-
-    aiGenerations: ai.generationCount,
-    canGenerate: ai.canGenerate,
-    aiRemaining: ai.remainingGenerations,
-    generateDescription: ai.generatePetDescription,
-    resetAICount: ai.resetGenerationCount,
 
     t: translation.t,
     lang: translation.lang,

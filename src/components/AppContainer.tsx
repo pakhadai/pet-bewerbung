@@ -36,17 +36,13 @@ const SwissDocument = lazyRetry(() => import('./SwissDocument'));
 interface AppContainerProps {
   onDownloadPDF: (templateType?: string) => Promise<void>;
   onDownloadAllTemplates: () => Promise<void>;
-  onGenerateText: () => Promise<void>;
-  canGenerateAI?: boolean;
-  remainingGenerations?: number;
+  onGenerateText: () => void;
 }
 
 export const AppContainer: React.FC<AppContainerProps> = ({
   onDownloadPDF,
   onDownloadAllTemplates,
   onGenerateText,
-  canGenerateAI = true,
-  remainingGenerations = 5,
 }) => {
   const { data, updateData } = useFormDataContext();
   const { t, lang, setLang } = useTranslationContext();
@@ -59,7 +55,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   // Wrap onDownloadPDF to inject selectedTemplate (user's chosen template)
   const wrappedOnDownloadPDF = useCallback(() => onDownloadPDF(selectedTemplate), [onDownloadPDF, selectedTemplate]);
 
-  // Validated navigation: sync validation on current data (no validationRef/setTimeout)
+  // Validated navigation: sync validation on current data
   const handleNext = () => {
     if (document.activeElement?.blur) document.activeElement.blur();
     const { isValid } = validateStep(data, step);
@@ -151,8 +147,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
                 showToast={showToast}
                 onGenerateText={onGenerateText}
                 onNavigationVisibilityChange={setNavigationVisible}
-                canGenerateAI={canGenerateAI}
-                remainingGenerations={remainingGenerations}
               />
             </WizardProvider>
           ) : null}

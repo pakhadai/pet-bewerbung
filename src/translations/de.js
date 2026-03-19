@@ -207,6 +207,8 @@ export default {
   },
   validation: {
     required: "Pflichtfeld",
+    fillRequired: "Bitte füllen Sie die Pflichtfelder aus",
+    pleaseWait: "Bitte warten Sie, bis die AI-Generierung abgeschlossen ist.",
     ownerNameRequired: "Name ist erforderlich (min. 2 Zeichen)",
     postalInvalid: "PLZ muss 4 Ziffern haben",
     emailInvalid: "Ungültige E-Mail-Adresse",
@@ -300,7 +302,9 @@ export default {
     paymentData: "Zahlungsdaten",
     paymentDataText: "Bei einem freiwilligen Unterstützungsbeitrag werden folgende Daten von unserem Zahlungsanbieter verarbeitet:",
     thirdParty: "Drittanbieter-Dienste",
-    stripeText: "Für die Abwicklung von Unterstützungsbeiträgen nutzen wir Stripe. Ihre Zahlungsdaten werden direkt von Stripe gemäss deren Datenschutzrichtlinie verarbeitet.",
+    securityLogs: "Sicherheit & Rate Limiting",
+    securityLogsText: "Zur Verhinderung von Missbrauch (Rate Limiting) wird Ihre IP-Adresse temporär für maximal 24 Stunden auf unserem Server gespeichert. Diese Daten werden automatisch gelöscht und nicht mit Ihrem Pet-Dossier verknüpft. Nach Schweizer nFADP gelten IP-Adressen als personenbezogene Daten.",
+    stripeText: "Unterstützungsbeiträge erfolgen über direkte Überweisung (TWINT/PayPal). Wir verarbeiten keine Zahlungsdaten.",
     fontsText: "Wir verwenden lokal gehostete Schriftarten, um Datenübertragungen an Google-Server zu vermeiden.",
     cookies: "Cookies",
     cookiesText: "Wir verwenden nur technisch notwendige Cookies, um Ihre Sprach- und Design-Einstellungen zu speichern. Es werden keine Tracking-Cookies verwendet.",
@@ -324,7 +328,7 @@ export default {
     jurisdiction: "Gerichtsstand",
     jurisdictionText: "Es gilt Schweizer Recht. Gerichtsstand ist St. Gallen, Schweiz.",
     cookieBannerTitle: "Cookie-Hinweis",
-    cookieBannerText: "Wir verwenden nur notwendige Cookies für Sprach- und Design-Einstellungen. Für Unterstützungsbeiträge kann Stripe zusätzliche Cookies setzen.",
+    cookieBannerText: "Wir verwenden nur notwendige Cookies für Sprach- und Design-Einstellungen.",
     learnMore: "Mehr erfahren",
     accept: "Akzeptieren",
     decline: "Ablehnen"

@@ -18,10 +18,8 @@ interface WizardRouteProps {
   selectedTemplate: string;
   onSelectTemplate: (templateId: string) => void;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
-  onGenerateText: () => Promise<void>;
+  onGenerateText: () => void;
   onNavigationVisibilityChange: (visible: boolean) => void;
-  canGenerateAI?: boolean;
-  remainingGenerations?: number;
 }
 
 export const WizardRoute: React.FC<WizardRouteProps> = ({
@@ -31,8 +29,6 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
   showToast,
   onGenerateText,
   onNavigationVisibilityChange,
-  canGenerateAI = true,
-  remainingGenerations = 5,
 }) => {
   switch (step) {
     case 1:
@@ -40,13 +36,7 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
     case 2:
       return <Step2HealthInsurance />;
     case 3:
-      return (
-        <Step3Description
-          onGenerate={onGenerateText}
-          canGenerateAI={canGenerateAI}
-          remainingGenerations={remainingGenerations}
-        />
-      );
+      return <Step3Description onGenerate={onGenerateText} />;
     case 4:
       return (
         <Step4Photo

@@ -194,13 +194,19 @@ export const useFormData = (
     };
   }, [data, isLoading, onSaveError]);
 
-  // Save form data synchronously on beforeunload to prevent data loss
+  // Save form data on tab close/background (beforeunload unreliable on mobile; visibilitychange catches app minimize)
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      saveFormDataSync(dataRef.current);
+    const save = () => saveFormDataSync(dataRef.current);
+    const handleBeforeUnload = () => save();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') save();
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   // Track language changes (text is kept - user can regenerate if needed)

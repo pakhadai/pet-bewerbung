@@ -31,7 +31,7 @@ function downloadBlob(blob: Blob, filename: string): void {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  setTimeout(() => URL.revokeObjectURL(url), 300000); // 5min - browser needs URL for download on slow connections
+  setTimeout(() => URL.revokeObjectURL(url), 1000); // 1s sufficient for OS to start download; avoids memory leak on repeated downloads
 }
 
 /**
@@ -60,8 +60,7 @@ export async function downloadPdf(
   if (isIOS) {
     const newWindow = window.open(url, '_blank');
     if (!newWindow) window.location.href = url;
-    // Revoke after delay - user may need to save
-    setTimeout(() => URL.revokeObjectURL(url), 300000);
+    setTimeout(() => URL.revokeObjectURL(url), 2000); // 2s for iOS save dialog; avoids memory leak
   } else {
     downloadBlob(blob, filename);
     URL.revokeObjectURL(url);

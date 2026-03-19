@@ -94,7 +94,13 @@ async function loadImageWithOrientation(source) {
     const bitmap = await createImageBitmap(blob, opts);
     checkDimensions(bitmap.width, bitmap.height);
     return { bitmap, width: bitmap.width, height: bitmap.height, isBitmap: true };
-  } catch {
+  } catch (err) {
+    // SECURITY: Never fall back to loadImageLegacy for large files when parser failed - Image Bomb risk.
+    // loadImageLegacy decodes via new Image() before we can check dimensions - 15000x15000 = 900MB OOM.
+    const size = (source instanceof Blob || source instanceof File) ? source.size : 0;
+    if (size > 1024 * 1024) {
+      throw new Error('Image too large or unsupported format. Maximum 1 MB when dimensions cannot be verified.');
+    }
     return loadImageLegacy(source);
   }
 }

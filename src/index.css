@@ -60,3 +60,10 @@ html.dark body {
     box-shadow: 0 0 15px rgba(179, 157, 219, 0.35);
   }
 }
+
+/* Respect user preference for reduced motion (accessibility, battery on mobile) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-play-state: paused !important;
+  }
+}

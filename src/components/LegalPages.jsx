@@ -94,10 +94,10 @@ const PrivacyContent = ({ t }) => (
     </section>
 
     <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.aiProcessing || 'AI Text Generation / KI-Textgenerierung'}</h3>
+      <h3 className="font-semibold text-base mb-2">{t.legal?.aiProcessing || 'Text Generation / Textgenerierung'}</h3>
       <p className="theme-text-muted">
         {t.legal?.aiProcessingText ||
-          'For the AI-assisted description feature, anonymized pet data only (breed, age, character traits) is sent to our server and forwarded to Google Gemini AI for text generation. Personal data of the owner (name, address, email, phone) never leaves your device and is not transmitted to Google or any third party.'}
+          'Text generation is done entirely in your browser using template-based logic. No data is sent to any server. Your pet dossier is created locally on your device.'}
       </p>
     </section>
 
