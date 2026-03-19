@@ -16,12 +16,12 @@ import LegalPages from './LegalPages';
 import ErrorBoundary from './ErrorBoundary';
 import { X, Camera } from 'lucide-react';
 import {
-  useFormDataContext,
   useTranslationContext,
   useWizardNavigationContext,
   useThemeContext,
   useToastContext,
 } from '../context/WizardProviders';
+import { useFormStore } from '../stores/formStore';
 import { useTemplateSelection, useFormValidation, validateStep } from '../hooks';
 import WizardRoute from '../routes/WizardRoute';
 import HeroRoute from '../routes/HeroRoute';
@@ -44,7 +44,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   onDownloadAllTemplates,
   onGenerateText,
 }) => {
-  const { data, updateData } = useFormDataContext();
+  const { data, updateData, resetForm } = useFormStore();
   const { t, lang, setLang } = useTranslationContext();
   const { step, animDir, goToStep } = useWizardNavigationContext();
   const { darkMode, setDarkMode, toggleTheme } = useThemeContext();
@@ -93,7 +93,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   // Convert darkMode to theme string
   const theme = darkMode ? 'dark' : 'light';
 
-  const { resetForm } = useFormDataContext();
   const wizardContextValue = useMemo(
     () => ({
       data,

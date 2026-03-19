@@ -1,49 +1,26 @@
 /**
- * WizardProviders - Split contexts for form data, translation, navigation, theme, toast.
- * No AI/backend - static SPA only.
+ * WizardProviders - Translation, navigation, theme, toast.
+ * Form data: Zustand store (useFormStore) - no Context.
  */
 
-import React, { createContext, useContext, ReactNode, useMemo } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect } from 'react';
 import {
-  useFormData,
   useTranslation,
   useWizardNavigation,
   useTheme,
   useToast,
 } from '../hooks';
+import { useFormStore, STORAGE_FAILED_EVENT, flushFormStoreSync, isFormStoreSaving } from '../stores/formStore';
 
-type FormDataContextValue = ReturnType<typeof useFormData>;
-type FormDataStateValue = Pick<FormDataContextValue, 'data' | 'isLoading'>;
-type FormDataDispatchValue = Omit<FormDataContextValue, 'data' | 'isLoading'>;
 type TranslationContextValue = ReturnType<typeof useTranslation>;
 type WizardNavigationContextValue = ReturnType<typeof useWizardNavigation>;
 type ThemeContextValue = ReturnType<typeof useTheme>;
 type ToastContextValue = ReturnType<typeof useToast>;
 
-const FormDataStateContext = createContext<FormDataStateValue | null>(null);
-const FormDataDispatchContext = createContext<FormDataDispatchValue | null>(null);
 const TranslationContext = createContext<TranslationContextValue | null>(null);
 const WizardNavigationContext = createContext<WizardNavigationContextValue | null>(null);
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 const ToastContext = createContext<ToastContextValue | null>(null);
-
-export const useFormDataStateContext = (): FormDataStateValue => {
-  const ctx = useContext(FormDataStateContext);
-  if (!ctx) throw new Error('useFormDataStateContext must be used within WizardProviders');
-  return ctx;
-};
-
-export const useFormDataDispatchContext = (): FormDataDispatchValue => {
-  const ctx = useContext(FormDataDispatchContext);
-  if (!ctx) throw new Error('useFormDataDispatchContext must be used within WizardProviders');
-  return ctx;
-};
-
-export const useFormDataContext = (): FormDataContextValue => {
-  const state = useFormDataStateContext();
-  const dispatch = useFormDataDispatchContext();
-  return { ...state, ...dispatch };
-};
 
 export const useTranslationContext = (): TranslationContextValue => {
   const ctx = useContext(TranslationContext);
@@ -75,54 +52,59 @@ const SAVE_ERROR_THROTTLE_MS = 60000;
 export const WizardProviders: React.FC<{ children: ReactNode }> = ({ children }) => {
   const translation = useTranslation();
   const toast = useToast();
-  const formData = useFormData(translation.lang, {
-    onSaveError: (err) => {
-      const now = Date.now();
-      if (now - saveErrorShownAt < SAVE_ERROR_THROTTLE_MS) return;
-      saveErrorShownAt = now;
-      const msg =
-        err.name === 'QuotaExceededError' || err.message?.includes('quota')
-          ? translation.t?.labels?.storageQuotaError ?? 'Speicher voll oder Privatmodus. Daten konnten nicht gespeichert werden.'
-          : translation.t?.labels?.storageError ?? 'Daten konnten nicht gespeichert werden.';
-      toast.showToast(msg, 'error');
-    },
-  });
   const wizardNav = useWizardNavigation();
   const theme = useTheme();
 
-  const formState = useMemo(() => ({ data: formData.data, isLoading: formData.isLoading }), [formData.data, formData.isLoading]);
-  const formDispatch = useMemo(
-    () => ({
-      updateData: formData.updateData,
-      updateMultipleData: formData.updateMultipleData,
-      resetForm: formData.resetForm,
-      saveData: formData.saveData,
-      loadSavedData: formData.loadSavedData,
-      setData: formData.setData,
-    }),
-    [
-      formData.updateData,
-      formData.updateMultipleData,
-      formData.resetForm,
-      formData.saveData,
-      formData.loadSavedData,
-      formData.setData,
-    ]
-  );
+  useEffect(() => {
+    useFormStore.getState().loadDraft(translation.lang);
+  }, [translation.lang]);
+
+  useEffect(() => {
+    const handler = () => {
+      const now = Date.now();
+      if (now - saveErrorShownAt < SAVE_ERROR_THROTTLE_MS) return;
+      saveErrorShownAt = now;
+      toast.showToast(
+        translation.t?.labels?.storageQuotaError ?? 'Privatmodus: Daten werden nicht gespeichert. Seite nicht aktualisieren!',
+        'warning'
+      );
+    };
+    window.addEventListener(STORAGE_FAILED_EVENT, handler);
+    return () => window.removeEventListener(STORAGE_FAILED_EVENT, handler);
+  }, [toast, translation.t]);
+
+  useEffect(() => {
+    const save = () => flushFormStoreSync();
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      save();
+      if (isFormStoreSaving()) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') save();
+    };
+    const handleEmergencyFlush = () => save();
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('emergency-flush', handleEmergencyFlush);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('emergency-flush', handleEmergencyFlush);
+    };
+  }, []);
 
   return (
     <TranslationContext.Provider value={translation}>
-      <FormDataStateContext.Provider value={formState}>
-        <FormDataDispatchContext.Provider value={formDispatch}>
-          <WizardNavigationContext.Provider value={wizardNav}>
-            <ThemeContext.Provider value={theme}>
-              <ToastContext.Provider value={toast}>
-                {children}
-              </ToastContext.Provider>
-            </ThemeContext.Provider>
-          </WizardNavigationContext.Provider>
-        </FormDataDispatchContext.Provider>
-      </FormDataStateContext.Provider>
+      <WizardNavigationContext.Provider value={wizardNav}>
+        <ThemeContext.Provider value={theme}>
+          <ToastContext.Provider value={toast}>
+            {children}
+          </ToastContext.Provider>
+        </ThemeContext.Provider>
+      </WizardNavigationContext.Provider>
     </TranslationContext.Provider>
   );
 };

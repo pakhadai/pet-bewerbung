@@ -30,16 +30,3 @@ export type {
   TemplateConfigGetter,
   TemplateModule,
 } from './template';
-
-// Storage Types
-export type {
-  StorageType,
-  StorageAdapter,
-  StorageOptions,
-  StorageMetadata,
-  StorageEntry,
-  StorageKey,
-  StorageStrategy,
-} from './storage';
-
-export { STORAGE_STRATEGIES } from './storage';

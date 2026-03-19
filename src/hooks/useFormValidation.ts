@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { validateSwissPhone, validateSwissPostal, validateEmail } from '../utils/swissValidation';
-import { MIN_PET_NAME_LENGTH, MIN_OWNER_NAME_LENGTH } from '../constants/validation';
+
+const MIN_OWNER_NAME_LENGTH = 2;
+const MIN_PET_NAME_LENGTH = 2;
 
 export interface FormValidationErrors {
   [field: string]: boolean;

@@ -52,7 +52,6 @@ const Step1Details = React.memo(() => {
               <div className="md:col-span-2">
                 <Label required>{t.labels.ownerName}</Label>
                 <FormInput
-                  field="ownerName"
                   value={data.ownerName}
                   onChange={val => updateData('ownerName', val)}
                   onBlur={() => markTouched('ownerName')}
@@ -65,16 +64,15 @@ const Step1Details = React.memo(() => {
               </div>
               <div>
                 <Label>{t.labels.street}</Label>
-                <FormInput field="street" value={data.street} onChange={val => updateData('street', val)} placeholder={t?.placeholders?.street ?? 'e.g. Bahnhofstrasse'} />
+                <FormInput value={data.street} onChange={val => updateData('street', val)} placeholder={t?.placeholders?.street ?? 'e.g. Bahnhofstrasse'} />
               </div>
               <div>
                 <Label>{t.labels.houseNumber}</Label>
-                <FormInput field="houseNumber" value={data.houseNumber} onChange={val => updateData('houseNumber', val)} placeholder="12A" />
+                <FormInput value={data.houseNumber} onChange={val => updateData('houseNumber', val)} placeholder="12A" />
               </div>
               <div>
                 <Label>{t.labels.postal}</Label>
                 <FormInput
-                  field="postal"
                   value={data.postal}
                   onChange={val => updateData('postal', val)}
                   onBlur={() => markTouched('postal')}
@@ -85,12 +83,11 @@ const Step1Details = React.memo(() => {
               </div>
               <div>
                 <Label>{t.labels.city}</Label>
-                <FormInput field="city" value={data.city} onChange={val => updateData('city', val)} placeholder="St. Gallen" />
+                <FormInput value={data.city} onChange={val => updateData('city', val)} placeholder="St. Gallen" />
               </div>
               <div>
                 <Label>{t.labels.email}</Label>
                 <FormInput
-                  field="email"
                   type="email"
                   value={data.email}
                   onChange={val => updateData('email', val)}
@@ -103,7 +100,6 @@ const Step1Details = React.memo(() => {
               <div>
                 <Label>{t.labels.phone}</Label>
                 <FormInput
-                  field="phone"
                   type="tel"
                   value={data.phone}
                   onChange={val => updateData('phone', val)}
@@ -144,7 +140,6 @@ const Step1Details = React.memo(() => {
               <div className="md:col-span-2">
                 <Label required>{t.labels.petName}</Label>
                 <FormInput
-                  field="name"
                   value={data.name}
                   onChange={val => updateData('name', val)}
                   onBlur={() => markTouched('name')}
@@ -156,7 +151,6 @@ const Step1Details = React.memo(() => {
               <div>
                 <Label>{t.labels.breed}</Label>
                 <FormInput
-                  field="breed"
                   value={data.breed}
                   onChange={val => updateData('breed', val)}
                   placeholder={t?.placeholders?.breed ?? 'e.g. Beagle'}
@@ -165,7 +159,6 @@ const Step1Details = React.memo(() => {
               <div>
                 <Label>{t.labels.age}</Label>
                 <FormInput
-                  field="age"
                   type="number"
                   min="0"
                   max="30"
@@ -182,7 +175,6 @@ const Step1Details = React.memo(() => {
                   max="200"
                   step="0.1"
                   value={data.weight}
-                  field="weight"
                   onChange={val => updateData('weight', val)}
                   placeholder="0"
                 />

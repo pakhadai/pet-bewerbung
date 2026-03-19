@@ -9,10 +9,11 @@ import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS } from '../constants';
 import AppContainer from './AppContainer';
 import { buildPdfTranslations } from '../services/pdfService';
 import { downloadPdf, downloadAllTemplatesAsZip } from '../services/exportService';
-import { useFormDataContext, useTranslationContext, useToastContext } from '../context/WizardProviders';
+import { useTranslationContext, useToastContext } from '../context/WizardProviders';
+import { useFormStore } from '../stores/formStore';
 
 const AppContent: React.FC = () => {
-  const { data, updateData } = useFormDataContext();
+  const { data, updateData } = useFormStore();
   const { t } = useTranslationContext();
   const { showToast } = useToastContext();
   const prevLangRef = useRef(data.lang);

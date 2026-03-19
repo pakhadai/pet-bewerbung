@@ -1,10 +1,10 @@
 import {
-  useFormDataContext,
   useTranslationContext,
   useWizardNavigationContext,
   useThemeContext,
   useToastContext,
 } from '../context/WizardProviders';
+import { useFormStore } from '../stores/formStore';
 
 export interface UseFormWizardReturn {
   step: number;
@@ -39,7 +39,7 @@ export const useFormWizard = (): UseFormWizardReturn => {
   const wizardNav = useWizardNavigationContext();
   const translation = useTranslationContext();
   const toast = useToastContext();
-  const formData = useFormDataContext();
+  const formData = useFormStore();
   const theme = useThemeContext();
 
   const clearSavedData = () => {
