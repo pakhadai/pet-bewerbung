@@ -1,10 +1,11 @@
 import React from 'react';
 import { isEmptyText } from '../../utils/documentHelpers';
 import type { DocumentVariant } from './OwnerInfo';
+import type { TranslationObject } from '../../types/template';
 
 export interface DescriptionSectionProps {
   text: string | undefined;
-  t: Record<string, unknown>;
+  t: TranslationObject;
   variant?: DocumentVariant;
   customColors?: unknown;
 }
@@ -54,15 +55,15 @@ const DescriptionSection: React.FC<DescriptionSectionProps> = ({ text, t, varian
   };
 
   const styles = getVariantStyles();
-  const doc = t.doc as Record<string, string>;
-  const ui = t.ui as Record<string, string>;
+  const doc = t.doc;
+  const ui = t.ui;
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.heading}>{doc.sectionAbout}</h3>
+      <h3 className={styles.heading}>{doc?.sectionAbout ?? 'Character'}</h3>
       <div className={styles.text}>
         {isEmptyText(text) ? (
-          <span className="text-slate-300 italic">{ui.noDescription}</span>
+          <span className="text-slate-300 italic">{ui?.noDescription ?? 'No description'}</span>
         ) : (
           text
         )}

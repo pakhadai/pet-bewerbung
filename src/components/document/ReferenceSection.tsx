@@ -3,10 +3,11 @@ import { Phone, Mail, AlertCircle } from 'lucide-react';
 import type { FormData } from '../../types/form';
 import type { DocumentVariant } from './OwnerInfo';
 import { getShowAdvancedHealthInfo } from '../../utils/getShowAdvancedHealthInfo';
+import type { TranslationObject } from '../../types/template';
 
 export interface ReferenceSectionProps {
   data: FormData;
-  t: Record<string, unknown>;
+  t: TranslationObject;
   variant?: DocumentVariant;
   customColors?: unknown;
 }
@@ -72,25 +73,25 @@ const ReferenceSection: React.FC<ReferenceSectionProps> = ({ data, t, variant = 
   };
 
   const styles = getVariantStyles();
-  const labels = t.labels as Record<string, string>;
-  const step2Emergency = t.step2Emergency as Record<string, string> | undefined;
+  const labels = t.labels;
+  const step2Emergency = t.step2Emergency;
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.heading}>{labels.referenceTitle}</h3>
+      <h3 className={styles.heading}>{labels?.referenceTitle ?? 'References'}</h3>
 
       <div className={styles.columnsContainer}>
         {/* Left column: Previous Landlord */}
         {hasLandlordInfo && (
           <div className={styles.subsection}>
-            <h4 className={styles.subheading}>{labels.previousLandlord}</h4>
+            <h4 className={styles.subheading}>{labels?.previousLandlord ?? 'Previous landlord'}</h4>
             <div className={styles.grid}>
               {data.previousLandlordName && (
                 <div className={styles.fieldValue}>{data.previousLandlordName}</div>
               )}
               {data.previousDuration && (
                 <div className="text-slate-600">
-                  <span className={styles.fieldLabel}>{labels.previousDuration}: </span>
+                  <span className={styles.fieldLabel}>{labels?.previousDuration ?? 'Duration'}: </span>
                   <span>{data.previousDuration}</span>
                 </div>
               )}
@@ -113,14 +114,14 @@ const ReferenceSection: React.FC<ReferenceSectionProps> = ({ data, t, variant = 
         {/* Right column: Emergency Contact */}
         {hasEmergencyInfo && (
           <div className={styles.subsection}>
-            <h4 className={styles.subheading}>{labels.emergencyContact}</h4>
+            <h4 className={styles.subheading}>{labels?.emergencyContact ?? 'Emergency contact'}</h4>
             <div className={styles.grid}>
               {data.emergencyContactName && (
                 <div className={styles.fieldValue}>{data.emergencyContactName}</div>
               )}
               {data.emergencyContactRelation && (
                 <div className="text-slate-600">
-                  <span className={styles.fieldLabel}>{labels.emergencyContactRelation}: </span>
+                  <span className={styles.fieldLabel}>{labels?.emergencyContactRelation ?? 'Relation'}: </span>
                   <span>{data.emergencyContactRelation}</span>
                 </div>
               )}

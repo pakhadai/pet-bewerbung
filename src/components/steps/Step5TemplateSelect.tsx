@@ -8,6 +8,7 @@ import { useWizardContext } from '../../context/WizardContext';
 import { useFormStore } from '../../stores/formStore';
 import type { FormData } from '../../types/form';
 import type { TemplateType } from '../../types/form';
+import { trackUmamiEvent } from '../../utils/umami';
 
 const SwissDocument = lazy(() => import('../SwissDocument'));
 
@@ -60,6 +61,7 @@ const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({ selectedTempl
               type="button"
               onClick={() => {
                 onSelectTemplate(opt.id as TemplateType);
+                  trackUmamiEvent('Template_Changed', { template: opt.id });
                 showToast?.(t?.ui?.templateSelected ?? 'Vorlage ausgewählt', 'success');
               }}
               className={`group template-card p-3 md:p-4 flex flex-col gap-3 text-left relative transition-all duration-300 

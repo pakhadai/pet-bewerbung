@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dog, Cat, Bird } from 'lucide-react';
+import type { TranslationObject } from '../types/template';
 
 export interface AddressResult {
   streetLine?: string;
@@ -26,8 +27,8 @@ export const getPetTypeIcon = (petType: string, size = 20): React.ReactElement =
   return icons[petType] ?? icons.other;
 };
 
-export const getGenderLabel = (gender: string | undefined, t: Record<string, unknown>): string => {
-  const labels = t?.labels as Record<string, string> | undefined;
+export const getGenderLabel = (gender: string | undefined, t: TranslationObject): string => {
+  const labels = t?.labels;
   if (!labels) return gender === 'm' ? 'M' : 'F';
   return gender === 'm' ? (labels.m ?? 'M') : (labels.f ?? 'F');
 };
@@ -36,13 +37,13 @@ export const isEmptyText = (text: string | undefined): boolean => {
   return !text || text.trim() === '';
 };
 
-export const formatAge = (age: number | string | undefined, t: Record<string, unknown>): string => {
-  const labels = t?.labels as Record<string, string> | undefined;
+export const formatAge = (age: number | string | undefined, t: TranslationObject): string => {
+  const labels = t?.labels;
   return age ? `${age} ${labels?.years ?? 'years'}` : '—';
 };
 
-export const formatWeight = (weight: number | string | undefined, t: Record<string, unknown>): string => {
-  const labels = t?.labels as Record<string, string> | undefined;
+export const formatWeight = (weight: number | string | undefined, t: TranslationObject): string => {
+  const labels = t?.labels;
   return weight ? `${weight} ${labels?.kg ?? 'kg'}` : '—';
 };
 

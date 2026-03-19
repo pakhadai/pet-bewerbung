@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, FileText, Shield, Scale, LucideIcon } from 'lucide-react';
+import type { TranslationObject } from '../types/template';
 
 export type LegalPageType = 'impressum' | 'privacy' | 'terms' | null;
 
@@ -47,11 +48,11 @@ const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose, title, icon: I
 };
 
 interface ImpressumContentProps {
-  t: Record<string, unknown>;
+  t: TranslationObject;
 }
 
 const ImpressumContent: React.FC<ImpressumContentProps> = ({ t }) => {
-  const legal = t.legal as Record<string, string> | undefined;
+  const legal = t.legal;
   return (
     <div className="space-y-4 text-sm leading-relaxed">
       <section>
@@ -93,7 +94,7 @@ const ImpressumContent: React.FC<ImpressumContentProps> = ({ t }) => {
 // Privacy Policy (Datenschutz) Content
 // Compliant with Swiss nFADP (New Federal Act on Data Protection)
 const PrivacyContent: React.FC<ImpressumContentProps> = ({ t }) => {
-  const legal = t.legal as Record<string, string> | undefined;
+  const legal = t.legal;
   return (
     <div className="space-y-4 text-sm leading-relaxed">
       <section>
@@ -158,7 +159,7 @@ const PrivacyContent: React.FC<ImpressumContentProps> = ({ t }) => {
 
 // Terms of Service (AGB) Content
 const TermsContent: React.FC<ImpressumContentProps> = ({ t }) => {
-  const legal = t.legal as Record<string, string> | undefined;
+  const legal = t.legal;
   return (
     <div className="space-y-4 text-sm leading-relaxed">
       <section>
@@ -208,12 +209,12 @@ const TermsContent: React.FC<ImpressumContentProps> = ({ t }) => {
 
 // Footer Links Component
 export interface LegalFooterLinksProps {
-  t: Record<string, unknown>;
+  t: TranslationObject;
   onOpenLegal: (page: 'impressum' | 'privacy' | 'terms') => void;
 }
 
 export const LegalFooterLinks: React.FC<LegalFooterLinksProps> = ({ t, onOpenLegal }) => {
-  const legal = t.legal as Record<string, string> | undefined;
+  const legal = t.legal;
   return (
     <div className="flex flex-wrap items-center justify-center gap-4 text-xs theme-text-muted">
       <button
@@ -242,13 +243,13 @@ export const LegalFooterLinks: React.FC<LegalFooterLinksProps> = ({ t, onOpenLeg
 
 // Main Legal Pages Component
 export interface LegalPagesProps {
-  t: Record<string, unknown>;
+  t: TranslationObject;
   openPage: LegalPageType;
   onClose: () => void;
 }
 
 const LegalPages: React.FC<LegalPagesProps> = ({ t, openPage, onClose }) => {
-  const legal = t.legal as Record<string, string> | undefined;
+  const legal = t.legal;
   return (
     <>
       <LegalModal

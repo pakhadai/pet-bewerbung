@@ -3,11 +3,12 @@ import { Camera } from 'lucide-react';
 import { getPetTypeIcon } from '../../utils/documentHelpers';
 import type { PetType } from '../../types/form';
 import type { DocumentVariant } from './OwnerInfo';
+import type { TranslationObject } from '../../types/template';
 
 export interface PetPhotoProps {
   photo: string | null | undefined;
   petType?: PetType;
-  t: Record<string, unknown>;
+  t: TranslationObject;
   variant?: DocumentVariant;
   customColors?: unknown;
 }
@@ -77,16 +78,16 @@ const PetPhoto: React.FC<PetPhotoProps> = ({ photo, petType = 'dog', t, variant 
   };
 
   const styles = getVariantStyles();
-  const ui = t.ui as Record<string, string>;
+  const ui = t.ui;
 
   return (
     <div className={styles.container}>
       {photo ? (
-        <img src={photo} className={styles.image} alt={ui.petPhotoAlt} />
+        <img src={photo} className={styles.image} alt={ui?.petPhotoAlt ?? 'Pet photo'} />
       ) : (
         <div className={styles.placeholder}>
           <Camera size={styles.placeholderIcon} className="mx-auto mb-2 opacity-40" />
-          <span className={styles.placeholderText}>{ui.noImage}</span>
+          <span className={styles.placeholderText}>{ui?.noImage ?? 'No image'}</span>
         </div>
       )}
       <div className={styles.badge}>

@@ -86,6 +86,38 @@ export interface StyleOverrides {
 }
 
 export interface TranslationObject {
+  ui?: Record<string, string>;
+  nav?: Record<string, string>;
+  validation?: Record<string, string>;
+  step4?: Record<string, string>;
+  step2Emergency?: Record<string, string>;
+  hero?: Record<string, string>;
+  footer?: Record<string, string>;
+  thankYou?: Record<string, string>;
+  legal?: Record<string, string>;
+  faq?: {
+    title?: string;
+    searchPlaceholder?: string;
+    noResults?: string;
+    footerHint?: string;
+    categories?: Record<string, string>;
+    items?: Array<{
+      id: string;
+      category?: string;
+      q: string;
+      a: string;
+    }>;
+    [key: string]: unknown;
+  };
+  stepsNew?: {
+    step1?: { short?: string; [key: string]: string | undefined };
+    step2?: { short?: string; [key: string]: string | undefined };
+    step3?: { short?: string; [key: string]: string | undefined };
+    step4?: { short?: string; [key: string]: string | undefined };
+    step5?: { short?: string; [key: string]: string | undefined };
+    step6?: { short?: string; [key: string]: string | undefined };
+    [key: string]: { short?: string; [key: string]: string | undefined } | undefined;
+  };
   doc?: {
     title: string;
     subtitle: string;

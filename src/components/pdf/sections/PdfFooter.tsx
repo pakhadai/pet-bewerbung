@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from '@react-pdf/renderer';
+import { View, Text, Link } from '@react-pdf/renderer';
 import { commonStyles } from '../PdfBase';
 import type { PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
 import type { PdfTranslations } from '../../../services/pdfService';
@@ -20,10 +20,20 @@ export const PdfFooter: React.FC<PdfFooterProps> = ({ t, templateConfig }) => {
     <View style={footerStyle}>
       {footerBrandingVariant === 'freeCentered' ? (
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={commonStyles.footerBrandingFree}>✦ {footerBranding} ✦</Text>
+          <Link
+            src="https://pet-bewerbung.ch"
+            style={commonStyles.footerBrandingFree}
+          >
+            ✦ {footerBranding} ✦
+          </Link>
         </View>
       ) : (
-        <Text style={commonStyles.footerBrandingAlt}>pet-bewerbung.ch</Text>
+        <Link
+          src="https://pet-bewerbung.ch"
+          style={commonStyles.footerBrandingAlt}
+        >
+          pet-bewerbung.ch
+        </Link>
       )}
       <View style={footerSignStyle}>
         <Text>{t.doc.sign ?? 'Signature'}</Text>

@@ -2,10 +2,11 @@ import React from 'react';
 import { getGenderLabel, formatAge, formatWeight, withFallback } from '../../utils/documentHelpers';
 import type { FormData } from '../../types/form';
 import type { DocumentVariant } from './OwnerInfo';
+import type { TranslationObject } from '../../types/template';
 
 export interface PetDetailsProps {
   data: FormData;
-  t: Record<string, unknown>;
+  t: TranslationObject;
   variant?: DocumentVariant;
   customColors?: unknown;
 }
@@ -70,29 +71,29 @@ const PetDetails: React.FC<PetDetailsProps> = ({ data, t, variant = 'classic' })
   };
 
   const styles = getVariantStyles();
-  const doc = t.doc as Record<string, string>;
-  const labels = t.labels as Record<string, string>;
+  const doc = t.doc;
+  const labels = t.labels;
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.heading}>{doc.sectionPet}</h3>
+      <h3 className={styles.heading}>{doc?.sectionPet ?? 'Pet details'}</h3>
       <div className={styles.grid}>
         <div>
-          <span className={styles.fieldLabel}>{labels.petName}</span>
+          <span className={styles.fieldLabel}>{labels?.petName ?? 'Name'}</span>
           <div className={styles.fieldValueLarge}>{withFallback(data.name)}</div>
         </div>
         <div>
-          <span className={styles.fieldLabel}>{labels.breed}</span>
+          <span className={styles.fieldLabel}>{labels?.breed ?? 'Breed'}</span>
           <div className={styles.fieldValue}>{withFallback(data.breed)}</div>
         </div>
         <div>
-          <span className={styles.fieldLabel}>{labels.gender} / {labels.age}</span>
+          <span className={styles.fieldLabel}>{labels?.gender ?? 'Gender'} / {labels?.age ?? 'Age'}</span>
           <div className={styles.fieldValue}>
             {getGenderLabel(data.gender, t)} / {formatAge(data.age, t)}
           </div>
         </div>
         <div>
-          <span className={styles.fieldLabel}>{labels.weight}</span>
+          <span className={styles.fieldLabel}>{labels?.weight ?? 'Weight'}</span>
           <div className={styles.fieldValue}>{formatWeight(data.weight, t)}</div>
         </div>
       </div>

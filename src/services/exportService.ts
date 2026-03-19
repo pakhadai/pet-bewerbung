@@ -39,6 +39,11 @@ function downloadBlob(blob: Blob, filename: string): void {
 /**
  * Download single PDF
  */
+let pdfDownloadInFlight: Promise<void> | null = null;
+let zipDownloadInFlight:
+  | Promise<{ successCount: number; failedTemplates: string[] }>
+  | null = null;
+
 export async function downloadPdf(
   data: Record<string, any>,
   templateType: string,
@@ -50,6 +55,10 @@ export async function downloadPdf(
     pdfSaveHint?: string;
   } = {}
 ): Promise<void> {
+  // Prevent parallel PDF generations (OOM risk on mobile/older devices).
+  if (pdfDownloadInFlight) return pdfDownloadInFlight;
+
+  pdfDownloadInFlight = (async () => {
   const filename = `${data.name || 'Pet-CV'}-${Date.now()}.pdf`;
   const pdfData = await preparePdfData(data);
 
@@ -67,6 +76,11 @@ export async function downloadPdf(
     downloadBlob(blob, filename);
     URL.revokeObjectURL(url);
   }
+  })().finally(() => {
+    pdfDownloadInFlight = null;
+  });
+
+  return pdfDownloadInFlight;
 }
 
 /**
@@ -86,6 +100,10 @@ export async function downloadAllTemplatesAsZip(
     zipError?: string;
   } = {}
 ): Promise<{ successCount: number; failedTemplates: string[] }> {
+  // Prevent parallel ZIP generations (OOM risk on desktop + slower devices).
+  if (zipDownloadInFlight) return zipDownloadInFlight;
+
+  zipDownloadInFlight = (async () => {
   // Convert photo once before loop (avoids N conversions per template)
   let optimizedData: Record<string, any> | undefined;
   if (data.photo && typeof data.photo === 'string') {
@@ -130,4 +148,9 @@ export async function downloadAllTemplatesAsZip(
   downloadBlob(zipBlob, `${petName}-alle-vorlagen.zip`);
 
   return { successCount, failedTemplates };
+  })().finally(() => {
+    zipDownloadInFlight = null;
+  });
+
+  return zipDownloadInFlight;
 }

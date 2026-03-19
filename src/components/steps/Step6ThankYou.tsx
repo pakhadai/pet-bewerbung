@@ -2,7 +2,7 @@
  * Step6ThankYou - Thank you page after document creation
  */
 import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import Header from '../Header';
 import Footer from '../Footer';
 import LegalPages from '../LegalPages';
@@ -19,7 +19,18 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
   const updateData = useFormStore((s) => s.updateData);
   const { t, darkMode, setDarkMode, setLang, goToStep, onDownloadPDF, showToast, resetForm } = useWizardContext();
   const [legalPage, setLegalPage] = useState<string | null>(null);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const onFaqClick = onFaqClickProp ?? (() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info'));
+
+  const handleDownloadPdf = async () => {
+    if (isGeneratingPdf) return;
+    setIsGeneratingPdf(true);
+    try {
+      await Promise.resolve(onDownloadPDF());
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   const handleLangChange = (v: string) => {
     updateData('lang', v);
@@ -72,10 +83,17 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
             {onDownloadPDF && (
               <button
                 type="button"
-                onClick={onDownloadPDF}
+                onClick={handleDownloadPdf}
+                disabled={isGeneratingPdf}
                 className={`group relative w-full px-10 py-6 text-3xl sm:text-4xl font-bold font-display hand-drawn-button bg-primary hover:bg-primary-dark transition-all hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-4 shadow-[8px_8px_0px_0px_rgba(179,157,219,0.2)] ${darkMode ? 'text-white' : 'text-[#121212]'}`}
               >
-                <span className="material-symbols-outlined text-4xl group-hover:scale-110 transition-transform">download_for_offline</span>
+                {isGeneratingPdf ? (
+                  <Loader2 size={28} className="animate-spin" />
+                ) : (
+                  <span className="material-symbols-outlined text-4xl group-hover:scale-110 transition-transform">
+                    download_for_offline
+                  </span>
+                )}
                 {t?.thankYou?.downloadPdf ?? t?.labels?.download ?? 'DOWNLOAD PDF'}
                 <div className="absolute -bottom-2 -right-2 w-full h-full border-2 border-dashed border-primary/40 -z-10 rounded-xl pointer-events-none" aria-hidden />
               </button>

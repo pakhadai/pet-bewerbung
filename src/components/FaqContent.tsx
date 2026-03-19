@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Search, ChevronDown } from 'lucide-react';
+import type { TranslationObject } from '../types/template';
 
 export interface FaqItem {
   id: string;
@@ -9,7 +10,7 @@ export interface FaqItem {
 }
 
 export interface FaqContentProps {
-  t?: Record<string, unknown>;
+  t?: TranslationObject;
   darkMode?: boolean;
   className?: string;
 }
@@ -23,8 +24,8 @@ const FaqContent: React.FC<FaqContentProps> = ({ t, darkMode, className = '' }) 
   const [activeCategory, setActiveCategory] = useState('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const faq = t?.faq as Record<string, unknown> | undefined;
-  const categoriesObj = faq?.categories as Record<string, string> | undefined;
+  const faq = t?.faq;
+  const categoriesObj = faq?.categories;
   const categories = [
     { id: 'all', label: categoriesObj?.all || 'All' },
     { id: 'general', label: categoriesObj?.general || 'General' },
@@ -33,7 +34,7 @@ const FaqContent: React.FC<FaqContentProps> = ({ t, darkMode, className = '' }) 
     { id: 'tips', label: categoriesObj?.tips || 'Tips' },
   ];
 
-  const questions = (faq?.items as FaqItem[] | undefined) || [];
+  const questions: FaqItem[] = faq?.items ?? [];
 
   const filteredQuestions = useMemo(() => {
     return questions.filter(item => {
@@ -61,7 +62,7 @@ const FaqContent: React.FC<FaqContentProps> = ({ t, darkMode, className = '' }) 
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input
             type="text"
-            placeholder={(faq?.searchPlaceholder as string) || 'Suche...'}
+            placeholder={faq?.searchPlaceholder || 'Suche...'}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className={`w-full pl-10 pr-4 py-3 rounded-xl border outline-none focus:ring-2 focus:ring-primary/50 transition-all ${inputBg}`}
@@ -123,14 +124,14 @@ const FaqContent: React.FC<FaqContentProps> = ({ t, darkMode, className = '' }) 
         ) : (
           <div className="text-center py-10 opacity-50">
             <Search size={48} className="mx-auto mb-2 opacity-20" />
-            <p>{(faq?.noResults as string) || 'Keine Ergebnisse'} &quot;{searchQuery}&quot;</p>
+            <p>{faq?.noResults || 'Keine Ergebnisse'} &quot;{searchQuery}&quot;</p>
           </div>
         )}
       </div>
 
       {/* Footer Hint */}
       <div className={`p-4 border-t text-center text-xs flex-shrink-0 ${darkMode ? 'border-gray-800 bg-gray-900 text-gray-500' : 'border-gray-100 bg-gray-50 text-gray-400'}`}>
-        {(faq?.footerHint as string) || 'Questions about the service? Visit pet-bewerbung.ch'}
+        {faq?.footerHint || 'Questions about the service? Visit pet-bewerbung.ch'}
       </div>
     </div>
   );

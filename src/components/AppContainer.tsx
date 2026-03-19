@@ -54,7 +54,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   const handleNext = () => {
     const { isValid } = validateStep(data, step);
     if (!isValid) {
-      showToast((t?.validation as Record<string, string>)?.fillRequired || 'Bitte füllen Sie die Pflichtfelder aus', 'error');
+      showToast(t?.validation?.fillRequired || 'Bitte füllen Sie die Pflichtfelder aus', 'error');
       return;
     }
     goToStep(step + 1);

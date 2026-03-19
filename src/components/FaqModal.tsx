@@ -1,11 +1,12 @@
 import React from 'react';
 import { X, HelpCircle } from 'lucide-react';
 import FaqContent from './FaqContent';
+import type { TranslationObject } from '../types/template';
 
 export interface FaqModalProps {
   isOpen: boolean;
   onClose: () => void;
-  t?: Record<string, unknown>;
+  t?: TranslationObject;
   darkMode?: boolean;
 }
 
@@ -17,7 +18,7 @@ const FaqModal: React.FC<FaqModalProps> = ({ isOpen, onClose, t, darkMode }) => 
 
   const cardBg = darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200';
   const textMain = darkMode ? 'text-white' : 'text-gray-900';
-  const faq = t?.faq as Record<string, string> | undefined;
+  const faq = t?.faq;
 
   return (
     <div

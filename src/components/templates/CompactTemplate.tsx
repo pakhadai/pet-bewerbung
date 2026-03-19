@@ -14,10 +14,11 @@ import LegalSection from '../document/LegalSection';
 import ReferenceSection from '../document/ReferenceSection';
 import type { FormData } from '../../types/form';
 import type { TemplateConfig, StyleOverrides } from './ClassicTemplate';
+import type { TranslationObject } from '../../types/template';
 
 export interface CompactTemplateProps {
   data: FormData;
-  t: Record<string, unknown>;
+  t: TranslationObject;
   customColors: unknown;
   config: TemplateConfig;
   styleOverrides: StyleOverrides;
@@ -25,6 +26,7 @@ export interface CompactTemplateProps {
 
 const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors, config, styleOverrides }) => {
   const { header, accent, border, footer } = styleOverrides;
+  const doc = t.doc;
 
   return (
     <>
@@ -41,8 +43,8 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors
               />
             </div>
             <div className="flex flex-col">
-              <h1 className={config.titleText}>{(t.doc as Record<string, string>).title}</h1>
-              <p className={config.subtitleText} style={accent}>{(t.doc as Record<string, string>).subtitle}</p>
+              <h1 className={config.titleText}>{doc?.title ?? 'Pet Dossier'}</h1>
+              <p className={config.subtitleText} style={accent}>{doc?.subtitle ?? 'Application document'}</p>
             </div>
           </div>
           <div className="text-right">
@@ -77,7 +79,7 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors
           </p>
           {config.footerSignContainer && (
             <div className={config.footerSignContainer}>
-              <p className={config.footerSignText}>{(t.doc as Record<string, string>).sign}</p>
+              <p className={config.footerSignText}>{doc?.sign ?? 'Signature'}</p>
             </div>
           )}
         </div>

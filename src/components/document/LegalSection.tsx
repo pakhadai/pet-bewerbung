@@ -4,10 +4,11 @@ import { withFallback } from '../../utils/documentHelpers';
 import type { FormData } from '../../types/form';
 import type { DocumentVariant } from './OwnerInfo';
 import { getShowAdvancedHealthInfo } from '../../utils/getShowAdvancedHealthInfo';
+import type { TranslationObject } from '../../types/template';
 
 export interface LegalSectionProps {
   data: FormData;
-  t: Record<string, unknown>;
+  t: TranslationObject;
   variant?: DocumentVariant;
   customColors?: unknown;
 }
@@ -78,34 +79,34 @@ const LegalSection: React.FC<LegalSectionProps> = ({ data, t, variant = 'classic
   };
 
   const styles = getVariantStyles();
-  const doc = t.doc as Record<string, string>;
-  const labels = t.labels as Record<string, string>;
-  const step2Emergency = t.step2Emergency as Record<string, string> | undefined;
+  const doc = t.doc;
+  const labels = t.labels;
+  const step2Emergency = t.step2Emergency;
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.heading}>{doc.sectionLegal}</h3>
+      <h3 className={styles.heading}>{doc?.sectionLegal ?? 'Legal'}</h3>
       <div className={styles.grid}>
         <div>
-          <span className={styles.fieldLabel}>{labels.chipId}</span>
+          <span className={styles.fieldLabel}>{labels?.chipId ?? 'Chip ID'}</span>
           <span className={styles.fieldValue}>{withFallback(data.chipId)}</span>
         </div>
         <div>
-          <span className={styles.fieldLabel}>{labels.insurance}</span>
+          <span className={styles.fieldLabel}>{labels?.insurance ?? 'Insurance'}</span>
           <span className={styles.fieldValueText}>{withFallback(data.insuranceProvider)}</span>
         </div>
         {(data.vetName || data.vetPhone) && (
           <div className="col-span-2">
-            <span className={styles.fieldLabel}>{labels.vet}</span>
+            <span className={styles.fieldLabel}>{labels?.vet ?? 'Vet'}</span>
             <span className={styles.fieldValueText}>
               {[data.vetName, data.vetPhone].filter(Boolean).join(' · ') || '—'}
             </span>
           </div>
         )}
         <div className={styles.statusContainer}>
-          <StatusItem label={labels.neutered} active={data.isNeutered} />
-          <StatusItem label={labels.vaccination} active={data.hasVaccination} />
-          <StatusItem label={labels.registration} active={data.hasRegistration} />
+          <StatusItem label={labels?.neutered ?? 'Neutered'} active={data.isNeutered} />
+          <StatusItem label={labels?.vaccination ?? 'Vaccinated'} active={data.hasVaccination} />
+          <StatusItem label={labels?.registration ?? 'Registered'} active={data.hasRegistration} />
           <StatusItem label={labels?.willingToPayDeposit ?? 'Tierkaution'} active={data.willingToPayDeposit} />
         </div>
         {data.medicalConditions && (

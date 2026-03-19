@@ -1,3 +1,5 @@
+import type { TranslationObject } from '../types/template';
+
 export const validateSwissPhone = (phone: string | undefined | null): boolean => {
   if (!phone) return true;
   const cleaned = phone.replace(/[\s\-()]/g, '');
@@ -46,8 +48,8 @@ export const formatSwissAddress = (
   return [streetLine, cityLine].filter(Boolean).join(', ');
 };
 
-export const getPhoneErrorMessage = (t: Record<string, unknown>): string => {
-  const validation = t?.validation as Record<string, string> | undefined;
+export const getPhoneErrorMessage = (t: TranslationObject): string => {
+  const validation = t?.validation;
   return validation?.phoneFormat ?? "Format: +41 XX XXX XX XX oder internationale Nummer (+49, +33, etc.)";
 };
 

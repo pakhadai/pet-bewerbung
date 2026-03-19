@@ -11,6 +11,7 @@ import { buildPdfTranslations } from '../services/pdfService';
 import { downloadPdf, downloadAllTemplatesAsZip } from '../services/exportService';
 import { useTranslationContext, useToastContext } from '../context/WizardProviders';
 import { useFormStore } from '../stores/formStore';
+import { trackUmamiEvent } from '../utils/umami';
 
 const selectData = (s: ReturnType<typeof useFormStore.getState>) => s.data;
 const selectUpdateData = (s: ReturnType<typeof useFormStore.getState>) => s.updateData;
@@ -70,6 +71,11 @@ const AppContent: React.FC = () => {
       await downloadPdf(data, templateType, pdfT, {
         pdfSaveHint: t?.labels?.pdfSaveHint || 'Tippen Sie auf "Teilen" → "In Dateien sichern"',
       });
+
+      trackUmamiEvent('PDF_Downloaded', {
+        template: templateType,
+      });
+
       if (isIOS) {
         showToast(t?.labels?.pdfSaveHint || 'Tippen Sie auf "Teilen" → "In Dateien sichern"', 'info');
       } else {
@@ -111,6 +117,12 @@ const AppContent: React.FC = () => {
           zipError: t?.labels?.zipError || 'Fehler beim Erstellen des ZIP-Archivs',
         }
       );
+
+      trackUmamiEvent('ZIP_Downloaded', {
+        successCount,
+        failedCount: failedTemplates.length,
+      });
+
       if (failedTemplates.length > 0) {
         showToast(`${successCount}/${TEMPLATE_OPTIONS.length} templates generated. Failed: ${failedTemplates.join(', ')}`, 'warning');
       } else {

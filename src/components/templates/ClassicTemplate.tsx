@@ -13,6 +13,7 @@ import DescriptionSection from '../document/DescriptionSection';
 import LegalSection from '../document/LegalSection';
 import ReferenceSection from '../document/ReferenceSection';
 import type { FormData } from '../../types/form';
+import type { TranslationObject } from '../../types/template';
 
 export interface TemplateConfig {
   container: string;
@@ -46,7 +47,7 @@ export interface StyleOverrides {
 
 export interface ClassicTemplateProps {
   data: FormData;
-  t: Record<string, unknown>;
+  t: TranslationObject;
   customColors: unknown;
   config: TemplateConfig;
   styleOverrides: StyleOverrides;
@@ -54,6 +55,7 @@ export interface ClassicTemplateProps {
 
 const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors, config, styleOverrides }) => {
   const { header, accent, border, footer } = styleOverrides;
+  const doc = t.doc;
 
   return (
     <>
@@ -70,8 +72,8 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors
               />
             </div>
             <div className="flex flex-col">
-              <h1 className={config.titleText}>{(t.doc as Record<string, string>).title}</h1>
-              <p className={config.subtitleText} style={accent}>{(t.doc as Record<string, string>).subtitle}</p>
+              <h1 className={config.titleText}>{doc?.title ?? 'Pet Dossier'}</h1>
+              <p className={config.subtitleText} style={accent}>{doc?.subtitle ?? 'Application document'}</p>
             </div>
           </div>
           <div className="text-right">
@@ -102,13 +104,13 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors
       <div className={config.footerContainer} style={footer}>
         <div className="flex flex-col items-center w-full">
           <p className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-semibold mb-4">
-            ✦ {(t?.doc as Record<string, string>)?.footer ?? 'DOKUMENT GENERIERT VIA PET-BEWERBUNG.CH'} ✦
+            ✦ {doc?.footer ?? 'DOKUMENT GENERIERT VIA PET-BEWERBUNG.CH'} ✦
           </p>
         </div>
         <div className="flex justify-end">
           {config.footerSignContainer && (
             <div className={config.footerSignContainer}>
-              <p className={config.footerSignText}>{(t.doc as Record<string, string>).sign}</p>
+              <p className={config.footerSignText}>{doc?.sign ?? 'Signature'}</p>
             </div>
           )}
         </div>

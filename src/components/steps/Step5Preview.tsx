@@ -2,7 +2,7 @@
  * Step5Preview - Document preview and download
  */
 import React, { useState, lazy, Suspense } from 'react';
-import { Download, Check, FileArchive, Maximize2, Minimize2 } from 'lucide-react';
+import { Download, Check, FileArchive, Maximize2, Minimize2, Loader2 } from 'lucide-react';
 import ErrorBoundary from '../ErrorBoundary';
 import { TEMPLATE_OPTIONS } from '../../constants';
 import { useWizardContext } from '../../context/WizardContext';
@@ -31,8 +31,30 @@ const Step5Preview: React.FC<Step5PreviewProps> = ({ selectedTemplate }) => {
   const borderCl = darkMode ? 'border-gray-700' : 'border-gray-200';
 
   const [isEnlarged, setIsEnlarged] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isGeneratingZip, setIsGeneratingZip] = useState(false);
   const templateOption = TEMPLATE_OPTIONS.find((opt) => opt.id === selectedTemplate);
   const previewScale = isEnlarged ? 0.85 : 0.55;
+
+  const handleDownloadPdf = async () => {
+    if (isGeneratingPdf) return;
+    setIsGeneratingPdf(true);
+    try {
+      await onDownloadPDF();
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
+  const handleDownloadZip = async () => {
+    if (isGeneratingZip) return;
+    setIsGeneratingZip(true);
+    try {
+      await Promise.resolve(onDownloadAllTemplates());
+    } finally {
+      setIsGeneratingZip(false);
+    }
+  };
 
   return (
     <div className={`page page-enter-${animDir} reveal fade-enter max-w-7xl mx-auto pb-32`}>
@@ -112,22 +134,32 @@ const Step5Preview: React.FC<Step5PreviewProps> = ({ selectedTemplate }) => {
             <div className="p-5 space-y-3">
               <button
                 type="button"
-                onClick={onDownloadPDF}
-                className="w-full font-display font-bold px-5 py-4 rounded-xl flex items-center justify-center gap-3 transition-all bg-primary text-white hover:bg-primary-dark shadow-lg shadow-primary/25"
+                onClick={handleDownloadPdf}
+                disabled={isGeneratingPdf}
+                className={`w-full font-display font-bold px-5 py-4 rounded-xl flex items-center justify-center gap-3 transition-all shadow-lg shadow-primary/25 ${
+                  isGeneratingPdf
+                    ? 'bg-primary/70 text-white cursor-not-allowed'
+                    : 'bg-primary text-white hover:bg-primary-dark'
+                }`}
               >
-                <Download size={20} />
+                {isGeneratingPdf ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />}
                 {t?.labels?.downloadPdf ?? 'PDF herunterladen'}
               </button>
 
               {onDownloadAllTemplates && (
                 <button
                   type="button"
-                  onClick={onDownloadAllTemplates}
+                  onClick={handleDownloadZip}
+                  disabled={isGeneratingZip}
                   className={`w-full px-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all ${
                     darkMode ? 'bg-purple-500/10 text-purple-400 hover:bg-purple-500/20' : 'bg-purple-50 text-purple-600 hover:bg-purple-100'
-                  }`}
+                  } ${isGeneratingZip ? 'opacity-70 cursor-not-allowed hover:bg-inherit' : ''}`}
                 >
-                  <FileArchive size={16} />
+                  {isGeneratingZip ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <FileArchive size={16} />
+                  )}
                   {t?.labels?.downloadAllZip ?? 'Alle als ZIP'}
                 </button>
               )}

@@ -8,11 +8,12 @@ import FaqModal from './FaqModal';
 import LegalPages from './LegalPages';
 import ErrorBoundary from './ErrorBoundary';
 import { lazyRetry } from '../utils/lazyRetry';
+import type { TranslationObject } from '../types/template';
 
 const SwissDocument = lazyRetry(() => import('./SwissDocument'));
 
 export interface ModalsLayerProps {
-  t: Record<string, unknown>;
+  t: TranslationObject;
   darkMode: boolean;
   faqOpen: boolean;
   setFaqOpen: (open: boolean) => void;
@@ -61,7 +62,7 @@ const ModalsLayer: React.FC<ModalsLayerProps> = ({
             className="text-white mb-4 font-medium flex items-center gap-2 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md"
             onClick={(e) => e.stopPropagation()}
           >
-            <Camera size={18} /> {(t?.ui as Record<string, string>)?.previewMode} — {previewTemplate}
+            <Camera size={18} /> {t?.ui?.previewMode} — {previewTemplate}
           </div>
 
           <div

@@ -1,7 +1,7 @@
 /**
  * Step4Photo - Photo upload with cropping
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Crop, Camera, Upload } from 'lucide-react';
 import ImageCropper from '../ImageCropper';
 import compressImage from '../../utils/imageCompression';
@@ -21,7 +21,9 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
   const [showCropper, setShowCropper] = useState(false);
   const [tempImage, setTempImage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isWindowDragging, setIsWindowDragging] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
+  const dragDepthRef = useRef(0);
 
   useEffect(() => {
     onNavigationVisibilityChange?.(!showCropper);
@@ -35,6 +37,52 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
     },
     [tempImage]
   );
+
+  useEffect(() => {
+    const hasFiles = (event: DragEvent): boolean =>
+      Array.from(event.dataTransfer?.types ?? []).includes('Files');
+
+    const handleWindowDragEnter = (event: DragEvent) => {
+      if (!hasFiles(event)) return;
+      dragDepthRef.current += 1;
+      setIsWindowDragging(true);
+    };
+
+    const handleWindowDragOver = (event: DragEvent) => {
+      if (!hasFiles(event)) return;
+      event.preventDefault();
+      setIsWindowDragging(true);
+    };
+
+    const handleWindowDragLeave = (event: DragEvent) => {
+      if (!hasFiles(event)) return;
+      dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+      if (dragDepthRef.current === 0) setIsWindowDragging(false);
+    };
+
+    const handleWindowDrop = (event: DragEvent) => {
+      if (!hasFiles(event)) return;
+      event.preventDefault();
+      dragDepthRef.current = 0;
+      setIsWindowDragging(false);
+      const file = event.dataTransfer?.files?.[0];
+      if (file) {
+        void processFile(file);
+      }
+    };
+
+    window.addEventListener('dragenter', handleWindowDragEnter);
+    window.addEventListener('dragover', handleWindowDragOver);
+    window.addEventListener('dragleave', handleWindowDragLeave);
+    window.addEventListener('drop', handleWindowDrop);
+
+    return () => {
+      window.removeEventListener('dragenter', handleWindowDragEnter);
+      window.removeEventListener('dragover', handleWindowDragOver);
+      window.removeEventListener('dragleave', handleWindowDragLeave);
+      window.removeEventListener('drop', handleWindowDrop);
+    };
+  }, []);
 
   const MAX_FILE_SIZE = 3 * 1024 * 1024;
 
@@ -241,6 +289,22 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
 
       {showCropper && tempImage && (
         <ImageCropper imageSrc={tempImage} onCropComplete={handleCropComplete} onCancel={handleCropCancel} aspectRatio={3 / 4} t={t} />
+      )}
+
+      {isWindowDragging && !showCropper && (
+        <div className="fixed inset-0 z-[70] pointer-events-none bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-6">
+          <div className="hand-drawn-border border-2 border-dashed border-primary rounded-2xl px-8 py-10 bg-white/95 dark:bg-gray-900/95 text-center shadow-2xl max-w-lg w-full">
+            <div className="flex items-center justify-center mb-4">
+              <Upload size={40} className="text-primary" />
+            </div>
+            <p className="font-display font-bold text-2xl text-text-main dark:text-white">
+              {t?.ui?.clickOrDrop ?? 'Drop photo here'}
+            </p>
+            <p className="mt-2 text-sm text-text-secondary dark:text-gray-300">
+              {t?.step4?.photoHint ?? 'Clear photos with good lighting work best!'}
+            </p>
+          </div>
+        </div>
       )}
     </>
   );

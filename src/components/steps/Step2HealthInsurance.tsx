@@ -33,7 +33,10 @@ const Step2HealthInsurance: React.FC = () => {
     { id: 'hasVaccination', label: t?.labels?.vaccination ?? 'Geimpft' },
     { id: 'hasRegistration', label: t?.labels?.registration ?? 'Registriert' },
     { id: 'willingToPayDeposit', label: t?.labels?.willingToPayDeposit ?? 'Bereit für Tierkaution' },
-  ];
+  ] as const satisfies ReadonlyArray<{
+    id: 'isNeutered' | 'hasVaccination' | 'hasRegistration' | 'willingToPayDeposit';
+    label: string;
+  }>;
 
   return (
     <div className={`page page-enter-${animDir} reveal fade-enter max-w-3xl mx-auto pb-32`}>
@@ -123,7 +126,12 @@ const Step2HealthInsurance: React.FC = () => {
                   {statusOptions.map((opt) => (
                     <label key={opt.id} className="flex items-center justify-between p-3 rounded-xl border-2 hand-drawn-border theme-card cursor-pointer hover:theme-card-bg-hover transition-colors">
                       <span className="text-sm font-medium theme-text">{opt.label}</span>
-                      <input type="checkbox" className="w-5 h-5" checked={!!(data as Record<string, unknown>)[opt.id]} onChange={(e) => updateData(opt.id, e.target.checked)} />
+                      <input
+                        type="checkbox"
+                        className="w-5 h-5"
+                        checked={Boolean(data[opt.id])}
+                        onChange={(e) => updateData(opt.id, e.target.checked)}
+                      />
                     </label>
                   ))}
                 </div>

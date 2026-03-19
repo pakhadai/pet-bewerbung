@@ -1,20 +1,23 @@
 import React from 'react';
+import type { TranslationObject } from '../types/template';
 
 export interface StepProgressProps {
   step: number;
-  t: Record<string, unknown>;
+  t: TranslationObject;
   darkMode: boolean;
   onStepClick?: (step: number) => void;
 }
 
 const StepProgress: React.FC<StepProgressProps> = ({ step, t, darkMode, onStepClick }) => {
+  const stepsNew = t?.stepsNew;
+  const ui = t?.ui;
   const steps = [
-    { key: 'step1', label: (t?.stepsNew as Record<string, Record<string, string>>)?.step1?.short || 'Daten', short: '1' },
-    { key: 'step2', label: (t?.stepsNew as Record<string, Record<string, string>>)?.step2?.short || 'Gesundheit', short: '2' },
-    { key: 'step3', label: (t?.stepsNew as Record<string, Record<string, string>>)?.step3?.short || 'Charakter', short: '3' },
-    { key: 'step4', label: (t?.stepsNew as Record<string, Record<string, string>>)?.step4?.short || 'Foto', short: '4' },
-    { key: 'step5', label: (t?.stepsNew as Record<string, Record<string, string>>)?.step5?.short || 'Design', short: '5' },
-    { key: 'step6', label: (t?.stepsNew as Record<string, Record<string, string>>)?.step6?.short || 'Vorschau', short: '6' },
+    { key: 'step1', label: stepsNew?.step1?.short || 'Daten', short: '1' },
+    { key: 'step2', label: stepsNew?.step2?.short || 'Gesundheit', short: '2' },
+    { key: 'step3', label: stepsNew?.step3?.short || 'Charakter', short: '3' },
+    { key: 'step4', label: stepsNew?.step4?.short || 'Foto', short: '4' },
+    { key: 'step5', label: stepsNew?.step5?.short || 'Design', short: '5' },
+    { key: 'step6', label: stepsNew?.step6?.short || 'Vorschau', short: '6' },
   ];
   const current = step >= 6 ? 6 : Math.min(step, 6);
 
@@ -39,7 +42,7 @@ const StepProgress: React.FC<StepProgressProps> = ({ step, t, darkMode, onStepCl
               onClick={() => handleStepClick(idx)}
               disabled={!clickable}
               className={`flex items-center gap-2 ${clickable ? 'cursor-pointer' : 'cursor-default'}`}
-              title={clickable ? `${(t?.ui as Record<string, string>)?.goTo || 'Gehe zu'} ${s.label}` : ''}
+              title={clickable ? `${ui?.goTo || 'Gehe zu'} ${s.label}` : ''}
             >
               <div
                 className={`flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border-2 font-display font-bold text-sm sm:text-base transition-all

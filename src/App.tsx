@@ -9,14 +9,19 @@
  * while business logic is distributed across focused modules.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppProviders from './components/AppProviders';
 import AppContent from './components/AppContent';
+import { initUmami } from './utils/umami';
 
 /**
  * App: Main component wrapped in providers
  */
 export default function App() {
+  useEffect(() => {
+    initUmami();
+  }, []);
+
   return (
     <AppProviders>
       <AppContent />

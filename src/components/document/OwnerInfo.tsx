@@ -3,12 +3,13 @@ import { Phone, Mail } from 'lucide-react';
 import { formatAddress, withFallback } from '../../utils/documentHelpers';
 import { generateQrDataUrl, getQrContent } from '../../utils/qrCode';
 import type { FormData } from '../../types/form';
+import type { TranslationObject } from '../../types/template';
 
 export type DocumentVariant = 'classic' | 'modern' | 'swiss' | 'compact';
 
 export interface OwnerInfoProps {
   data: FormData;
-  t: Record<string, unknown>;
+  t: TranslationObject;
   variant?: DocumentVariant;
   customColors?: unknown;
 }
@@ -99,7 +100,7 @@ const OwnerInfo: React.FC<OwnerInfoProps> = ({ data, t, variant = 'classic' }) =
   };
 
   const styles = getVariantStyles();
-  const doc = t?.doc as Record<string, string> | undefined;
+  const doc = t?.doc;
 
   return (
     <div className={styles.container}>
