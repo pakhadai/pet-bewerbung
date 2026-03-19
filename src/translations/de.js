@@ -93,7 +93,7 @@ export default {
   ai: {
     dataInfoButton: "Welche Daten werden bei KI-Generierung gesendet?",
     dataInfoTitle: "KI-Datenschutz",
-    dataInfoDesc: "Bei der KI-Textgenerierung werden folgende Daten an unseren Server gesendet:",
+    dataInfoDesc: "Die Textgenerierung erfolgt lokal. Folgende Angaben werden verwendet:",
     dataPetName: "Name des Tieres",
     dataPetType: "Tierart (Hund/Katze/Andere)",
     dataBreed: "Rasse",
@@ -296,14 +296,12 @@ export default {
     privacyIntro: "Datenschutz",
     privacyIntroText: "Wir nehmen den Schutz Ihrer persönlichen Daten ernst. Diese Datenschutzerklärung erklärt, wie wir mit Ihren Informationen umgehen.",
     dataCollection: "Datenerhebung",
-    dataCollectionText: "Alle von Ihnen eingegebenen Daten (Name, Adresse, Tierinformationen, Fotos) werden ausschliesslich in Ihrem Browser verarbeitet. Es werden keine personenbezogenen Daten auf unsere Server übertragen oder gespeichert. Die PDF-Erstellung erfolgt vollständig clientseitig.",
-    aiProcessing: "KI-Textgenerierung",
-    aiProcessingText: "Für die KI-gestützte Beschreibungsfunktion werden nur anonymisierte Tierdaten (Rasse, Alter, Charaktereigenschaften) an unseren Server und an Google Gemini AI zur Textgenerierung übermittelt. Persönliche Daten des Halters (Name, Adresse, E-Mail, Telefon) verlassen niemals Ihr Gerät und werden nicht an Google oder Dritte übertragen.",
+    dataCollectionText: "Alle von Ihnen eingegebenen Daten (Name, Adresse, Tierinformationen, Fotos) werden ausschliesslich in Ihrem Browser verarbeitet. Es werden keine personenbezogenen Daten auf unsere Server übertragen oder gespeichert. Die PDF- und Text-Erstellung erfolgt vollständig offline auf Ihrem Gerät.",
+    aiProcessing: "Textgenerierung",
+    aiProcessingText: "Die Textgenerierung erfolgt vollständig lokal in Ihrem Browser. Keine Daten werden an Server oder Dritte übertragen.",
     paymentData: "Zahlungsdaten",
     paymentDataText: "Bei einem freiwilligen Unterstützungsbeitrag werden folgende Daten von unserem Zahlungsanbieter verarbeitet:",
     thirdParty: "Drittanbieter-Dienste",
-    securityLogs: "Sicherheit & Rate Limiting",
-    securityLogsText: "Zur Verhinderung von Missbrauch (Rate Limiting) wird Ihre IP-Adresse temporär für maximal 24 Stunden auf unserem Server gespeichert. Diese Daten werden automatisch gelöscht und nicht mit Ihrem Pet-Dossier verknüpft. Nach Schweizer nFADP gelten IP-Adressen als personenbezogene Daten.",
     stripeText: "Unterstützungsbeiträge erfolgen über direkte Überweisung (TWINT/PayPal). Wir verarbeiten keine Zahlungsdaten.",
     fontsText: "Wir verwenden lokal gehostete Schriftarten, um Datenübertragungen an Google-Server zu vermeiden.",
     cookies: "Cookies",
@@ -315,7 +313,7 @@ export default {
     scope: "Geltungsbereich",
     scopeText: "Diese Bedingungen gelten für die Nutzung von Pet-Bewerbung.ch. Mit der Nutzung dieses Services stimmen Sie diesen Bedingungen zu.",
     services: "Leistungen",
-    servicesText: "Wir bieten ein kostenloses Tool zur Erstellung von Haustier-Bewerbungsunterlagen (Pet CV) für Mietbewerbungen in der Schweiz. Der Service umfasst Formularausfüllung, KI-gestützte Textgenerierung und PDF-Erstellung.",
+    servicesText: "Wir bieten ein kostenloses Tool zur Erstellung von Haustier-Bewerbungsunterlagen (Pet CV) für Mietbewerbungen in der Schweiz. Der Service umfasst Formularausfüllung, automatische Textgenerierung und PDF-Erstellung.",
     userResponsibility: "Nutzerverantwortung",
     responsibility1: "Sie sind für die Richtigkeit aller angegebenen Informationen verantwortlich",
     responsibility2: "Sie müssen die Rechte an hochgeladenen Fotos besitzen",
@@ -351,7 +349,7 @@ export default {
     transparencyBadge1: "Lokale Daten",
     transparencyBadge2: "Keine Werbung",
     transparencyBadge3: "100% kostenlos",
-    freeFeatures: ["3 Vorlagen", "KI-Textgenerierung", "PDF-Download", "ZIP mit allen Designs"]
+    freeFeatures: ["3 Vorlagen", "Automatische Textgenerierung", "PDF-Download", "ZIP mit allen Designs"]
   },
   step1Details: {
     ownerSection: "Halterangaben",
@@ -523,9 +521,9 @@ export default {
     items: [
       { id: "q1", category: "general", q: "Garantiert dieses Pet-Dossier eine Wohnungszusage?", a: "Nein, eine Garantie gibt es nicht. Aber ein professionelles Dossier zeigt dem Vermieter, dass Sie Verantwortung übernehmen (Versicherung, Erziehung). In der Schweiz entscheiden sich Vermieter oft für den Kandidaten, der das geringste Risiko darstellt – dieses Dokument minimiert Bedenken." },
       { id: "q2", category: "privacy", q: "Wo werden meine Daten gespeichert?", a: "Nirgendwo auf unseren Servern. Wir nutzen eine 'Local-First'-Technologie. Alle Daten (Namen, Fotos, Adressen) werden ausschliesslich im temporären Speicher Ihres Browsers verarbeitet. Sobald Sie das PDF herunterladen und den Tab schliessen, sind die Daten weg (ausser Sie löschen den Browser-Cache nicht)." },
-      { id: "q3", category: "payment", q: "Was kostet der Service?", a: "Der Service ist vollständig kostenlos. Sie erhalten 3 Vorlagen (Classic, Modern, Compact), KI-Textgenerierung (5 Anfragen pro Tag) und können alle Vorlagen als ZIP herunterladen." },
-      { id: "q4", category: "payment", q: "Was ist enthalten?", a: "Alle 3 Vorlagendesigns (Classic, Modern, Compact), KI-Textgenerierung für die Beschreibung (5 pro Tag pro IP), PDF-Download und ZIP-Download aller Vorlagen auf einmal." },
-      { id: "q6", category: "privacy", q: "Werden meine Daten für KI-Training genutzt?", a: "Nein. Wir senden nur anonymisierte Tierdaten (Rasse, Alter, Merkmale) an die KI, um den Text zu generieren. Persönliche Daten des Halters (Name, Adresse) verlassen niemals Ihr Gerät." },
+      { id: "q3", category: "payment", q: "Was kostet der Service?", a: "Der Service ist vollständig kostenlos. Sie erhalten 3 Vorlagen (Classic, Modern, Compact) und können diese als PDF oder ZIP herunterladen." },
+      { id: "q4", category: "payment", q: "Was ist enthalten?", a: "Alle 3 Vorlagendesigns, automatische Textgenerierung basierend auf Ihren Angaben, PDF-Download und ZIP-Download." },
+      { id: "q6", category: "privacy", q: "Verlassen meine Daten mein Gerät?", a: "Nein. Alles passiert lokal in Ihrem Browser (Local-First). Die Text- und PDF-Generierung benötigt keine Server." },
       { id: "q7", category: "tips", q: "Welche Versicherungen sind in der Schweiz wichtig?", a: "Für Hundehalter ist eine Privathaftpflichtversicherung (Privathaftpflicht) mit Deckung für Mieterschäden essenziell. Oft wird auch der Nachweis der AMICUS-Registrierung verlangt. Unser Dossier hebt diese Punkte hervor." },
       { id: "q8", category: "general", q: "Kann ich das Dossier nachträglich bearbeiten?", a: "Solange Sie den Browser nicht schliessen oder die Seite neu laden, bleiben Ihre Daten erhalten. Nach dem Schliessen müssen Sie ein neues Dossier erstellen." }
     ],

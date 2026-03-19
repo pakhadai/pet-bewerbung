@@ -40,10 +40,6 @@ export type StorageKey =
   | 'form-step'
   | 'form-draft'
 
-  // AI
-  | 'ai-generations'
-  | 'ai-last-reset'
-
   // UI State
   | 'theme-mode'
   | 'language'
@@ -55,10 +51,7 @@ export type StorageKey =
 
   // Photos (IndexedDB)
   | 'photo-blob'
-  | 'photo-thumbnail'
-
-  // Cache
-  | 'csrf-token';
+  | 'photo-thumbnail';
 
 export interface StorageStrategy {
   maxSize: number; // bytes
@@ -76,12 +69,8 @@ export const STORAGE_STRATEGIES: Record<StorageKey, StorageStrategy> = {
   // Medium data → localStorage
   'form-data': { maxSize: 10000, adapter: 'localStorage' },
   'custom-design': { maxSize: 5000, adapter: 'localStorage' },
-  'ai-generations': { maxSize: 1000, adapter: 'localStorage' },
-  'ai-last-reset': { maxSize: 100, adapter: 'localStorage' },
-
   // Temporary data → sessionStorage (cleared when tab closes)
   'form-draft': { maxSize: 10000, adapter: 'sessionStorage' },
-  'csrf-token': { maxSize: 200, adapter: 'sessionStorage' },
 
   // Large data → IndexedDB
   'photo-blob': { maxSize: 10485760, adapter: 'indexedDB' }, // 10 MB
