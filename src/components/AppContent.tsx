@@ -33,27 +33,32 @@ const AppContent: React.FC = () => {
     const tmpl = t?.templates || {};
     const lbl = t?.labels || {};
 
+    if (!tmpl.intro) {
+      // Translations not yet loaded — don't generate with empty strings
+      showToast(lbl.pleaseWait || '…', 'info');
+      return;
+    }
+
     // Build opening with name + breed
     const petLabel = [data.name, data.breed].filter(Boolean).join(' – ');
-    const introBase = tmpl.intro || 'Das beschriebene Tier ist ein sehr gepflegter und sozialverträglicher Mitbewohner.';
-    const intro = petLabel ? `${petLabel}: ${introBase} ` : `${introBase} `;
+    const intro = petLabel ? `${petLabel}: ${tmpl.intro} ` : `${tmpl.intro} `;
 
     // Add user-entered keywords
     const rawKeywords = (data.keywords || '').split(',').map((s: string) => s.trim()).filter(Boolean);
     let keywordsSection = '';
-    if (rawKeywords.length > 0) {
-      keywordsSection = `${tmpl.keywords || 'Besondere Eigenschaften: '}${rawKeywords.join(', ')}. `;
+    if (rawKeywords.length > 0 && tmpl.keywords) {
+      keywordsSection = `${tmpl.keywords}${rawKeywords.join(', ')}. `;
     }
 
     // Add noise level context if set
     let noiseNote = '';
-    if (data.noiseLevel === 'low') {
-      noiseNote = `${lbl.noiseLow || 'Ruhig, selten laut'}. `;
-    } else if (data.noiseLevel === 'medium') {
-      noiseNote = `${lbl.noiseMedium || 'Gelegentlich laut bei Besuch'}. `;
+    if (data.noiseLevel === 'low' && lbl.noiseLow) {
+      noiseNote = `${lbl.noiseLow}. `;
+    } else if (data.noiseLevel === 'medium' && lbl.noiseMedium) {
+      noiseNote = `${lbl.noiseMedium}. `;
     }
 
-    const fullText = `${intro}${keywordsSection}${noiseNote}${tmpl.outro || ''}`;
+    const fullText = `${intro}${keywordsSection}${noiseNote}${tmpl.outro || ''}`.trim();
     updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
     showToast('✨ Text generiert!', 'success');
   };

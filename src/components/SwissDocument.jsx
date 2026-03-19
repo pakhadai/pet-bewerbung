@@ -7,7 +7,6 @@
 import React from 'react';
 import {
   getLocale,
-  Watermark,
   getStyleOverrides,
 } from './templates/TemplateBase';
 import { getTemplateComponent, getTemplateConfig as getConfig } from './templates/templateRegistry';
@@ -20,10 +19,7 @@ const SwissDocument = ({ data, t, templateType = 'classic' }) => {
 
   return (
     <div className={config.container}>
-      <Watermark />
-      <div className="relative z-10 flex flex-col h-full">
-        <TemplateComponent data={data} t={t} customColors={null} config={config} styleOverrides={styleOverrides} />
-      </div>
+      <TemplateComponent data={data} t={t} customColors={null} config={config} styleOverrides={styleOverrides} />
     </div>
   );
 };

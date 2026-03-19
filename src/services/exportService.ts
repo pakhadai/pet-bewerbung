@@ -21,7 +21,8 @@ const PDF_GENERATION_PAUSE_MS = 800;
 
 /**
  * Trigger browser download of a blob.
- * Revoke URL on next frame - browser has already started download on link.click().
+ * Revoke URL after 10 seconds — rAF is too fast for large ZIPs on slow connections
+ * and can abort the download before the browser finishes streaming to disk.
  */
 function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
@@ -32,7 +33,7 @@ function downloadBlob(blob: Blob, filename: string): void {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  requestAnimationFrame(() => URL.revokeObjectURL(url));
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
 /**

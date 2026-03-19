@@ -415,7 +415,7 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
           {templateType === 'classic' ? (
             <View style={{ flex: 1, alignItems: 'center' }}>
               <Text style={commonStyles.footerBrandingFree}>
-                ✦ DOKUMENT GENERIERT VIA PET-BEWERBUNG.CH ✦
+                ✦ {(t?.doc?.footer ?? 'DOKUMENT GENERIERT VIA PET-BEWERBUNG.CH').toUpperCase()} ✦
               </Text>
             </View>
           ) : (

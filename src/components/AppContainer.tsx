@@ -53,7 +53,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   const data = useFormStore(selectData);
   const updateData = useFormStore(selectUpdateData);
   const resetForm = useFormStore(selectResetForm);
-  const { t, lang, setLang } = useTranslationContext();
+  const { t, lang, setLang, isLoading: isTranslationLoading } = useTranslationContext();
   const { step, animDir, goToStep } = useWizardNavigationContext();
   const { darkMode, setDarkMode, toggleTheme } = useThemeContext();
   const { showToast } = useToastContext();
@@ -65,7 +65,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
 
   // Validated navigation: sync validation on current data
   const handleNext = () => {
-    if (document.activeElement?.blur) document.activeElement.blur();
     const { isValid } = validateStep(data, step);
     if (!isValid) {
       showToast(t?.validation?.fillRequired || 'Bitte füllen Sie die Pflichtfelder aus', 'error');
@@ -73,6 +72,18 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     }
     goToStep(step + 1);
   };
+
+  // Accessibility: move focus to first focusable element in the new step
+  useEffect(() => {
+    if (step >= 1 && step <= 6) {
+      // Defer to let the new step's DOM render first
+      const id = setTimeout(() => {
+        const firstInput = document.querySelector<HTMLElement>('main input:not([type="hidden"]), main select, main textarea');
+        firstInput?.focus({ preventScroll: false });
+      }, 100);
+      return () => clearTimeout(id);
+    }
+  }, [step]);
 
   // Local state for modals
   const [legalPage, setLegalPage] = useState<string | null>(null);
@@ -97,6 +108,17 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       setNavigationVisible(true);
     }
   }, [step]);
+
+  // Block render until translations are ready — prevents crashes like t.labels.xxx on empty object
+  if (isTranslationLoading) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
+        <div className="flex flex-col items-center gap-4 text-slate-400">
+          <span className="material-symbols-outlined animate-spin text-4xl">progress_activity</span>
+        </div>
+      </div>
+    );
+  }
 
   // Convert darkMode to theme string
   const theme = darkMode ? 'dark' : 'light';
