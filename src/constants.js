@@ -39,30 +39,6 @@ const INITIAL_DATA = {
   willingToPayDeposit: true,
   behaviorWithChildren: '', // good, neutral, avoid
   behaviorWithPets: '', // good, neutral, avoid
-  // Custom design settings (Visual Editor)
-  // Stored in browser localStorage, not in project
-  customDesign: {
-    isEdited: false,              // Flag set to true when user applies changes in editor
-    // Colors
-    primaryColor: '#4a148c',      // Header/title color (Midnight Purple default)
-    secondaryColor: '#f3e5f5',    // Accent/highlight color
-    backgroundColor: '#ffffff',   // Document background
-    textColor: '#1f2937',         // Body text color
-    // Fonts
-    headerFont: 'helvetica',      // Heading font family
-    bodyFont: 'helvetica',        // Body text font family
-    headerFontSize: 9,            // Heading font size (px for HTML, pt for PDF)
-    bodyFontSize: 10,             // Body font size (px for HTML, pt for PDF)
-    // Text styles
-    headerBold: true,             // Bold headers
-    headerItalic: false,          // Italic headers
-    bodyBold: false,              // Bold body text
-    bodyItalic: false,            // Italic body text
-    // Layout
-    layoutOrder: ['photo', 'owner', 'details', 'behavior', 'description', 'legal', 'reference'],
-    // Visibility
-    hiddenSections: []            // Sections to hide
-  }
 };
 
 const MAX_DESCRIPTION_LENGTH = 470; // limit for generated / manual descriptions

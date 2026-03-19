@@ -151,7 +151,7 @@ const TermsContent = ({ t }) => (
       <h3 className="font-semibold text-base mb-2">{t.legal?.services || 'Services'}</h3>
       <p className="theme-text-muted">
         {t.legal?.servicesText ||
-          'We provide a free tool to create pet application documents (Pet CV) for rental applications in Switzerland. The service includes form completion, AI-assisted text generation, and PDF creation.'}
+          'We provide a free tool to create pet application documents (Pet CV) for rental applications in Switzerland. The service includes form completion, automatic text generation, and PDF creation.'}
       </p>
     </section>
 
@@ -163,14 +163,6 @@ const TermsContent = ({ t }) => (
         <li>{t.legal?.responsibility3 || 'You may not use this service for fraudulent purposes'}</li>
         <li>{t.legal?.responsibility4 || 'You acknowledge that this document does not guarantee housing approval'}</li>
       </ul>
-    </section>
-
-    <section>
-      <h3 className="font-semibold text-base mb-2">{t.legal?.donations || 'Donations'}</h3>
-      <p className="theme-text-muted">
-        {t.legal?.donationsText ||
-          'Donations are voluntary and non-refundable. They help maintain and improve this free service.'}
-      </p>
     </section>
 
     <section>

@@ -62,7 +62,7 @@ const Step3Description = React.memo(({ onGenerate }) => {
             <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${darkMode ? 'bg-green-900/20 border border-green-600/30' : 'bg-green-50 border border-green-200'}`}>
               <span className="material-symbols-outlined text-green-500 text-lg sketch-icon-filled">verified_user</span>
               <span className={`text-xs font-medium ${darkMode ? 'text-green-300' : 'text-green-700'}`}>
-                100% Privat. Alles wird lokal in Ihrem Browser generiert.
+                {t?.labels?.localPrivacy ?? 'Lokale Erzeugung • Datenschutz'}
               </span>
             </div>
           </div>

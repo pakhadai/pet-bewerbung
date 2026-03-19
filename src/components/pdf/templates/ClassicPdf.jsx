@@ -16,11 +16,8 @@ import {
 import {
   commonStyles,
   TEMPLATE_COLORS,
-  getCustomStyle,
-  hasCustomDesign,
   getLayoutSections,
   getLocale,
-  INITIAL_DATA,
 } from '../PdfBase';
 import { formatAddress, getGenderLabel, formatAge, formatWeight, withFallback, sanitizeForPdf } from '../../../utils/documentHelpers';
 
@@ -40,29 +37,21 @@ export const getPdfClassicConfig = (data, t) => {
  * Classic PDF Template Component (also handles Modern, Compact, Swiss variants)
  */
 const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
-  const customDesign = data?.customDesign || INITIAL_DATA.customDesign;
-  const isCustomized = hasCustomDesign(customDesign);
-  const customStyle = isCustomized ? getCustomStyle(customDesign) : null;
-
-  // Use custom style if available, otherwise use template default colors
-  const colors = customStyle || (TEMPLATE_COLORS[templateType] || TEMPLATE_COLORS.classic);
+  const colors = TEMPLATE_COLORS[templateType] || TEMPLATE_COLORS.classic;
 
   // Template type flags
-  const isSwiss = templateType === 'swiss';
+  const isSwiss = false; // 'swiss' template removed
   const isCompact = templateType === 'compact';
   const isModern = templateType === 'modern';
 
-  // Text color and background
-  const textColor = customStyle?.text || '#334155';
-  const backgroundColor = customStyle?.background || '#ffffff';
-
-  // Font weights & sizes (react-pdf uses 'bold' or 'normal')
-  const headerFontWeight = customStyle?.headerBold ? 'bold' : 'normal';
-  const headerFontStyle = customStyle?.headerItalic ? 'italic' : 'normal';
-  const bodyFontWeight = customStyle?.bodyBold ? 'bold' : 'normal';
-  const bodyFontStyle = customStyle?.bodyItalic ? 'italic' : 'normal';
-  const headerFontSize = customDesign?.headerFontSize || 9;
-  const bodyFontSize = customDesign?.bodyFontSize || 10;
+  const textColor = '#334155';
+  const backgroundColor = '#ffffff';
+  const headerFontWeight = 'bold';
+  const headerFontStyle = 'normal';
+  const bodyFontWeight = 'normal';
+  const bodyFontStyle = 'normal';
+  const headerFontSize = 9;
+  const bodyFontSize = 10;
 
   // Get layout sections (fixed default)
   const { sidebarSections, mainSections } = getLayoutSections();

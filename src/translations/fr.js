@@ -120,8 +120,6 @@ export default {
     generating: "Génération en cours...",
     aiBtn: "Générer le texte",
     aiResult: "Texte pour la régie",
-    aiError: "Génération IA échouée. Utilisation du modèle.",
-    aiNetworkError: "Erreur réseau. Veuillez vérifier votre connexion et réessayer.",
     recrop: "Recadrer l'image",
     useFullImage: "Utiliser l'image complète",
     cropDone: "Recadrer",
@@ -153,10 +151,6 @@ export default {
     behaviorTitle: "Comportement & Routine",
     referenceTitle: "Références & Contact d'urgence",
     petType: "Type d'animal",
-    aiLimitReached: "Limite IA atteinte. Réessayez demain.",
-    aiLimitBtn: "Limite atteinte – réessayez demain",
-    aiRemaining: "génération(s) IA restante(s)",
-    aiLimitInfo: "Limite atteinte – réessayez demain",
     zipMobileDisabled: "Téléchargement ZIP désactivé sur mobile. Téléchargez les modèles individuellement.",
     generatingZip: "Génération de tous les modèles...",
     zipDownloaded: "ZIP avec tous les modèles téléchargé!",
@@ -167,7 +161,6 @@ export default {
   validation: {
     required: "Obligatoire",
     fillRequired: "Veuillez remplir tous les champs obligatoires",
-    pleaseWait: "Veuillez attendre la fin de la génération IA.",
     ownerNameRequired: "Le nom est requis (min. 2 caractères)",
     postalInvalid: "Le code postal doit contenir 4 chiffres",
     emailInvalid: "Adresse e-mail invalide",
@@ -190,13 +183,6 @@ export default {
     swissPetCV: "CV Animal Suisse",
     insurancePrefix: "Assurance:"
   },
-  monetization: {
-    title: "Soutenir le projet",
-    desc: "Ce service est gratuit. Aidez-nous avec une donation.",
-    free: "Utiliser gratuitement",
-    coffee: "Offrir un café (5 CHF)",
-    bone: "Offrir une friandise (10 CHF)"
-  },
   thankYou: {
     title: "Merci",
     msg: "Merci d'avoir utilisé notre service. Votre document a été généré localement.",
@@ -204,32 +190,8 @@ export default {
     subtitle: "Le CV de votre animal a été généré et est prêt.",
     downloadPdf: "Télécharger PDF",
     privacyLocal: "Vos données ont été traitées localement et ne sont jamais stockées sur nos serveurs.",
-    supportTitle: "Choisir votre contribution",
-    supportDesc: "Pet-Bewerbung est sans publicité et ne stocke aucune donnée. Utilisez-le gratuitement – si le résultat vous plaît, soutenez-nous par une contribution équitable.",
-    supportCta: "PayPal / TWINT",
-    everyTreat: "Prix équitable – chaque contribution compte ! Wouf & Miaou.",
     createAnother: "← Créer un autre",
-    showSupport: "Afficher les options de soutien",
     purrPerfect: "PURR-FECT !"
-  },
-  paymentSuccess: {
-    title: "Paiement réussi !",
-    message: "Merci pour votre généreux don !",
-    detailsTitle: "Détails du paiement",
-    thankYouTitle: "Merci !",
-    thankYouMessage: "Votre soutien nous aide à maintenir et améliorer ce service. Nous apprécions vraiment votre générosité !",
-    tailWagTitle: "Un grand remuement de queue pour vous !",
-    donationMade: "Votre don de",
-    donationMadeSuffix: "vient de faire une grande différence.",
-    downloadPdf: "Télécharger le PDF",
-    returnHome: "Retour à l'accueil",
-    paymentConfirmed: "Paiement confirmé",
-    secureTransaction: "Transaction sécurisée",
-    amount: "Montant",
-    email: "E-mail",
-    status: "Statut",
-    completed: "Terminé",
-    goHome: "Retour à l'accueil"
   },
   templates: {
     intro: "L'animal décrit est un compagnon très soigné et sociable.",
@@ -254,7 +216,6 @@ export default {
     aiProcessing: "Génération de texte",
     aiProcessingText: "La génération de texte se fait entièrement localement dans votre navigateur. Aucune donnée n'est envoyée à un serveur ou à des tiers.",
     thirdParty: "Services tiers",
-    stripeText: "Les contributions de soutien se font par virement direct (TWINT/PayPal). Nous ne traitons pas les données de paiement.",
     fontsText: "Nous utilisons des polices hébergées localement pour éviter le transfert de données vers les serveurs Google.",
     cookies: "Cookies",
     cookiesText: "Nous utilisons uniquement des cookies techniquement nécessaires pour stocker vos préférences de langue et de thème. Aucun cookie de suivi n'est utilisé.",
@@ -271,8 +232,6 @@ export default {
     responsibility2: "Vous devez posséder les droits sur les photos téléchargées",
     responsibility3: "Vous ne pouvez pas utiliser ce service à des fins frauduleuses",
     responsibility4: "Vous reconnaissez que ce document ne garantit pas l'obtention d'un logement",
-    donations: "Dons",
-    donationsText: "Les dons sont volontaires et non remboursables. Ils aident à maintenir et améliorer ce service gratuit.",
     changes: "Modifications des conditions",
     changesText: "Nous nous réservons le droit de modifier ces conditions à tout moment. L'utilisation continue du service constitue l'acceptation des conditions mises à jour.",
     jurisdiction: "Juridiction",
@@ -342,13 +301,11 @@ export default {
     },
     step3: {
       title: "Photo et design",
-      subtitle: "Télécharger et modèle",
-      badge: "IA"
+      subtitle: "Télécharger et modèle"
     },
     step4: {
       title: "Éditeur et export",
-      subtitle: "Personnaliser et PDF",
-      badge: "Photo"
+      subtitle: "Personnaliser et PDF"
     },
     step5: {
       title: "Aperçu",
@@ -368,81 +325,20 @@ export default {
     faq: "FAQ",
     faqComingSoon: "FAQ — bientôt disponible."
   },
-  builder: {
-    title: 'Constructeur de modèles',
-    subtitle: 'Personnalisez votre document',
-    colorScheme: 'Palette de couleurs',
-    primaryColor: 'Couleur d\'accent',
-    secondaryColor: 'Couleur de fond',
-    sectionOrder: 'Ordre des sections',
-    dragHint: 'Faites glisser les sections pour les réorganiser',
-    required: 'Obligatoire',
-    style: 'Style',
-    styles: {
-      classic: 'Classique',
-      modern: 'Moderne',
-      minimal: 'Minimaliste'
-    },
-    sections: {
-      photo: 'Photo',
-      owner: 'Info propriétaire',
-      details: 'Détails animal',
-      behavior: 'Comportement',
-      description: 'Description',
-      legal: 'Juridique',
-      reference: 'Références'
-    },
-    reset: 'Réinitialiser',
-    apply: 'Appliquer',
-    applied: 'Modifications appliquées!'
-  },
-  // Visual Editor (nouvelles traductions de l'éditeur de style)
-  editor: {
-    title: 'Personnaliser le document',
-    subtitle: 'Couleurs, polices & visibilité',
-    palettes: 'Palettes de couleurs',
-    colors: 'Couleurs personnalisées',
-    headerColor: 'En-têtes',
-    textColor: 'Couleur du texte',
-    accentColor: 'Couleur d\'accent',
-    bgColor: 'Arrière-plan',
-    typography: 'Typographie',
-    headerFont: 'En-têtes',
-    bodyFont: 'Corps du texte',
-    headerStyle: 'Style des en-têtes',
-    bodyStyle: 'Style du texte',
-    visibility: 'Visibilité',
-    reset: 'Réinitialiser',
-    close: 'Fermer',
-    apply: 'Appliquer',
-    unsaved: 'Non enregistré',
-    saved: 'Enregistré',
-    bold: 'Gras',
-    italic: 'Italique',
-    sections: {
-      photo: 'Photo',
-      owner: 'Info propriétaire',
-      details: 'Détails animal',
-      behavior: 'Comportement',
-      description: 'Description',
-      legal: 'Juridique',
-      reference: 'Références'
-    }
-  },
   faq: {
     title: "Questions fréquentes",
     searchPlaceholder: "Rechercher des réponses...",
     noResults: "Aucun résultat pour",
-    categories: { all: "Tout", general: "Général", privacy: "Confidentialité & Sécurité", payment: "Coûts", tips: "Conseils pour la recherche" },
+    categories: { all: "Tout", general: "Général", privacy: "Confidentialité & Sécurité", cost: "Coûts", tips: "Conseils pour la recherche" },
     items: [
       { id: "q1", category: "general", q: "Ce dossier garantit-il que j'obtiendrai l'appartement?", a: "Non, aucune garantie. Mais un dossier professionnel montre au propriétaire que vous prenez vos responsabilités (assurance, éducation). En Suisse, les propriétaires choisissent souvent le candidat à moindre risque – ce document minimise les inquiétudes." },
       { id: "q2", category: "privacy", q: "Où sont stockées mes données?", a: "Nulle part sur nos serveurs. Nous utilisons une technologie 'Local-First'. Toutes les données sont traitées uniquement dans le stockage temporaire de votre navigateur. Une fois le PDF téléchargé et l'onglet fermé, les données disparaissent." },
-      { id: "q3", category: "payment", q: "Combien coûte le service?", a: "Le service est entièrement gratuit. Vous obtenez 3 modèles (Classic, Modern, Compact) et pouvez les télécharger en PDF ou ZIP." },
-      { id: "q4", category: "payment", q: "Qu'est-ce qui est inclus?", a: "Les 3 designs, génération automatique de texte et téléchargement PDF et ZIP." },
+      { id: "q3", category: "cost", q: "Combien coûte le service?", a: "Le service est entièrement gratuit. Vous obtenez 3 modèles (Classic, Modern, Compact) et pouvez les télécharger en PDF ou ZIP." },
+      { id: "q4", category: "cost", q: "Qu'est-ce qui est inclus?", a: "Les 3 designs, génération automatique de texte et téléchargement PDF et ZIP." },
       { id: "q6", category: "privacy", q: "Mes données quittent-elles mon appareil?", a: "Non. Tout se passe localement dans votre navigateur (Local-First). La génération de texte et PDF ne nécessite aucun serveur." },
       { id: "q7", category: "tips", q: "Quelles assurances sont importantes en Suisse?", a: "Pour les propriétaires de chiens, une assurance responsabilité civile privée avec couverture des dommages locatifs est essentielle. La preuve d'enregistrement AMICUS est souvent requise." },
       { id: "q8", category: "general", q: "Puis-je modifier le dossier plus tard?", a: "Tant que vous ne fermez pas le navigateur, vos données restent. Après fermeture, vous devez créer un nouveau dossier." }
     ],
-    footerHint: "Questions sur la technique ou le paiement? support@pet-bewerbung.ch"
+    footerHint: "Questions sur le service? Visitez pet-bewerbung.ch"
   }
 };

@@ -56,11 +56,8 @@ export default {
     preview: "Preview",
     previewMode: "Preview Mode",
     cancel: "Cancel",
-    pay: "Pay",
     loading: "Loading…",
     error: "Error",
-    emailComingSoon: "Email function will be added soon",
-    emailInDevelopment: "Email function in development",
     freeSuccess: "Thank you! Good luck with your search.",
     insuranceInfoDog: "For dogs, AMICUS and liability insurance are often mandatory in Switzerland.",
     insuranceInfoCat: "For cats too, insurance is often recommended (tenant damages).",
@@ -89,19 +86,6 @@ export default {
     photoHint: "Clear photos with good lighting work best!",
     clickOrDrop: "Click or Drag & Drop"
   },
-  // AI data privacy info
-  ai: {
-    dataInfoButton: "What data is sent during AI generation?",
-    dataInfoTitle: "AI Privacy",
-    dataInfoDesc: "The following data is sent to our server during AI text generation:",
-    dataPetName: "Pet name",
-    dataPetType: "Pet type (Dog/Cat/Other)",
-    dataBreed: "Breed",
-    dataKeywords: "Keywords/Character traits",
-    dataLang: "Selected language",
-    dataNoPersonal: "No personal data (name, address, phone) is sent. The generated PDF is created locally."
-  },
-  // Step 4 specific
   step4: {
     photoPrivacy: "Your photo is never uploaded. Everything happens locally in your browser.",
     changePhotoHint: "Click on the image or drag a new one here",
@@ -115,9 +99,7 @@ export default {
     tip3: "Neutral background"
   },
   step5: {
-    photoPreview: "Your photo will be displayed in the templates",
-    premiumInfo: "Premium templates can be selected and previewed.",
-    premiumInfoSub: "Payment is only required at download."
+    photoPreview: "Your photo will be displayed in the templates"
   },
   labels: {
     type: "Animal Type",
@@ -158,8 +140,6 @@ export default {
     generating: "Generating...",
     aiBtn: "Generate Text",
     aiResult: "Text for Landlord",
-    aiError: "AI generation failed. Using template.",
-    aiNetworkError: "Network error. Please check your connection and try again.",
     recrop: "Recrop",
     remove: "Remove",
     useFullImage: "Use full image",
@@ -192,21 +172,18 @@ export default {
     behaviorTitle: "Behavior & Routine",
     referenceTitle: "References & Emergency Contact",
     petType: "Pet Type",
-    aiLimitReached: "AI limit reached. Try again tomorrow.",
-    aiLimitBtn: "Limit reached – try again tomorrow",
-    aiRemaining: "AI generation(s) remaining",
-    aiLimitInfo: "Limit reached – try again tomorrow",
     zipMobileDisabled: "ZIP download disabled on mobile. Please download templates individually.",
     generatingZip: "Generating all templates...",
     zipDownloaded: "ZIP with all templates downloaded!",
     zipError: "Error creating ZIP archive",
     freeTemplate: "Free",
-    downloadAllZip: "All as ZIP"
+    downloadAllZip: "All as ZIP",
+    storageQuotaError: "Private mode detected: data won't be saved. Don't reload the page!",
+    storageError: "Data could not be saved."
   },
   validation: {
     required: "Required",
     fillRequired: "Please fill in all required fields",
-    pleaseWait: "Please wait until AI generation is complete.",
     ownerNameRequired: "Name is required (min. 2 characters)",
     postalInvalid: "Postal code must be 4 digits",
     emailInvalid: "Invalid email address",
@@ -231,13 +208,6 @@ export default {
     qrLabel: "Scan contact",
     qrHint: "Add vCard"
   },
-  monetization: {
-    title: "Support Us",
-    desc: "This service is free. Help us with a donation.",
-    free: "Use for Free",
-    coffee: "Buy us a coffee (5 CHF)",
-    bone: "Buy a treat (10 CHF)"
-  },
   thankYou: {
     title: "Thank you",
     msg: "Thanks for using the service. Your document was created locally.",
@@ -245,45 +215,8 @@ export default {
     subtitle: "Your pet's professional resume has been generated and is ready.",
     downloadPdf: "Download PDF",
     privacyLocal: "Your data was processed locally and is never stored on our servers.",
-    supportTitle: "Choose Your Contribution",
-    supportDesc: "Pet-Bewerbung is ad-free and stores no data. Use it for free – if you like the result, support us with a fair contribution.",
-    supportCta: "PayPal / TWINT",
-    everyTreat: "Fair pay – every contribution counts! Woof & Meow.",
     createAnother: "← Create Another One",
-    showSupport: "Show support options",
     purrPerfect: "PURR-FECT!"
-  },
-  paymentSuccess: {
-    title: "Payment Successful!",
-    message: "Thank you for your generous donation!",
-    detailsTitle: "Payment Details",
-    thankYouTitle: "Thank You!",
-    thankYouMessage: "Your support helps us maintain and improve this service. We truly appreciate your generosity!",
-    tailWagTitle: "A Huge Tail Wag For You!",
-    donationMade: "Your donation of",
-    donationMadeSuffix: "just made a big difference.",
-    downloadPdf: "Download PDF",
-    returnHome: "Return Home",
-    paymentConfirmed: "Payment Confirmed",
-    secureTransaction: "Secure Transaction",
-    amount: "Amount",
-    email: "Email",
-    status: "Status",
-    completed: "Completed",
-    goHome: "Back to Homepage",
-    pawsome: "You're Pawsome!",
-    supportFuels: "Your support fuels our mission",
-    thankYouBanner: "THANK YOU!",
-    generosityQuote: '"Your generosity helps us keep PetCV.io free and private for pet owners worldwide. From the whiskers of our cats to the wags of our dogs, we thank you!"',
-    lifetimeBadge: "Lifetime Supporter Badge Earned",
-    shareLove: "Share Love",
-    spreadWord: "Spread the word about PetCV.io",
-    copyLink: "Copy Link",
-    shareText: "Create a pet resume with PetCV.io!",
-    shared: "Link shared!",
-    linkCopied: "Link copied!",
-    shareError: "Could not share",
-    thanks: "Thank you!"
   },
   templates: {
     intro: "The described animal is a very well-groomed and socially compatible companion.",
@@ -307,10 +240,7 @@ export default {
     dataCollectionText: "All data you enter (name, address, pet information, photos) is processed exclusively in your browser. No personal data is transmitted to or stored on our servers. PDF and text generation happens entirely offline on your device.",
     aiProcessing: "Text Generation",
     aiProcessingText: "Text generation is done entirely locally in your browser. No data is sent to any server or third party.",
-    paymentData: "Payment Data",
-    paymentDataText: "When you make a voluntary support contribution, the following data is processed by our payment provider:",
     thirdParty: "Third-Party Services",
-    stripeText: "Support contributions are made via direct transfer (TWINT/PayPal). We do not process payment data.",
     fontsText: "We use locally hosted fonts to avoid data transfer to Google servers.",
     cookies: "Cookies",
     cookiesText: "We use only technically necessary cookies to store your language and theme preferences. No tracking cookies are used.",
@@ -327,8 +257,6 @@ export default {
     responsibility2: "You must own the rights to any photos uploaded",
     responsibility3: "You may not use this service for fraudulent purposes",
     responsibility4: "You acknowledge that this document does not guarantee housing approval",
-    donations: "Support Contributions",
-    donationsText: "Support contributions are voluntary and non-refundable. They help maintain and improve this free service.",
     changes: "Changes to Terms",
     changesText: "We reserve the right to modify these terms at any time. Continued use of the service constitutes acceptance of the updated terms.",
     jurisdiction: "Jurisdiction",
@@ -352,12 +280,11 @@ export default {
     solutionTitle: "Your solution: The Pet Dossier",
     solutionDesc: "A professional CV shows responsibility, proves insurance coverage and sets you apart from other applicants.",
     cta: "Create Now",
-    // Free vs Premium comparison
     transparencyTitle: "All free",
     transparencyBadge1: "Local Data",
     transparencyBadge2: "No Ads",
     transparencyBadge3: "100% free",
-    freeFeatures: ["3 templates", "AI text generation", "PDF download", "ZIP with all designs"]
+    freeFeatures: ["3 templates", "Automatic text generation", "PDF download", "ZIP with all designs"]
   },
   step1Details: {
     ownerSection: "Owner Information",
@@ -398,10 +325,9 @@ export default {
       subtitle: "Insurance, Vet, Contacts"
     },
     step3: {
-      title: "Character & AI Text",
+      title: "Character & Description",
       short: "Character",
-      subtitle: "Create Description",
-      badge: "AI"
+      subtitle: "Create Description"
     },
     step4: {
       title: "Upload Photo",
@@ -433,85 +359,17 @@ export default {
     faq: "FAQ",
     faqComingSoon: "FAQ — coming soon."
   },
-  // Affiliate links
   affiliate: {
     insuranceTitle: 'No liability insurance yet?',
     insuranceDesc: 'Landlords often require proof. Protect yourself and your pet from 5 CHF/month.',
     insuranceCta: 'Compare offers'
   },
-  // Template Builder / Visual Editor
-  builder: {
-    title: 'Visual Editor',
-    subtitle: 'Design your document professionally',
-    colorScheme: 'Color Scheme',
-    primaryColor: 'Accent Color',
-    secondaryColor: 'Background Color',
-    sectionOrder: 'Sections',
-    dragHint: 'Drag sections to reorder',
-    required: 'Required',
-    style: 'Style',
-    styles: {
-      classic: 'Classic',
-      modern: 'Modern',
-      minimal: 'Minimal'
-    },
-    sections: {
-      photo: 'Photo',
-      owner: 'Owner Info',
-      details: 'Pet Details',
-      behavior: 'Behavior',
-      description: 'Description',
-      legal: 'Legal',
-      reference: 'References'
-    },
-    reset: 'Reset',
-    apply: 'Apply',
-    applied: 'Changes applied!',
-    tips: 'Tips',
-    tipSelect: 'Click on a section to select it',
-    tipDrag: 'Drag sections in the left panel to reorder',
-    tipHide: 'Hide optional sections',
-    tipColors: 'Use professional colors',
-    colorPreview: 'Color Preview',
-    colorPreviewDesc: 'This is how your colors will look in the document.',
-    hidden: 'Hidden'
-  },
-  // Visual Editor (new style editor translations)
-  editor: {
-    title: 'Customize Document',
-    subtitle: 'Colors, fonts & visibility',
-    palettes: 'Color Palettes',
-    colors: 'Custom Colors',
-    headerColor: 'Headers',
-    textColor: 'Text Color',
-    accentColor: 'Accent Color',
-    bgColor: 'Background',
-    typography: 'Typography',
-    headerFont: 'Headers',
-    bodyFont: 'Body Text',
-    headerStyle: 'Header Style',
-    bodyStyle: 'Text Style',
-    visibility: 'Visibility',
-    reset: 'Reset',
-    close: 'Close',
-    apply: 'Apply',
-    unsaved: 'Unsaved',
-    saved: 'Saved',
-    bold: 'Bold',
-    italic: 'Italic',
-    sections: {
-      photo: 'Photo',
-      owner: 'Owner Info',
-      details: 'Pet Details',
-      behavior: 'Behavior',
-      description: 'Description',
-      legal: 'Legal',
-      reference: 'References'
-    }
-  },
-  // Legal/Cookie
-  legal: {
-    cookieRequiredForPayment: 'Please accept cookies for payments'
+  placeholders: {
+    ownerName: 'e.g. John Doe',
+    street: 'e.g. Bahnhofstrasse',
+    petName: 'e.g. Luna',
+    breed: 'e.g. Beagle',
+    selectGender: 'Select...'
   },
   faq: {
     title: "Frequently Asked Questions",
@@ -521,18 +379,18 @@ export default {
       all: "All",
       general: "General",
       privacy: "Privacy & Security",
-      payment: "Costs",
+      cost: "Costs",
       tips: "Tips for Finding Housing"
     },
     items: [
       { id: "q1", category: "general", q: "Does this Pet Dossier guarantee I get the apartment?", a: "No, there is no guarantee. But a professional dossier shows the landlord that you take responsibility (insurance, training). In Switzerland, landlords often choose the candidate who poses the least risk – this document minimizes concerns." },
-      { id: "q2", category: "privacy", q: "Where are my data stored?", a: "Nowhere on our servers. We use 'Local-First' technology. All data (names, photos, addresses) is processed exclusively in your browser's temporary storage. Once you download the PDF and close the tab, the data is gone (unless you don't clear the browser cache)." },
-      { id: "q3", category: "payment", q: "How much does the service cost?", a: "The service is completely free. You get 3 templates (Classic, Modern, Compact) and can download them as PDF or ZIP." },
-      { id: "q4", category: "payment", q: "What's included?", a: "All 3 template designs, automatic text generation based on your input, PDF download, and ZIP download." },
+      { id: "q2", category: "privacy", q: "Where are my data stored?", a: "Nowhere on our servers. We use 'Local-First' technology. All data (names, photos, addresses) is processed exclusively in your browser's temporary storage. Once you download the PDF and close the tab, the data is gone." },
+      { id: "q3", category: "cost", q: "How much does the service cost?", a: "The service is completely free. You get 3 templates (Classic, Modern, Compact) and can download them as PDF or ZIP." },
+      { id: "q4", category: "cost", q: "What's included?", a: "All 3 template designs, automatic text generation based on your input, PDF download, and ZIP download." },
       { id: "q6", category: "privacy", q: "Do my data leave my device?", a: "No. Everything happens locally in your browser (Local-First). Text and PDF generation require no servers." },
       { id: "q7", category: "tips", q: "Which insurances are important in Switzerland?", a: "For dog owners, private liability insurance (Privathaftpflicht) with coverage for tenant damage is essential. Proof of AMICUS registration is often also required. Our dossier highlights these points." },
       { id: "q8", category: "general", q: "Can I edit the dossier later?", a: "As long as you don't close the browser or reload the page, your data remains. After closing, you must create a new dossier." }
     ],
-    footerHint: "Questions about tech or payment? Email support@pet-bewerbung.ch"
+    footerHint: "Questions about the service? Visit pet-bewerbung.ch"
   }
 };

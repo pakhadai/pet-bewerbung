@@ -4,7 +4,6 @@
  */
 
 import React from 'react';
-import { INITIAL_DATA } from '../../constants';
 import PetPhoto from '../document/PetPhoto';
 import OwnerInfo from '../document/OwnerInfo';
 import PetDetails from '../document/PetDetails';
@@ -38,12 +37,6 @@ export const SECTION_COMPONENTS = {
   )
 };
 
-// Default customDesign values for comparison (Midnight Purple theme)
-export const DEFAULT_COLORS = {
-  primaryColor: '#4a148c',
-  secondaryColor: '#f3e5f5'
-};
-
 // Sidebar sections (left column)
 export const SIDEBAR_SECTIONS = ['photo', 'owner', 'behavior'];
 // Main sections (right column)
@@ -63,49 +56,10 @@ export const getLocale = (lang) => {
 };
 
 /**
- * Font family mapping
+ * No visual editor — customization always returns null/empty.
+ * Kept as stubs so template components don't need to change their signatures.
  */
-export const FONT_FAMILIES = {
-  helvetica: 'Helvetica, Arial, sans-serif',
-  georgia: 'Georgia, "Times New Roman", serif',
-  arial: 'Arial, sans-serif',
-  times: '"Times New Roman", Times, serif',
-  verdana: 'Verdana, Geneva, sans-serif',
-  tahoma: 'Tahoma, Geneva, sans-serif',
-  trebuchet: '"Trebuchet MS", sans-serif',
-  courier: '"Courier New", monospace',
-};
-
-/**
- * Check if customDesign has been modified
- */
-export const isCustomized = (customDesign) => {
-  const hasCustomColors = customDesign.primaryColor !== DEFAULT_COLORS.primaryColor ||
-                          customDesign.secondaryColor !== DEFAULT_COLORS.secondaryColor;
-  return customDesign.isEdited || hasCustomColors;
-};
-
-/**
- * Generate custom colors object from customDesign
- */
-export const getCustomColors = (customDesign) => {
-  if (!isCustomized(customDesign)) return null;
-  return {
-    primary: customDesign.primaryColor || '#b39ddb',
-    secondary: customDesign.secondaryColor || '#f5f5f5',
-    accentStyle: customDesign.accentStyle || 'modern',
-    textColor: customDesign.textColor || '#1f2937',
-    backgroundColor: customDesign.backgroundColor || '#ffffff',
-    headerFont: customDesign.headerFont || 'helvetica',
-    bodyFont: customDesign.bodyFont || 'helvetica',
-    headerBold: customDesign.headerBold ?? true,
-    headerItalic: customDesign.headerItalic ?? false,
-    bodyBold: customDesign.bodyBold ?? false,
-    bodyItalic: customDesign.bodyItalic ?? false,
-    headerFontSize: customDesign.headerFontSize || 9,
-    bodyFontSize: customDesign.bodyFontSize || 10,
-  };
-};
+export const getCustomColors = () => null;
 
 /**
  * Subtle watermark component
@@ -132,41 +86,5 @@ export const Watermark = () => (
   </div>
 );
 
-/**
- * Get dynamic custom styles
- */
-export const getCustomStyle = (customColors) => {
-  if (!customColors) return {};
-  return {
-    '--custom-primary': customColors.primary,
-    '--custom-secondary': customColors.secondary,
-    borderTopColor: customColors.primary,
-    borderTopWidth: '4px',
-    backgroundColor: customColors.backgroundColor,
-    color: customColors.textColor,
-    fontFamily: FONT_FAMILIES[customColors.bodyFont] || FONT_FAMILIES.helvetica,
-    fontWeight: customColors.bodyBold ? 'bold' : 'normal',
-    fontStyle: customColors.bodyItalic ? 'italic' : 'normal',
-    fontSize: `${customColors.bodyFontSize}px`,
-  };
-};
-
-/**
- * Get inline style overrides for headers, accents, borders, footers
- */
-export const getStyleOverrides = (customColors) => {
-  if (!customColors) {
-    return {
-      header: {},
-      accent: {},
-      border: {},
-      footer: {}
-    };
-  }
-  return {
-    header: { borderBottomColor: customColors.primary },
-    accent: { color: customColors.primary },
-    border: { borderColor: customColors.primary },
-    footer: { borderTopColor: customColors.primary }
-  };
-};
+export const getCustomStyle = () => ({});
+export const getStyleOverrides = () => ({ header: {}, accent: {}, border: {}, footer: {} });

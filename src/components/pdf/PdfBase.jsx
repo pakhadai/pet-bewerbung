@@ -27,68 +27,19 @@ export const getLocale = (lang) => {
 export const PAGE_WIDTH = 595.28;
 export const PAGE_HEIGHT = 841.89;
 
-// Template-specific accent colors (match SwissDocument)
+// Template-specific accent colors
 export const TEMPLATE_COLORS = {
   classic: { primary: '#0f172a', border: '#0f172a', muted: '#64748b', light: '#e2e8f0' },
   modern: { primary: '#334155', border: '#e2e8f0', muted: '#64748b', light: '#f1f5f9' },
   compact: { primary: '#334155', border: '#cbd5e1', muted: '#64748b', light: '#e2e8f0' },
-  swiss: { primary: '#dc2626', border: '#dc2626', muted: '#64748b', light: '#fef2f2' },
-  professional: { primary: '#000000', border: '#000000', muted: '#6b7280', light: '#f3f4f6' },
-  emergency: { primary: '#dc2626', border: '#000000', muted: '#6b7280', light: '#fef2f2' },
-  friendly: { primary: '#6400f0', border: '#efe5fd', muted: '#130c1d', light: '#efe5fd' },
-  grid: { primary: '#D80000', border: '#D80000', muted: '#1a1a1a', light: '#f5f5f5' },
 };
 
-// Default customDesign values (Midnight Purple theme)
-export const DEFAULT_STYLE = {
-  primaryColor: '#4a148c',
-  secondaryColor: '#f3e5f5',
-  backgroundColor: '#ffffff',
-  textColor: '#1f2937',
-  headerBold: true,
-  headerItalic: false,
-  bodyBold: false,
-  bodyItalic: false,
-};
-
-// Default layout order (fixed - no drag & drop)
 export const DEFAULT_LAYOUT_ORDER = ['photo', 'owner', 'details', 'behavior', 'description', 'legal', 'reference'];
 
 // Sidebar sections (left column)
 export const SIDEBAR_SECTION_IDS = ['photo', 'owner', 'behavior'];
 // Main sections (right column)
 export const MAIN_SECTION_IDS = ['details', 'description', 'legal', 'reference'];
-
-// ============= CUSTOM DESIGN HELPERS =============
-
-/**
- * Check if customDesign has been modified (isEdited flag from Visual Editor)
- */
-export const hasCustomDesign = (customDesign) => {
-  if (!customDesign) return false;
-  return customDesign.isEdited === true;
-};
-
-/**
- * Helper to get custom style from data.customDesign
- */
-export const getCustomStyle = (customDesign) => {
-  if (!customDesign) return null;
-  return {
-    // Colors
-    primary: customDesign.primaryColor || DEFAULT_STYLE.primaryColor,
-    border: customDesign.primaryColor || DEFAULT_STYLE.primaryColor,
-    muted: '#64748b',
-    light: customDesign.secondaryColor || DEFAULT_STYLE.secondaryColor,
-    text: customDesign.textColor || DEFAULT_STYLE.textColor,
-    background: customDesign.backgroundColor || DEFAULT_STYLE.backgroundColor,
-    // Text styles
-    headerBold: customDesign.headerBold ?? DEFAULT_STYLE.headerBold,
-    headerItalic: customDesign.headerItalic ?? DEFAULT_STYLE.headerItalic,
-    bodyBold: customDesign.bodyBold ?? DEFAULT_STYLE.bodyBold,
-    bodyItalic: customDesign.bodyItalic ?? DEFAULT_STYLE.bodyItalic,
-  };
-};
 
 /**
  * Get layout sections (fixed default - layout customization removed, premium no longer exists)

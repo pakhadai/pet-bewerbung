@@ -65,69 +65,13 @@ export interface PetData {
   photo: string; // Base64 or URL
   selectedTemplate: TemplateType;
 
-  // Visual Editor Customization
-  customDesign: CustomDesign;
-
   // Metadata
   lang: Language;
   createdAt?: string;
   updatedAt?: string;
 }
 
-export type TemplateType =
-  | 'classic'
-  | 'modern'
-  | 'compact'
-  | 'swiss'
-  | 'professional'
-  | 'emergency'
-  | 'friendly'
-  | 'grid';
-
-export interface CustomDesign {
-  // Colors
-  primaryColor: string;
-  secondaryColor: string;
-  accentStyle: 'modern' | 'classic' | 'minimal';
-  textColor: string;
-  backgroundColor: string;
-
-  // Fonts
-  headerFont: FontFamily;
-  bodyFont: FontFamily;
-  headerBold: boolean;
-  headerItalic: boolean;
-  bodyBold: boolean;
-  bodyItalic: boolean;
-  headerFontSize: number;
-  bodyFontSize: number;
-
-  // Layout
-  layoutOrder: SectionId[];
-  hiddenSections: SectionId[];
-
-  // Flags
-  isEdited: boolean;
-}
-
-export type FontFamily =
-  | 'helvetica'
-  | 'georgia'
-  | 'arial'
-  | 'times'
-  | 'verdana'
-  | 'tahoma'
-  | 'trebuchet'
-  | 'courier';
-
-export type SectionId =
-  | 'photo'
-  | 'owner'
-  | 'details'
-  | 'behavior'
-  | 'description'
-  | 'legal'
-  | 'reference';
+export type TemplateType = 'classic' | 'modern' | 'compact';
 
 export interface FormValidationError {
   field: keyof PetData;

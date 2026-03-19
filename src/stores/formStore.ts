@@ -92,10 +92,6 @@ export const useFormStore = create<FormState>((set, get) => ({
             ...INITIAL_DATA,
             ...saved,
             lang: (saved.lang as string) || defaultLang,
-            customDesign: {
-              ...INITIAL_DATA.customDesign,
-              ...(saved?.customDesign as object || {}),
-            },
           }
         : { ...INITIAL_DATA, lang: defaultLang };
       delete merged.hasPhotoSaved;

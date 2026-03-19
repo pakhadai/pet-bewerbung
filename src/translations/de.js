@@ -56,11 +56,8 @@ export default {
     preview: "Vorschau",
     previewMode: "Vorschau-Modus",
     cancel: "Abbrechen",
-    pay: "Bezahlen",
     loading: "Wird geladen…",
     error: "Fehler",
-    emailComingSoon: "E-Mail-Funktion wird in Kürze hinzugefügt",
-    emailInDevelopment: "E-Mail-Funktion in Entwicklung",
     freeSuccess: "Vielen Dank! Viel Erfolg bei der Suche.",
     insuranceInfoDog: "Für Hunde sind AMICUS und Haftpflicht in der Schweiz oft Pflicht.",
     insuranceInfoCat: "Auch für Katzen wird eine Versicherung oft empfohlen (Mieterschäden).",
@@ -89,19 +86,6 @@ export default {
     photoHint: "Klare Fotos mit guter Beleuchtung funktionieren am besten!",
     clickOrDrop: "Klicken oder per Drag & Drop"
   },
-  // AI data privacy info
-  ai: {
-    dataInfoButton: "Welche Daten werden bei KI-Generierung gesendet?",
-    dataInfoTitle: "KI-Datenschutz",
-    dataInfoDesc: "Die Textgenerierung erfolgt lokal. Folgende Angaben werden verwendet:",
-    dataPetName: "Name des Tieres",
-    dataPetType: "Tierart (Hund/Katze/Andere)",
-    dataBreed: "Rasse",
-    dataKeywords: "Schlüsselwörter/Charaktereigenschaften",
-    dataLang: "Gewählte Sprache",
-    dataNoPersonal: "Keine persönlichen Daten (Name, Adresse, Telefon) werden gesendet. Das generierte PDF wird lokal erstellt."
-  },
-  // Step 4 specific
   step4: {
     photoPrivacy: "Ihr Foto wird niemals hochgeladen. Alles passiert lokal in Ihrem Browser.",
     changePhotoHint: "Klicken Sie auf das Bild oder ziehen Sie ein neues hierher",
@@ -156,8 +140,6 @@ export default {
     generating: "Wird generiert...",
     aiBtn: "Text generieren",
     aiResult: "Text für Vermieter",
-    aiError: "KI-Generierung fehlgeschlagen. Verwende Vorlage.",
-    aiNetworkError: "Netzwerkfehler. Bitte Verbindung prüfen und erneut versuchen.",
     recrop: "Neu zuschneiden",
     remove: "Entfernen",
     useFullImage: "Vollbild verwenden",
@@ -195,21 +177,18 @@ export default {
     low: "Ruhig",
     medium: "Mittel",
     high: "Laut",
-    aiLimitReached: "KI-Limit erreicht. Versuchen Sie es morgen wieder.",
-    aiLimitBtn: "Limit erreicht – morgen wieder",
-    aiRemaining: "KI-Generierung(en) übrig",
-    aiLimitInfo: "Limit erreicht – morgen wieder",
     zipMobileDisabled: "ZIP-Download auf Mobilgeräten deaktiviert. Bitte einzelne Vorlagen herunterladen.",
     generatingZip: "Generiere alle Vorlagen...",
     zipDownloaded: "ZIP mit allen Vorlagen heruntergeladen!",
     zipError: "Fehler beim Erstellen des ZIP-Archivs",
     freeTemplate: "Kostenlos",
-    downloadAllZip: "Alle als ZIP"
+    downloadAllZip: "Alle als ZIP",
+    storageQuotaError: "Privatmodus erkannt: Daten werden nicht gespeichert. Seite nicht aktualisieren!",
+    storageError: "Daten konnten nicht gespeichert werden."
   },
   validation: {
     required: "Pflichtfeld",
     fillRequired: "Bitte füllen Sie die Pflichtfelder aus",
-    pleaseWait: "Bitte warten Sie, bis die AI-Generierung abgeschlossen ist.",
     ownerNameRequired: "Name ist erforderlich (min. 2 Zeichen)",
     postalInvalid: "PLZ muss 4 Ziffern haben",
     emailInvalid: "Ungültige E-Mail-Adresse",
@@ -237,13 +216,6 @@ export default {
     qrLabel: "Kontakt scannen",
     qrHint: "vCard hinzufügen"
   },
-  monetization: {
-    title: "Projekt unterstützen",
-    desc: "Dieser Service ist kostenlos. Helfen Sie uns mit einer Spende.",
-    free: "Kostenlos nutzen",
-    coffee: "Kaffee spendieren (5 CHF)",
-    bone: "Leckerli spendieren (10 CHF)"
-  },
   thankYou: {
     title: "Danke",
     msg: "Danke, dass Sie unseren Service genutzt haben. Ihr Dokument wurde lokal erstellt.",
@@ -251,32 +223,8 @@ export default {
     subtitle: "Der Lebenslauf Ihres Tieres wurde erstellt und ist bereit.",
     downloadPdf: "PDF herunterladen",
     privacyLocal: "Ihre Daten wurden lokal verarbeitet und niemals auf unseren Servern gespeichert.",
-    supportTitle: "Beitrag wählen",
-    supportDesc: "Pet-Bewerbung ist werbefrei und speichert keine Daten. Nutzen Sie es gratis – wenn Ihnen das Ergebnis gefällt, unterstützen Sie uns mit einem fairen Beitrag.",
-    supportCta: "PayPal / TWINT",
-    everyTreat: "Fair bezahlen – jeder Beitrag zählt! Wuff & Miau.",
     createAnother: "← Noch eines erstellen",
-    showSupport: "Unterstützungsoptionen anzeigen",
     purrPerfect: "PURR-FECT!"
-  },
-  paymentSuccess: {
-    title: "Zahlung erfolgreich!",
-    message: "Vielen Dank für Ihre großzügige Spende!",
-    detailsTitle: "Zahlungsdetails",
-    thankYouTitle: "Vielen Dank!",
-    thankYouMessage: "Ihre Unterstützung hilft uns, diesen Service zu erhalten und zu verbessern. Wir schätzen Ihre Großzügigkeit sehr!",
-    tailWagTitle: "Ein großes Schwanzwedeln für Sie!",
-    donationMade: "Ihr Beitrag von",
-    donationMadeSuffix: "hat gerade einen großen Unterschied gemacht.",
-    downloadPdf: "PDF herunterladen",
-    returnHome: "Zur Startseite",
-    paymentConfirmed: "Zahlung bestätigt",
-    secureTransaction: "Sichere Transaktion",
-    amount: "Betrag",
-    email: "E-Mail",
-    status: "Status",
-    completed: "Abgeschlossen",
-    goHome: "Zur Startseite",
   },
   templates: {
     intro: "Bei dem beschriebenen Tier handelt es sich um einen sehr gepflegten und sozialverträglichen Mitbewohner.",
@@ -300,10 +248,7 @@ export default {
     dataCollectionText: "Alle von Ihnen eingegebenen Daten (Name, Adresse, Tierinformationen, Fotos) werden ausschliesslich in Ihrem Browser verarbeitet. Es werden keine personenbezogenen Daten auf unsere Server übertragen oder gespeichert. Die PDF- und Text-Erstellung erfolgt vollständig offline auf Ihrem Gerät.",
     aiProcessing: "Textgenerierung",
     aiProcessingText: "Die Textgenerierung erfolgt vollständig lokal in Ihrem Browser. Keine Daten werden an Server oder Dritte übertragen.",
-    paymentData: "Zahlungsdaten",
-    paymentDataText: "Bei einem freiwilligen Unterstützungsbeitrag werden folgende Daten von unserem Zahlungsanbieter verarbeitet:",
     thirdParty: "Drittanbieter-Dienste",
-    stripeText: "Unterstützungsbeiträge erfolgen über direkte Überweisung (TWINT/PayPal). Wir verarbeiten keine Zahlungsdaten.",
     fontsText: "Wir verwenden lokal gehostete Schriftarten, um Datenübertragungen an Google-Server zu vermeiden.",
     cookies: "Cookies",
     cookiesText: "Wir verwenden nur technisch notwendige Cookies, um Ihre Sprach- und Design-Einstellungen zu speichern. Es werden keine Tracking-Cookies verwendet.",
@@ -320,8 +265,6 @@ export default {
     responsibility2: "Sie müssen die Rechte an hochgeladenen Fotos besitzen",
     responsibility3: "Sie dürfen diesen Service nicht für betrügerische Zwecke nutzen",
     responsibility4: "Sie erkennen an, dass dieses Dokument keine Wohnungszusage garantiert",
-    donations: "Unterstützungsbeiträge",
-    donationsText: "Unterstützungsbeiträge sind freiwillig und nicht erstattungsfähig. Sie helfen, diesen kostenlosen Service zu erhalten und zu verbessern.",
     changes: "Änderungen der Bedingungen",
     changesText: "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Die fortgesetzte Nutzung des Services bedeutet Akzeptanz der aktualisierten Bedingungen.",
     jurisdiction: "Gerichtsstand",
@@ -345,7 +288,6 @@ export default {
     solutionTitle: "Ihre Lösung: Das Pet-Dossier",
     solutionDesc: "Ein professioneller Lebenslauf zeigt Verantwortung, belegt Versicherungsschutz und hebt Sie von anderen Bewerbern ab.",
     cta: "Jetzt erstellen",
-    // Free vs Premium comparison
     transparencyTitle: "Alles kostenlos",
     transparencyBadge1: "Lokale Daten",
     transparencyBadge2: "Keine Werbung",
@@ -393,10 +335,9 @@ export default {
       subtitle: "Versicherung, Tierarzt, Kontakte"
     },
     step3: {
-      title: "Charakter & KI-Text",
+      title: "Charakter & Beschreibung",
       short: "Charakter",
-      subtitle: "Beschreibung erstellen",
-      badge: "KI"
+      subtitle: "Beschreibung erstellen"
     },
     step4: {
       title: "Foto hochladen",
@@ -428,85 +369,17 @@ export default {
     faq: "FAQ",
     faqComingSoon: "FAQ — demnächst verfügbar."
   },
-  // Affiliate links
   affiliate: {
     insuranceTitle: 'Noch keine Haftpflichtversicherung?',
     insuranceDesc: 'Vermieter verlangen oft einen Nachweis. Schützen Sie sich und Ihr Tier ab 5 CHF/Monat.',
     insuranceCta: 'Angebote vergleichen'
   },
-  // Template Builder / Visual Editor
-  builder: {
-    title: 'Visual Editor',
-    subtitle: 'Gestalten Sie Ihr Dokument professionell',
-    colorScheme: 'Farbschema',
-    primaryColor: 'Akzentfarbe',
-    secondaryColor: 'Hintergrundfarbe',
-    sectionOrder: 'Sektionen',
-    dragHint: 'Ziehen Sie Sektionen zum Neuanordnen',
-    required: 'Pflicht',
-    style: 'Stil',
-    styles: {
-      classic: 'Klassisch',
-      modern: 'Modern',
-      minimal: 'Minimal'
-    },
-    sections: {
-      photo: 'Foto',
-      owner: 'Besitzer Info',
-      details: 'Tier Details',
-      behavior: 'Verhalten',
-      description: 'Beschreibung',
-      legal: 'Rechtliches',
-      reference: 'Referenzen'
-    },
-    reset: 'Zurücksetzen',
-    apply: 'Anwenden',
-    applied: 'Änderungen angewendet!',
-    tips: 'Tipps',
-    tipSelect: 'Klicken Sie auf eine Sektion, um sie auszuwählen',
-    tipDrag: 'Ziehen Sie Sektionen in der linken Liste neu',
-    tipHide: 'Blenden Sie optionale Sektionen aus',
-    tipColors: 'Verwenden Sie professionelle Farben',
-    colorPreview: 'Farbvorschau',
-    colorPreviewDesc: 'So werden Ihre Farben im Dokument aussehen.',
-    hidden: 'Ausgeblendet'
-  },
-  // Visual Editor (new style editor translations)
-  editor: {
-    title: 'Dokument anpassen',
-    subtitle: 'Farben, Schriften & Sichtbarkeit',
-    palettes: 'Farbpaletten',
-    colors: 'Eigene Farben',
-    headerColor: 'Überschriften',
-    textColor: 'Textfarbe',
-    accentColor: 'Akzentfarbe',
-    bgColor: 'Hintergrund',
-    typography: 'Schriftarten',
-    headerFont: 'Überschriften',
-    bodyFont: 'Fließtext',
-    headerStyle: 'Überschriften-Stil',
-    bodyStyle: 'Text-Stil',
-    visibility: 'Sichtbarkeit',
-    reset: 'Zurücksetzen',
-    close: 'Schließen',
-    apply: 'Anwenden',
-    unsaved: 'Nicht gespeichert',
-    saved: 'Gespeichert',
-    bold: 'Fett',
-    italic: 'Kursiv',
-    sections: {
-      photo: 'Foto',
-      owner: 'Besitzer Info',
-      details: 'Tier Details',
-      behavior: 'Verhalten',
-      description: 'Beschreibung',
-      legal: 'Rechtliches',
-      reference: 'Referenzen'
-    }
-  },
-  // Legal/Cookie
-  legal: {
-    cookieRequiredForPayment: 'Bitte akzeptieren Sie Cookies für Zahlungen'
+  placeholders: {
+    ownerName: 'z.B. Max Mustermann',
+    street: 'z.B. Bahnhofstrasse',
+    petName: 'z.B. Luna',
+    breed: 'z.B. Beagle',
+    selectGender: 'Auswählen...'
   },
   faq: {
     title: "Häufig gestellte Fragen",
@@ -516,14 +389,14 @@ export default {
       all: "Alle",
       general: "Allgemein",
       privacy: "Datenschutz & Sicherheit",
-      payment: "Kosten",
+      cost: "Kosten",
       tips: "Tipps für die Wohnungssuche"
     },
     items: [
       { id: "q1", category: "general", q: "Garantiert dieses Pet-Dossier eine Wohnungszusage?", a: "Nein, eine Garantie gibt es nicht. Aber ein professionelles Dossier zeigt dem Vermieter, dass Sie Verantwortung übernehmen (Versicherung, Erziehung). In der Schweiz entscheiden sich Vermieter oft für den Kandidaten, der das geringste Risiko darstellt – dieses Dokument minimiert Bedenken." },
-      { id: "q2", category: "privacy", q: "Wo werden meine Daten gespeichert?", a: "Nirgendwo auf unseren Servern. Wir nutzen eine 'Local-First'-Technologie. Alle Daten (Namen, Fotos, Adressen) werden ausschliesslich im temporären Speicher Ihres Browsers verarbeitet. Sobald Sie das PDF herunterladen und den Tab schliessen, sind die Daten weg (ausser Sie löschen den Browser-Cache nicht)." },
-      { id: "q3", category: "payment", q: "Was kostet der Service?", a: "Der Service ist vollständig kostenlos. Sie erhalten 3 Vorlagen (Classic, Modern, Compact) und können diese als PDF oder ZIP herunterladen." },
-      { id: "q4", category: "payment", q: "Was ist enthalten?", a: "Alle 3 Vorlagendesigns, automatische Textgenerierung basierend auf Ihren Angaben, PDF-Download und ZIP-Download." },
+      { id: "q2", category: "privacy", q: "Wo werden meine Daten gespeichert?", a: "Nirgendwo auf unseren Servern. Wir nutzen eine 'Local-First'-Technologie. Alle Daten (Namen, Fotos, Adressen) werden ausschliesslich im temporären Speicher Ihres Browsers verarbeitet. Sobald Sie das PDF herunterladen und den Tab schliessen, sind die Daten weg." },
+      { id: "q3", category: "cost", q: "Was kostet der Service?", a: "Der Service ist vollständig kostenlos. Sie erhalten 3 Vorlagen (Classic, Modern, Compact) und können diese als PDF oder ZIP herunterladen." },
+      { id: "q4", category: "cost", q: "Was ist enthalten?", a: "Alle 3 Vorlagendesigns, automatische Textgenerierung basierend auf Ihren Angaben, PDF-Download und ZIP-Download." },
       { id: "q6", category: "privacy", q: "Verlassen meine Daten mein Gerät?", a: "Nein. Alles passiert lokal in Ihrem Browser (Local-First). Die Text- und PDF-Generierung benötigt keine Server." },
       { id: "q7", category: "tips", q: "Welche Versicherungen sind in der Schweiz wichtig?", a: "Für Hundehalter ist eine Privathaftpflichtversicherung (Privathaftpflicht) mit Deckung für Mieterschäden essenziell. Oft wird auch der Nachweis der AMICUS-Registrierung verlangt. Unser Dossier hebt diese Punkte hervor." },
       { id: "q8", category: "general", q: "Kann ich das Dossier nachträglich bearbeiten?", a: "Solange Sie den Browser nicht schliessen oder die Seite neu laden, bleiben Ihre Daten erhalten. Nach dem Schliessen müssen Sie ein neues Dossier erstellen." }

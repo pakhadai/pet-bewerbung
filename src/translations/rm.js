@@ -120,8 +120,6 @@ export default {
     generating: "Generaziun...",
     aiBtn: "Generar text",
     aiResult: "Text per il locatari",
-    aiError: "Generaziun IA betg reussida. Utilisar model.",
-    aiNetworkError: "Errur da rait. Controllar la connexiun e provar danovamain.",
     recrop: "Cropir maletg",
     useFullImage: "Utilisar maletg entir",
     cropDone: "Cropir",
@@ -153,10 +151,6 @@ export default {
     behaviorTitle: "Cumportament & Rutina",
     referenceTitle: "References & Contact d'urgenza",
     petType: "Tip d'animal",
-    aiLimitReached: "Limita IA cuntanschida. Emprova danovamain damaun.",
-    aiLimitBtn: "Limita cuntanschida – emprova damaun",
-    aiRemaining: "generaziun(s) IA restanta(s)",
-    aiLimitInfo: "Limita cuntanschida – emprova damaun",
     zipMobileDisabled: "Telechargiada ZIP deactivada sin mobil. Telechargiai ils models individualmain.",
     generatingZip: "Generaziun da tut ils models...",
     zipDownloaded: "ZIP cun tut ils models telechargia!",
@@ -167,7 +161,6 @@ export default {
   validation: {
     required: "Obligatori",
     fillRequired: "Cumpiglia tut ils champs obligatoris",
-    pleaseWait: "Spetgar fin che la generaziun IA è finida.",
     ownerNameRequired: "Il num è necessari (min. 2 caracters)",
     postalInvalid: "Il numer postal sto avair 4 cifras",
     emailInvalid: "Adressa e-mail nunvalida",
@@ -190,13 +183,6 @@ export default {
     swissPetCV: "CV Animal Svizzer",
     insurancePrefix: "Assicuranza:"
   },
-  monetization: {
-    title: "Sustegnai nus",
-    desc: "Quest servetsch è gratuit. Gidai nus cun ina donaziun.",
-    free: "Gratuit",
-    coffee: "Offrir un café (5 CHF)",
-    bone: "Offrir in oss (10 CHF)"
-  },
   thankYou: {
     title: "Grazia",
     msg: "Grazia fitg per l'utilisaziun. Il document è vegnì generà localmain.",
@@ -204,32 +190,8 @@ export default {
     subtitle: "Il curriculum da voss animal è pront.",
     downloadPdf: "Telechargiar PDF",
     privacyLocal: "Vossas datas èn vegnidas elaboradas localmain e na vegnan mai memorisadas.",
-    supportTitle: "Tscherner voss contribuziun",
-    supportDesc: "Pet-Bewerbung è senza reclama e na memorisescha naginas datas. Utilisai gratis – sche il resultat Vus gugent, sustegnain nus cun in contribuziun gista.",
-    supportCta: "PayPal / TWINT",
-    everyTreat: "Pajar gist – mintga contribuziun conta! Wuff & Miau.",
     createAnother: "← Crear in auter",
-    showSupport: "Mussar opziuns da sustegn",
     purrPerfect: "PURR-FECT!"
-  },
-  paymentSuccess: {
-    title: "Pagament reussì!",
-    message: "Grazia per tia donaziun generusa!",
-    detailsTitle: "Detagls dal pagament",
-    thankYouTitle: "Grazia!",
-    thankYouMessage: "Tia sustegnida ans gida da mantegnair e meglierar quest servetsch. Nus appreziain fitg tia generusadad!",
-    tailWagTitle: "In grond moviment da la cua per tai!",
-    donationMade: "Tia donaziun da",
-    donationMadeSuffix: "ha gist fatg ina gronda differenza.",
-    downloadPdf: "Telechargiar PDF",
-    returnHome: "Turnar a la pagina principala",
-    paymentConfirmed: "Pagament confirmà",
-    secureTransaction: "Transacziun segira",
-    amount: "Summa",
-    email: "E-mail",
-    status: "Status",
-    completed: "Terminà",
-    goHome: "Turnar a la pagina principala"
   },
   templates: {
     intro: "L'animal descrit è un cumpogn fitg tgirà e sociabel.",
@@ -254,7 +216,6 @@ export default {
     aiProcessing: "Generaziun da text",
     aiProcessingText: "La generaziun da text succeda cumplettamain local en voss navigatur. Naginas datas vegnan tramessas a servers u terzs.",
     thirdParty: "Servetschs da terzs",
-    stripeText: "Contribuziuns da sustegn succedan via transfer direct (TWINT/PayPal). Nus n'elavurain naginas datas da pajament.",
     fontsText: "Nus utilisain scrittiras localas per evitar transferiments da datas a servers da Google.",
     cookies: "Cookies",
     cookiesText: "Nus utilisain mo cookies tecnicamain necessaris per memorisar vossas preferenzas da lingua e design.",
@@ -271,8 +232,6 @@ export default {
     responsibility2: "Vus stuais posseder ils dretgs da las fotografias chargiadas",
     responsibility3: "Vus na duvais betg utilisar quest servetsch per intents fraudulents",
     responsibility4: "Vus renconuschais che quest document na garantescha betg l'approvaziun d'in abitadi",
-    donations: "Donaziuns",
-    donationsText: "Donaziuns èn voluntarias e betg rembursablas.",
     changes: "Midadas da las cundiziuns",
     changesText: "Nus ans resalvain il dretg da midar questas cundiziuns mintga mument.",
     jurisdiction: "Giurisdicziun",
@@ -341,13 +300,11 @@ export default {
     },
     step3: {
       title: "Foto e design",
-      subtitle: "Chargiar e model",
-      badge: "IA"
+      subtitle: "Chargiar e model"
     },
     step4: {
       title: "Editur e export",
-      subtitle: "Persunalisar e PDF",
-      badge: "Foto"
+      subtitle: "Persunalisar e PDF"
     },
     step5: {
       title: "Prevista",
@@ -367,81 +324,20 @@ export default {
     faq: "FAQ",
     faqComingSoon: "FAQ — en curt disponibel."
   },
-  builder: {
-    title: 'Constructor da models',
-    subtitle: 'Adattai Voss document',
-    colorScheme: 'Schema da colurs',
-    primaryColor: 'Colur d\'accent',
-    secondaryColor: 'Colur da fund',
-    sectionOrder: 'Successiun da las secziuns',
-    dragHint: 'Srenai las secziuns per reordinar',
-    required: 'Obligatori',
-    style: 'Stil',
-    styles: {
-      classic: 'Classic',
-      modern: 'Modern',
-      minimal: 'Minimalistic'
-    },
-    sections: {
-      photo: 'Foto',
-      owner: 'Info possessur',
-      details: 'Detagls animal',
-      behavior: 'Cumportament',
-      description: 'Descripziun',
-      legal: 'Legal',
-      reference: 'Referenzas'
-    },
-    reset: 'Restituir',
-    apply: 'Applitgar',
-    applied: 'Midadas applitgadas!'
-  },
-  // Visual Editor (novas translaziuns da l'editur da stil)
-  editor: {
-    title: 'Adattar document',
-    subtitle: 'Colurs, scrituras & visibilitad',
-    palettes: 'Palettas da colurs',
-    colors: 'Colurs persunals',
-    headerColor: 'Titels',
-    textColor: 'Colur dal text',
-    accentColor: 'Colur d\'accent',
-    bgColor: 'Fund',
-    typography: 'Tipografia',
-    headerFont: 'Titels',
-    bodyFont: 'Text principal',
-    headerStyle: 'Stil dals titels',
-    bodyStyle: 'Stil dal text',
-    visibility: 'Visibilitad',
-    reset: 'Restituir',
-    close: 'Serrar',
-    apply: 'Applitgar',
-    unsaved: 'Betg memorisà',
-    saved: 'Memorisà',
-    bold: 'Grass',
-    italic: 'Cursiv',
-    sections: {
-      photo: 'Foto',
-      owner: 'Info possessur',
-      details: 'Detagls animal',
-      behavior: 'Cumportament',
-      description: 'Descripziun',
-      legal: 'Legal',
-      reference: 'Referenzas'
-    }
-  },
   faq: {
     title: "Dumondas frequentas",
     searchPlaceholder: "Tschertgar rispostas...",
     noResults: "Nagins resultats per",
-    categories: { all: "Tut", general: "General", privacy: "Protecziun da datas", payment: "Custs", tips: "Cussegls per tschertgar" },
+    categories: { all: "Tut", general: "General", privacy: "Protecziun da datas", cost: "Custs", tips: "Cussegls per tschertgar" },
     items: [
       { id: "q1", category: "general", q: "Garantescha quest dossier in'acceptaziun?", a: "Na, nagina garantia. Ma in dossier professiunal mussa al patrun che Vus prendais responsabilitad (assicuranza, educaziun). En Svizra tschernan patruns savens il candidat cun il pli pitschen risc." },
       { id: "q2", category: "privacy", q: "Nua vegnan memorisadas mias datas?", a: "Da nagin lieu sin noss servers. Nus duvrain tecnologia 'Local-First'. Tut las datas vegnan elaboradas be en la memoria temporara da Voss navigatur." },
-      { id: "q3", category: "payment", q: "Quant costa il servetsch?", a: "Il servetsch è cumplettamain gratuit. Vus survegnis 3 models (Classic, Modern, Compact) e pudais quels telechargiar sco PDF u ZIP." },
-      { id: "q4", category: "payment", q: "Tge è inclus?", a: "Tut ils 3 designs, generaziun automatica dal text e download PDF e ZIP." },
+      { id: "q3", category: "cost", q: "Quant costa il servetsch?", a: "Il servetsch è cumplettamain gratuit. Vus survegnis 3 models (Classic, Modern, Compact) e pudais quels telechargiar sco PDF u ZIP." },
+      { id: "q4", category: "cost", q: "Tge è inclus?", a: "Tut ils 3 designs, generaziun automatica dal text e download PDF e ZIP." },
       { id: "q6", category: "privacy", q: "Bandunan mias datas mes apparat?", a: "Na. Tut succeda local en voss navigatur (Local-First). La generaziun da text e PDF na basegna nagins servers." },
       { id: "q7", category: "tips", q: "Tge assicuranzas èn impurtantas en Svizra?", a: "Per possessurs da chauns è ina assicuranza da responsabilitad privata cun cuvertura per donns da locatar essenziala. Savens è er la prova da registraziun AMICUS pretendida." },
       { id: "q8", category: "general", q: "Poss jau modifitgar il dossier pli tard?", a: "Fin che Vus na serrais betg il navigatur, restan las datas. Suenter serrar ston Vus crear in nov dossier." }
     ],
-    footerHint: "Dumondas davart la tecnica u il pajament? support@pet-bewerbung.ch"
+    footerHint: "Dumondas davart il servetsch? Visitar pet-bewerbung.ch"
   }
 };

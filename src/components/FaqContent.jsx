@@ -14,7 +14,7 @@ const FaqContent = ({ t, darkMode, className = '' }) => {
     { id: 'all', label: t?.faq?.categories?.all || 'All' },
     { id: 'general', label: t?.faq?.categories?.general || 'General' },
     { id: 'privacy', label: t?.faq?.categories?.privacy || 'Privacy' },
-    { id: 'payment', label: t?.faq?.categories?.payment || 'Payment' },
+    { id: 'cost', label: t?.faq?.categories?.cost || 'Costs' },
     { id: 'tips', label: t?.faq?.categories?.tips || 'Tips' },
   ];
 
