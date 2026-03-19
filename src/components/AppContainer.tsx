@@ -123,10 +123,10 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   // Convert darkMode to theme string
   const theme = darkMode ? 'dark' : 'light';
 
+  // data/updateData are intentionally NOT in context — steps subscribe via useFormStore selectors.
+  // This prevents Header/Footer/StepProgress re-renders on every keystroke.
   const wizardContextValue = useMemo(
     () => ({
-      data,
-      updateData,
       t,
       darkMode,
       step,
@@ -140,7 +140,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       showToast,
       resetForm,
     }),
-    [data, updateData, t, darkMode, step, animDir, validationErrors, wrappedOnDownloadPDF, onDownloadAllTemplates, goToStep, setLang, setDarkMode, showToast, resetForm]
+    [t, darkMode, step, animDir, validationErrors, wrappedOnDownloadPDF, onDownloadAllTemplates, goToStep, setLang, setDarkMode, showToast, resetForm]
   );
 
   const appContent = step === 7 ? (

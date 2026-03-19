@@ -17,11 +17,15 @@ import { ShieldCheck, ExternalLink } from 'lucide-react';
 import Label from '../Label';
 import Input from '../Input';
 import { useWizardContext } from '../../context/WizardContext';
+import { useFormStore } from '../../stores/formStore';
 
 const INSURANCE_AFFILIATE_LINK = import.meta.env.VITE_INSURANCE_AFFILIATE_LINK || '';
 
 const Step2HealthInsurance = React.memo(() => {
-  const { data, updateData, t, animDir, darkMode } = useWizardContext();
+  const data = useFormStore((s) => s.data);
+  const updateData = useFormStore((s) => s.updateData);
+  const updateMultipleData = useFormStore((s) => s.updateMultipleData);
+  const { t, animDir, darkMode } = useWizardContext();
   const [showMore, setShowMore] = useState(
     !!(data.insuranceProvider || data.chipId || data.medicalConditions || data.previousLandlordName || data.emergencyContactName)
   );
@@ -77,7 +81,29 @@ const Step2HealthInsurance = React.memo(() => {
               type="button"
               role="switch"
               aria-checked={showMore}
-              onClick={() => setShowMore(!showMore)}
+              onClick={() => {
+                if (showMore) {
+                  // Clear all "extra" fields so hidden data doesn't silently appear in the PDF
+                  updateMultipleData({
+                    insuranceProvider: '',
+                    chipId: '',
+                    noiseLevel: 'low',
+                    aloneTime: '',
+                    activeHours: '',
+                    behaviorWithChildren: '',
+                    behaviorWithPets: '',
+                    previousLandlordName: '',
+                    previousLandlordPhone: '',
+                    previousLandlordEmail: '',
+                    previousDuration: '',
+                    emergencyContactName: '',
+                    emergencyContactRelation: '',
+                    emergencyContactPhone: '',
+                    medicalConditions: '',
+                  });
+                }
+                setShowMore(!showMore);
+              }}
               className={`relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 hand-drawn-border transition-colors ${
                 showMore ? 'bg-primary border-primary' : (darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-200 border-gray-400')
               }`}

@@ -14,9 +14,12 @@ import { Dog, Cat, Bird } from 'lucide-react';
 import Label from '../Label';
 import FormInput from '../FormInput';
 import { useWizardContext } from '../../context/WizardContext';
+import { useFormStore } from '../../stores/formStore';
 
 const Step1Details = React.memo(() => {
-  const { data, updateData, t, animDir, darkMode, validationErrors = {} } = useWizardContext();
+  const data = useFormStore((s) => s.data);
+  const updateData = useFormStore((s) => s.updateData);
+  const { t, animDir, darkMode, validationErrors = {} } = useWizardContext();
   const errors = validationErrors;
   const [touched, setTouched] = useState({});
   const markTouched = useCallback((field) => setTouched((prev) => ({ ...prev, [field]: true })), []);

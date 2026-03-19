@@ -5,10 +5,13 @@
 import React from 'react';
 import { MAX_DESCRIPTION_LENGTH } from '../../constants';
 import { useWizardContext } from '../../context/WizardContext';
+import { useFormStore } from '../../stores/formStore';
 import FormInput from '../FormInput';
 
 const Step3Description = React.memo(({ onGenerate }) => {
-  const { data, updateData, t, animDir, darkMode } = useWizardContext();
+  const data = useFormStore((s) => s.data);
+  const updateData = useFormStore((s) => s.updateData);
+  const { t, animDir, darkMode } = useWizardContext();
   const canGenerate = data.name || data.petType || data.keywords;
   const len = (data.generatedText || '').length;
   const titleCl = darkMode ? 'text-white' : 'text-text-main';

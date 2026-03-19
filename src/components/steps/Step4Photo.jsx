@@ -11,12 +11,15 @@ import { Crop, Camera, Upload } from 'lucide-react';
 import ImageCropper from '../ImageCropper';
 import compressImage from '../../utils/imageCompression';
 import { useWizardContext } from '../../context/WizardContext';
+import { useFormStore } from '../../stores/formStore';
 
 const Step4Photo = React.memo(({
   onNavigationVisibilityChange,
   showToast
 }) => {
-  const { data, updateData, t, animDir, darkMode } = useWizardContext();
+  const data = useFormStore((s) => s.data);
+  const updateData = useFormStore((s) => s.updateData);
+  const { t, animDir, darkMode } = useWizardContext();
   const [showCropper, setShowCropper] = useState(false);
   const [tempImage, setTempImage] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -77,7 +80,10 @@ const Step4Photo = React.memo(({
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(false);
+    // Only clear dragging when the cursor truly leaves the drop zone (not just moves to a child element)
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragging(false);
+    }
   };
 
   const handleDrop = (e) => {

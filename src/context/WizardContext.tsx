@@ -1,12 +1,12 @@
 /**
- * WizardContext - Provides form data, translations, and theme to all wizard steps
- * Split into State/Dispatch: components using only dispatch don't re-render on data change.
+ * WizardContext - Provides translations, theme, step state, and actions.
+ * form data (data / updateData) is intentionally NOT in context:
+ * step components subscribe to formStore directly with Zustand selectors,
+ * so only the active step re-renders on keystrokes — not Header / Footer / nav.
  */
 import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 
 export interface WizardContextValue {
-  data: any;
-  updateData: (field: string, value: any) => void;
   t: any;
   darkMode: boolean;
   step: number;
@@ -21,8 +21,9 @@ export interface WizardContextValue {
   resetForm: () => Promise<void>;
 }
 
-type WizardStateValue = Pick<WizardContextValue, 'data' | 't' | 'darkMode' | 'step' | 'animDir' | 'validationErrors'>;
-type WizardDispatchValue = Omit<WizardContextValue, 'data' | 't' | 'darkMode' | 'step' | 'animDir' | 'validationErrors'>;
+// Split into State (re-renders on t/darkMode/step changes) and Dispatch (stable refs)
+type WizardStateValue = Pick<WizardContextValue, 't' | 'darkMode' | 'step' | 'animDir' | 'validationErrors'>;
+type WizardDispatchValue = Omit<WizardContextValue, 't' | 'darkMode' | 'step' | 'animDir' | 'validationErrors'>;
 
 const WizardStateContext = createContext<WizardStateValue | null>(null);
 const WizardDispatchContext = createContext<WizardDispatchValue | null>(null);
@@ -33,18 +34,16 @@ export const WizardProvider: React.FC<{
 }> = ({ value, children }) => {
   const stateValue: WizardStateValue = useMemo(
     () => ({
-      data: value.data,
       t: value.t,
       darkMode: value.darkMode,
       step: value.step,
       animDir: value.animDir,
       validationErrors: value.validationErrors,
     }),
-    [value.data, value.t, value.darkMode, value.step, value.animDir, value.validationErrors]
+    [value.t, value.darkMode, value.step, value.animDir, value.validationErrors]
   );
   const dispatchValue: WizardDispatchValue = useMemo(
     () => ({
-      updateData: value.updateData,
       onDownloadPDF: value.onDownloadPDF,
       onDownloadAllTemplates: value.onDownloadAllTemplates,
       goToStep: value.goToStep,
@@ -54,7 +53,6 @@ export const WizardProvider: React.FC<{
       resetForm: value.resetForm,
     }),
     [
-      value.updateData,
       value.onDownloadPDF,
       value.onDownloadAllTemplates,
       value.goToStep,

@@ -6,6 +6,7 @@ import React, { lazy, Suspense } from 'react';
 import { Palette } from 'lucide-react';
 import { TEMPLATE_OPTIONS } from '../../constants';
 import { useWizardContext } from '../../context/WizardContext';
+import { useFormStore } from '../../stores/formStore';
 
 const SwissDocument = lazy(() => import('../SwissDocument'));
 
@@ -26,7 +27,8 @@ const Step5TemplateSelect = React.memo(({
   onSelectTemplate,
   showToast,
 }) => {
-  const { data, t, animDir, darkMode } = useWizardContext();
+  const data = useFormStore((s) => s.data);
+  const { t, animDir, darkMode } = useWizardContext();
   // All templates render immediately; Suspense handles per-card loading state.
   const visibleTemplates = TEMPLATE_OPTIONS.map(x => x.id);
 

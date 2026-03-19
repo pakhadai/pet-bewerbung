@@ -9,9 +9,12 @@ import Header from '../Header';
 import Footer from '../Footer';
 import LegalPages from '../LegalPages';
 import { useWizardContext } from '../../context/WizardContext';
+import { useFormStore } from '../../stores/formStore';
 
 const Step6ThankYou = React.memo(({ onFaqClick: onFaqClickProp }) => {
-  const { data, t, darkMode, setDarkMode, setLang, updateData, goToStep, onDownloadPDF, showToast, resetForm } = useWizardContext();
+  const data = useFormStore((s) => s.data);
+  const updateData = useFormStore((s) => s.updateData);
+  const { t, darkMode, setDarkMode, setLang, goToStep, onDownloadPDF, showToast, resetForm } = useWizardContext();
   const [legalPage, setLegalPage] = useState(null);
   const onFaqClick = onFaqClickProp ?? (() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info'));
 

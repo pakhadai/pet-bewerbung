@@ -44,6 +44,10 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
   const isCompact = templateType === 'compact';
   const isModern = templateType === 'modern';
 
+  // Shorthand: sanitize + fallback every user-supplied text field.
+  // Prevents Yoga Layout freeze when long strings without spaces are encountered.
+  const s = (val) => sanitizeForPdf(withFallback(val));
+
   const textColor = '#334155';
   const backgroundColor = '#ffffff';
   const headerFontWeight = 'bold';
@@ -72,8 +76,6 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
     commonStyles.page,
     { backgroundColor: backgroundColor, color: textColor },
     isCompact && { padding: 32, fontSize: 9 },
-    isSwiss && !isCustomized && { borderTopWidth: 4, borderTopColor: '#dc2626' },
-    isCustomized && { borderTopWidth: 4, borderTopColor: colors.primary },
   ];
 
   const headerStyle = [commonStyles.header, { borderBottomColor: colors.primary }];
@@ -96,10 +98,7 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
   const footerSignStyle = [commonStyles.footerSign, isSwiss && { borderTopColor: '#f87171' }];
   const boxStyle = [
     commonStyles.box,
-    {
-      borderColor: colors.light,
-      backgroundColor: isCustomized ? colors.light : (isSwiss ? '#fef2f2' : '#f8fafc')
-    }
+    { borderColor: colors.light, backgroundColor: '#f8fafc' },
   ];
   const headerIconStyle = [
     commonStyles.headerIcon,
@@ -127,11 +126,11 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
     <View style={commonStyles.sectionBlock} key="owner">
       <Text style={headingStyle}>{t?.doc?.sectionOwner ?? 'Owner'}</Text>
       <View>
-        <Text style={commonStyles.textBold}>{withFallback(data?.ownerName)}</Text>
-        <Text style={commonStyles.text}>{streetLine}</Text>
-        <Text style={commonStyles.text}>{cityLine}</Text>
-        <Text style={[commonStyles.text, { marginTop: 6 }]}>{withFallback(data?.email)}</Text>
-        <Text style={commonStyles.text}>{withFallback(data?.phone)}</Text>
+        <Text style={commonStyles.textBold}>{s(data?.ownerName)}</Text>
+        <Text style={commonStyles.text}>{sanitizeForPdf(streetLine)}</Text>
+        <Text style={commonStyles.text}>{sanitizeForPdf(cityLine)}</Text>
+        <Text style={[commonStyles.text, { marginTop: 6 }]}>{s(data?.email)}</Text>
+        <Text style={commonStyles.text}>{s(data?.phone)}</Text>
       </View>
       {/* QR Code with label */}
       {qrUrl && (
@@ -172,14 +171,14 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
         </View>
         <View style={commonStyles.gridHalf}>
           <Text style={commonStyles.label}>{t?.labels?.aloneTime ?? 'Alone'}</Text>
-          <Text style={commonStyles.text}>{data?.aloneTime ? `${data.aloneTime}h` : '—'}</Text>
+          <Text style={commonStyles.text}>{data?.aloneTime ? `${sanitizeForPdf(String(data.aloneTime))}h` : '—'}</Text>
         </View>
       </View>
       {data?.activeHours ? (
         <View style={[commonStyles.gridRow, { marginTop: 4 }]}>
           <View style={commonStyles.gridHalf}>
             <Text style={commonStyles.label}>{t?.labels?.activeHours ?? 'Active hours'}</Text>
-            <Text style={commonStyles.text}>{data.activeHours}</Text>
+            <Text style={commonStyles.text}>{sanitizeForPdf(data.activeHours)}</Text>
           </View>
         </View>
       ) : null}
@@ -213,11 +212,11 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
       <View style={commonStyles.gridRow}>
         <View style={commonStyles.gridHalf}>
           <Text style={commonStyles.label}>{t?.labels?.petName ?? 'Name'}</Text>
-          <Text style={commonStyles.textBold}>{withFallback(data?.name)}</Text>
+          <Text style={commonStyles.textBold}>{s(data?.name)}</Text>
         </View>
         <View style={commonStyles.gridHalf}>
           <Text style={commonStyles.label}>{t?.labels?.breed ?? 'Breed'}</Text>
-          <Text style={commonStyles.text}>{withFallback(data?.breed)}</Text>
+          <Text style={commonStyles.text}>{s(data?.breed)}</Text>
         </View>
       </View>
       <View style={commonStyles.gridRow}>
@@ -253,18 +252,18 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
         <View style={commonStyles.gridRow}>
           <View style={commonStyles.gridHalf}>
             <Text style={[commonStyles.label, { fontSize: 7 }]}>{t?.labels?.chipId ?? 'Chip ID'}</Text>
-            <Text style={[commonStyles.text, { fontSize: 9 }]}>{withFallback(data?.chipId)}</Text>
+            <Text style={[commonStyles.text, { fontSize: 9 }]}>{s(data?.chipId)}</Text>
           </View>
           <View style={commonStyles.gridHalf}>
             <Text style={[commonStyles.label, { fontSize: 7 }]}>{t?.labels?.insurance ?? 'Insurance'}</Text>
-            <Text style={[commonStyles.text, { fontSize: 9 }]}>{withFallback(data?.insuranceProvider)}</Text>
+            <Text style={[commonStyles.text, { fontSize: 9 }]}>{s(data?.insuranceProvider)}</Text>
           </View>
         </View>
         <View style={commonStyles.gridRow}>
           <View style={commonStyles.gridHalf}>
             <Text style={[commonStyles.label, { fontSize: 7 }]}>{t?.labels?.vet ?? 'Vet'}</Text>
             <Text style={[commonStyles.text, { fontSize: 9 }]}>
-              {[data?.vetName, data?.vetPhone].filter(Boolean).join(' · ') || '—'}
+              {[data?.vetName, data?.vetPhone].filter(Boolean).map(v => sanitizeForPdf(v)).join(' · ') || '—'}
             </Text>
           </View>
           <View style={commonStyles.gridHalf}>
@@ -318,16 +317,16 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
                 {t?.labels?.previousLandlord ?? 'Previous landlord'}
               </Text>
               {data?.previousLandlordName && (
-                <Text style={[commonStyles.text, { fontWeight: 'bold', fontSize: 9 }]}>{data.previousLandlordName}</Text>
+                <Text style={[commonStyles.text, { fontWeight: 'bold', fontSize: 9 }]}>{s(data.previousLandlordName)}</Text>
               )}
               {data?.previousDuration && (
-                <Text style={[commonStyles.text, { fontSize: 8 }]}>{t?.labels?.previousDuration ?? 'Duration'}: {data.previousDuration}</Text>
+                <Text style={[commonStyles.text, { fontSize: 8 }]}>{t?.labels?.previousDuration ?? 'Duration'}: {s(data.previousDuration)}</Text>
               )}
               {data?.previousLandlordPhone && (
-                <Text style={[commonStyles.text, { fontSize: 8 }]}>{data.previousLandlordPhone}</Text>
+                <Text style={[commonStyles.text, { fontSize: 8 }]}>{s(data.previousLandlordPhone)}</Text>
               )}
               {data?.previousLandlordEmail && (
-                <Text style={[commonStyles.text, { fontSize: 8 }]}>{data.previousLandlordEmail}</Text>
+                <Text style={[commonStyles.text, { fontSize: 8 }]}>{s(data.previousLandlordEmail)}</Text>
               )}
             </View>
           )}
@@ -338,13 +337,13 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
                 {t?.labels?.emergencyContact ?? 'Emergency contact'}
               </Text>
               {data?.emergencyContactName && (
-                <Text style={[commonStyles.text, { fontWeight: 'bold', fontSize: 9 }]}>{data.emergencyContactName}</Text>
+                <Text style={[commonStyles.text, { fontWeight: 'bold', fontSize: 9 }]}>{s(data.emergencyContactName)}</Text>
               )}
               {data?.emergencyContactRelation && (
-                <Text style={[commonStyles.text, { fontSize: 8 }]}>{t?.labels?.emergencyContactRelation ?? 'Relation'}: {data.emergencyContactRelation}</Text>
+                <Text style={[commonStyles.text, { fontSize: 8 }]}>{t?.labels?.emergencyContactRelation ?? 'Relation'}: {s(data.emergencyContactRelation)}</Text>
               )}
               {data?.emergencyContactPhone && (
-                <Text style={[commonStyles.text, { fontSize: 8 }]}>{data.emergencyContactPhone}</Text>
+                <Text style={[commonStyles.text, { fontSize: 8 }]}>{s(data.emergencyContactPhone)}</Text>
               )}
             </View>
           )}
@@ -353,7 +352,7 @@ const ClassicPdf = ({ data, t, logoUrl, qrUrl, templateType = 'classic' }) => {
         {data?.secondaryEmergencyContact && (
           <View style={{ marginTop: 6, paddingTop: 4, borderTopWidth: 1, borderTopColor: '#bfdbfe' }}>
             <Text style={[commonStyles.text, { fontSize: 8 }]}>
-              {t?.labels?.secondaryEmergencyContact ?? 'Zweiter Kontakt'}: {data.secondaryEmergencyContact}
+              {t?.labels?.secondaryEmergencyContact ?? 'Zweiter Kontakt'}: {s(data.secondaryEmergencyContact)}
             </Text>
           </View>
         )}

@@ -84,24 +84,29 @@ export const useFormStore = create<FormState>((set, get) => ({
 
   loadDraft: async (defaultLang) => {
     set({ isLoading: true });
+
+    // Isolate text and photo loading: a photo storage failure must NOT wipe text data.
+    let saved = null;
     try {
-      const saved = simpleStorage.loadDraft();
-      const photo = await simpleStorage.loadPhoto();
-      const merged: FormData = saved
-        ? {
-            ...INITIAL_DATA,
-            ...saved,
-            lang: (saved.lang as string) || defaultLang,
-          }
-        : { ...INITIAL_DATA, lang: defaultLang };
-      delete merged.hasPhotoSaved;
-      merged.photo = photo;
-      merged.hasPhotoSaved = !!photo;
-      set({ data: merged, isLoading: false, prevPhoto: photo });
+      saved = simpleStorage.loadDraft();
     } catch (e) {
-      if (import.meta.env.DEV) console.warn('loadDraft failed', e);
-      set({ data: { ...INITIAL_DATA, lang: defaultLang }, isLoading: false, prevPhoto: undefined });
+      if (import.meta.env.DEV) console.warn('loadDraft: failed to load text draft', e);
     }
+
+    let photo = null;
+    try {
+      photo = await simpleStorage.loadPhoto();
+    } catch (e) {
+      if (import.meta.env.DEV) console.warn('loadDraft: failed to load photo (text draft preserved)', e);
+    }
+
+    const merged: FormData = saved
+      ? { ...INITIAL_DATA, ...saved, lang: (saved.lang as string) || defaultLang }
+      : { ...INITIAL_DATA, lang: defaultLang };
+    delete merged.hasPhotoSaved;
+    merged.photo = photo;
+    merged.hasPhotoSaved = !!photo;
+    set({ data: merged, isLoading: false, prevPhoto: photo });
   },
 
   saveData: async () => {

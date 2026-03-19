@@ -7,6 +7,7 @@ import { Download, Check, FileArchive, Maximize2, Minimize2 } from 'lucide-react
 import ErrorBoundary from '../ErrorBoundary';
 import { TEMPLATE_OPTIONS } from '../../constants';
 import { useWizardContext } from '../../context/WizardContext';
+import { useFormStore } from '../../stores/formStore';
 
 const SwissDocument = lazy(() => import('../SwissDocument'));
 
@@ -17,7 +18,8 @@ const TEMPLATE_LABELS = {
 };
 
 const Step5Preview = React.memo(({ selectedTemplate }) => {
-  const { data, t, animDir, darkMode, onDownloadPDF, onDownloadAllTemplates } = useWizardContext();
+  const data = useFormStore((s) => s.data);
+  const { t, animDir, darkMode, onDownloadPDF, onDownloadAllTemplates } = useWizardContext();
   const titleCl = darkMode ? 'text-white' : 'text-text-main';
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary';
   const cardBg = darkMode ? 'bg-gray-800' : 'bg-white';
