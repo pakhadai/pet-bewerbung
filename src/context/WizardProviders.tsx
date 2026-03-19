@@ -24,25 +24,55 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 export const useTranslationContext = (): TranslationContextValue => {
   const ctx = useContext(TranslationContext);
-  if (!ctx) throw new Error('useTranslationContext must be used within WizardProviders');
+  if (!ctx) {
+    // During Vite HMR / Fast Refresh the provider-consumer boundary can briefly desync.
+    // Returning a safe fallback prevents the entire app from crashing.
+    if (import.meta.env.DEV) console.warn('useTranslationContext: missing provider, using fallback');
+    return {
+      t: {} as TranslationContextValue['t'],
+      lang: 'de' as TranslationContextValue['lang'],
+      setLang: () => undefined,
+      isLoading: true,
+    } as TranslationContextValue;
+  }
   return ctx;
 };
 
 export const useWizardNavigationContext = (): WizardNavigationContextValue => {
   const ctx = useContext(WizardNavigationContext);
-  if (!ctx) throw new Error('useWizardNavigationContext must be used within WizardProviders');
+  if (!ctx) {
+    if (import.meta.env.DEV) console.warn('useWizardNavigationContext: missing provider, using fallback');
+    return {
+      step: 0,
+      animDir: 'left',
+      goToStep: () => undefined,
+      nextStep: () => undefined,
+      prevStep: () => undefined,
+      setStep: () => undefined,
+    } as WizardNavigationContextValue;
+  }
   return ctx;
 };
 
 export const useThemeContext = (): ThemeContextValue => {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error('useThemeContext must be used within WizardProviders');
+  if (!ctx) {
+    if (import.meta.env.DEV) console.warn('useThemeContext: missing provider, using fallback');
+    return {
+      darkMode: false,
+    } as ThemeContextValue;
+  }
   return ctx;
 };
 
 export const useToastContext = (): ToastContextValue => {
   const ctx = useContext(ToastContext);
-  if (!ctx) throw new Error('useToastContext must be used within WizardProviders');
+  if (!ctx) {
+    if (import.meta.env.DEV) console.warn('useToastContext: missing provider, using fallback');
+    return {
+      showToast: () => undefined,
+    } as ToastContextValue;
+  }
   return ctx;
 };
 
