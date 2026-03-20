@@ -89,9 +89,9 @@ export default {
   step4: {
     photoPrivacy: "Ihr Foto wird niemals hochgeladen. Alles passiert lokal in Ihrem Browser.",
     changePhotoHint: "Klicken Sie auf das Bild oder ziehen Sie ein neues hierher",
-    maxSize: "bis zu 10MB",
+    maxSize: "bis zu 10 MB",
     fileTooLarge: "Datei zu groß. Max. 10 MB.",
-    invalidImage: "Ungültige Bilddatei. Bitte laden Sie eine gültige JPG- oder PNG-Datei hoch.",
+    invalidImage: "Ungültige Bilddatei. Bitte laden Sie JPG, PNG, WEBP oder HEIC/HEIF hoch.",
     tipFormat: "Tipp: Hochformat (3:4) funktioniert am besten",
     tipsTitle: "Tipps für ein perfektes Foto:",
     tip1: "Gute Beleuchtung (natürliches Licht ist ideal)",

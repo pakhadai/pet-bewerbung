@@ -43,7 +43,7 @@ export const INITIAL_DATA: FormData & Record<string, unknown> = {
   behaviorWithPets: '',
 };
 
-export const MAX_DESCRIPTION_LENGTH = 470;
+export const MAX_DESCRIPTION_LENGTH = 940;
 
 export const TEMPLATE_OPTIONS = [
   { id: 'classic', label: 'Classic' },

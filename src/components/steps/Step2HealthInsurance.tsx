@@ -11,6 +11,7 @@ import type { FormData } from '../../types/form';
 import { getShowAdvancedHealthInfo } from '../../utils/getShowAdvancedHealthInfo';
 
 const INSURANCE_AFFILIATE_LINK = import.meta.env.VITE_INSURANCE_AFFILIATE_LINK || '';
+const MEDICAL_CONDITIONS_MAX_LENGTH = 200;
 
 const Step2HealthInsurance: React.FC = () => {
   const data = useFormStore((s) => s.data) as FormData;
@@ -215,21 +216,18 @@ const Step2HealthInsurance: React.FC = () => {
                 <Label>{t?.step2Emergency?.displayMedical ?? 'Allergien / Medikamente'}</Label>
                 <textarea
                   value={data.medicalConditions ?? ''}
-                  onChange={(e) => updateData('medicalConditions', e.target.value)}
+                  onChange={(e) => updateData('medicalConditions', e.target.value.slice(0, MEDICAL_CONDITIONS_MAX_LENGTH))}
                   placeholder={t?.step2Emergency?.medicalHint ?? 'z.B. Pollenallergie, Medikament X'}
+                  maxLength={MEDICAL_CONDITIONS_MAX_LENGTH}
                   rows={3}
                   className="w-full px-4 py-3 rounded-xl border-2 hand-drawn-border text-sm resize-y theme-input mt-1"
                 />
+                <div className={`mt-1 text-right text-xs ${mutedCl}`}>
+                  {(data.medicalConditions ?? '').length} / {MEDICAL_CONDITIONS_MAX_LENGTH}
+                </div>
               </div>
             </div>
           )}
-        </div>
-
-        <div className={`mt-6 flex items-center gap-3 px-4 py-3 rounded-xl border-2 hand-drawn-border ${darkMode ? 'bg-green-900/20 border-green-600/50' : 'bg-green-50 border-green-200'}`}>
-          <span className="material-symbols-outlined text-green-600 dark:text-green-400 sketch-icon-filled">verified_user</span>
-          <span className={`text-sm font-semibold ${darkMode ? 'text-green-300' : 'text-green-800'}`}>
-            {t?.hero?.privacyDesc ?? 'Ihre Daten werden niemals gespeichert. Alles passiert in Ihrem Browser.'}
-          </span>
         </div>
       </div>
     </div>

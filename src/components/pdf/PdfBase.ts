@@ -187,11 +187,11 @@ export const commonStyles = StyleSheet.create({
   },
   // FREE template branding - more prominent
   footerBrandingFree: {
-    fontSize: 9,
-    fontWeight: 'bold',
+    fontSize: 8,
+    fontWeight: 'normal',
     textTransform: 'uppercase',
-    color: '#94a3b8',
-    letterSpacing: 1,
+    color: '#a8b3c2',
+    letterSpacing: 0.8,
     textAlign: 'center',
     marginTop: 8,
   },
@@ -209,6 +209,7 @@ export const commonStyles = StyleSheet.create({
     textTransform: 'uppercase',
     color: '#475569',
     marginTop: 20,
+    textAlign: 'center',
   },
   photoContainer: {
     width: '100%',

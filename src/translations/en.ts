@@ -89,9 +89,9 @@ export default {
   step4: {
     photoPrivacy: "Your photo is never uploaded. Everything happens locally in your browser.",
     changePhotoHint: "Click on the image or drag a new one here",
-    maxSize: "up to 10MB",
+    maxSize: "up to 10 MB",
     fileTooLarge: "File too large. Max. 10 MB.",
-    invalidImage: "Invalid image file. Please upload a valid JPG or PNG file.",
+    invalidImage: "Invalid image file. Please upload JPG, PNG, WEBP, or HEIC/HEIF.",
     tipFormat: "Tip: Portrait format (3:4) works best",
     tipsTitle: "Tips for a perfect photo:",
     tip1: "Good lighting (natural light is ideal)",

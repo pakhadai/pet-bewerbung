@@ -84,12 +84,37 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
     };
   }, []);
 
-  const MAX_FILE_SIZE = 3 * 1024 * 1024;
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
+  const ACCEPT_ATTR = 'image/jpeg,image/png,image/webp,image/heic,image/heif';
+  const ALLOWED_MIME_TYPES = new Set([
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+    'image/heic',
+    'image/heif',
+  ]);
+  const ALLOWED_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif']);
+
+  const isSupportedImageFile = (file: File): boolean => {
+    const mime = (file.type || '').toLowerCase();
+    if (mime && ALLOWED_MIME_TYPES.has(mime)) return true;
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    return ALLOWED_EXTENSIONS.has(ext);
+  };
 
   const processFile = async (file: File) => {
-    if (!file?.type.startsWith('image/')) return;
+    if (!file) return;
+    if (!isSupportedImageFile(file)) {
+      showToast?.(
+        t?.step4?.invalidImage ??
+          'Ungültiges Bildformat. Bitte JPG, PNG, WEBP oder HEIC/HEIF hochladen.',
+        'error'
+      );
+      return;
+    }
     if (file.size > MAX_FILE_SIZE) {
-      showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 3 MB.', 'error');
+      showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error');
       return;
     }
     onNavigationVisibilityChange?.(false);
@@ -106,7 +131,11 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
       setTempImage(url);
       setShowCropper(true);
     } catch {
-      showToast?.(t?.step4?.invalidImage ?? 'Ungültige Bilddatei. Bitte laden Sie eine gültige JPG- oder PNG-Datei hoch.', 'error');
+      showToast?.(
+        t?.step4?.invalidImage ??
+          'Bild konnte nicht verarbeitet werden. Bitte JPG, PNG, WEBP oder HEIC/HEIF verwenden.',
+        'error'
+      );
     } finally {
       setIsCompressing(false);
     }
@@ -198,7 +227,7 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
           >
             <input
               type="file"
-              accept="image/*"
+              accept={ACCEPT_ATTR}
               onChange={handleFileSelect}
               disabled={isCompressing}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 disabled:cursor-wait"
@@ -249,7 +278,7 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
                   <p className={`text-2xl font-display font-bold mb-2 ${textMain}`}>
                     {t?.ui?.clickOrDrop ?? 'Klicken oder per Drag & Drop'}
                   </p>
-                  <p className={`text-sm ${textMuted}`}>PNG, JPG {t?.step4?.maxSize ?? 'bis zu 10MB'}</p>
+                  <p className={`text-sm ${textMuted}`}>JPG, PNG, WEBP, HEIC/HEIF {t?.step4?.maxSize ?? 'bis zu 10MB'}</p>
                 </div>
                 <div className={`mt-4 px-4 py-2 rounded-full border-2 ${darkMode ? 'border-gray-600' : 'border-gray-300'}`}>
                   <p className={`text-xs ${textMuted}`}>{t?.step4?.tipFormat ?? 'Tipp: Hochformat (3:4) funktioniert am besten'}</p>

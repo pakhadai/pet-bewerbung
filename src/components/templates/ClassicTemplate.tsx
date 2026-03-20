@@ -103,8 +103,8 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors
       {/* Footer - Prominent branding */}
       <div className={config.footerContainer} style={footer}>
         <div className="flex flex-col items-center w-full">
-          <p className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-semibold mb-4">
-            ✦ {doc?.footer ?? 'DOKUMENT GENERIERT VIA PET-BEWERBUNG.CH'} ✦
+          <p className={config.footerText}>
+            {doc?.footer ?? 'DOKUMENT GENERIERT VIA PET-BEWERBUNG.CH'}
           </p>
         </div>
         <div className="flex justify-end">
@@ -141,8 +141,8 @@ export const getClassicConfig = (today: string): TemplateConfig => ({
   mainWidth: 'flex-1 min-w-0',
   mainSpace: 'space-y-3',
   footerContainer: 'mt-auto pt-2 border-t-2 border-slate-900 flex-shrink-0 pb-[3mm]',
-  footerText: 'text-[10px] text-slate-400 uppercase tracking-[0.15em] font-semibold text-center',
+  footerText: 'text-[8px] text-slate-300 uppercase tracking-[0.08em] font-medium text-center mb-3',
   footerSignContainer: 'w-44 border-t border-slate-400 pt-2 mt-3',
-  footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600',
+  footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600 text-center',
   badge: null
 });

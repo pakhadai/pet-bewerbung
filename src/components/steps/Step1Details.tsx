@@ -174,12 +174,6 @@ const Step1Details: React.FC = () => {
           </div>
         </div>
 
-        <div className={`mt-6 flex items-center gap-3 px-4 py-3 rounded-xl border-2 hand-drawn-border ${darkMode ? 'bg-green-900/20 border-green-600/50' : 'bg-green-50 border-green-200'}`}>
-          <span className="material-symbols-outlined text-green-600 dark:text-green-400 sketch-icon-filled">verified_user</span>
-          <span className={`text-sm font-semibold ${darkMode ? 'text-green-300' : 'text-green-800'}`}>
-            {t?.hero?.privacyDesc ?? 'Your data is private, stays in browser • No servers involved.'}
-          </span>
-        </div>
       </div>
     </div>
   );

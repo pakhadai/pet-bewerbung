@@ -2,7 +2,7 @@
  * Step6ThankYou - Thank you page after document creation
  */
 import React, { useState } from 'react';
-import { ArrowLeft, FileArchive, Loader2 } from 'lucide-react';
+import { FileArchive, Loader2 } from 'lucide-react';
 import Header from '../Header';
 import Footer from '../Footer';
 import LegalPages from '../LegalPages';
@@ -68,19 +68,6 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
         </div>
 
         <div className="w-full max-w-4xl flex flex-col items-center text-center z-10 gap-8">
-          <div
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold ${
-              darkMode
-                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-400/40'
-                : 'bg-emerald-50 text-emerald-700 border-emerald-300'
-            }`}
-          >
-            <span className="material-symbols-outlined text-base" aria-hidden>
-              shield_lock
-            </span>
-            <span>{t?.labels?.localPrivacy ?? 'Local generation • privacy focused'}</span>
-          </div>
-
           <div className="relative">
             <div className="size-32 sm:size-40 bg-primary/20 blob-accent flex items-center justify-center hand-drawn-border border-primary">
               <span className="material-symbols-outlined text-7xl sm:text-8xl text-primary animate-pulse sketch-icon-filled">check_circle</span>
@@ -98,12 +85,12 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
             <h2 className={`text-6xl sm:text-8xl font-bold font-display leading-none ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               {t?.thankYou?.allSet ?? t?.thankYou?.title ?? "You're All Set!"}
             </h2>
-            <p className={`text-xl sm:text-2xl max-w-lg leading-relaxed font-medium italic ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-lg sm:text-xl max-w-xl leading-relaxed font-semibold ${darkMode ? 'text-gray-300' : 'text-text-secondary'}`}>
               {t?.thankYou?.subtitle ?? t?.thankYou?.msg ?? "Your pet's professional resume has been generated and is ready for the world to see."}
             </p>
           </div>
 
-          <div className="w-full max-w-xl mt-4">
+          <div className="w-full max-w-xl mt-4 flex flex-col gap-5">
             {onDownloadPDF && (
               <button
                 type="button"
@@ -126,7 +113,7 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
               type="button"
               onClick={handleDownloadZip}
               disabled={isGeneratingZip}
-              className={`mt-3 w-full px-6 py-4 rounded-xl flex items-center justify-center gap-3 text-xl font-display font-bold transition-all ${
+              className={`w-full px-6 py-4 rounded-xl flex items-center justify-center gap-3 text-xl font-display font-bold transition-all ${
                 darkMode ? 'bg-purple-500/10 text-purple-300 hover:bg-purple-500/20' : 'bg-purple-50 text-purple-700 hover:bg-purple-100'
               } ${isGeneratingZip ? 'opacity-70 cursor-not-allowed hover:bg-inherit' : ''}`}
             >
@@ -138,16 +125,6 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <button
               type="button"
-              onClick={() => goToStep(6)}
-              className={`flex items-center gap-2 px-6 py-3 text-lg font-bold font-display hand-drawn-button border-2 transition-all ${
-                darkMode ? 'border-gray-500 text-gray-300 hover:bg-gray-700' : 'border-gray-400 text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              <ArrowLeft size={20} />
-              {t?.nav?.backToPreview ?? 'Zurück zur Vorschau'}
-            </button>
-            <button
-              type="button"
               onClick={() => {
                 if (window.confirm(t?.ui?.confirmReset ?? t?.validation?.confirmReset ?? 'Are you sure? All data will be permanently deleted.')) {
                   Promise.resolve(resetForm?.()).then(() => goToStep(0));
@@ -155,7 +132,7 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
               }}
               className={`text-primary transition-colors font-display text-xl ${darkMode ? 'hover:text-white' : 'hover:text-gray-900'}`}
             >
-              {t?.thankYou?.createAnother ?? t?.nav?.createAnother ?? 'Create another one'}
+              {t?.thankYou?.createAnother ?? t?.nav?.createAnother ?? 'Back to home'}
             </button>
             <button
               type="button"

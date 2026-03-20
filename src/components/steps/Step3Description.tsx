@@ -5,7 +5,6 @@ import React from 'react';
 import { MAX_DESCRIPTION_LENGTH } from '../../constants';
 import { useWizardContext } from '../../context/WizardContext';
 import { useFormStore } from '../../stores/formStore';
-import FormInput from '../FormInput';
 import type { FormData } from '../../types/form';
 
 interface Step3DescriptionProps {
@@ -16,7 +15,17 @@ const Step3Description: React.FC<Step3DescriptionProps> = ({ onGenerate }) => {
   const data = useFormStore((s) => s.data) as FormData;
   const updateData = useFormStore((s) => s.updateData);
   const { t, animDir, darkMode } = useWizardContext();
-  const canGenerate = !!(data.name || data.petType || data.keywords);
+  const canGenerate = !!(
+    data.name ||
+    data.petType ||
+    data.breed ||
+    data.age ||
+    data.noiseLevel ||
+    data.aloneTime ||
+    data.activeHours ||
+    data.behaviorWithChildren ||
+    data.behaviorWithPets
+  );
   const len = (data.generatedText || '').length;
   const titleCl = darkMode ? 'text-white' : 'text-text-main';
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary';
@@ -53,20 +62,6 @@ const Step3Description: React.FC<Step3DescriptionProps> = ({ onGenerate }) => {
             />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label htmlFor="pet-keywords" className={`text-sm font-medium ${mutedCl}`}>
-              {t?.labels?.autoTextPrompt ?? 'Keywords (e.g. quiet, clean)'}
-            </label>
-            <FormInput
-              id="pet-keywords"
-              value={data.keywords || ''}
-              onChange={(v) => updateData('keywords', v)}
-              placeholder="ruhig, stubenrein, verspielt, kinderlieb..."
-              className={`w-full p-3 hand-drawn-border border-2 rounded-xl outline-none transition-all text-sm
-                ${darkMode ? 'bg-gray-800/80 border-gray-600 text-white placeholder:text-gray-500' : 'bg-white/90 border-gray-400 text-text-main placeholder:text-gray-400'}`}
-            />
-          </div>
-
           <div className="flex flex-col items-center gap-4 mt-2">
             <button
               type="button"
@@ -80,13 +75,6 @@ const Step3Description: React.FC<Step3DescriptionProps> = ({ onGenerate }) => {
                 {t?.labels?.autoGenerateTextBtn ?? 'Automatic text generation'}
               </span>
             </button>
-
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${darkMode ? 'bg-green-900/20 border border-green-600/30' : 'bg-green-50 border border-green-200'}`}>
-              <span className="material-symbols-outlined text-green-500 text-lg sketch-icon-filled">verified_user</span>
-              <span className={`text-xs font-medium ${darkMode ? 'text-green-300' : 'text-green-700'}`}>
-                {t?.labels?.localPrivacy ?? 'Lokale Erzeugung • Datenschutz'}
-              </span>
-            </div>
           </div>
         </div>
       </div>

@@ -112,6 +112,6 @@ export const getCompactConfig = (today: string): TemplateConfig => ({
   footerContainer: 'mt-auto pt-3 border-t border-slate-300 flex-shrink-0 pb-[4mm]',
   footerText: 'text-[8px] text-slate-400 text-center mb-2',
   footerSignContainer: 'w-40 border-t border-slate-300 pt-2 mt-5',
-  footerSignText: 'text-[8px] uppercase font-medium tracking-wider text-slate-500',
+  footerSignText: 'text-[8px] uppercase font-medium tracking-wider text-slate-500 text-center',
   badge: null
 });

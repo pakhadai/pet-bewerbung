@@ -24,7 +24,7 @@ export const PdfFooter: React.FC<PdfFooterProps> = ({ t, templateConfig }) => {
             src="https://pet-bewerbung.ch"
             style={commonStyles.footerBrandingFree}
           >
-            ✦ {footerBranding} ✦
+            {footerBranding}
           </Link>
         </View>
       ) : (

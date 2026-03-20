@@ -2,7 +2,7 @@
  * Image compression utility - TypeScript
  */
 const MAX_DIMENSION = 8000;
-const MAX_FILE_SIZE_BYTES = 3 * 1024 * 1024;
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 function checkDimensions(width: number, height: number): void {
   if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
@@ -85,8 +85,8 @@ async function loadImageWithOrientation(source: Blob | File | string): Promise<L
     return { bitmap, width: bitmap.width, height: bitmap.height, isBitmap: true };
   } catch {
     const size = (source instanceof Blob || source instanceof File) ? source.size : 0;
-    if (size > 1024 * 1024) {
-      throw new Error('Image too large or unsupported format. Maximum 1 MB when dimensions cannot be verified.');
+    if (size > MAX_FILE_SIZE_BYTES) {
+      throw new Error(`Image too large or unsupported format. Maximum ${MAX_FILE_SIZE_BYTES / (1024 * 1024)} MB.`);
     }
     return loadImageLegacy(source);
   }
