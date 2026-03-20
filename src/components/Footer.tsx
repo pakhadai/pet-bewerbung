@@ -41,7 +41,7 @@ const Footer: React.FC<FooterProps> = ({ darkMode, t, onOpenLegal, onFaqClick })
         <span className="opacity-30" aria-hidden>|</span>
         <button
           type="button"
-          className={`bg-transparent border-none p-0 text-inherit font-sans text-sm font-semibold cursor-pointer ${linkClass}`}
+          className={`bg-transparent border-none p-0 text-inherit font-display text-sm font-semibold tracking-wide cursor-pointer ${linkClass}`}
           onClick={(e) => { e.preventDefault(); onFaqClick?.(); }}
         >
           {t?.footer?.faq ?? 'FAQ'}

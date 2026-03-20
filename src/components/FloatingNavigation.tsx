@@ -5,19 +5,17 @@
  *
  * Navigation Logic per Step (7 steps total):
  * - Steps 1-5: Back + Next only (data entry, photo, template selection)
- * - Step 6: Back + Download/Buy Premium button (preview - based on template & premium status)
+ * - Step 6: Back + Finish button (goes to thank-you page)
  * - Step 7: Not shown (thank you page)
  *
  */
-import React, { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import React from 'react';
 import type { TranslationObject } from '../types/template';
 
 export interface FloatingNavigationProps {
   step: number;
   onPrev: () => void;
   onNext: () => void;
-  onDownloadPDF: () => void;
   t?: TranslationObject;
   darkMode?: boolean;
   canProceed?: boolean;
@@ -28,14 +26,11 @@ const FloatingNavigation = React.memo<FloatingNavigationProps>(({
   step,
   onPrev,
   onNext,
-  onDownloadPDF,
   t,
   darkMode = false,
   canProceed = true,
   visible = true
 }) => {
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-
   // Don't show navigation on step 0 (landing) or step 7 (thank you)
   if (step === 0 || step === 7) return null;
 
@@ -54,26 +49,6 @@ const FloatingNavigation = React.memo<FloatingNavigationProps>(({
 
   // Determine if back button should be disabled (on step 1)
   const isBackDisabled = step === 1;
-
-  const getStep5ActionConfig = () => ({
-    label: labels?.download ?? 'Download PDF',
-    icon: 'download',
-    handler: onDownloadPDF,
-    className: darkMode
-      ? 'bg-lavender hover:bg-primary text-primary-dark hover:text-white border-primary/50'
-      : 'bg-lavender hover:bg-primary text-primary-dark hover:text-white border-primary/30'
-  });
-
-  const handleDownload = async () => {
-    if (isGeneratingPdf) return;
-    setIsGeneratingPdf(true);
-    try {
-      // `onDownloadPDF` returns Promise<void>, but the prop is typed as () => void in this component.
-      await Promise.resolve(onDownloadPDF());
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  };
 
   return (
     <div className="fixed bottom-8 left-0 w-full flex justify-center z-40 pointer-events-none print:hidden">
@@ -107,28 +82,20 @@ const FloatingNavigation = React.memo<FloatingNavigationProps>(({
           <span className="hidden sm:inline">{backLabel}</span>
         </button>
 
-        {/* Step 6: Download Button */}
+        {/* Step 6: Finish Button */}
         {isPreviewStep && (
           <button
             type="button"
-            onClick={handleDownload}
-            disabled={isGeneratingPdf}
-            className={`group flex items-center gap-2 px-4 sm:px-6 py-2 font-display text-lg sm:text-2xl font-bold transition-all hand-drawn-button hover:scale-105 border-2 ${getStep5ActionConfig().className} ${
-              isGeneratingPdf ? 'opacity-70 cursor-not-allowed hover:scale-100' : ''
+            onClick={onNext}
+            className={`group flex items-center gap-2 px-4 sm:px-6 py-2 font-display text-lg sm:text-2xl font-bold transition-all hand-drawn-button hover:scale-105 border-2 ${
+              darkMode
+                ? 'bg-lavender hover:bg-primary text-primary-dark hover:text-white border-primary/50'
+                : 'bg-lavender hover:bg-primary text-primary-dark hover:text-white border-primary/30'
             }`}
-            aria-label={labels?.download ?? 'Download PDF'}
+            aria-label={nav?.finish ?? ui?.finish ?? 'Finish'}
           >
-            <span
-              className="material-symbols-outlined text-lg sm:text-xl"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              {isGeneratingPdf ? null : getStep5ActionConfig().icon}
-            </span>
-            {isGeneratingPdf ? (
-              <Loader2 size={18} className="animate-spin" />
-            ) : (
-              <span>{getStep5ActionConfig().label}</span>
-            )}
+            <span className="material-symbols-outlined text-lg sm:text-xl">task_alt</span>
+            <span>{nav?.finish ?? ui?.finish ?? labels?.done ?? 'Finish'}</span>
           </button>
         )}
 

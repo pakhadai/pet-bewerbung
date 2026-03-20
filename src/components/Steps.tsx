@@ -102,17 +102,13 @@ const Steps: React.FC<StepsProps> = ({ darkMode, t }) => {
         <StepCard 
           number="2"
           title={t?.stepsNew?.step2?.title || "Description"}
-          subtitle={t?.stepsNew?.step2?.subtitle || "Character & AI"}
+          subtitle={t?.stepsNew?.step2?.subtitle || "Character & Details"}
           iconPrimary="psychology"
           iconSecondary="auto_awesome"
           bgColorClass="bg-peach"
           darkModeBgClass="bg-peach/80"
           rotation="rotate-[3deg]"
           hoverRotation="rotate-0"
-          badge={{
-            text: t?.stepsNew?.step3?.badge || "AI",
-            icon: 'smart_toy'
-          }}
           darkMode={darkMode}
           animDelay="0.15s"
         />

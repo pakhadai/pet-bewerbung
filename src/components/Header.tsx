@@ -21,7 +21,8 @@ const Header: React.FC<HeaderProps> = ({
     { code: 'en', label: 'EN' },
     { code: 'de', label: 'DE' },
     { code: 'fr', label: 'FR' },
-    { code: 'it', label: 'IT' }
+    { code: 'it', label: 'IT' },
+    { code: 'rm', label: 'RM' }
   ];
 
   return (
@@ -41,6 +42,29 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Navigation & Actions */}
         <div className="flex items-center gap-3 lg:gap-6">
+          {/* Mobile Language Switcher */}
+          <div className="md:hidden">
+            <label htmlFor="lang-mobile" className="sr-only">
+              {t?.header?.language ?? 'Language'}
+            </label>
+            <select
+              id="lang-mobile"
+              value={lang}
+              onChange={(e) => onLangChange(e.target.value)}
+              className={`rounded-lg border px-2 py-1 text-sm font-display font-bold ${
+                darkMode
+                  ? 'bg-gray-800 text-gray-100 border-gray-600'
+                  : 'bg-white text-text-main border-gray-300'
+              }`}
+              aria-label={t?.header?.language ?? 'Language'}
+            >
+              {languages.map((lng) => (
+                <option key={lng.code} value={lng.code}>
+                  {lng.label}
+                </option>
+              ))}
+            </select>
+          </div>
           
           {/* Language Switcher */}
           <div className={`hidden md:flex items-center gap-2 text-lg font-bold font-display ${darkMode ? 'text-gray-300' : 'text-text-main'}`}>

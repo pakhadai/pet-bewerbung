@@ -155,6 +155,20 @@ export const AppContainer: React.FC<AppContainerProps> = ({
           {step >= 1 && step <= 6 && (
             <div className={`sticky top-0 z-20 w-full p-0 print:hidden border-b ${darkMode ? 'bg-gray-900 border-transparent' : 'bg-white border-transparent'}`}>
               <StepProgress step={step} t={t} darkMode={darkMode} onStepClick={goToStep} />
+              <div className="px-4 md:px-8 pb-3">
+                <div
+                  className={`mx-auto max-w-7xl inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs sm:text-sm font-semibold ${
+                    darkMode
+                      ? 'bg-emerald-500/10 text-emerald-300 border-emerald-400/40'
+                      : 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-base" aria-hidden>
+                    shield_lock
+                  </span>
+                  <span>{t?.labels?.localPrivacy ?? 'Local generation • privacy focused'}</span>
+                </div>
+              </div>
             </div>
           )}
           <div className={step === 0 ? 'w-full' : 'max-w-7xl mx-auto p-4 md:p-8 print:border-none print:shadow-none print:p-0'}>
@@ -177,7 +191,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
           step={step}
           onPrev={() => goToStep(step - 1)}
           onNext={handleNext}
-          onDownloadPDF={wrappedOnDownloadPDF}
           t={t}
           darkMode={darkMode}
           canProceed={isStepValid}

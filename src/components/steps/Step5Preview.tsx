@@ -2,7 +2,7 @@
  * Step5Preview - Document preview and download
  */
 import React, { useState, lazy, Suspense } from 'react';
-import { Download, Check, FileArchive, Maximize2, Minimize2, Loader2 } from 'lucide-react';
+import { Check, Maximize2, Minimize2 } from 'lucide-react';
 import ErrorBoundary from '../ErrorBoundary';
 import { TEMPLATE_OPTIONS } from '../../constants';
 import { useWizardContext } from '../../context/WizardContext';
@@ -24,37 +24,15 @@ interface Step5PreviewProps {
 
 const Step5Preview: React.FC<Step5PreviewProps> = ({ selectedTemplate }) => {
   const data = useFormStore((s) => s.data) as FormData;
-  const { t, animDir, darkMode, onDownloadPDF, onDownloadAllTemplates } = useWizardContext();
+  const { t, animDir, darkMode } = useWizardContext();
   const titleCl = darkMode ? 'text-white' : 'text-text-main';
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary';
   const cardBg = darkMode ? 'bg-gray-800' : 'bg-white';
   const borderCl = darkMode ? 'border-gray-700' : 'border-gray-200';
 
   const [isEnlarged, setIsEnlarged] = useState(false);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const [isGeneratingZip, setIsGeneratingZip] = useState(false);
   const templateOption = TEMPLATE_OPTIONS.find((opt) => opt.id === selectedTemplate);
   const previewScale = isEnlarged ? 0.85 : 0.55;
-
-  const handleDownloadPdf = async () => {
-    if (isGeneratingPdf) return;
-    setIsGeneratingPdf(true);
-    try {
-      await onDownloadPDF();
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  };
-
-  const handleDownloadZip = async () => {
-    if (isGeneratingZip) return;
-    setIsGeneratingZip(true);
-    try {
-      await Promise.resolve(onDownloadAllTemplates());
-    } finally {
-      setIsGeneratingZip(false);
-    }
-  };
 
   return (
     <div className={`page page-enter-${animDir} reveal fade-enter max-w-7xl mx-auto pb-32`}>
@@ -73,8 +51,8 @@ const Step5Preview: React.FC<Step5PreviewProps> = ({ selectedTemplate }) => {
         </div>
       </div>
 
-      <div className={`grid gap-6 ${isEnlarged ? 'grid-cols-1' : 'lg:grid-cols-3'}`}>
-        <div className={isEnlarged ? 'col-span-1' : 'lg:col-span-2'}>
+      <div className="grid gap-6 grid-cols-1">
+        <div className="col-span-1">
           <div className={`relative rounded-2xl border ${borderCl} ${cardBg} overflow-hidden`}>
             <div className={`flex items-center justify-between px-4 py-3 border-b ${borderCl}`}>
               <div className="flex items-center gap-3" />
@@ -113,56 +91,6 @@ const Step5Preview: React.FC<Step5PreviewProps> = ({ selectedTemplate }) => {
                   </ErrorBoundary>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className={isEnlarged ? 'hidden' : 'lg:col-span-1'}>
-          <div className={`sticky top-24 rounded-2xl border ${borderCl} ${cardBg} overflow-hidden`}>
-            <div className={`p-5 border-b ${borderCl}`}>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-green-500/20">
-                  <Check size={18} className="text-green-500" />
-                </div>
-                <div>
-                  <p className={`font-display font-bold ${titleCl}`}>{TEMPLATE_LABELS[selectedTemplate] ?? templateOption?.label}</p>
-                  <p className={`text-xs ${mutedCl}`}>{t?.labels?.freeTemplate ?? 'Kostenlos'}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-5 space-y-3">
-              <button
-                type="button"
-                onClick={handleDownloadPdf}
-                disabled={isGeneratingPdf}
-                className={`w-full font-display font-bold px-5 py-4 rounded-xl flex items-center justify-center gap-3 transition-all shadow-lg shadow-primary/25 ${
-                  isGeneratingPdf
-                    ? 'bg-primary/70 text-white cursor-not-allowed'
-                    : 'bg-primary text-white hover:bg-primary-dark'
-                }`}
-              >
-                {isGeneratingPdf ? <Loader2 size={20} className="animate-spin" /> : <Download size={20} />}
-                {t?.labels?.downloadPdf ?? 'PDF herunterladen'}
-              </button>
-
-              {onDownloadAllTemplates && (
-                <button
-                  type="button"
-                  onClick={handleDownloadZip}
-                  disabled={isGeneratingZip}
-                  className={`w-full px-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all ${
-                    darkMode ? 'bg-purple-500/10 text-purple-400 hover:bg-purple-500/20' : 'bg-purple-50 text-purple-600 hover:bg-purple-100'
-                  } ${isGeneratingZip ? 'opacity-70 cursor-not-allowed hover:bg-inherit' : ''}`}
-                >
-                  {isGeneratingZip ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : (
-                    <FileArchive size={16} />
-                  )}
-                  {t?.labels?.downloadAllZip ?? 'Alle als ZIP'}
-                </button>
-              )}
             </div>
           </div>
         </div>

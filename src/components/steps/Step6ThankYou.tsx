@@ -2,7 +2,7 @@
  * Step6ThankYou - Thank you page after document creation
  */
 import React, { useState } from 'react';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, FileArchive, Loader2 } from 'lucide-react';
 import Header from '../Header';
 import Footer from '../Footer';
 import LegalPages from '../LegalPages';
@@ -17,9 +17,10 @@ interface Step6ThankYouProps {
 const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickProp }) => {
   const data = useFormStore((s) => s.data) as FormData;
   const updateData = useFormStore((s) => s.updateData);
-  const { t, darkMode, setDarkMode, setLang, goToStep, onDownloadPDF, showToast, resetForm } = useWizardContext();
+  const { t, darkMode, setDarkMode, setLang, goToStep, onDownloadPDF, onDownloadAllTemplates, showToast, resetForm } = useWizardContext();
   const [legalPage, setLegalPage] = useState<string | null>(null);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isGeneratingZip, setIsGeneratingZip] = useState(false);
   const onFaqClick = onFaqClickProp ?? (() => showToast(t?.footer?.faqComingSoon ?? 'FAQ — coming soon.', 'info'));
 
   const handleDownloadPdf = async () => {
@@ -35,6 +36,16 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
   const handleLangChange = (v: string) => {
     updateData('lang', v);
     setLang(v);
+  };
+
+  const handleDownloadZip = async () => {
+    if (isGeneratingZip) return;
+    setIsGeneratingZip(true);
+    try {
+      await Promise.resolve(onDownloadAllTemplates());
+    } finally {
+      setIsGeneratingZip(false);
+    }
   };
 
   return (
@@ -57,6 +68,19 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
         </div>
 
         <div className="w-full max-w-4xl flex flex-col items-center text-center z-10 gap-8">
+          <div
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold ${
+              darkMode
+                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-400/40'
+                : 'bg-emerald-50 text-emerald-700 border-emerald-300'
+            }`}
+          >
+            <span className="material-symbols-outlined text-base" aria-hidden>
+              shield_lock
+            </span>
+            <span>{t?.labels?.localPrivacy ?? 'Local generation • privacy focused'}</span>
+          </div>
+
           <div className="relative">
             <div className="size-32 sm:size-40 bg-primary/20 blob-accent flex items-center justify-center hand-drawn-border border-primary">
               <span className="material-symbols-outlined text-7xl sm:text-8xl text-primary animate-pulse sketch-icon-filled">check_circle</span>
@@ -79,7 +103,7 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
             </p>
           </div>
 
-          <div className="w-full max-w-md mt-4">
+          <div className="w-full max-w-xl mt-4">
             {onDownloadPDF && (
               <button
                 type="button"
@@ -98,9 +122,17 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
                 <div className="absolute -bottom-2 -right-2 w-full h-full border-2 border-dashed border-primary/40 -z-10 rounded-xl pointer-events-none" aria-hidden />
               </button>
             )}
-            <p className="mt-4 text-sm text-gray-500 font-medium">
-              {t?.thankYou?.privacyLocal ?? 'Your data was processed locally and is never stored on our servers.'}
-            </p>
+            <button
+              type="button"
+              onClick={handleDownloadZip}
+              disabled={isGeneratingZip}
+              className={`mt-3 w-full px-6 py-4 rounded-xl flex items-center justify-center gap-3 text-xl font-display font-bold transition-all ${
+                darkMode ? 'bg-purple-500/10 text-purple-300 hover:bg-purple-500/20' : 'bg-purple-50 text-purple-700 hover:bg-purple-100'
+              } ${isGeneratingZip ? 'opacity-70 cursor-not-allowed hover:bg-inherit' : ''}`}
+            >
+              {isGeneratingZip ? <Loader2 size={22} className="animate-spin" /> : <FileArchive size={22} />}
+              {t?.labels?.downloadAllZip ?? 'Download ZIP archive'}
+            </button>
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -124,6 +156,13 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
               className={`text-primary transition-colors font-display text-xl ${darkMode ? 'hover:text-white' : 'hover:text-gray-900'}`}
             >
               {t?.thankYou?.createAnother ?? t?.nav?.createAnother ?? 'Create another one'}
+            </button>
+            <button
+              type="button"
+              onClick={() => goToStep(1)}
+              className={`text-primary transition-colors font-display text-xl ${darkMode ? 'hover:text-white' : 'hover:text-gray-900'}`}
+            >
+              {t?.nav?.backToData ?? 'Back to data'}
             </button>
           </div>
         </div>
