@@ -51,9 +51,9 @@ const FloatingNavigation = React.memo<FloatingNavigationProps>(({
   const isBackDisabled = step === 1;
 
   return (
-    <div className="fixed bottom-8 left-0 w-full flex justify-center z-40 pointer-events-none print:hidden">
+    <div className="fixed bottom-4 sm:bottom-8 left-0 w-full flex justify-center z-40 pointer-events-none print:hidden">
       <nav
-        className={`pointer-events-auto backdrop-blur-md border-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)] px-6 sm:px-10 py-3 flex items-center gap-6 sm:gap-12 transition-transform hover:-translate-y-1 ${
+        className={`mx-3 sm:mx-0 w-[calc(100%-1.5rem)] sm:w-auto justify-between sm:justify-center pointer-events-auto backdrop-blur-md border-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)] px-4 sm:px-10 py-2.5 sm:py-3 flex items-center gap-4 sm:gap-12 transition-transform hover:-translate-y-1 ${
           darkMode
             ? 'bg-gray-900/95 border-gray-600'
             : 'bg-white/95 border-text-main'
@@ -95,7 +95,7 @@ const FloatingNavigation = React.memo<FloatingNavigationProps>(({
             aria-label={nav?.finish ?? ui?.finish ?? 'Finish'}
           >
             <span className="material-symbols-outlined text-lg sm:text-xl">task_alt</span>
-            <span>{nav?.finish ?? ui?.finish ?? labels?.done ?? 'Finish'}</span>
+            <span className="hidden sm:inline">{nav?.finish ?? ui?.finish ?? labels?.done ?? 'Finish'}</span>
           </button>
         )}
 

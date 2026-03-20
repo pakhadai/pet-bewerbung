@@ -29,7 +29,9 @@ export function initUmami(): void {
   const domain = getEnvString('VITE_UMAMI_DOMAINS') ?? window.location.hostname;
 
   // Prevent duplicate script injection (dev StrictMode can run effects twice).
-  const existing = document.querySelector<HTMLScriptElement>('script[data-umami="true"]');
+  const existing = document.querySelector<HTMLScriptElement>(
+    'script[data-umami="true"], script[src*="umami"][data-website-id]'
+  );
   if (existing) return;
 
   const normalizedHost = host.replace(/\/+$/, '');

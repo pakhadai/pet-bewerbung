@@ -1,7 +1,7 @@
 /**
  * Step5Preview - Document preview and download
  */
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, lazy, Suspense, useEffect } from 'react';
 import { Check, Maximize2, Minimize2 } from 'lucide-react';
 import ErrorBoundary from '../ErrorBoundary';
 import { TEMPLATE_OPTIONS } from '../../constants';
@@ -31,12 +31,30 @@ const Step5Preview: React.FC<Step5PreviewProps> = ({ selectedTemplate }) => {
   const borderCl = darkMode ? 'border-gray-700' : 'border-gray-200';
 
   const [isEnlarged, setIsEnlarged] = useState(false);
+  const [viewportWidth, setViewportWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1024);
   const templateOption = TEMPLATE_OPTIONS.find((opt) => opt.id === selectedTemplate);
-  const previewScale = isEnlarged ? 0.85 : 0.55;
+
+  useEffect(() => {
+    const onResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const isMobile = viewportWidth < 640;
+  const a4PxWidth = 794; // Approx. 210mm at 96dpi
+  const mobilePadding = isEnlarged ? 32 : 48;
+  const fitScale = Math.max(0.32, (viewportWidth - mobilePadding) / a4PxWidth);
+  const previewScale = isMobile
+    ? isEnlarged
+      ? Math.min(0.82, fitScale)
+      : Math.min(0.52, fitScale)
+    : isEnlarged
+      ? 0.75
+      : 0.55;
 
   return (
-    <div className={`page page-enter-${animDir} reveal fade-enter max-w-7xl mx-auto pb-32`}>
-      <div className="flex items-center justify-between mb-6">
+    <div className={`page page-enter-${animDir} reveal fade-enter max-w-7xl mx-auto pb-40 sm:pb-32`}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <h2 className={`font-display font-bold text-2xl md:text-3xl ${titleCl}`}>
             {t?.stepsNew?.step6?.title ?? 'Vorschau & Download'}
@@ -68,7 +86,10 @@ const Step5Preview: React.FC<Step5PreviewProps> = ({ selectedTemplate }) => {
               </button>
             </div>
 
-            <div className="overflow-auto flex justify-center bg-gray-100 dark:bg-gray-900/50" style={{ height: isEnlarged ? '80vh' : '65vh' }}>
+            <div
+              className="overflow-auto flex justify-center bg-gray-100 dark:bg-gray-900/50"
+              style={{ height: isEnlarged ? (isMobile ? '68vh' : '72vh') : (isMobile ? '54vh' : '58vh') }}
+            >
               <div className="py-6">
                 <div
                   id="pdf-document"

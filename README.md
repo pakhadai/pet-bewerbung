@@ -26,6 +26,7 @@ Principles:
   - ZIP download for all free templates (desktop-only to reduce OOM risk)
 - QR code embedded in the PDF (vCard 3.0)
 - Photo upload & compression before storage/generation
+- Optional privacy-friendly analytics (Umami) for key product events
 
 ---
 
@@ -36,6 +37,11 @@ There is **no backend** and no data transfer to third parties.
 - Form draft (except photo) is stored **in the browser**
 - Photo is stored **in IndexedDB**
 - PDF rendering happens fully **in the browser**
+
+Analytics note:
+
+- Umami can be enabled optionally for anonymous usage metrics
+- No form field values or sensitive personal data are sent
 
 ---
 
@@ -158,9 +164,20 @@ Storage adapters (local-first):
 
 ## Environment variables
 
-Create `.env` from `.env.example` when using Docker/tunnel:
+Create `.env` from `.env.example` when using Docker/tunnel and optional analytics:
 
-- `CLOUDFLARE_TUNNEL_TOKEN`
+- Required for VPS tunnel:
+  - `CLOUDFLARE_TUNNEL_TOKEN`
+- Optional (Umami analytics):
+  - `VITE_UMAMI_WEBSITE_ID`
+  - `VITE_UMAMI_HOST` (default: `https://analytics.umami.is`)
+  - `VITE_UMAMI_DOMAINS` (default: current hostname)
+
+Tracked custom events:
+
+- `Template_Changed` (template switch in step 5)
+- `PDF_Downloaded` (single PDF export)
+- `ZIP_Downloaded` (all templates ZIP export)
 
 ---
 
