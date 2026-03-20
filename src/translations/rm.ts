@@ -49,6 +49,19 @@ export default {
     instruction: "Duvra ils buttuns sut per telechargiar u trametter il document"
   },
   finalMessage: "Grazia per avair duvra nos servetsch!",
+  step4: {
+    photoPrivacy: "Tia foto na vegn mai chargiada sin in server. Tut succeda localmain en tes navigatur.",
+    changePhotoHint: "Clicca sin il maletg u traina in nov maletg qua",
+    maxSize: "fin a 10 MB",
+    fileTooLarge: "Datoteca memia gronda. Max. 10 MB.",
+    invalidImage: "Format da maletg nunvalid. Per plaschair chargiar JPG, PNG, WEBP u HEIC/HEIF.",
+    heicFallback: "HEIC/HEIF po esser instabel en tscherts navigaturs. Sche il chargiar na reussescha betg, convertescha en JPG e prova anc ina giada.",
+    tipFormat: "Tip: format vertical (3:4) funcziuna il meglier",
+    tipsTitle: "Tips per ina foto perfetga:",
+    tip1: "Buna glisch (glisch natirala è ideala)",
+    tip2: "L'animal guarda en camera",
+    tip3: "Fund neutral"
+  },
   ui: {
     select: "Tscherner",
     preview: "Prevista",
@@ -192,6 +205,40 @@ export default {
     intro: "L'animal descrit è un cumpogn fitg tgirà e sociabel.",
     keywords: "Las suandantas qualitads èn da menziunar: ",
     outro: "L'animal è disà da viver en in'abitaziun e na fa nagina canera. Per donns eventuals exista in'assicuranza da responsabladad cumpletta."
+  },
+  generationText: {
+    openings: [
+      "{name} ha mussa d'esser in cumpogn tant pasch sco attent, che enrichescha mintga situaziun d'abitar cun ina calma natirala e gronda fidaivladad.",
+      "Cun {name} guadogna mintga chasa in cumpogn fidaivel e sensibel, che s'integrescha senza sforzs en il mintgadi e radiescha in chalur authentic.",
+      "Tgi che enconuscha {name} scuvra in animal cun in caracter remartgabel – fidaivel, adattabel e d'ina natira chalurusa che inspira immediat confidenza."
+    ],
+    noise: {
+      low: "{name} sa distingua tras ina calma remartgabla – canera e sturbanza na fan simplamain betg part dal repertori, quai che renda la convivenza particularmain agreabla per tuts.",
+      medium: "{name} ha in temperament equilibrà e s'exprima vocalmain mo en situaziuns cumprevisiblas, sco tar visitas – en il mintgadi resta il nivel da rumur confortabel bass.",
+      high: "{name} communichescha vivamain e attentamain, ma rutinas claras e in'educaziun consequenta garanteschan che las vocalisaziuns restan controlladas e previsiblas."
+    },
+    social: {
+      childrenGood: "En preschientscha d'uffants mussa {name} ina gronda pazienzia e sensibilitad – ina dulschezza natirala ch'ils geniturs apprezian fitg.",
+      childrenNeutral: "{name} sa cumporta cun respect e retenida envers ils uffants, mantegnend ina distanza cortaisa senza esser intrusiv.",
+      petsGood: "{name} s'avischina ad auters animals cun ina curiositad amicala e pronunziada cumpatibilitad sociala, garantind ina convivenza armoniusa.",
+      petsNeutral: "En contact cun auters animals mussa {name} in'independenza serena – ni temairosa ni dominanta, mabain quietamain segira da sasez."
+    },
+    routines: [
+      "Il mintgadi suonda ina structura establida: fases da paus alterneschan armoniusamain cun muments d'activitad, garantind ina rutina previsibla e senza disturbanza.",
+      "{name} ha emprendì da surpassar muments da suletta cun serenezza e confidenza – in segn da maturitad emoziunala che simplifitgescha il mintgadi per tuts.",
+      "Uraris clars per mangiar, giugar e pasar determineschan mintga di, creond in equiliber che fa bain tant a l'animal sco a l'entir ambient d'abitar."
+    ],
+    responsibility: "Controllas veterinaras regularas, ina cuvrida da vaccinaziun cumpletta e tgira constanta attesteschan in ferm senn da responsabladad e minimizan ils riscs da sanadad.",
+    closings: [
+      "{name} è in animal che merita confidenza – tras fidaivladad, adattabilitad e in'indole fundamentalmain amicala che dat segirtad a mintga proprietari.",
+      "En general sa preschentan {name} sco il cumpogn ideal d'abitar: tgirà, sociabel e pront da s'integrar armoniusamain en mintga ambient.",
+      "Tscherner {name} vul dir tscherner in cumpogn che incarnescha responsabladad e qualitad da vita – in valair effectiv per mintga chasa."
+    ],
+    extras: [
+      "Netadad e respect per il spazi d'abitar cuminaivel fan part da las qualitads natiralas che simplifitgeschan il mintgadi per tuts.",
+      "La relaziun stretga tranter possessur e animal sa reflectescha en in cumportament equilibrà e seren, ch'era il vischinadi appreziescha.",
+      "In'educaziun amiaivla e consequenta ha furmà ina persunalitad che sa cumporta cun respect e discreziun en chasas cun pliras famiglias."
+    ]
   },
   legal: {
     impressum: "Impressum",

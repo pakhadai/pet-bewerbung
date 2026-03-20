@@ -26,9 +26,12 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-pdf': ['@react-pdf/renderer'],
-          'vendor': ['react', 'react-dom'],
+        manualChunks(id) {
+          if (id.includes('@react-pdf/renderer')) return 'react-pdf';
+          if (id.includes('node_modules/jszip')) return 'jszip';
+          if (id.includes('node_modules/qrcode')) return 'qrcode';
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) return 'vendor';
+          return undefined;
         },
       },
     },

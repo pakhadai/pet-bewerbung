@@ -103,8 +103,16 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
     return ALLOWED_EXTENSIONS.has(ext);
   };
 
+  const isHeicLikeFile = (file: File): boolean => {
+    const mime = (file.type || '').toLowerCase();
+    if (mime === 'image/heic' || mime === 'image/heif') return true;
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    return ext === 'heic' || ext === 'heif';
+  };
+
   const processFile = async (file: File) => {
     if (!file) return;
+    const isHeicLike = isHeicLikeFile(file);
     if (!isSupportedImageFile(file)) {
       showToast?.(
         t?.step4?.invalidImage ??
@@ -116,6 +124,16 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
     if (file.size > MAX_FILE_SIZE) {
       showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error');
       return;
+    }
+    if (isHeicLike) {
+      const isApplePlatform = /iPhone|iPad|iPod|Macintosh/i.test(navigator.userAgent);
+      if (!isApplePlatform) {
+        showToast?.(
+          t?.step4?.heicFallback ??
+            'HEIC/HEIF can be unstable on some browsers. If this file fails, please convert it to JPG and upload again.',
+          'info'
+        );
+      }
     }
     onNavigationVisibilityChange?.(false);
     setIsCompressing(true);
@@ -132,8 +150,11 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
       setShowCropper(true);
     } catch {
       showToast?.(
-        t?.step4?.invalidImage ??
-          'Bild konnte nicht verarbeitet werden. Bitte JPG, PNG, WEBP oder HEIC/HEIF verwenden.',
+        isHeicLike
+          ? (t?.step4?.heicFallback ??
+            'HEIC/HEIF can be unstable on some browsers. If this file fails, please convert it to JPG and upload again.')
+          : (t?.step4?.invalidImage ??
+            'Bild konnte nicht verarbeitet werden. Bitte JPG, PNG, WEBP oder HEIC/HEIF verwenden.'),
         'error'
       );
     } finally {

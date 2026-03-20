@@ -92,6 +92,7 @@ export default {
     maxSize: "bis zu 10 MB",
     fileTooLarge: "Datei zu groß. Max. 10 MB.",
     invalidImage: "Ungültige Bilddatei. Bitte laden Sie JPG, PNG, WEBP oder HEIC/HEIF hoch.",
+    heicFallback: "HEIC/HEIF wird in manchen Browsern instabil unterstützt. Falls der Upload fehlschlägt, bitte als JPG speichern und erneut hochladen.",
     tipFormat: "Tipp: Hochformat (3:4) funktioniert am besten",
     tipsTitle: "Tipps für ein perfektes Foto:",
     tip1: "Gute Beleuchtung (natürliches Licht ist ideal)",
@@ -228,6 +229,40 @@ export default {
     intro: "Bei dem beschriebenen Tier handelt es sich um einen sehr gepflegten und sozialverträglichen Mitbewohner.",
     keywords: "Besonders hervorzuheben sind folgende Eigenschaften: ",
     outro: "Das Tier ist an das Leben in einer Wohnung gewöhnt und verursacht keine Lärmbelästigung. Für allfällige Schäden besteht eine umfassende Haftpflichtdeckung."
+  },
+  generationText: {
+    openings: [
+      "{name} hat sich als ebenso sanftmütige wie aufmerksame Persönlichkeit erwiesen, die jede Wohnsituation mit natürlicher Gelassenheit bereichert.",
+      "Mit {name} gewinnt jedes Zuhause einen treuen und feinfühligen Mitbewohner, der sich mühelos in den Alltag einfügt und echte Lebensfreude ausstrahlt.",
+      "Wer {name} kennenlernt, erlebt ein Tier mit ausgeprägtem Charakter – verlässlich, anpassungsfähig und von einem warmherzigen Wesen, das sofort Vertrauen schafft."
+    ],
+    noise: {
+      low: "{name} zeichnet sich durch eine bemerkenswerte Ruhe aus – Lärm oder Unruhe gehören nicht zum Repertoire, was das Zusammenleben für alle Beteiligten besonders angenehm macht.",
+      medium: "{name} zeigt ein ausgewogenes Temperament und äussert sich nur in verständlichen Situationen, etwa bei Besuch oder ungewohnten Geräuschen – im Alltag bleibt die Lautstärke stets angenehm.",
+      high: "{name} kommuniziert lebhaft und aufmerksam, wobei klare Routinen und konsequente Erziehung dafür sorgen, dass Lautäusserungen kontrolliert und vorhersehbar bleiben."
+    },
+    social: {
+      childrenGood: "Im Umgang mit Kindern beweist {name} viel Geduld und Einfühlungsvermögen – eine natürliche Sanftmut, die Familien besonders zu schätzen wissen.",
+      childrenNeutral: "Gegenüber Kindern verhält sich {name} respektvoll und zurückhaltend, ohne aufdringlich zu werden.",
+      petsGood: "Anderen Tieren begegnet {name} mit freundlicher Neugier und ausgeprägter sozialer Verträglichkeit, was ein harmonisches Miteinander gewährleistet.",
+      petsNeutral: "Im Kontakt mit anderen Tieren zeigt {name} eine gelassene Eigenständigkeit – weder ängstlich noch dominant, sondern ruhig und selbstsicher."
+    },
+    routines: [
+      "Der Tagesablauf ist fest strukturiert: Ruhephasen wechseln sich harmonisch mit Aktivitätszeiten ab, sodass ein planbarer und störungsfreier Alltag gewährleistet ist.",
+      "{name} hat gelernt, auch Zeiten ohne Bezugsperson gelassen zu überbrücken – ein Zeichen von Selbstständigkeit und emotionaler Reife, das den Alltag erleichtert.",
+      "Klare Fütterungs-, Spiel- und Ruhezeiten prägen den Tag und sorgen für ein Gleichgewicht, das nicht nur dem Tier, sondern auch dem gesamten Wohnumfeld zugutekommt."
+    ],
+    responsibility: "Regelmässige tierärztliche Kontrollen, ein vollständiger Impfschutz und eine konsequente Pflege zeugen von Verantwortungsbewusstsein und sorgen dafür, dass gesundheitliche Risiken minimiert werden.",
+    closings: [
+      "{name} ist ein Tier, das Vertrauen verdient – durch Verlässlichkeit, Anpassungsfähigkeit und ein freundliches Naturell, das jedem Vermieter Sicherheit gibt.",
+      "Insgesamt präsentiert sich {name} als idealer Mitbewohner: gepflegt, sozialverträglich und bereit, sich harmonisch in jedes Umfeld einzufügen.",
+      "Mit {name} entscheidet man sich für einen Begleiter, der Verantwortungsbewusstsein und Lebensqualität gleichermassen verkörpert – eine echte Bereicherung für jedes Zuhause."
+    ],
+    extras: [
+      "Sauberkeit und Rücksichtnahme auf das gemeinsame Wohnumfeld gehören zu den selbstverständlichen Stärken, die den Alltag erleichtern.",
+      "Die enge Bindung zwischen Halter und Tier zeigt sich in einem ausgeglichenen, stressfreien Verhalten, das auch Nachbarn positiv auffällt.",
+      "Liebevolle und konsequente Erziehung hat eine Persönlichkeit geformt, die sich in einem Mehrparteienhaus respektvoll und unauffällig verhält."
+    ]
   },
   legal: {
     impressum: "Impressum",

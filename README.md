@@ -20,12 +20,13 @@ Principles:
 
 - Multi-step form (wizard) to collect owner + pet details
 - Local text generation for the “character/behavior” section (runs in the browser; no server calls)
+  - 3 rotating text variants per language (DE/EN/FR/IT/RM), now managed in `translations/*`
 - Generates:
   - HTML preview (A4 layout)
   - PDF dossier (client-side, downloaded as a file)
   - ZIP download for all free templates (desktop-only to reduce OOM risk)
 - QR code embedded in the PDF (vCard 3.0)
-- Photo upload & compression before storage/generation
+- Photo upload & compression before storage/generation (JPG/PNG/WEBP/HEIC/HEIF, max 10 MB, with HEIC fallback hint)
 - Optional privacy-friendly analytics (Umami) for key product events
 
 ---
@@ -77,6 +78,12 @@ Build & preview:
 ```bash
 npm run build
 npm run preview
+```
+
+E2E smoke tests (Playwright):
+
+```bash
+npm run e2e
 ```
 
 ---
@@ -159,6 +166,7 @@ Storage adapters (local-first):
 
 - Photo conversion to JPEG happens before generating PDF (for better react-pdf compatibility)
 - ZIP download is disabled on mobile devices (OOM risk); single-template PDF remains available
+- `@react-pdf/renderer` is split into a dedicated chunk to reduce first-render bundle cost
 
 ---
 

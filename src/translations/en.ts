@@ -92,6 +92,7 @@ export default {
     maxSize: "up to 10 MB",
     fileTooLarge: "File too large. Max. 10 MB.",
     invalidImage: "Invalid image file. Please upload JPG, PNG, WEBP, or HEIC/HEIF.",
+    heicFallback: "HEIC/HEIF can be unstable in some browsers. If upload fails, please convert to JPG and try again.",
     tipFormat: "Tip: Portrait format (3:4) works best",
     tipsTitle: "Tips for a perfect photo:",
     tip1: "Good lighting (natural light is ideal)",
@@ -220,6 +221,40 @@ export default {
     intro: "The described animal is a very well-groomed and socially compatible companion.",
     keywords: "The following characteristics are particularly noteworthy: ",
     outro: "The animal is accustomed to apartment living and causes no noise disturbance. Comprehensive liability coverage is in place for any potential damages."
+  },
+  generationText: {
+    openings: [
+      "{name} has proven to be a gentle yet attentive companion who enriches any living situation with a natural sense of calm and reliability.",
+      "With {name}, every home gains a loyal and perceptive companion who integrates effortlessly into daily life and radiates genuine warmth.",
+      "Those who meet {name} quickly discover a pet with remarkable character – dependable, adaptable, and blessed with a warm-hearted nature that inspires instant trust."
+    ],
+    noise: {
+      low: "{name} is notably calm and composed – noise or restlessness are simply not part of the picture, making coexistence particularly pleasant for everyone involved.",
+      medium: "{name} has a well-balanced temperament and only vocalizes in understandable situations, such as when visitors arrive – in everyday life, noise levels remain comfortably low.",
+      high: "{name} communicates actively and attentively, though consistent routines and thoughtful training ensure that vocalizations remain controlled and predictable."
+    },
+    social: {
+      childrenGood: "Around children, {name} shows remarkable patience and sensitivity – a natural gentleness that families especially appreciate.",
+      childrenNeutral: "{name} behaves respectfully and calmly around children, maintaining a polite distance without being intrusive.",
+      petsGood: "{name} approaches other animals with friendly curiosity and strong social compatibility, ensuring a harmonious coexistence in any household.",
+      petsNeutral: "With other animals, {name} displays a composed independence – neither anxious nor dominant, but calmly self-assured."
+    },
+    routines: [
+      "Daily life follows a well-established structure: rest periods alternate harmoniously with active times, ensuring a predictable and disturbance-free routine.",
+      "{name} has learned to handle time alone with composure and confidence – a sign of emotional maturity and independence that makes everyday life smoother for everyone.",
+      "Clear feeding, play, and rest schedules define each day, creating a balance that benefits not only the pet but the entire living environment."
+    ],
+    responsibility: "Regular veterinary check-ups, complete vaccination coverage, and consistent care reflect a strong sense of responsibility and ensure that health risks are kept to a minimum.",
+    closings: [
+      "{name} is a pet that earns trust – through reliability, adaptability, and a fundamentally friendly nature that gives any landlord confidence.",
+      "Overall, {name} presents as an ideal housemate: well-groomed, socially compatible, and ready to fit harmoniously into any living situation.",
+      "Choosing {name} means choosing a companion who embodies both responsibility and quality of life – a genuine asset to any home."
+    ],
+    extras: [
+      "Cleanliness and consideration for the shared living environment are among the natural strengths that make daily life easier for everyone.",
+      "The close bond between owner and pet is reflected in balanced, stress-free behavior that neighbors notice and appreciate.",
+      "Loving yet consistent guidance has shaped a personality that behaves respectfully and unobtrusively in multi-tenant buildings."
+    ]
   },
   legal: {
     impressum: "Impressum",

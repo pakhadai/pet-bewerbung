@@ -157,7 +157,11 @@ export const AppContainer: React.FC<AppContainerProps> = ({
               <StepProgress step={step} t={t} darkMode={darkMode} onStepClick={goToStep} />
               <div className="px-4 md:px-8 pt-3 pb-0 flex justify-center">
                 <div
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs sm:text-sm font-semibold theme-card theme-border theme-text-muted"
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs sm:text-sm font-semibold ${
+                    darkMode
+                      ? 'bg-emerald-500/10 text-emerald-300 border-emerald-400/40'
+                      : 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                  }`}
                 >
                   <span className="material-symbols-outlined text-base" aria-hidden>
                     shield_lock

@@ -46,6 +46,9 @@ jobs:
               exit 1
             fi
 
+            # Validate compose file and variables before restart
+            docker compose config > /dev/null
+
             # Rebuild if code or Dockerfile changed
             docker compose build
 

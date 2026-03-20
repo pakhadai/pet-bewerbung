@@ -49,6 +49,19 @@ export default {
     instruction: "Utilisez les boutons ci-dessous pour télécharger ou envoyer le document"
   },
   finalMessage: "Merci d'avoir utilisé notre service!",
+  step4: {
+    photoPrivacy: "Votre photo n'est jamais téléversée. Tout se passe localement dans votre navigateur.",
+    changePhotoHint: "Cliquez sur l'image ou glissez-en une nouvelle ici",
+    maxSize: "jusqu'à 10 MB",
+    fileTooLarge: "Fichier trop volumineux. Max. 10 MB.",
+    invalidImage: "Format d'image invalide. Veuillez téléverser JPG, PNG, WEBP ou HEIC/HEIF.",
+    heicFallback: "HEIC/HEIF peut être instable sur certains navigateurs. Si l'import échoue, convertissez l'image en JPG et réessayez.",
+    tipFormat: "Astuce : le format portrait (3:4) fonctionne le mieux",
+    tipsTitle: "Conseils pour une photo parfaite :",
+    tip1: "Bonne luminosité (la lumière naturelle est idéale)",
+    tip2: "Animal regardant l'objectif",
+    tip3: "Arrière-plan neutre"
+  },
   ui: {
     select: "Sélectionner",
     preview: "Aperçu",
@@ -192,6 +205,40 @@ export default {
     intro: "L'animal décrit est un compagnon très soigné et sociable.",
     keywords: "Les caractéristiques suivantes sont particulièrement notables : ",
     outro: "L'animal est habitué à la vie en appartement et ne cause aucune nuisance sonore. Une couverture responsabilité civile complète est en place pour tout dommage éventuel."
+  },
+  generationText: {
+    openings: [
+      "{name} s'est révélé être un compagnon à la fois doux et attentif, qui enrichit chaque cadre de vie par son calme naturel et sa fiabilité.",
+      "Avec {name}, chaque foyer gagne un compagnon fidèle et sensible, qui s'intègre sans effort au quotidien et rayonne d'une chaleur authentique.",
+      "Ceux qui font la connaissance de {name} découvrent un animal au caractère remarquable – fiable, adaptable et doté d'une nature chaleureuse qui inspire immédiatement confiance."
+    ],
+    noise: {
+      low: "{name} se distingue par un calme remarquable – le bruit et l'agitation ne font tout simplement pas partie de son répertoire, ce qui rend la cohabitation particulièrement agréable pour tous.",
+      medium: "{name} possède un tempérament équilibré et ne s'exprime vocalement que dans des situations compréhensibles, comme lors de visites – au quotidien, le niveau sonore reste agréablement bas.",
+      high: "{name} communique de manière vive et attentive, mais des routines claires et une éducation cohérente garantissent que les vocalisations restent contrôlées et prévisibles."
+    },
+    social: {
+      childrenGood: "En présence d'enfants, {name} fait preuve d'une patience et d'une sensibilité remarquables – une douceur naturelle que les familles apprécient tout particulièrement.",
+      childrenNeutral: "{name} se comporte avec respect et retenue envers les enfants, maintenant une distance polie sans être envahissant.",
+      petsGood: "{name} aborde les autres animaux avec une curiosité amicale et une forte compatibilité sociale, garantissant une coexistence harmonieuse.",
+      petsNeutral: "Face aux autres animaux, {name} affiche une indépendance sereine – ni craintif ni dominant, mais calmement sûr de soi."
+    },
+    routines: [
+      "Le quotidien suit une structure bien établie : les périodes de repos alternent harmonieusement avec les moments d'activité, assurant une routine prévisible et sans perturbation.",
+      "{name} a appris à gérer les moments de solitude avec sérénité et assurance – un signe de maturité émotionnelle qui facilite le quotidien de tous.",
+      "Des horaires clairs de repas, de jeu et de repos rythment chaque journée, créant un équilibre bénéfique pour l'animal comme pour l'environnement résidentiel."
+    ],
+    responsibility: "Des contrôles vétérinaires réguliers, une couverture vaccinale complète et des soins constants témoignent d'un sens aigu des responsabilités et minimisent tout risque sanitaire.",
+    closings: [
+      "{name} est un animal qui inspire confiance – par sa fiabilité, son adaptabilité et sa nature fondamentalement bienveillante qui rassure tout propriétaire.",
+      "Dans l'ensemble, {name} se présente comme le colocataire idéal : soigné, sociable et prêt à s'intégrer harmonieusement dans n'importe quel cadre de vie.",
+      "Choisir {name}, c'est choisir un compagnon qui incarne à la fois responsabilité et qualité de vie – un véritable atout pour chaque foyer."
+    ],
+    extras: [
+      "La propreté et le respect de l'espace de vie commun comptent parmi les qualités naturelles qui facilitent le quotidien de tous.",
+      "Le lien étroit entre le propriétaire et l'animal se reflète dans un comportement équilibré et serein, apprécié également par le voisinage.",
+      "Une éducation aimante et cohérente a façonné une personnalité qui se comporte avec respect et discrétion dans un immeuble à plusieurs logements."
+    ]
   },
   legal: {
     impressum: "Mentions légales",

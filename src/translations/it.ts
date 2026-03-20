@@ -49,6 +49,19 @@ export default {
     instruction: "Usa i pulsanti sotto per scaricare o inviare il documento"
   },
   finalMessage: "Grazie per aver utilizzato il nostro servizio!",
+  step4: {
+    photoPrivacy: "La tua foto non viene mai caricata. Tutto avviene localmente nel browser.",
+    changePhotoHint: "Clicca sull'immagine o trascinane una nuova qui",
+    maxSize: "fino a 10 MB",
+    fileTooLarge: "File troppo grande. Max. 10 MB.",
+    invalidImage: "Formato immagine non valido. Carica JPG, PNG, WEBP o HEIC/HEIF.",
+    heicFallback: "HEIC/HEIF puo essere instabile su alcuni browser. Se il caricamento fallisce, converti in JPG e riprova.",
+    tipFormat: "Suggerimento: il formato verticale (3:4) funziona meglio",
+    tipsTitle: "Consigli per una foto perfetta:",
+    tip1: "Buona illuminazione (la luce naturale e ideale)",
+    tip2: "Animale rivolto verso la fotocamera",
+    tip3: "Sfondo neutro"
+  },
   ui: {
     select: "Seleziona",
     preview: "Anteprima",
@@ -192,6 +205,40 @@ export default {
     intro: "L'animale descritto è un compagno molto curato e socievole.",
     keywords: "Le seguenti caratteristiche sono particolarmente degne di nota: ",
     outro: "L'animale è abituato alla vita in appartamento e non causa disturbi. È presente una copertura completa di responsabilità civile per eventuali danni."
+  },
+  generationText: {
+    openings: [
+      "{name} si è rivelato un compagno tanto dolce quanto attento, capace di arricchire ogni situazione abitativa con una calma naturale e una grande affidabilità.",
+      "Con {name}, ogni casa guadagna un compagno fedele e sensibile, che si integra senza sforzo nella vita quotidiana e irradia un calore autentico.",
+      "Chi conosce {name} scopre un animale dal carattere notevole – affidabile, adattabile e dotato di un'indole calorosa che ispira fiducia immediata."
+    ],
+    noise: {
+      low: "{name} si distingue per una calma notevole – rumori e irrequietezza non fanno parte del suo repertorio, rendendo la convivenza particolarmente piacevole per tutti.",
+      medium: "{name} possiede un temperamento equilibrato e si esprime vocalmente solo in situazioni comprensibili, come all'arrivo di ospiti – nella quotidianità il livello di rumore resta piacevolmente basso.",
+      high: "{name} comunica in modo vivace e attento, ma routine chiare e un'educazione coerente garantiscono che le vocalizzazioni restino controllate e prevedibili."
+    },
+    social: {
+      childrenGood: "Con i bambini, {name} dimostra grande pazienza e sensibilità – una dolcezza naturale che le famiglie apprezzano particolarmente.",
+      childrenNeutral: "{name} si comporta in modo rispettoso e riservato con i bambini, mantenendo una distanza cortese senza essere invadente.",
+      petsGood: "{name} si avvicina agli altri animali con curiosità amichevole e spiccata compatibilità sociale, garantendo una convivenza armoniosa.",
+      petsNeutral: "Con gli altri animali, {name} mostra un'indipendenza serena – né timoroso né dominante, ma tranquillamente sicuro di sé."
+    },
+    routines: [
+      "La giornata segue una struttura consolidata: periodi di riposo si alternano armoniosamente a momenti di attività, assicurando una routine prevedibile e priva di disturbi.",
+      "{name} ha imparato a gestire i momenti di solitudine con serenità e sicurezza – segno di maturità emotiva che semplifica la vita quotidiana di tutti.",
+      "Orari chiari per pasti, gioco e riposo scandiscono ogni giornata, creando un equilibrio che giova tanto all'animale quanto all'intero ambiente abitativo."
+    ],
+    responsibility: "Controlli veterinari regolari, copertura vaccinale completa e cure costanti testimoniano un forte senso di responsabilità e garantiscono che i rischi sanitari siano ridotti al minimo.",
+    closings: [
+      "{name} è un animale che merita fiducia – per la sua affidabilità, adattabilità e un'indole fondamentalmente amichevole che rassicura qualsiasi proprietario.",
+      "Nel complesso, {name} si presenta come il coinquilino ideale: curato, socievole e pronto a integrarsi armoniosamente in qualsiasi contesto abitativo.",
+      "Scegliere {name} significa scegliere un compagno che incarna responsabilità e qualità della vita – un vero valore aggiunto per ogni casa."
+    ],
+    extras: [
+      "La pulizia e il rispetto dello spazio abitativo condiviso sono tra le qualità naturali che rendono più semplice la convivenza quotidiana.",
+      "Il legame profondo tra proprietario e animale si riflette in un comportamento equilibrato e sereno, apprezzato anche dal vicinato.",
+      "Un'educazione amorevole e coerente ha plasmato una personalità che si comporta con rispetto e discrezione negli edifici con più appartamenti."
+    ]
   },
   legal: {
     impressum: "Impressum",

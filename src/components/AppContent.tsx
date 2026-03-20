@@ -16,129 +16,83 @@ import { trackUmamiEvent } from '../utils/umami';
 const selectData = (s: ReturnType<typeof useFormStore.getState>) => s.data;
 const selectUpdateData = (s: ReturnType<typeof useFormStore.getState>) => s.updateData;
 
-type GenerationLocale = 'de' | 'en' | 'fr' | 'it' | 'rm';
 interface GenerationPack {
   openings: [string, string, string];
-  variantBlocks: [string, string, string];
+  noise: { low: string; medium: string; high: string };
+  social: { childrenGood: string; childrenNeutral: string; petsGood: string; petsNeutral: string };
+  routines: [string, string, string];
+  responsibility: string;
   closings: [string, string, string];
-  fillers: [string, string, string];
+  extras: [string, string, string];
 }
 
-const GENERATION_TEXTS: Record<GenerationLocale, GenerationPack> = {
-  de: {
-    openings: [
-      'Das Tier wird als gepflegter, gut integrierter Mitbewohner vorgestellt.',
-      'Die vorliegende Beschreibung zeigt ein alltagstaugliches Tierprofil fuer ein ruhiges Wohnumfeld.',
-      'Mit diesem Profil wird das Tier transparent und vermieterfreundlich dargestellt.',
-    ],
-    variantBlocks: [
-      'Im Alltag zeigt das Tier ein stabiles, berechenbares Verhalten und reagiert in neuen Situationen ruhig. Regeln im Haushalt werden verlaesslich eingehalten.',
-      'Dank guter Sozialisierung, klarer Tagesstruktur und verantwortungsvoller Betreuung ist das Verhalten kontrolliert und fuer Mehrparteienhaeuser geeignet.',
-      'Fuer Vermieter ist besonders relevant, dass das Tier in den Tagesablauf eingebunden ist und keine unkontrollierten Stoerungen verursacht.',
-    ],
-    closings: [
-      'Insgesamt ergibt sich ein verlaessliches Gesamtbild mit guter Wohnungs- und Nachbarschaftskompatibilitaet.',
-      'Damit liegt eine nachvollziehbare Grundlage fuer eine vertrauensvolle Mietentscheidung vor.',
-      'Die Angaben sprechen fuer ein ruecksichtsvolles Zusammenleben im Wohnobjekt.',
-    ],
-    fillers: [
-      'Sauberkeit, Ruecksicht und planbare Routinen werden konsequent umgesetzt.',
-      'Die Betreuung erfolgt verantwortungsvoll und auf Kontinuitaet ausgerichtet.',
-      'So entsteht eine stabile, konfliktarme Wohnsituation fuer alle Beteiligten.',
-    ],
+const FALLBACK_PACK: GenerationPack = {
+  openings: [
+    '{name} has proven to be a gentle yet attentive companion who enriches any living situation with a natural sense of calm and reliability.',
+    'With {name}, every home gains a loyal and perceptive companion who integrates effortlessly into daily life and radiates genuine warmth.',
+    'Those who meet {name} quickly discover a pet with remarkable character – dependable, adaptable, and blessed with a warm-hearted nature that inspires trust.',
+  ],
+  noise: {
+    low: '{name} is notably calm and composed – noise or restlessness are simply not part of the picture, making coexistence particularly pleasant for everyone involved.',
+    medium: '{name} has a well-balanced temperament and only vocalizes in understandable situations, such as when visitors arrive – in everyday life, noise levels remain comfortably low.',
+    high: '{name} communicates actively and attentively, though consistent routines and thoughtful training ensure that vocalizations remain controlled and predictable.',
   },
-  en: {
-    openings: [
-      'This pet is presented as a well-groomed and socially compatible companion.',
-      'The profile highlights a reliable pet suited for apartment living.',
-      'This document provides a transparent and landlord-friendly overview of the pet.',
-    ],
-    variantBlocks: [
-      'In daily life, the pet shows stable and predictable behavior and remains calm in new situations. Household rules are followed consistently.',
-      'Thanks to socialization, structured routines, and responsible care, the pet behaves in a controlled and practical way for shared buildings.',
-      'For landlords, it is especially relevant that the pet is integrated into a clear routine and does not cause uncontrolled disturbances.',
-    ],
-    closings: [
-      'Overall, the profile supports a dependable and low-risk living arrangement.',
-      'These details provide a clear basis for trust in a rental context.',
-      'The information indicates a considerate and apartment-compatible companion.',
-    ],
-    fillers: [
-      'Cleanliness, predictability, and respectful coexistence are consistently maintained.',
-      'Care routines are organized and focused on long-term stability.',
-      'This helps create a calm and conflict-free home environment.',
-    ],
+  social: {
+    childrenGood: 'Around children, {name} shows remarkable patience and sensitivity – a natural gentleness that families especially appreciate.',
+    childrenNeutral: '{name} behaves respectfully and calmly around children, maintaining a polite distance without being intrusive.',
+    petsGood: '{name} approaches other animals with friendly curiosity and strong social compatibility, ensuring a harmonious coexistence.',
+    petsNeutral: 'With other animals, {name} displays a composed independence – neither anxious nor dominant, but calmly self-assured.',
   },
-  fr: {
-    openings: [
-      "Cet animal est presente comme un compagnon soigne et socialement adapte.",
-      "Ce profil met en avant un animal fiable, adapte a la vie en appartement.",
-      "Ce document offre une presentation claire e rassurante pour le proprietaire.",
-    ],
-    variantBlocks: [
-      "Au quotidien, l'animal adopte un comportement stable et previsible, y compris dans des situations nouvelles. Les regles du foyer sont respectees de maniere constante.",
-      "Grace a une bonne socialisation, une routine claire et un encadrement responsable, le comportement reste maitrise et compatible avec un immeuble collectif.",
-      "Pour un bailleur, il est essentiel que l'animal soit integre a un rythme bien etabli et ne provoque pas de nuisances non controlees.",
-    ],
-    closings: [
-      "Dans l'ensemble, le profil indique une cohabitation fiable et respectueuse.",
-      "Ces informations constituent une base solide pour une relation locative de confiance.",
-      "Les elements presentes soutiennent une integration harmonieuse dans le logement.",
-    ],
-    fillers: [
-      "La proprete, la regularite et le respect du voisinage sont appliques de facon coherente.",
-      "Le suivi quotidien est organise pour assurer une stabilite durable.",
-      "Cela favorise un cadre de vie calme et sans tensions.",
-    ],
-  },
-  it: {
-    openings: [
-      "L'animale viene presentato come un compagno curato e socialmente equilibrato.",
-      "Il profilo evidenzia un animale affidabile, adatto alla vita in appartamento.",
-      "Questo documento fornisce una panoramica chiara e rassicurante per il locatore.",
-    ],
-    variantBlocks: [
-      "Nella vita quotidiana l'animale mostra un comportamento stabile e prevedibile, anche in contesti nuovi. Le regole domestiche vengono rispettate con continuita.",
-      "Grazie a buona socializzazione, routine strutturata e gestione responsabile, il comportamento resta controllato e compatibile con edifici plurifamiliari.",
-      "Per il proprietario e particolarmente importante che l'animale sia inserito in una routine chiara e non provochi disturbi non controllati.",
-    ],
-    closings: [
-      "Nel complesso, il profilo indica una convivenza affidabile e rispettosa.",
-      "Questi elementi offrono una base solida per una decisione locativa serena.",
-      "Le informazioni supportano un inserimento armonioso nell'ambiente abitativo.",
-    ],
-    fillers: [
-      "Pulizia, regolarita e rispetto del vicinato vengono mantenuti con costanza.",
-      "La gestione quotidiana e organizzata per garantire stabilita nel tempo.",
-      "Questo favorisce un contesto abitativo tranquillo e privo di conflitti.",
-    ],
-  },
-  rm: {
-    openings: [
-      "Quest animal vegn preschenta sco cumpogn tgira e socialmain adattà.",
-      "Il profil mussa in animal fidaivel, adattà per viver en abitaziun.",
-      "Quest document dat ina survista clera e favuraivla per locaturs.",
-    ],
-    variantBlocks: [
-      "En il mintgadi mussa l'animal in cumportament stabil e prevedibel, era en situaziuns novas. Las reglas da la chasa vegnan observadas cun constanza.",
-      "Grazia a buna socialisaziun, rutina structurada e tgira responsabla resta il cumportament controllà e cumpatibel cun chasas da pliras famiglias.",
-      "Per in locatur e impurtant che l'animal saja integrà en ina rutina clera e na chaschunia nagins disturbis nuncontrolads.",
-    ],
-    closings: [
-      "En total mussa il profil ina convivenza fidaivla e respectusa.",
-      "Questas infurmaziuns porschan ina buna basa per ina decisiun da locaziun cun fidanza.",
-      "Ils detagls sustegnan ina integraziun harmonica en l'abitaziun.",
-    ],
-    fillers: [
-      "Nettezia, regularitad e risguard envers vischins vegnan mantegnids consequentamain.",
-      "La tgira quotidiana e organisada per garantir stabilitad a lunga vista.",
-      "Uschia sa sviluppa ina situaziun d'abitar ruassaivla e senza conflicts.",
-    ],
-  },
+  routines: [
+    'Daily life follows a well-established structure: rest periods alternate harmoniously with active times, ensuring a predictable and disturbance-free routine.',
+    '{name} has learned to handle time alone with composure – a sign of emotional maturity and independence that makes everyday life smoother for everyone.',
+    'Clear feeding, play, and rest schedules define each day, creating a balance that benefits not only the pet but the entire living environment.',
+  ],
+  responsibility: 'Regular veterinary check-ups, complete vaccination coverage, and consistent care reflect a strong sense of responsibility and ensure that health risks are kept to a minimum.',
+  closings: [
+    '{name} is a pet that earns trust – through reliability, adaptability, and a fundamentally friendly nature that gives any landlord confidence.',
+    'Overall, {name} presents as an ideal housemate: well-groomed, socially compatible, and ready to fit harmoniously into any living situation.',
+    'Choosing {name} means choosing a companion who embodies both responsibility and quality of life – a genuine asset to any home.',
+  ],
+  extras: [
+    'Cleanliness and consideration for the shared living environment are among the natural strengths that make daily life easier for everyone.',
+    'The close bond between owner and pet is reflected in balanced, stress-free behavior that neighbors notice and appreciate.',
+    'Loving yet consistent guidance has shaped a personality that behaves respectfully and unobtrusively in multi-tenant buildings.',
+  ],
 };
 
-const isGenerationLocale = (lang: string): lang is GenerationLocale =>
-  Object.prototype.hasOwnProperty.call(GENERATION_TEXTS, lang);
+const str = (v: unknown, fb: string): string => (typeof v === 'string' && v.length > 0) ? v : fb;
+
+const tri = (v: unknown, fb: [string, string, string]): [string, string, string] => {
+  if (!Array.isArray(v) || v.length < 3) return fb;
+  const [a, b, c] = v;
+  if (typeof a !== 'string' || typeof b !== 'string' || typeof c !== 'string') return fb;
+  return [a, b, c];
+};
+
+const getGenerationPack = (raw: unknown): GenerationPack => {
+  const o = (raw && typeof raw === 'object') ? (raw as Record<string, unknown>) : {};
+  const n = (o.noise && typeof o.noise === 'object') ? (o.noise as Record<string, unknown>) : {};
+  const s = (o.social && typeof o.social === 'object') ? (o.social as Record<string, unknown>) : {};
+  return {
+    openings: tri(o.openings, FALLBACK_PACK.openings),
+    noise: {
+      low: str(n.low, FALLBACK_PACK.noise.low),
+      medium: str(n.medium, FALLBACK_PACK.noise.medium),
+      high: str(n.high, FALLBACK_PACK.noise.high),
+    },
+    social: {
+      childrenGood: str(s.childrenGood, FALLBACK_PACK.social.childrenGood),
+      childrenNeutral: str(s.childrenNeutral, FALLBACK_PACK.social.childrenNeutral),
+      petsGood: str(s.petsGood, FALLBACK_PACK.social.petsGood),
+      petsNeutral: str(s.petsNeutral, FALLBACK_PACK.social.petsNeutral),
+    },
+    routines: tri(o.routines, FALLBACK_PACK.routines),
+    responsibility: str(o.responsibility, FALLBACK_PACK.responsibility),
+    closings: tri(o.closings, FALLBACK_PACK.closings),
+    extras: tri(o.extras, FALLBACK_PACK.extras),
+  };
+};
 
 const AppContent: React.FC = () => {
   const data = useFormStore(selectData);
@@ -156,71 +110,48 @@ const AppContent: React.FC = () => {
   }, [data.lang, data.generatedText, showToast]);
 
   const generateText = () => {
-    const tmpl = t?.templates || {};
     const lbl = t?.labels || {};
+    const pack = getGenerationPack(t?.generationText);
 
-    if (!tmpl.intro) {
+    if (!t?.templates?.intro) {
       showToast(lbl.pleaseWait || '…', 'info');
       return;
     }
 
     const variant = generationVariantRef.current % 3;
     generationVariantRef.current += 1;
-    const locale = isGenerationLocale(data.lang || 'de') ? (data.lang as GenerationLocale) : 'de';
-    const pack = GENERATION_TEXTS[locale];
 
     const petName = data.name?.trim() || (lbl?.petName || 'Pet');
-    const petType = data.petType?.trim() || '';
-    const breed = data.breed?.trim() || '';
-    const age = data.age?.toString().trim() || '';
-    const gender = data.gender?.toString().trim() || '';
-    const neutered = data.isNeutered ? (lbl?.yes ?? 'yes') : (lbl?.no ?? 'no');
-    const vaccinated = data.hasVaccination ? (lbl?.yes ?? 'yes') : (lbl?.no ?? 'no');
-    const registered = data.hasRegistration ? (lbl?.yes ?? 'yes') : (lbl?.no ?? 'no');
+    const r = (s: string) => s.replace(/\{name\}/g, petName);
 
-    const opening = `${petName}${breed ? ` (${breed})` : ''}: ${tmpl.intro || pack.openings[variant]}`;
+    const body: string[] = [];
 
-    const detailSentences: string[] = [];
-    if (petType) detailSentences.push(`${lbl?.type ?? 'Type'}: ${petType}.`);
-    if (age) detailSentences.push(`${lbl?.age ?? 'Age'}: ${age}.`);
-    if (gender) detailSentences.push(`${lbl?.gender ?? 'Gender'}: ${gender}.`);
-    if (data.weight) detailSentences.push(`${lbl?.weight ?? 'Weight'}: ${data.weight}.`);
-    if (data.noiseLevel) {
-      const noiseText =
-        data.noiseLevel === 'low'
-          ? (lbl?.noiseLow ?? 'low')
-          : data.noiseLevel === 'medium'
-            ? (lbl?.noiseMedium ?? 'medium')
-            : (lbl?.noiseHigh ?? 'high');
-      detailSentences.push(`${lbl?.noiseLevel ?? 'Noise level'}: ${noiseText}.`);
-    }
-    if (data.aloneTime) detailSentences.push(`${lbl?.aloneTime ?? 'Alone time'}: ${data.aloneTime}.`);
-    if (data.activeHours) detailSentences.push(`${lbl?.activeHours ?? 'Active hours'}: ${data.activeHours}.`);
-    if (data.behaviorWithChildren) detailSentences.push(`${lbl?.behaviorWithChildren ?? 'Behavior with children'}: ${data.behaviorWithChildren}.`);
-    if (data.behaviorWithPets) detailSentences.push(`${lbl?.behaviorWithPets ?? 'Behavior with other pets'}: ${data.behaviorWithPets}.`);
-    if (data.willingToPayDeposit) detailSentences.push(`${lbl?.willingToPayDeposit ?? 'Pet deposit'}: ${lbl?.yes ?? 'yes'}.`);
-    detailSentences.push(
-      `${lbl?.vaccination ?? 'Vaccinated'}: ${vaccinated}, ${lbl?.registration ?? 'Registered'}: ${registered}, ${lbl?.neutered ?? 'Neutered'}: ${neutered}.`
-    );
+    body.push(r(pack.openings[variant]));
 
-    let fullText = [
-      opening,
-      detailSentences.join(' '),
-      pack.variantBlocks[variant],
-      pack.closings[variant],
-      tmpl.outro || '',
-    ]
-      .join(' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const noiseKey = data.noiseLevel === 'high' ? 'high' : data.noiseLevel === 'medium' ? 'medium' : 'low';
+    body.push(r(pack.noise[noiseKey]));
 
-    const targetLength = Math.floor(MAX_DESCRIPTION_LENGTH * 0.92);
-    let fillerIdx = 0;
-    while (fullText.length < targetLength && fillerIdx < pack.fillers.length) {
-      fullText = `${fullText} ${pack.fillers[(variant + fillerIdx) % pack.fillers.length]}`;
-      fillerIdx += 1;
+    if (data.behaviorWithChildren && data.behaviorWithChildren !== 'avoid') {
+      body.push(r(data.behaviorWithChildren === 'good' ? pack.social.childrenGood : pack.social.childrenNeutral));
     }
 
+    if (data.behaviorWithPets && data.behaviorWithPets !== 'avoid') {
+      body.push(r(data.behaviorWithPets === 'good' ? pack.social.petsGood : pack.social.petsNeutral));
+    }
+
+    body.push(r(pack.routines[variant]));
+    body.push(r(pack.responsibility));
+
+    const closing = r(pack.closings[variant]);
+    const target = Math.floor(MAX_DESCRIPTION_LENGTH * 0.88);
+    let assembled = body.join(' ');
+    let ei = 0;
+    while (assembled.length + closing.length + 1 < target && ei < pack.extras.length) {
+      assembled += ' ' + r(pack.extras[(variant + ei) % pack.extras.length]);
+      ei += 1;
+    }
+
+    const fullText = (assembled + ' ' + closing).replace(/\s+/g, ' ').trim();
     updateData('generatedText', fullText.slice(0, MAX_DESCRIPTION_LENGTH));
     showToast('✨ Text generiert!', 'success');
   };
