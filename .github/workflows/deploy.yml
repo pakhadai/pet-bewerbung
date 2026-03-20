@@ -17,15 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate required secrets
-        env:
-          CLOUDFLARE_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
-        run: |
-          if [ -z "${CLOUDFLARE_TUNNEL_TOKEN}" ]; then
-            echo "Missing required GitHub secret: CLOUDFLARE_TUNNEL_TOKEN"
-            exit 1
-          fi
-
       - name: Sync files via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -40,25 +31,20 @@ jobs:
 
       - name: Execute deployment commands
         uses: appleboy/ssh-action@v1.0.3
-        env:
-          CLOUDFLARE_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           port: ${{ secrets.VPS_PORT }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: CLOUDFLARE_TUNNEL_TOKEN
           script: |
             set -e
             cd /root/apps/pet-bewerbung
 
-            # Ensure runtime .env is always present and up to date.
-            if [ -z "${CLOUDFLARE_TUNNEL_TOKEN}" ]; then
-              echo "ERROR: CLOUDFLARE_TUNNEL_TOKEN secret is empty."
+            # Use server-local .env (managed directly on VPS).
+            if [ ! -f .env ]; then
+              echo "ERROR: /root/apps/pet-bewerbung/.env not found on VPS."
               exit 1
             fi
-            printf 'CLOUDFLARE_TUNNEL_TOKEN=%s\n' "${CLOUDFLARE_TUNNEL_TOKEN}" > .env
-            chmod 600 .env
 
             # Rebuild if code or Dockerfile changed
             docker compose build
