@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 /* Background gradient – light and dark mode */
+/* No transition on body background-* — Lighthouse flags non-composited animations on <body>. */
 html body {
   background-attachment: fixed;
-  transition: background-color 0.5s ease, background-image 0.5s ease;
 }
 
 body {

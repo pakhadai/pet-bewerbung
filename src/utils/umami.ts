@@ -1,5 +1,6 @@
 // Umami analytics helper (privacy-friendly: no consent UI in this app).
-// If Umami is not configured (no website id), everything becomes a no-op.
+// Script loads after idle — avoids competing with first paint / main bundle (Lighthouse).
+// Override with VITE_UMAMI_WEBSITE_ID / VITE_UMAMI_HOST in .env
 
 export type UmamiTrackData = Record<string, unknown>;
 
@@ -13,22 +14,16 @@ declare global {
 
 let umamiInitStarted = false;
 
+/** Same default as former index.html embed; override via VITE_UMAMI_* in .env */
+const DEFAULT_WEBSITE_ID = 'a0c4edd1-3953-4ba8-9f16-4afb1a067805';
+const DEFAULT_HOST = 'https://cloud.umami.is';
+
 function getEnvString(name: string): string | undefined {
   const val = Reflect.get(import.meta.env, name);
   return typeof val === 'string' && val.trim() ? val : undefined;
 }
 
-export function initUmami(): void {
-  if (umamiInitStarted) return;
-  umamiInitStarted = true;
-
-  const websiteId = getEnvString('VITE_UMAMI_WEBSITE_ID');
-  if (!websiteId) return; // Not configured.
-
-  const host = getEnvString('VITE_UMAMI_HOST') ?? 'https://analytics.umami.is';
-  const domain = getEnvString('VITE_UMAMI_DOMAINS') ?? window.location.hostname;
-
-  // Prevent duplicate script injection (dev StrictMode can run effects twice).
+function injectUmamiScript(websiteId: string, host: string, domain: string): void {
   const existing = document.querySelector<HTMLScriptElement>(
     'script[data-umami="true"], script[src*="umami"][data-website-id]'
   );
@@ -44,8 +39,24 @@ export function initUmami(): void {
   script.dataset.umami = 'true';
   script.dataset.websiteId = websiteId;
   script.dataset.domains = domain;
-  // Keep the default behavior for automatic page view tracking.
   document.head.appendChild(script);
+}
+
+export function initUmami(): void {
+  if (umamiInitStarted) return;
+  umamiInitStarted = true;
+
+  const websiteId = getEnvString('VITE_UMAMI_WEBSITE_ID') ?? DEFAULT_WEBSITE_ID;
+  const host = getEnvString('VITE_UMAMI_HOST') ?? DEFAULT_HOST;
+  const domain = getEnvString('VITE_UMAMI_DOMAINS') ?? window.location.hostname;
+
+  const run = () => injectUmamiScript(websiteId, host, domain);
+
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(run, { timeout: 3000 });
+  } else {
+    window.setTimeout(run, 0);
+  }
 }
 
 export function trackUmamiEvent(eventName: string, data?: UmamiTrackData): void {
@@ -55,4 +66,3 @@ export function trackUmamiEvent(eventName: string, data?: UmamiTrackData): void 
     // Never break the app if analytics fails.
   }
 }
-

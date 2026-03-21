@@ -5,7 +5,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     nodePolyfills({
@@ -27,6 +27,10 @@ export default defineConfig({
     'global': 'globalThis',
   },
   build: {
+    /** Smaller prod bundles; keep console in dev */
+    esbuild: {
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -43,5 +47,5 @@ export default defineConfig({
   server: {
     host: true,
     port: 3000
-  }
-})
+  },
+}))

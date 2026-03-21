@@ -143,15 +143,11 @@ const GlobalStyles: React.FC = () => (
 
     /* Prefer system UI fonts so emoji (flags) use color emoji fonts when available */
     /* html/body background: gradient from index.html (mint/peach/lavender) - do not override */
-    /* Avoid animating text color on large subtrees (better compositing; Lighthouse). */
-    html {
-      transition: background-color 300ms ease;
-    }
-    /* Шрифт як на головній: Quicksand (підключено в index.html) */
+    /* No transition on html/body background — Lighthouse: avoid animating background on <body>. */
+    /* Шрифт як на головній: Quicksand (preload in index.html) */
     body {
       font-family: "Quicksand", system-ui, -apple-system, "Segoe UI", sans-serif;
       color: var(--text);
-      transition: background-color 300ms ease;
     }
     select, input, textarea {
       font-family: "Quicksand", system-ui, -apple-system, "Segoe UI", sans-serif;
