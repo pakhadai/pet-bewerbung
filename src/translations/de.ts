@@ -324,7 +324,15 @@ export default {
     transparencyBadge1: "Lokale Daten",
     transparencyBadge2: "Keine Werbung",
     transparencyBadge3: "100% kostenlos",
-    freeFeatures: ["3 Vorlagen", "Automatische Textgenerierung", "PDF-Download", "ZIP mit allen Designs"]
+    freeFeatures: ["3 Vorlagen", "Automatische Textgenerierung", "PDF-Download", "ZIP mit allen Designs"],
+    seoSectionTitle: "Pet-CV & Haustier-Dossier für die Wohnungsbewerbung in der Schweiz",
+    seoParagraphs: [
+      "Pet-CV, Haustier-Lebenslauf und Bewerbungsdossier für Hund, Katze oder anderes Tier: Stellen Sie Ihr Haustier bei der Wohnungssuche und Mietwohnung in der Schweiz professionell vor. Der kostenlose Generator erstellt ein PDF mit mehreren Vorlagen — für Vermieter, Verwaltungen und Mieterbewerbungen.",
+      "Textgenerierung und PDF-Download erfolgen lokal im Browser. Ihre Daten werden nicht auf Server hochgeladen — Datenschutz und Privatsphäre bleiben gewahrt.",
+      "Ein vollständiges Dossier kann Ihre Chancen bei der Wohnungssuche mit Haustier verbessern — transparent und ohne versteckte Kosten."
+    ],
+    faqTeaserTitle: "Häufige Fragen (Auszug)",
+    faqTeaserCta: "Alle Fragen durchsuchen"
   },
   step1Details: {
     ownerSection: "Halterangaben",
@@ -436,6 +444,6 @@ export default {
       { id: "q9", category: "general", q: "Kann ich das Dossier später bearbeiten?", a: "Solange Sie den Browser nicht schliessen oder die Seite neu laden, bleiben Ihre Daten erhalten. Nach dem Schliessen müssen Sie ein neues Dossier erstellen." },
       { id: "q10", category: "general", q: "Muss ich das Pet-Dossier unterschreiben?", a: "Eine Unterschrift ist für den Service rechtlich nicht erforderlich. Wir empfehlen jedoch, das PDF auszudrucken und selbst zu unterschreiben (oder eine gescannte/digitale Signatur hinzuzufügen), um dem Vermieter mehr Vertrauen zu geben." }
     ],
-    footerHint: "Fragen zum Service? Besuchen Sie pet-bewerbung.ch"
+    footerHint: "Fragen zum Service? Schreiben Sie uns: info@pet-bewerbung.ch"
   }
 };

@@ -1,8 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { TranslationObject } from '../types/template';
 
-const SUPPORTED_LANGS = ['de', 'fr', 'it', 'rm', 'en'] as const;
+export const SUPPORTED_LANGS = ['de', 'fr', 'it', 'rm', 'en'] as const;
 export type Language = (typeof SUPPORTED_LANGS)[number];
+
+/** First path segment for locale URLs: /de/, /fr/, … */
+const PATH_LANG_RE = /^\/(de|fr|it|rm|en)(?:\/|$)/;
+
+/**
+ * Read active locale from the URL (SPA). Used for first paint + SEO routes.
+ */
+export const getLangFromPath = (): Language | null => {
+  if (typeof window === 'undefined') return null;
+  const m = window.location.pathname.match(PATH_LANG_RE);
+  return m ? (m[1] as Language) : null;
+};
 
 /**
  * Detect user's language from browser settings
@@ -52,7 +64,7 @@ export interface UseTranslationReturn {
  * @returns Translation state and handlers
  */
 export const useTranslation = (): UseTranslationReturn => {
-  const [lang, setLangState] = useState<Language>(() => detectLang());
+  const [lang, setLangState] = useState<Language>(() => getLangFromPath() ?? detectLang());
   const [t, setT] = useState<TranslationObject>({});
   const [isLoading, setIsLoading] = useState(true);
 

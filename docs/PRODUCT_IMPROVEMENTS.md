@@ -9,6 +9,8 @@
 | **Fonts** | **WOFF2** generated from TTF via `npm run fonts:woff2` (fontmin). `@font-face` prefers WOFF2, TTF fallback. Preload in `index.html` uses WOFF2. |
 | **a11y (baseline)** | `<main id="main-content" aria-label={ui.mainLandmark}>`, toast region with **`aria-live`** / **`role="alert"`** for errors, dismiss control. |
 | **WCAG contrast + CLS** | `text-secondary` **`#5a5a5a`** (not `#6a6a6a`) so body text on pastel cards (e.g. **trust-green** `#c8e6c9`) meets **AA 4.5:1**; `text-main` `#4a4a4a` already passes on those surfaces. **`font-display: swap`** on all `@font-face` in `GlobalStyles.tsx`; **`index.html`** preloads Quicksand + **Amatic SC 700** WOFF2 to limit layout shift on hero/display text. |
+| **SEO — locale URLs** | **`react-router-dom`**: public routes **`/{de|fr|it|en|rm}/`**, `/` → **`RootRedirect`** (browser language if supported, else `de`). **`RouteLangSync`** keeps **`lang`** + form in sync with URL; language switch **`navigate(`/${lang}/`)`**. **`SeoHead`**: per-locale title/description, **canonical**, **Open Graph / Twitter**, **`hreflang`** (`de-CH` … `x-default`→`/de/`). **`src/seo/metaByLang.ts`** — keyword-rich strings. **`public/sitemap.xml`** lists all locale URLs + alternates on main entry. **`FaqJsonLd`** unchanged (FAQ JSON-LD). |
+| **SEO — visible landing copy** | **`LandingSeoSection`**: `hero.seoSectionTitle` + **`seoParagraphs[]`** (keywords: Pet-CV, Haustier, Wohnung, Schweiz, …) in all locales. **`LandingFaqPreview`**: first 5 FAQ as **`<details>`** (indexable HTML, matches FAQ JSON-LD) + CTA opens full FAQ modal. **Hero**: single **`h1`**, problem/solution/transparency use **`h2`**. **`SeoHead`**: **Organization** JSON-LD. |
 
 ## Backlog (not automated here)
 

@@ -316,7 +316,15 @@ export default {
     transparencyBadge1: "Local Data",
     transparencyBadge2: "No Ads",
     transparencyBadge3: "100% free",
-    freeFeatures: ["3 templates", "Automatic text generation", "PDF download", "ZIP with all designs"]
+    freeFeatures: ["3 templates", "Automatic text generation", "PDF download", "ZIP with all designs"],
+    seoSectionTitle: "Pet CV & rental dossier for Switzerland (dog, cat, pet)",
+    seoParagraphs: [
+      "Create a pet CV, pet resume, and application dossier for renting a flat in Switzerland. Present your dog, cat, or other pet professionally to landlords and agencies. Free PDF templates generated in your browser.",
+      "Text generation and PDF export run locally — your details are not uploaded to our servers, so privacy stays under your control.",
+      "A complete dossier can support your apartment search with a pet: clear, serious, and free to use."
+    ],
+    faqTeaserTitle: "Frequently asked questions (preview)",
+    faqTeaserCta: "Open full FAQ"
   },
   step1Details: {
     ownerSection: "Owner Information",
@@ -426,6 +434,6 @@ export default {
       { id: "q9", category: "general", q: "Can I edit the dossier later?", a: "As long as you don't close the browser or reload the page, your data remains. After closing, you must create a new dossier." },
       { id: "q10", category: "general", q: "Do I need to sign the Pet CV?", a: "A signature is not legally required by the service. However, we recommend printing and signing the PDF yourself (or adding a scanned/ digital signature) to increase trust with your landlord." }
     ],
-    footerHint: "Questions about the service? Visit pet-bewerbung.ch"
+    footerHint: "Questions about the service? Email us at info@pet-bewerbung.ch"
   }
 };

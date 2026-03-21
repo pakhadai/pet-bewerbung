@@ -35,6 +35,7 @@ export default defineConfig(({ mode }) => ({
         display: 'standalone',
         scope: '/',
         start_url: '/',
+        /** Locale paths: /de/, /fr/, … — `/` redirects in app (RootRedirect). */
         icons: [
           { src: '/android-chrome-192x192.webp', sizes: '192x192', type: 'image/webp' },
           { src: '/android-chrome-512x512.webp', sizes: '512x512', type: 'image/webp' },

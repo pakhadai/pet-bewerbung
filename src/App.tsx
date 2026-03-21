@@ -10,12 +10,15 @@
  */
 
 import React, { useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AppProviders from './components/AppProviders';
 import AppContent from './components/AppContent';
+import RouteLangSync from './components/RouteLangSync';
+import RootRedirect from './components/RootRedirect';
 import { initUmami } from './utils/umami';
 
 /**
- * App: Main component wrapped in providers
+ * App: locale URLs /{de|fr|it|en|rm}/ for SEO + BrowserRouter.
  */
 export default function App() {
   useEffect(() => {
@@ -23,8 +26,19 @@ export default function App() {
   }, []);
 
   return (
-    <AppProviders>
-      <AppContent />
-    </AppProviders>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<RootRedirect />} />
+        <Route
+          path="/:lang/*"
+          element={
+            <AppProviders>
+              <RouteLangSync />
+              <AppContent />
+            </AppProviders>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }

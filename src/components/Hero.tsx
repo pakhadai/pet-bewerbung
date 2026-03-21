@@ -27,11 +27,11 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
         {t?.hero?.badge || 'Free Start & No Signup'}
       </div>
 
-      {/* Main Title */}
-      <h2 className={`text-5xl sm:text-6xl lg:text-8xl font-bold font-display leading-none mt-1 transition-colors
+      {/* Main title — single h1 per page (SEO) */}
+      <h1 className={`text-5xl sm:text-6xl lg:text-8xl font-bold font-display leading-none mt-1 transition-colors
          ${darkMode ? 'text-white' : 'text-text-main'}`}>
         {t?.hero?.title || 'Pet CV Creator'}
-      </h2>
+      </h1>
 
       {/* Value Proposition: Problem & Solution */}
       <div className={`w-full max-w-4xl my-4 p-8 rounded-2xl border-l-4 shadow-lg text-left transition-colors
@@ -39,10 +39,10 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
         <div className="flex flex-col md:flex-row gap-6 items-start">
           {/* Left: Problem */}
           <div className="flex-1">
-            <h3 className={`font-display font-bold text-xl mb-3 flex items-center gap-2 ${darkMode ? 'text-red-300' : 'text-red-500'}`}>
+            <h2 className={`font-display font-bold text-xl mb-3 flex items-center gap-2 ${darkMode ? 'text-red-300' : 'text-red-500'}`}>
               <MaterialIcon name="home_app_logo" className="text-2xl" />
               {t?.hero?.problemTitle || "Wohnungssuche mit Haustier?"}
-            </h3>
+            </h2>
             <p className={`text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {t?.hero?.problemDesc || "In der Schweiz ist der Wohnungsmarkt hart umkämpft. Viele Vermieter sind skeptisch gegenüber Haustieren."}
             </p>
@@ -51,10 +51,10 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
           <div className={`hidden md:block w-px h-24 self-center ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
           {/* Right: Solution */}
           <div className="flex-1">
-            <h3 className={`font-display font-bold text-xl mb-3 flex items-center gap-2 ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+            <h2 className={`font-display font-bold text-xl mb-3 flex items-center gap-2 ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
               <MaterialIcon name="verified" className="text-2xl" />
               {t?.hero?.solutionTitle || "Die Lösung: Das Pet-Dossier"}
-            </h3>
+            </h2>
             <p className={`text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
               {t?.hero?.solutionDesc || "Ein professioneller Lebenslauf belegt Versicherung & Erziehung. Erhöhen Sie Ihre Chancen auf die Traumwohnung massiv."}
             </p>
@@ -85,9 +85,9 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
       {/* Features - All Free */}
       <div className={`mt-8 max-w-3xl w-full rounded-2xl overflow-hidden shadow-lg
         ${darkMode ? 'bg-gray-800/80 border border-gray-700' : 'bg-white border border-gray-200'}`}>
-        <h3 className={`font-display font-bold text-xl text-center py-4 ${darkMode ? 'text-white bg-gradient-to-r from-gray-700 to-gray-800' : 'text-gray-800 bg-gradient-to-r from-gray-50 to-gray-100'}`}>
+        <h2 className={`font-display font-bold text-xl text-center py-4 ${darkMode ? 'text-white bg-gradient-to-r from-gray-700 to-gray-800' : 'text-gray-800 bg-gradient-to-r from-gray-50 to-gray-100'}`}>
           {t?.hero?.transparencyTitle || 'Alles kostenlos'}
-        </h3>
+        </h2>
         <div className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
           <ul className={`space-y-3 text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
             {(t?.hero?.freeFeatures || ['3 Vorlagen', 'KI-Textgenerierung', 'PDF-Download', 'ZIP mit allen Designs']).map((feature: string, i: number) => (

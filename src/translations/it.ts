@@ -302,7 +302,15 @@ export default {
     transparencyBadge1: "Dati locali",
     transparencyBadge2: "Niente annunci",
     transparencyBadge3: "100% gratuito",
-    freeFeatures: ["3 modelli", "Generazione automatica del testo", "Download PDF", "ZIP con tutti i design"]
+    freeFeatures: ["3 modelli", "Generazione automatica del testo", "Download PDF", "ZIP con tutti i design"],
+    seoSectionTitle: "CV per animali & dossier per affitto in Svizzera",
+    seoParagraphs: [
+      "Pet CV e dossier di candidatura per cane, gatto o altro animale: presentate il vostro animale in modo professionale nella ricerca di un appartamento in Svizzera. Generatore PDF gratuito con più modelli.",
+      "Generazione testi e PDF avviene in locale nel browser — i dati non vengono caricati sui nostri server.",
+      "Un dossier completo può migliorare le possibilità in una ricerca casa con animale — senza costi nascosti."
+    ],
+    faqTeaserTitle: "Domande frequenti (anteprima)",
+    faqTeaserCta: "Apri FAQ completa"
   },
   step1Details: {
     ownerSection: "Informazioni proprietario",
@@ -383,6 +391,6 @@ export default {
       { id: "q9", category: "general", q: "Posso modificare il dossier in seguito?", a: "Finché non chiudi il browser o non ricarichi la pagina, i dati restano. Dopo la chiusura devi creare un nuovo dossier." },
       { id: "q10", category: "general", q: "Devo firmare il Pet CV?", a: "La firma non è obbligatoria per il servizio. Tuttavia, consigliamo di stampare e firmare il PDF da soli (oppure aggiungere una firma scansionata/digitale) per aumentare la fiducia del proprietario." }
     ],
-    footerHint: "Domande sul servizio? Visita pet-bewerbung.ch"
+    footerHint: "Domande sul servizio? Scrivete a info@pet-bewerbung.ch"
   }
 };

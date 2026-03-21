@@ -70,8 +70,17 @@ Analytics note:
    ```bash
    npm run dev
    ```
-3. Open:
-   - http://localhost:3000
+3. Open (locale in URL for SEO & sharing):
+   - http://localhost:3000/de/ (or `/fr/`, `/it/`, `/en/`, `/rm/`)
+   - `http://localhost:3000/` redirects to the browser’s preferred language when supported, otherwise German.
+
+### SEO (locales)
+
+- Public URLs: `https://pet-bewerbung.ch/{de|fr|it|en|rm}/`
+- `SeoHead` sets per-locale `<title>`, `meta description`, `canonical`, Open Graph, Twitter cards, and `hreflang` alternates.
+- `FaqJsonLd` injects `FAQPage` JSON-LD from translations.
+- Sitemap lists all locale entry points (`public/sitemap.xml`).
+- Landing page includes **visible** SEO paragraphs (`hero.seoParagraphs`) and an **FAQ preview** (`<details>`) so content matches structured data; `SeoHead` adds **Organization** JSON-LD.
 
 Build & preview:
 

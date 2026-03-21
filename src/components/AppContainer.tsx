@@ -3,6 +3,7 @@
  * Main app container - delegates routing to StepRenderer and modals to ModalsLayer
  */
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MaterialIcon from './MaterialIcon';
 import GlobalStyles from './GlobalStyles';
 import Header from './Header';
@@ -10,6 +11,8 @@ import Footer from './Footer';
 import StepProgress from './StepProgress';
 import FloatingNavigation from './FloatingNavigation';
 import ModalsLayer from './ModalsLayer';
+import FaqJsonLd from './FaqJsonLd';
+import SeoHead from './SeoHead';
 import ErrorBoundary from './ErrorBoundary';
 import {
   useTranslationContext,
@@ -44,6 +47,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   const updateData = useFormStore(selectUpdateData);
   const resetForm = useFormStore(selectResetForm);
   const { t, lang, setLang, isLoading: isTranslationLoading } = useTranslationContext();
+  const navigate = useNavigate();
   const { step, animDir, goToStep } = useWizardNavigationContext();
   const { darkMode, setDarkMode, toggleTheme } = useThemeContext();
   const { showToast } = useToastContext();
@@ -115,6 +119,8 @@ export const AppContainer: React.FC<AppContainerProps> = ({
   if (step === 7) {
     return (
       <>
+        <SeoHead />
+        <FaqJsonLd t={t} />
         <GlobalStyles />
         <WizardProvider value={wizardContextValue}>
           <ThankYouRoute onFaqClick={() => setFaqOpen(true)} />
@@ -138,6 +144,8 @@ export const AppContainer: React.FC<AppContainerProps> = ({
 
   return (
     <>
+      <SeoHead />
+      <FaqJsonLd t={t} />
       <GlobalStyles />
       <div className="min-h-screen font-sans theme-text theme-bg pb-6 print:bg-white print:p-0">
         <Header
@@ -147,6 +155,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
           onLangChange={(v: string) => {
             updateData('lang', v);
             setLang(v);
+            navigate(`/${v}/`, { replace: true });
           }}
           onLogoClick={() => goToStep(0)}
           t={t}
@@ -189,6 +198,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
               handleNext={handleNext}
               darkMode={darkMode}
               t={t}
+              onOpenFaq={() => setFaqOpen(true)}
             />
           </div>
         </main>

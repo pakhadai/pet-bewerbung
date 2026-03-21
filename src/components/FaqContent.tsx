@@ -15,6 +15,8 @@ export interface FaqContentProps {
   className?: string;
 }
 
+const FAQ_SUPPORT_EMAIL = 'info@pet-bewerbung.ch';
+
 /**
  * Modular FAQ content: search, category filter, accordion.
  * Can be used inside FaqModal or standalone (e.g. FAQ page).
@@ -131,7 +133,27 @@ const FaqContent: React.FC<FaqContentProps> = ({ t, darkMode, className = '' }) 
 
       {/* Footer Hint */}
       <div className={`p-4 border-t text-center text-xs flex-shrink-0 ${darkMode ? 'border-gray-800 bg-gray-900 text-gray-500' : 'border-gray-100 bg-gray-50 text-gray-400'}`}>
-        {faq?.footerHint || 'Questions about the service? Visit pet-bewerbung.ch'}
+        {(() => {
+          const hintText =
+            faq?.footerHint ||
+            `Questions about the service? Email us at ${FAQ_SUPPORT_EMAIL}`;
+          const parts = hintText.split(FAQ_SUPPORT_EMAIL);
+          if (parts.length === 2) {
+            return (
+              <>
+                {parts[0]}
+                <a
+                  href={`mailto:${FAQ_SUPPORT_EMAIL}`}
+                  className="font-medium text-primary underline-offset-2 hover:underline"
+                >
+                  {FAQ_SUPPORT_EMAIL}
+                </a>
+                {parts[1]}
+              </>
+            );
+          }
+          return hintText;
+        })()}
       </div>
     </div>
   );

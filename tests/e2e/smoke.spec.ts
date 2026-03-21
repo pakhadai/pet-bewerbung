@@ -6,7 +6,7 @@ const tinyPng = Buffer.from(
 );
 
 async function startWizard(page: Page) {
-  await page.goto('/');
+  await page.goto('/de/');
   await page.locator('main button').first().click();
   await expect(page.locator('nav[aria-label="Form navigation"]')).toBeVisible();
 }

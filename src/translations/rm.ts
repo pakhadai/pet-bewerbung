@@ -301,7 +301,15 @@ export default {
     transparencyBadge1: "Datas localas",
     transparencyBadge2: "Senza reclama",
     transparencyBadge3: "100% gratuit",
-    freeFeatures: ["3 models", "Generaziun automatica dal text", "Download PDF", "ZIP cun tut ils designs"]
+    freeFeatures: ["3 models", "Generaziun automatica dal text", "Download PDF", "ZIP cun tut ils designs"],
+    seoSectionTitle: "Pet-CV & dossier per ina retschertga dad in apartmant en Svizra",
+    seoParagraphs: [
+      "Pet-CV e dossier per chien, chat u auter animal: mussai voss animal professiunalamain tar la retschertga dad in apartmant. Generatur gratuit da PDF cun plirs models per inquilins e administraziuns.",
+      "La generaziun da text e PDF succeda localmain en il navigatur — las datas na vegnan betg tramessas sin server.",
+      "In dossier cumplett po meglierar vossas chances tar la retschertga cun animal — senza custs zupents."
+    ],
+    faqTeaserTitle: "Dumondas frequentas (extrait)",
+    faqTeaserCta: "Avrir tut las dumondas"
   },
   step1Details: {
     ownerSection: "Infurmaziuns proprietari",
@@ -382,6 +390,6 @@ export default {
       { id: "q9", category: "general", q: "Poss jau modifitgar il dossier pli tard?", a: "Fin che Vus na serrais betg il navigatur, restan las datas. Suenter serrar ston Vus crear in nov dossier." },
       { id: "q10", category: "general", q: "Ston jau suttascriver il Pet CV?", a: "Ina suttascripziun n'è betg obligatorica giuridicamain. Nus recumandain dentant da stampar il PDF e suttascriver quel sez (u d'udir ina suttascripziun scannada/digitall) per rinforzar la fidaivladad." }
     ],
-    footerHint: "Dumondas davart il servetsch? Visitar pet-bewerbung.ch"
+    footerHint: "Dumondas davart il servetsch? Scrivain nus a info@pet-bewerbung.ch"
   }
 };

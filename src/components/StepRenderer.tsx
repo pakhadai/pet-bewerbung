@@ -6,6 +6,7 @@ import React from 'react';
 import HeroRoute from '../routes/HeroRoute';
 import WizardRoute from '../routes/WizardRoute';
 import { WizardProvider } from '../context/WizardContext';
+import type { TranslationObject } from '../types/template';
 
 export interface WizardContextValue {
   t: Record<string, unknown>;
@@ -32,7 +33,8 @@ export interface StepRendererProps {
   onNavigationVisibilityChange: (visible: boolean) => void;
   handleNext: () => void;
   darkMode: boolean;
-  t: Record<string, unknown>;
+  t: TranslationObject;
+  onOpenFaq: () => void;
 }
 
 const StepRenderer: React.FC<StepRendererProps> = ({
@@ -46,9 +48,17 @@ const StepRenderer: React.FC<StepRendererProps> = ({
   handleNext,
   darkMode,
   t,
+  onOpenFaq,
 }) => {
   if (step === 0) {
-    return <HeroRoute darkMode={darkMode} t={t} onStartClick={() => wizardContextValue.goToStep(1)} />;
+    return (
+      <HeroRoute
+        darkMode={darkMode}
+        t={t}
+        onStartClick={() => wizardContextValue.goToStep(1)}
+        onOpenFaq={onOpenFaq}
+      />
+    );
   }
 
   if (step >= 1 && step <= 6) {
