@@ -49,7 +49,7 @@ const StepProgress: React.FC<StepProgressProps> = ({ step, t, onStepClick }) => 
                   ${active ? 'bg-primary border-primary text-white' : ''}
                   ${done ? 'bg-primary/25 border-primary text-[var(--primary)]' : ''}
                   ${!active && !done ? 'theme-border bg-[var(--card-bg-hover)] theme-text-muted' : ''}
-                  ${clickable ? 'hover:scale-110 hover:shadow-md' : ''}`}
+                  ${clickable ? 'hover:scale-105 active:scale-100 transition-transform duration-200 ease-out' : ''}`}
               >
                 {done ? (
                   <MaterialIcon name="check" className="text-lg text-inherit" />

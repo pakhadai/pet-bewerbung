@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
     }),
     vsharp({
       include: /\.(png|jpg|jpeg|webp)$/,
-      exclude: ['og-image.jpg.jpg'],
+      exclude: ['og-image.jpg'],
       png: { quality: 85 },
       jpeg: { quality: 85 },
       width: 256,

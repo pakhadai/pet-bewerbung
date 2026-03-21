@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * Self-hosted Material Symbols as SVG (see docs/material-icons-used.md).
+ * Self-hosted Material Symbols as SVG (public/icons/material).
  * Renders via CSS mask + bg-current so Tailwind text-* colors apply.
  */
 export const MATERIAL_ICON_NAMES = [
@@ -31,7 +31,6 @@ export const MATERIAL_ICON_NAMES = [
   'task_alt',
   'tune',
   'verified',
-  'verified_user',
 ] as const;
 
 export type MaterialIconName = (typeof MATERIAL_ICON_NAMES)[number];

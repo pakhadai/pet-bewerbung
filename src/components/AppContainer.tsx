@@ -153,7 +153,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
         />
 
         <main
-          className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 6 ? 'pt-24 md:pt-28' : ''}`}
+          className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 6 ? 'pt-[72px]' : ''}`}
           aria-label={t?.ui?.mainLandmark ?? 'Pet application'}
           id="main-content"
         >

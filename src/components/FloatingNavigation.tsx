@@ -64,7 +64,6 @@ const FloatingNavigation = React.memo<FloatingNavigationProps>(({
           px-3 py-2 sm:px-10 sm:py-3
           w-max
           backdrop-blur-md border-2 shadow-[0_8px_30px_rgb(0,0,0,0.12)]
-          transition-transform hover:-translate-y-1
           ${navSurface}
         `}
         style={{ borderRadius: '50px 255px 45px 230px / 240px 35px 225px 40px' }}
@@ -76,12 +75,12 @@ const FloatingNavigation = React.memo<FloatingNavigationProps>(({
           type="button"
           onClick={onPrev}
           disabled={isBackDisabled}
-          className={`group flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-2xl font-display text-lg sm:min-h-0 sm:min-w-0 sm:gap-2 sm:text-2xl font-bold transition-colors ${
+          className={`group flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-2xl font-display text-lg sm:min-h-0 sm:min-w-0 sm:gap-2 sm:text-2xl font-bold transition-all duration-200 ease-out ${
             isBackDisabled
               ? 'opacity-30 cursor-not-allowed'
               : darkMode
-                ? 'text-gray-400 hover:bg-gray-800 hover:text-white active:bg-gray-800'
-                : 'text-text-secondary hover:bg-black/5 hover:text-text-main active:bg-black/5'
+                ? 'text-gray-400 hover:text-white active:scale-[0.98] hover:scale-[1.03]'
+                : 'text-text-secondary hover:text-primary active:scale-[0.98] hover:scale-[1.03]'
           }`}
           aria-label={isBackDisabled ? 'First step' : 'Go to previous step'}
         >
@@ -97,7 +96,7 @@ const FloatingNavigation = React.memo<FloatingNavigationProps>(({
           <button
             type="button"
             onClick={onNext}
-            className={`group flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 py-2 font-display text-base sm:min-h-0 sm:px-6 sm:py-2 sm:text-2xl font-bold transition-all hand-drawn-button hover:scale-105 border-2 active:scale-[0.98] ${
+            className={`group flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 py-2 font-display text-base sm:min-h-0 sm:px-6 sm:py-2 sm:text-2xl font-bold transition-all duration-200 ease-out hand-drawn-button border-2 hover:scale-[1.03] active:scale-[0.98] ${
               darkMode
                 ? 'bg-lavender hover:bg-primary text-primary-dark hover:text-white border-primary/50'
                 : 'bg-lavender hover:bg-primary text-primary-dark hover:text-white border-primary/30'
@@ -115,12 +114,12 @@ const FloatingNavigation = React.memo<FloatingNavigationProps>(({
             type="button"
             onClick={canProceed ? onNext : undefined}
             disabled={!canProceed}
-            className={`group flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-2xl font-display text-lg sm:min-h-0 sm:min-w-0 sm:gap-2 sm:text-2xl font-bold transition-colors ${
+            className={`group flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-2xl font-display text-lg sm:min-h-0 sm:min-w-0 sm:gap-2 sm:text-2xl font-bold transition-all duration-200 ease-out ${
               !canProceed
                 ? 'cursor-not-allowed opacity-50 text-gray-400'
                 : darkMode
-                  ? 'text-white hover:bg-gray-800 hover:text-primary active:bg-gray-800'
-                  : 'text-text-main hover:bg-black/5 hover:text-primary active:bg-black/5'
+                  ? 'text-white hover:text-primary active:scale-[0.98] hover:scale-[1.03]'
+                  : 'text-text-main hover:text-primary active:scale-[0.98] hover:scale-[1.03]'
             }`}
             aria-label={!canProceed ? 'Fill required fields' : 'Go to next step'}
           >

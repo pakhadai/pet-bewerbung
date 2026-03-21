@@ -1,5 +1,8 @@
 node_modules/
 dist/
+
+# Local AI / IDE (do not commit)
+.claude/
 build/
 .env
 .DS_Store
