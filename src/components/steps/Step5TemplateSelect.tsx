@@ -28,10 +28,9 @@ const TemplateSkeleton: React.FC = () => (
 interface Step5TemplateSelectProps {
   selectedTemplate: TemplateType;
   onSelectTemplate: (id: TemplateType) => void;
-  showToast?: (msg: string, type?: 'info' | 'success' | 'error' | 'warning') => void;
 }
 
-const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({ selectedTemplate, onSelectTemplate, showToast }) => {
+const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({ selectedTemplate, onSelectTemplate }) => {
   const data = useFormStore((s) => s.data) as FormData;
   const { t, animDir, darkMode } = useWizardContext();
   const visibleTemplates = TEMPLATE_OPTIONS.map((x) => x.id);
@@ -62,8 +61,7 @@ const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({ selectedTempl
               type="button"
               onClick={() => {
                 onSelectTemplate(opt.id as TemplateType);
-                  trackUmamiEvent('Template_Changed', { template: opt.id });
-                showToast?.(t?.ui?.templateSelected ?? 'Vorlage ausgewählt', 'success');
+                trackUmamiEvent('Template_Changed', { template: opt.id });
               }}
               className={`group template-card p-3 md:p-4 flex flex-col gap-3 text-left relative transition-all duration-300 
                 ${isSelected ? 'active ring-2 ring-primary ring-offset-2' : ''} 

@@ -4,7 +4,7 @@
  * No backend - all processing client-side.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS } from '../constants';
 import AppContainer from './AppContainer';
 import {
@@ -104,15 +104,7 @@ const AppContent: React.FC = () => {
   const updateData = useFormStore(selectUpdateData);
   const { t } = useTranslationContext();
   const { showToast } = useToastContext();
-  const prevLangRef = useRef(data.lang);
   const generationVariantRef = useRef(0);
-
-  useEffect(() => {
-    if (prevLangRef.current !== data.lang && data.generatedText && data.generatedText.length > 0) {
-      showToast(t?.labels?.langChangeKeepText || 'Text bleibt erhalten.', 'info');
-    }
-    prevLangRef.current = data.lang;
-  }, [data.lang, data.generatedText, showToast]);
 
   const generateText = () => {
     const lbl = t?.labels || {};

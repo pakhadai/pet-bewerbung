@@ -121,7 +121,6 @@ export default {
     registration: "Registrà (AMICUS/ANIS)",
     willingToPayDeposit: "Pront da pajar ina cauziun per animals",
     autoTextPrompt: "Pleds-clav (p.ex. quiets, net)",
-    langChangeKeepText: "Text restà. Regenerar sche basegn per la nova lingua.",
     tellUsAboutPet: "Racontai da vies animal",
     descriptionHint: "Persunalitad, gieus preferids u pitschnas manias.",
     descriptionPlaceholder: "Buddy è in Golden Retriever viv da char che amescha las carezzas e suandar squerrs...",

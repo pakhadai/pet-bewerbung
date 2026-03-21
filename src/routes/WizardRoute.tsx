@@ -49,7 +49,6 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
         <Step5TemplateSelect
           selectedTemplate={selectedTemplate}
           onSelectTemplate={onSelectTemplate}
-          showToast={showToast}
         />
       );
     case 6:

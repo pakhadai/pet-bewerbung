@@ -121,7 +121,6 @@ export default {
     registration: "Enregistré (AMICUS/ANIS)",
     willingToPayDeposit: "Prêt à payer une caution pour animal",
     autoTextPrompt: "Mots-clés (ex: calme, propre)",
-    langChangeKeepText: "Texte conservé. Régénérer si besoin pour la nouvelle langue.",
     tellUsAboutPet: "Parlez-nous de votre animal",
     descriptionHint: "Personnalité, jouets préférés ou petits travers.",
     descriptionPlaceholder: "Buddy est un Golden Retriever énergique qui aime les caresses et courir après les écureuils...",
