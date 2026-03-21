@@ -3,6 +3,7 @@
  */
 import React, { lazy, Suspense } from 'react';
 import { Palette } from 'lucide-react';
+import MaterialIcon from '../MaterialIcon';
 import { TEMPLATE_OPTIONS } from '../../constants';
 import { useWizardContext } from '../../context/WizardContext';
 import { useFormStore } from '../../stores/formStore';
@@ -20,7 +21,7 @@ const TEMPLATE_LABELS: Record<string, string> = {
 
 const TemplateSkeleton: React.FC = () => (
   <div className="w-full h-full bg-neutral-800 animate-pulse flex items-center justify-center rounded-md">
-    <span className="material-symbols-outlined text-4xl text-gray-600 animate-pulse">description</span>
+    <MaterialIcon name="description" className="text-4xl text-gray-600 animate-pulse" />
   </div>
 );
 
@@ -87,7 +88,7 @@ const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({ selectedTempl
                 )}
                 {isSelected && (
                   <div className="absolute bottom-3 right-3 bg-primary rounded-full p-1 shadow-lg">
-                    <span className="material-symbols-outlined text-white text-xl">check</span>
+                    <MaterialIcon name="check" className="text-white text-xl" />
                   </div>
                 )}
               </div>

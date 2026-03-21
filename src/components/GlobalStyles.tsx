@@ -51,13 +51,6 @@ const GlobalStyles: React.FC = () => (
       font-display: swap;
       src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkBgv18E.ttf') format('truetype');
     }
-    @font-face {
-      font-family: 'Material Symbols Outlined';
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url('/fonts/kJF1BvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzByHX9rA6RzaxHMPdY43zj-jCxv3fzvRNU22ZXGJpEpjC_1v-p_4MrImHCIJIZrDCvHOem.ttf') format('truetype');
-    }
 
     /* To use Inter locally, download from https://rsms.me/inter/ and uncomment below: */
     /*
@@ -150,40 +143,26 @@ const GlobalStyles: React.FC = () => (
 
     /* Prefer system UI fonts so emoji (flags) use color emoji fonts when available */
     /* html/body background: gradient from index.html (mint/peach/lavender) - do not override */
+    /* Avoid animating text color on large subtrees (better compositing; Lighthouse). */
     html {
-      transition: background 300ms;
+      transition: background-color 300ms ease;
     }
     /* Шрифт як на головній: Quicksand (підключено в index.html) */
     body {
       font-family: "Quicksand", system-ui, -apple-system, "Segoe UI", sans-serif;
       color: var(--text);
-      transition: background 300ms, color 300ms;
+      transition: background-color 300ms ease;
     }
     select, input, textarea {
       font-family: "Quicksand", system-ui, -apple-system, "Segoe UI", sans-serif;
       color: var(--text);
       background: var(--bg);
-      transition: background 300ms, color 300ms;
+      transition: background-color 300ms ease;
     }
     button {
       font-family: "Quicksand", system-ui, -apple-system, "Segoe UI", sans-serif;
       color: var(--text);
-      transition: background 300ms, color 300ms;
-    }
-    .material-symbols-outlined {
-      font-family: 'Material Symbols Outlined';
-      font-style: normal;
-      font-weight: 400;
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 300ms ease;
     }
 
     /* Theme-aware utility classes */

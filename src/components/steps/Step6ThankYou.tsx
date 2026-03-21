@@ -3,6 +3,7 @@
  */
 import React, { useState } from 'react';
 import { FileArchive, Loader2 } from 'lucide-react';
+import MaterialIcon from '../MaterialIcon';
 import Header from '../Header';
 import Footer from '../Footer';
 import LegalPages from '../LegalPages';
@@ -61,16 +62,16 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
 
       <main className="flex-grow flex flex-col items-center justify-center relative pt-32 pb-20 px-4">
         <div className="absolute top-[20%] left-[10%] opacity-20 pointer-events-none hidden lg:block animate-bounce select-none" style={{ animationDuration: '4s' }}>
-          <span className="material-symbols-outlined text-7xl rotate-12 text-primary">celebration</span>
+          <MaterialIcon name="celebration" className="text-7xl rotate-12 text-primary" />
         </div>
         <div className="absolute bottom-[20%] right-[10%] opacity-20 pointer-events-none hidden lg:block animate-pulse select-none">
-          <span className="material-symbols-outlined text-8xl -rotate-12 text-accent-pink dark:text-pink-400">pets</span>
+          <MaterialIcon name="pets" className="text-8xl -rotate-12 text-accent-pink dark:text-pink-400" />
         </div>
 
         <div className="w-full max-w-4xl flex flex-col items-center text-center z-10 gap-8">
           <div className="relative">
             <div className="size-32 sm:size-40 bg-primary/20 blob-accent flex items-center justify-center hand-drawn-border border-primary">
-              <span className="material-symbols-outlined text-7xl sm:text-8xl text-primary animate-pulse sketch-icon-filled">check_circle</span>
+              <MaterialIcon name="check_circle" className="text-7xl sm:text-8xl text-primary animate-pulse sketch-icon-filled" />
             </div>
             <span
               className={`absolute -top-4 -right-4 px-3 py-1 font-display font-bold text-xl rounded-full rotate-12 hand-drawn-border ${
@@ -101,9 +102,7 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
                 {isGeneratingPdf ? (
                   <Loader2 size={28} className="animate-spin" />
                 ) : (
-                  <span className="material-symbols-outlined text-4xl group-hover:scale-110 transition-transform">
-                    download_for_offline
-                  </span>
+                  <MaterialIcon name="download_for_offline" className="text-4xl group-hover:scale-110 transition-transform" />
                 )}
                 {t?.thankYou?.downloadPdf ?? t?.labels?.download ?? 'DOWNLOAD PDF'}
                 <div className="absolute -bottom-2 -right-2 w-full h-full border-2 border-dashed border-primary/40 -z-10 rounded-xl pointer-events-none" aria-hidden />

@@ -18,6 +18,11 @@
     <meta name="author" content="Pet-Bewerbung.ch" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://pet-bewerbung.ch/" />
+    <!-- Analytics: early connection (Lighthouse preconnect) -->
+    <link rel="preconnect" href="https://cloud.umami.is" crossorigin />
+    <link rel="preconnect" href="https://api-gateway.umami.dev" crossorigin />
+    <link rel="dns-prefetch" href="https://cloud.umami.is" />
+    <link rel="dns-prefetch" href="https://api-gateway.umami.dev" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -39,14 +44,14 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.webp" />
     <link rel="manifest" href="/site.webmanifest" />
     
     <!-- Theme Color -->
     <meta name="theme-color" content="#b39ddb" />
     
     <!-- Fonts are served locally from /public/fonts (no Google Fonts CDN). -->
-    <link rel="preload" href="/logo.png" as="image" />
+    <link rel="preload" href="/logo.webp" as="image" type="image/webp" />
 
     <script
       defer

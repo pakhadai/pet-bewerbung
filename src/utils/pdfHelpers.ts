@@ -3,6 +3,8 @@
  * Extracted from App.tsx for better maintainability
  */
 
+import { PUBLIC_LOGO_PATH } from '../constants';
+
 /**
  * Convert blob URL to data URL
  * @param blobUrl - Blob URL to convert
@@ -56,7 +58,7 @@ export async function toJpegDataUrl(webpDataUrl: string): Promise<string> {
  */
 export async function fetchLogoAsDataUrl(): Promise<string | null> {
   try {
-    const response = await fetch('/logo.png');
+    const response = await fetch(PUBLIC_LOGO_PATH);
     const blob = await response.blob();
     return new Promise((resolve, reject) => {
       const reader = new FileReader();

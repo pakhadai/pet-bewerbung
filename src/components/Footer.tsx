@@ -1,4 +1,5 @@
 import React from 'react';
+import MaterialIcon from './MaterialIcon';
 
 interface FooterProps {
   darkMode: boolean;
@@ -11,8 +12,10 @@ const linkClass = "hover:text-primary hover:underline decoration-wavy decoration
 
 const Footer: React.FC<FooterProps> = ({ darkMode, t, onOpenLegal, onFaqClick }) => {
   return (
-    <footer className={`pt-5 pb-0 w-full text-center border-t border-dashed transition-colors
-      ${darkMode ? 'border-gray-700 bg-gray-900' : 'border-gray-300 bg-white'}`}>
+    <footer
+      className={`pt-5 pb-0 w-full text-center border-t border-dashed transition-colors px-4 md:px-8
+      ${darkMode ? 'border-gray-700 bg-gray-900' : 'border-gray-300 bg-white'}`}
+    >
       
       <p className={`text-base font-display tracking-wide ${darkMode ? 'text-gray-400' : 'text-text-secondary'}`}>
         {t?.footer?.copyright ? (
@@ -20,7 +23,7 @@ const Footer: React.FC<FooterProps> = ({ darkMode, t, onOpenLegal, onFaqClick })
         ) : (
           <>
             © 2026 pet-bewerbung.ch. Made with{' '}
-            <span className="material-symbols-outlined align-middle text-[18px] inline mx-0.5 text-red-400 sketch-icon-filled">favorite</span>{' '}
+            <MaterialIcon name="favorite" className="align-middle text-[18px] inline mx-0.5 text-red-400 sketch-icon-filled" />{' '}
             for pets everywhere.
           </>
         )}

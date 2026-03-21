@@ -6,6 +6,7 @@
 
 import React from 'react';
 import type { PetData, TemplateType } from '../types/form';
+import { PUBLIC_LOGO_PATH } from '../constants';
 import { toJpegDataUrl } from '../utils/imageCompression';
 import { blobUrlToDataUrl } from '../utils/pdfHelpers';
 import { generateQrDataUrl, getQrContent } from '../utils/qrCode';
@@ -114,7 +115,7 @@ export function buildPdfTranslations(t: Record<string, any>) {
  */
 export async function fetchLogoAsDataUrl(): Promise<string | null> {
   try {
-    const url = `${window.location.origin}/logo.png`;
+    const url = `${window.location.origin}${PUBLIC_LOGO_PATH}`;
     const res = await fetch(url);
     if (!res.ok) return null;
     const blob = await res.blob();

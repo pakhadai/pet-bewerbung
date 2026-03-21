@@ -3,6 +3,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { ShieldCheck, ExternalLink } from 'lucide-react';
+import MaterialIcon from '../MaterialIcon';
 import Label from '../Label';
 import Input from '../Input';
 import { useWizardContext } from '../../context/WizardContext';
@@ -51,7 +52,7 @@ const Step2HealthInsurance: React.FC = () => {
 
         <div className="space-y-4">
           <h3 className={`font-display font-bold text-lg flex items-center gap-2 ${titleCl}`}>
-            <span className="material-symbols-outlined text-primary">medical_services</span>
+            <MaterialIcon name="medical_services" className="text-primary" />
             {t?.step2Emergency?.emergencyContacts ?? 'Emergency contacts'}
           </h3>
           <div>

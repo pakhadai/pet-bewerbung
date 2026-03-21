@@ -1,4 +1,6 @@
 import React from 'react';
+import MaterialIcon from './MaterialIcon';
+import { PUBLIC_LOGO_PATH } from '../constants';
 
 interface HeaderProps {
   darkMode: boolean;
@@ -33,7 +35,15 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-2 cursor-pointer group" onClick={onLogoClick}>
           <div className={`flex size-10 items-center justify-center hand-drawn-border border-2 border-text-main rotate-[-3deg] transition-transform group-hover:rotate-0 overflow-hidden
             ${darkMode ? 'bg-gray-700' : 'bg-lavender'}`}>
-            <img src="/logo.png" alt="pet-bewerbung.ch" className="w-full h-full object-contain" />
+            <img
+              src={PUBLIC_LOGO_PATH}
+              alt="pet-bewerbung.ch"
+              className="w-full h-full object-contain"
+              width={40}
+              height={40}
+              decoding="async"
+              fetchPriority="high"
+            />
           </div>
           <h1 className={`text-3xl font-bold font-display tracking-wide transition-colors ${darkMode ? 'text-white' : 'text-text-main'}`}>
             {t?.header?.title || 'pet-bewerbung.ch'}
@@ -89,9 +99,7 @@ const Header: React.FC<HeaderProps> = ({
             className={`hidden md:flex items-center justify-center p-2 rounded-full transition-colors
                ${darkMode ? 'hover:bg-gray-700 text-yellow-300' : 'hover:bg-lavender text-text-main'}`}
           >
-            <span className="material-symbols-outlined">
-              {darkMode ? 'light_mode' : 'dark_mode'}
-            </span>
+            <MaterialIcon name={darkMode ? 'light_mode' : 'dark_mode'} className="text-2xl" />
           </button>
         </div>
       </div>

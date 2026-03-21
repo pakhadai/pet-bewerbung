@@ -189,6 +189,23 @@ Tracked custom events:
 
 ---
 
+## Performance (Lighthouse / Core Web Vitals)
+
+Implemented in code and `nginx.conf`:
+
+- Long-lived cache for `/fonts/` and static assets (repeat visits)
+- `preconnect` / `dns-prefetch` to Umami script and API hosts (faster first analytics connection)
+- CSP `connect-src` allows `https://api-gateway.umami.dev` (Umami events)
+- Theme transitions avoid animating `color` on large subtrees (better compositing; fewer “non-composited animation” warnings)
+- Header logo `<img>` uses explicit `width`/`height`, `decoding="async"`, `fetchPriority="high"` (LCP hint)
+
+Further improvements (optional):
+
+- Brand assets in `public/`: `logo.webp`, `apple-touch-icon.webp`, `android-chrome-*.webp` (paths referenced via `PUBLIC_LOGO_PATH` in `src/constants.ts`)
+- UI icons: SVG in `public/icons/material/` (see `docs/material-icons-used.md`, component `MaterialIcon`)
+
+---
+
 ## TypeScript migration status
 
 The project source under `src/` is TypeScript-only:

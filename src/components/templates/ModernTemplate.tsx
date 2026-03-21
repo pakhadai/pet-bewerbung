@@ -12,6 +12,7 @@ import BehaviorSection from '../document/BehaviorSection';
 import DescriptionSection from '../document/DescriptionSection';
 import LegalSection from '../document/LegalSection';
 import ReferenceSection from '../document/ReferenceSection';
+import { PUBLIC_LOGO_PATH } from '../../constants';
 import type { FormData } from '../../types/form';
 import type { TemplateConfig, StyleOverrides } from './ClassicTemplate';
 import type { TranslationObject } from '../../types/template';
@@ -36,7 +37,7 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, t, customColors, 
           <div className={config.headerIconContainer}>
             <div className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`} style={border}>
               <img
-                src="/logo.png"
+                src={PUBLIC_LOGO_PATH}
                 alt=""
                 className="w-full h-full object-contain"
                 style={{ width: config.headerIconSize + 8, height: config.headerIconSize + 8 }}

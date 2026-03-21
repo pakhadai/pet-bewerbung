@@ -1,4 +1,5 @@
 import React from 'react';
+import MaterialIcon from './MaterialIcon';
 import type { TranslationObject } from '../types/template';
 
 export interface StepProgressProps {
@@ -52,7 +53,7 @@ const StepProgress: React.FC<StepProgressProps> = ({ step, t, darkMode, onStepCl
                   ${clickable ? 'hover:scale-110 hover:shadow-md' : ''}`}
               >
                 {done ? (
-                  <span className="material-symbols-outlined text-lg">check</span>
+                  <MaterialIcon name="check" className="text-lg text-inherit" />
                 ) : (
                   s.short
                 )}

@@ -1,4 +1,5 @@
 import React from 'react';
+import MaterialIcon from './MaterialIcon';
 
 interface HeroProps {
   darkMode: boolean;
@@ -30,7 +31,7 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
           {/* Left: Problem */}
           <div className="flex-1">
             <h3 className={`font-display font-bold text-xl mb-3 flex items-center gap-2 ${darkMode ? 'text-red-300' : 'text-red-500'}`}>
-              <span className="material-symbols-outlined text-2xl">home_app_logo</span>
+              <MaterialIcon name="home_app_logo" className="text-2xl" />
               {t?.hero?.problemTitle || "Wohnungssuche mit Haustier?"}
             </h3>
             <p className={`text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -42,7 +43,7 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
           {/* Right: Solution */}
           <div className="flex-1">
             <h3 className={`font-display font-bold text-xl mb-3 flex items-center gap-2 ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
-              <span className="material-symbols-outlined text-2xl">verified</span>
+              <MaterialIcon name="verified" className="text-2xl" />
               {t?.hero?.solutionTitle || "Die Lösung: Das Pet-Dossier"}
             </h3>
             <p className={`text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -65,7 +66,7 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
               : 'bg-lavender text-text-main hover:bg-primary shadow-lg shadow-primary/30'}`}>
           <span className="relative flex items-center justify-center gap-4">
             {t?.hero?.cta || 'Start Securely'}
-            <span className="material-symbols-outlined text-3xl group-hover:translate-x-2 group-hover:scale-110 transition-all duration-500">lock</span>
+            <MaterialIcon name="lock" className="text-3xl group-hover:translate-x-2 group-hover:scale-110 transition-all duration-500" />
           </span>
           {/* Shadow element */}
           <div className={`absolute -bottom-1.5 -right-1.5 w-full h-full -z-10 rounded-xl border-2 border-transparent transition-all duration-500 group-hover:-bottom-2 group-hover:-right-2 ${darkMode ? 'bg-white/10' : 'bg-primary/20'}`}></div>
@@ -82,7 +83,7 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
           <ul className={`space-y-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
             {(t?.hero?.freeFeatures || ['3 Vorlagen', 'KI-Textgenerierung', 'PDF-Download', 'ZIP mit allen Designs']).map((feature: string, i: number) => (
               <li key={i} className="flex items-center gap-3">
-                <span className={`material-symbols-outlined text-base ${darkMode ? 'text-green-400' : 'text-green-500'}`}>check</span>
+                <MaterialIcon name="check" className={`text-base ${darkMode ? 'text-green-400' : 'text-green-500'}`} />
                 {feature}
               </li>
             ))}
@@ -93,15 +94,15 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
       {/* Trust Badges */}
       <div className="flex flex-wrap justify-center gap-4 mt-3 text-xs font-bold uppercase tracking-widest opacity-70">
         <div className="flex items-center gap-1">
-          <span className="material-symbols-outlined text-sm">lock</span>
+          <MaterialIcon name="lock" className="text-sm" />
           {t?.hero?.transparencyBadge1 || 'Lokale Daten'}
         </div>
         <div className="flex items-center gap-1">
-          <span className="material-symbols-outlined text-sm">block</span>
+          <MaterialIcon name="block" className="text-sm" />
           {t?.hero?.transparencyBadge2 || 'Keine Werbung'}
         </div>
         <div className="flex items-center gap-1">
-          <span className="material-symbols-outlined text-sm">verified</span>
+          <MaterialIcon name="verified" className="text-sm" />
           {t?.hero?.transparencyBadge3 || '100% kostenlos'}
         </div>
       </div>

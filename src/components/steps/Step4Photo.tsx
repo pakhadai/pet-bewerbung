@@ -3,6 +3,7 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { Crop, Camera, Upload } from 'lucide-react';
+import MaterialIcon from '../MaterialIcon';
 import ImageCropper from '../ImageCropper';
 import compressImage from '../../utils/imageCompression';
 import { useWizardContext } from '../../context/WizardContext';
@@ -309,7 +310,7 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
           </div>
 
           <div className={`mt-6 flex items-center gap-3 px-4 py-3 rounded-xl border-2 hand-drawn-border ${darkMode ? 'bg-green-900/20 border-green-600/50' : 'bg-green-50 border-green-200'}`}>
-            <span className="material-symbols-outlined text-green-600 dark:text-green-400 sketch-icon-filled">verified_user</span>
+            <MaterialIcon name="verified_user" className="text-green-600 dark:text-green-400 sketch-icon-filled" />
             <span className={`text-sm font-semibold ${darkMode ? 'text-green-300' : 'text-green-800'}`}>
               {t?.step4?.photoPrivacy ?? 'Ihr Foto wird niemals hochgeladen. Alles passiert lokal in Ihrem Browser.'}
             </span>
@@ -321,15 +322,15 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
             </h4>
             <ul className={`text-xs space-y-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>
               <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined text-sm mt-0.5">check</span>
+                <MaterialIcon name="check" className="text-sm mt-0.5 shrink-0" />
                 {t?.step4?.tip1 ?? 'Gute Beleuchtung (natürliches Licht ist ideal)'}
               </li>
               <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined text-sm mt-0.5">check</span>
+                <MaterialIcon name="check" className="text-sm mt-0.5 shrink-0" />
                 {t?.step4?.tip2 ?? 'Tier schaut in die Kamera'}
               </li>
               <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined text-sm mt-0.5">check</span>
+                <MaterialIcon name="check" className="text-sm mt-0.5 shrink-0" />
                 {t?.step4?.tip3 ?? 'Neutraler Hintergrund'}
               </li>
             </ul>

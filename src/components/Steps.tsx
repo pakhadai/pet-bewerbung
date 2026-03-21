@@ -1,4 +1,5 @@
 import React from 'react';
+import MaterialIcon, { type MaterialIconName } from './MaterialIcon';
 
 interface StepsProps {
   darkMode: boolean;
@@ -9,15 +10,15 @@ interface StepCardProps {
   number: string;
   title: string;
   subtitle: string;
-  iconPrimary: string;
-  iconSecondary?: string;
+  iconPrimary: MaterialIconName;
+  iconSecondary?: MaterialIconName;
   bgColorClass: string;
   darkModeBgClass: string;
   rotation: string;
   hoverRotation: string;
   badge?: {
     text: string;
-    icon: string;
+    icon: MaterialIconName;
   };
   darkMode: boolean;
   animDelay?: string; // e.g. '0.1s'
@@ -47,11 +48,12 @@ const StepCard: React.FC<StepCardProps> = ({
 
         {/* Icons */}
         <div className="flex items-center justify-center gap-0 relative">
-          <span className="material-symbols-outlined text-4xl text-text-main sketch-icon -mr-1">{iconPrimary}</span>
+          <MaterialIcon name={iconPrimary} className="text-4xl text-text-main sketch-icon -mr-1" />
           {iconSecondary && (
-             <span className={`material-symbols-outlined text-3xl text-text-main sketch-icon ${iconSecondary === 'pets' ? 'translate-y-2' : '-translate-y-1'}`}>
-               {iconSecondary}
-             </span>
+            <MaterialIcon
+              name={iconSecondary}
+              className={`text-3xl text-text-main sketch-icon ${iconSecondary === 'pets' ? 'translate-y-2' : '-translate-y-1'}`}
+            />
           )}
         </div>
 
@@ -59,8 +61,8 @@ const StepCard: React.FC<StepCardProps> = ({
         {badge && (
           <div className={`absolute -bottom-3 px-2 py-0.5 text-[10px] font-bold border border-text-main rounded-full shadow-sm flex items-center gap-1
              ${darkMode ? 'bg-gray-800 text-green-400' : 'bg-white text-green-700'}`}>
-             <span className="material-symbols-outlined text-[12px]">{badge.icon}</span> 
-             {badge.text}
+            <MaterialIcon name={badge.icon} className="text-[12px]" />
+            {badge.text}
           </div>
         )}
       </div>

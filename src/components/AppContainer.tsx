@@ -3,6 +3,7 @@
  * Main app container - delegates routing to StepRenderer and modals to ModalsLayer
  */
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import MaterialIcon from './MaterialIcon';
 import GlobalStyles from './GlobalStyles';
 import Header from './Header';
 import Footer from './Footer';
@@ -105,7 +106,7 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     return (
       <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
         <div className="flex flex-col items-center gap-4 text-slate-400">
-          <span className="material-symbols-outlined animate-spin text-4xl">progress_activity</span>
+          <MaterialIcon name="progress_activity" spin className="text-4xl text-inherit" />
         </div>
       </div>
     );
@@ -163,15 +164,19 @@ export const AppContainer: React.FC<AppContainerProps> = ({
                       : 'bg-emerald-50 text-emerald-700 border-emerald-300'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-base" aria-hidden>
-                    shield_lock
-                  </span>
+                  <MaterialIcon name="shield_lock" className="text-base text-inherit" />
                   <span>{t?.labels?.localPrivacy ?? 'Local generation • privacy focused'}</span>
                 </div>
               </div>
             </div>
           )}
-          <div className={step === 0 ? 'w-full' : 'max-w-7xl mx-auto p-4 md:p-8 print:border-none print:shadow-none print:p-0'}>
+          <div
+            className={
+              step === 0
+                ? 'w-full px-4 md:px-8'
+                : 'max-w-7xl mx-auto p-4 md:p-8 print:border-none print:shadow-none print:p-0'
+            }
+          >
             <StepRenderer
               step={step}
               wizardContextValue={wizardContextValue}

@@ -50,3 +50,6 @@ export const TEMPLATE_OPTIONS = [
   { id: 'modern', label: 'Modern' },
   { id: 'compact', label: 'Compact' },
 ] as const;
+
+/** Logo in /public (WebP). Keep in sync with index.html preload. */
+export const PUBLIC_LOGO_PATH = '/logo.webp';

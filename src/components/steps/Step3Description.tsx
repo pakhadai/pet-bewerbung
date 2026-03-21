@@ -2,6 +2,7 @@
  * Step3Description - Template-based pet description generation
  */
 import React from 'react';
+import MaterialIcon from '../MaterialIcon';
 import { MAX_DESCRIPTION_LENGTH } from '../../constants';
 import { useWizardContext } from '../../context/WizardContext';
 import { useFormStore } from '../../stores/formStore';
@@ -71,7 +72,7 @@ const Step3Description: React.FC<Step3DescriptionProps> = ({ onGenerate }) => {
                 ${darkMode ? 'text-gray-100 bg-primary/80 hover:bg-primary border-primary' : 'text-white bg-primary hover:bg-primary-dark border-primary'}`}
             >
               <span className="flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined text-2xl">edit_note</span>
+                <MaterialIcon name="edit_note" className="text-2xl" />
                 {t?.labels?.autoGenerateTextBtn ?? 'Automatic text generation'}
               </span>
             </button>
