@@ -18,12 +18,8 @@
     <meta name="author" content="Pet-Bewerbung.ch" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://pet-bewerbung.ch/" />
-    <!-- Analytics: early connection (Lighthouse preconnect) -->
-    <link rel="preconnect" href="https://cloud.umami.is" crossorigin />
-    <link rel="preconnect" href="https://api-gateway.umami.dev" crossorigin />
-    <link rel="dns-prefetch" href="https://cloud.umami.is" />
-    <link rel="dns-prefetch" href="https://api-gateway.umami.dev" />
-    
+    <!-- Umami: no preconnect here — script loads after idle (see src/utils/umami.ts); head preconnect was flagged unused and hurt Lighthouse. -->
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://pet-bewerbung.ch/" />

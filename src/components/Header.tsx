@@ -108,11 +108,12 @@ const Header: React.FC<HeaderProps> = ({
             ))}
           </div>
 
-          {/* Dark Mode Toggle */}
+          {/* Dark Mode Toggle — visible on mobile too (was hidden md:flex) */}
           <button 
+            type="button"
             onClick={toggleDarkMode}
             aria-label="Toggle dark mode" 
-            className={`hidden md:flex items-center justify-center p-2 rounded-full transition-colors
+            className={`flex shrink-0 items-center justify-center p-2 rounded-full transition-colors
                ${darkMode ? 'hover:bg-gray-700 text-amber-200' : 'hover:bg-lavender text-text-main'}`}
           >
             <MaterialIcon name={darkMode ? 'light_mode' : 'dark_mode'} className="text-2xl" />

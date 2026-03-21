@@ -309,13 +309,6 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
             )}
           </div>
 
-          <div className={`mt-6 flex items-center gap-3 px-4 py-3 rounded-xl border-2 hand-drawn-border ${darkMode ? 'bg-green-900/20 border-green-600/50' : 'bg-green-50 border-green-200'}`}>
-            <MaterialIcon name="verified_user" className="text-green-600 dark:text-green-400 sketch-icon-filled" />
-            <span className={`text-sm font-semibold ${darkMode ? 'text-green-300' : 'text-green-800'}`}>
-              {t?.step4?.photoPrivacy ?? 'Ihr Foto wird niemals hochgeladen. Alles passiert lokal in Ihrem Browser.'}
-            </span>
-          </div>
-
           <div className={`mt-6 p-4 rounded-xl ${darkMode ? 'bg-blue-900/20' : 'bg-blue-50'}`}>
             <h4 className={`font-display font-bold text-sm mb-2 ${darkMode ? 'text-blue-300' : 'text-blue-800'}`}>
               {t?.step4?.tipsTitle ?? 'Tipps für ein perfektes Foto:'}

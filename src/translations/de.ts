@@ -87,7 +87,6 @@ export default {
     clickOrDrop: "Klicken oder per Drag & Drop"
   },
   step4: {
-    photoPrivacy: "Ihr Foto wird niemals hochgeladen. Alles passiert lokal in Ihrem Browser.",
     changePhotoHint: "Klicken Sie auf das Bild oder ziehen Sie ein neues hierher",
     maxSize: "bis zu 10 MB",
     fileTooLarge: "Datei zu groß. Max. 10 MB.",
@@ -137,7 +136,6 @@ export default {
     descriptionHint: "Persönlichkeit, Lieblingsspielzeug oder kleine Eigenheiten.",
     descriptionPlaceholder: "Buddy ist ein temperamentvoller Golden Retriever, der Bauchkraulen und Eichhörnchen liebt...",
     autoGenerateTextBtn: "Text automatisch generieren (Vorlage)",
-    localPrivacy: "Lokale Erzeugung • Datenschutz",
     generating: "Wird generiert...",
     recrop: "Neu zuschneiden",
     remove: "Entfernen",

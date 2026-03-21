@@ -87,7 +87,6 @@ export default {
     clickOrDrop: "Click or Drag & Drop"
   },
   step4: {
-    photoPrivacy: "Your photo is never uploaded. Everything happens locally in your browser.",
     changePhotoHint: "Click on the image or drag a new one here",
     maxSize: "up to 10 MB",
     fileTooLarge: "File too large. Max. 10 MB.",
@@ -137,7 +136,6 @@ export default {
     descriptionHint: "Share their personality, favorite toys, or funny quirks.",
     descriptionPlaceholder: "Buddy is a high-energy Golden Retriever who loves belly rubs and chasing squirrels...",
     autoGenerateTextBtn: "Generate text automatically (template)",
-    localPrivacy: "Local Generation • Privacy Focused",
     generating: "Generating...",
     recrop: "Recrop",
     remove: "Remove",

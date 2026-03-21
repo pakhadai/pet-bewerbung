@@ -202,7 +202,7 @@ Tracked custom events:
 Implemented in code and `nginx.conf`:
 
 - Long-lived cache for `/fonts/` and static assets (repeat visits)
-- `preconnect` / `dns-prefetch` to Umami script and API hosts (faster first analytics connection)
+- Umami loads after `requestIdleCallback` (no analytics `preconnect` in HTML — avoids Lighthouse “unused preconnect”; `preconnect` to script origin is injected in JS right before the script loads)
 - CSP `connect-src` allows `https://api-gateway.umami.dev` (Umami events)
 - Theme transitions avoid animating `color` on large subtrees (better compositing; fewer “non-composited animation” warnings)
 - Header logo `<img>` uses explicit `width`/`height`, `decoding="async"`, `fetchPriority="high"` (LCP hint)
@@ -211,6 +211,15 @@ Further improvements (optional):
 
 - Brand assets in `public/`: `logo.webp` (PDF/templates), `logo-header.webp` (header/LCP, small), `apple-touch-icon.webp`, `android-chrome-*.webp` (`PUBLIC_LOGO_PATH` / `PUBLIC_LOGO_HEADER_PATH` in `src/constants.ts`)
 - UI icons: SVG in `public/icons/material/` (see `docs/material-icons-used.md`, component `MaterialIcon`)
+
+---
+
+## SEO / Sitemap (Google Search Console)
+
+- **Correct sitemap URL:** `https://pet-bewerbung.ch/sitemap.xml`  
+  Vite copies `public/sitemap.xml` to the **site root** — there is **no** `/public/` prefix in the deployed URL.
+- **Do not** submit `https://pet-bewerbung.ch/public/sitemap.xml` in GSC: that path does not exist as a file, so nginx falls through to the SPA `index.html` → Google reports “Sitemap is HTML” and errors.
+- After deploy, re-submit the sitemap in Search Console using the **root** URL above. `robots.txt` already references it.
 
 ---
 

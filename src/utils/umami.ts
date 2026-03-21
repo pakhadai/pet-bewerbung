@@ -23,6 +23,20 @@ function getEnvString(name: string): string | undefined {
   return typeof val === 'string' && val.trim() ? val : undefined;
 }
 
+function preconnectOrigin(scriptUrl: string): void {
+  try {
+    const origin = new URL(scriptUrl).origin;
+    if (document.querySelector(`link[rel="preconnect"][href="${origin}"]`)) return;
+    const link = document.createElement('link');
+    link.rel = 'preconnect';
+    link.href = origin;
+    link.crossOrigin = '';
+    document.head.appendChild(link);
+  } catch {
+    /* ignore invalid URL */
+  }
+}
+
 function injectUmamiScript(websiteId: string, host: string, domain: string): void {
   const existing = document.querySelector<HTMLScriptElement>(
     'script[data-umami="true"], script[src*="umami"][data-website-id]'
@@ -31,6 +45,8 @@ function injectUmamiScript(websiteId: string, host: string, domain: string): voi
 
   const normalizedHost = host.replace(/\/+$/, '');
   const scriptSrc = normalizedHost.includes('script.js') ? normalizedHost : `${normalizedHost}/script.js`;
+
+  preconnectOrigin(scriptSrc);
 
   const script = document.createElement('script');
   script.async = true;

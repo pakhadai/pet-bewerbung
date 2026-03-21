@@ -50,7 +50,6 @@ export default {
   },
   finalMessage: "Grazia per avair duvra nos servetsch!",
   step4: {
-    photoPrivacy: "Tia foto na vegn mai chargiada sin in server. Tut succeda localmain en tes navigatur.",
     changePhotoHint: "Clicca sin il maletg u traina in nov maletg qua",
     maxSize: "fin a 10 MB",
     fileTooLarge: "Datoteca memia gronda. Max. 10 MB.",
@@ -126,7 +125,6 @@ export default {
     descriptionHint: "Persunalitad, gieus preferids u pitschnas manias.",
     descriptionPlaceholder: "Buddy è in Golden Retriever viv da char che amescha las carezzas e suandar squerrs...",
     autoGenerateTextBtn: "Generar text automaticamain (model)",
-    localPrivacy: "Generaziun locala • Sfera privata",
     generating: "Generaziun...",
     recrop: "Cropir maletg",
     useFullImage: "Utilisar maletg entir",

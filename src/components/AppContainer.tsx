@@ -154,20 +154,8 @@ export const AppContainer: React.FC<AppContainerProps> = ({
 
         <main className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 6 ? 'pt-24 md:pt-28' : ''}`}>
           {step >= 1 && step <= 6 && (
-            <div className="sticky top-0 z-20 w-full p-0 print:hidden border-b theme-card border-transparent">
-              <StepProgress step={step} t={t} darkMode={darkMode} onStepClick={goToStep} />
-              <div className="px-4 md:px-8 pt-3 pb-0 flex justify-center">
-                <div
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs sm:text-sm font-semibold ${
-                    darkMode
-                      ? 'bg-emerald-500/10 text-emerald-300 border-emerald-400/40'
-                      : 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                  }`}
-                >
-                  <MaterialIcon name="shield_lock" className="text-base text-inherit" />
-                  <span>{t?.labels?.localPrivacy ?? 'Local generation • privacy focused'}</span>
-                </div>
-              </div>
+            <div className="sticky top-0 z-20 w-full p-0 print:hidden border-b border-[var(--border)] bg-transparent backdrop-blur-[2px]">
+              <StepProgress step={step} t={t} onStepClick={goToStep} />
             </div>
           )}
           <div

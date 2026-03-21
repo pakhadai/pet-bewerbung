@@ -50,7 +50,6 @@ export default {
   },
   finalMessage: "Merci d'avoir utilisé notre service!",
   step4: {
-    photoPrivacy: "Votre photo n'est jamais téléversée. Tout se passe localement dans votre navigateur.",
     changePhotoHint: "Cliquez sur l'image ou glissez-en une nouvelle ici",
     maxSize: "jusqu'à 10 MB",
     fileTooLarge: "Fichier trop volumineux. Max. 10 MB.",
@@ -126,7 +125,6 @@ export default {
     descriptionHint: "Personnalité, jouets préférés ou petits travers.",
     descriptionPlaceholder: "Buddy est un Golden Retriever énergique qui aime les caresses et courir après les écureuils...",
     autoGenerateTextBtn: "Générer le texte automatiquement (modèle)",
-    localPrivacy: "Génération locale • Confidentialité",
     generating: "Génération en cours...",
     recrop: "Recadrer l'image",
     useFullImage: "Utiliser l'image complète",
