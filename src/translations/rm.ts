@@ -291,7 +291,7 @@ export default {
     badge: "100% Gratuit • Nagina registraziun",
     title: "Creatur CV per Animals",
     privacyTitle: "Scut da Protecziun da Datas",
-    privacyDesc: "Vossas datas na vegnan mai memorisadas. Tut succeda en voss navigatur.",
+    privacyDesc: "Mo en il navigatur.",
     problemTitle: "Tschertgar appartament cun animal?",
     problemDesc: "En Svizra il martgà da logements è fitg cumpetitiv. Blers proprietaris èn sceptics vers animals.",
     solutionTitle: "Vossa soluziun: il Dossier Pet",

@@ -306,7 +306,7 @@ export default {
     badge: "100% Free • No Signup",
     title: "Pet CV Creator",
     privacyTitle: "Data Privacy Shield",
-    privacyDesc: "Your data is never stored. Everything happens in your browser.",
+    privacyDesc: "Browser only.",
     problemTitle: "Looking for a flat with a pet?",
     problemDesc: "In Switzerland the rental market is highly competitive. Many landlords are skeptical about pets.",
     solutionTitle: "Your solution: The Pet Dossier",

@@ -2,7 +2,7 @@
  * ModalsLayer - Renders all app modals in one place
  * FaqModal, LegalPages, PreviewModal
  */
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { X, Camera } from 'lucide-react';
 import FaqModal from './FaqModal';
 import LegalPages from './LegalPages';
@@ -39,55 +39,88 @@ const ModalsLayer: React.FC<ModalsLayerProps> = ({
   closePreview,
   data,
   showLayoutModals = true,
-}) => (
-  <>
-    <FaqModal isOpen={faqOpen} onClose={() => setFaqOpen(false)} t={t} darkMode={darkMode} />
+}) => {
+  const anyModalOpen = faqOpen || legalPage !== null || previewOpen;
 
-    {showLayoutModals && <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />}
+  /** Block page scroll under any overlay */
+  useEffect(() => {
+    if (!anyModalOpen) return;
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    return () => {
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+    };
+  }, [anyModalOpen]);
 
-    {previewOpen && (
-      <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 print:hidden">
-        <div className="relative bg-transparent w-full h-full flex flex-col items-center justify-center" onClick={closePreview}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              closePreview();
-            }}
-            className="absolute top-4 right-4 text-white/70 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
-          >
-            <X size={32} />
-          </button>
+  /** Close topmost overlay with Escape */
+  useEffect(() => {
+    if (!anyModalOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      if (previewOpen) closePreview();
+      else if (legalPage) setLegalPage(null);
+      else if (faqOpen) setFaqOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [anyModalOpen, previewOpen, legalPage, faqOpen, closePreview, setLegalPage, setFaqOpen]);
 
+  return (
+    <>
+      <FaqModal isOpen={faqOpen} onClose={() => setFaqOpen(false)} t={t} darkMode={darkMode} />
+
+      {showLayoutModals && <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />}
+
+      {previewOpen && (
+        <div className="fixed inset-0 z-50 print:hidden">
           <div
-            className="text-white mb-4 font-medium flex items-center gap-2 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Camera size={18} /> {t?.ui?.previewMode} — {previewTemplate}
-          </div>
-
-          <div
-            className="w-full max-w-4xl h-full overflow-auto flex justify-center items-start pt-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="origin-top scale-[0.4] sm:scale-[0.6] md:scale-[0.8] lg:scale-100 shadow-2xl">
-              <ErrorBoundary
-                fallbackTitle="Preview Error"
-                fallbackMessage="Failed to render document preview. Please check your data and try again."
-                onReset={closePreview}
+            className="absolute inset-0 bg-black/80"
+            onClick={closePreview}
+            role="presentation"
+            aria-hidden
+          />
+          <div className="relative z-10 flex h-full min-h-0 flex-col items-center justify-center p-4 pointer-events-none">
+            <div className="pointer-events-auto relative flex max-h-full w-full max-w-4xl flex-col items-center justify-center gap-4">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closePreview();
+                }}
+                className="absolute top-4 right-4 z-20 text-white/70 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+                aria-label={t?.ui?.closePreview ?? 'Close preview'}
               >
-                <Suspense fallback={<div className="bg-white p-8 rounded-lg">Loading preview...</div>}>
-                  <SwissDocument data={data} t={t} templateType={previewTemplate} />
-                </Suspense>
-              </ErrorBoundary>
+                <X size={32} />
+              </button>
+
+              <div className="text-white font-medium flex items-center gap-2 bg-black/50 px-4 py-2 rounded-full backdrop-blur-md">
+                <Camera size={18} aria-hidden /> {t?.ui?.previewMode} — {previewTemplate}
+              </div>
+
+              <div className="w-full flex-1 min-h-0 overflow-auto flex justify-center items-start pt-2">
+                <div className="origin-top scale-[0.4] sm:scale-[0.6] md:scale-[0.8] lg:scale-100 shadow-2xl">
+                  <ErrorBoundary
+                    fallbackTitle="Preview Error"
+                    fallbackMessage="Failed to render document preview. Please check your data and try again."
+                    onReset={closePreview}
+                  >
+                    <Suspense fallback={<div className="bg-white p-8 rounded-lg">Loading preview...</div>}>
+                      <SwissDocument data={data} t={t} templateType={previewTemplate} />
+                    </Suspense>
+                  </ErrorBoundary>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    )}
-
-    {showLayoutModals && (
-      null
-    )}
-  </>
-);
+      )}
+    </>
+  );
+};
 export default ModalsLayer;

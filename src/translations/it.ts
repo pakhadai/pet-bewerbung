@@ -291,7 +291,7 @@ export default {
     badge: "100% Gratuito • Nessuna registrazione",
     title: "Creatore CV per Animali",
     privacyTitle: "Scudo Privacy Dati",
-    privacyDesc: "I tuoi dati non vengono mai memorizzati. Tutto avviene nel tuo browser.",
+    privacyDesc: "Solo nel browser.",
     problemTitle: "Cerchi appartamento con animale?",
     problemDesc: "In Svizzera il mercato degli affitti è molto competitivo. Molti proprietari sono scettici sugli animali.",
     solutionTitle: "La tua soluzione: il Dossier Pet",

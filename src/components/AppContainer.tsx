@@ -158,15 +158,15 @@ export const AppContainer: React.FC<AppContainerProps> = ({
           id="main-content"
         >
           {step >= 1 && step <= 6 && (
-            <div className="sticky top-0 z-20 w-full p-0 print:hidden border-b border-[var(--border)]/80 bg-transparent backdrop-blur-[2px]">
+            <div className="sticky top-0 z-20 w-full pt-2 print:hidden bg-transparent backdrop-blur-[2px]">
               <StepProgress step={step} t={t} onStepClick={goToStep} />
-              <div className="px-4 md:px-8 pt-2 pb-2.5 flex justify-center print:hidden">
+              <div className="px-4 md:px-8 pt-1.5 pb-2 flex justify-center print:hidden">
                 <div
-                  className="inline-flex max-w-[min(100%,28rem)] items-center gap-2 px-3 py-1.5 rounded-full border text-center text-[11px] sm:text-xs font-semibold leading-snug bg-primary/10 text-[var(--primary)] border-primary/30"
+                  className="inline-flex max-w-[min(100%,28rem)] items-center gap-1.5 px-2.5 py-1 rounded-full border text-center text-[11px] sm:text-xs font-semibold leading-tight bg-primary/10 text-[var(--primary)] border-primary/30"
                   role="status"
                 >
-                  <MaterialIcon name="shield_lock" className="text-base shrink-0 text-inherit" aria-hidden />
-                  <span>{t?.hero?.privacyDesc ?? 'Your data is never stored. Everything happens in your browser.'}</span>
+                  <MaterialIcon name="shield_lock" className="text-sm shrink-0 text-inherit" aria-hidden />
+                  <span>{t?.hero?.privacyDesc ?? 'Browser only.'}</span>
                 </div>
               </div>
             </div>

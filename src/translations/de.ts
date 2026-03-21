@@ -314,7 +314,7 @@ export default {
     badge: "100% Kostenlos • Keine Anmeldung",
     title: "Pet CV Erstellen",
     privacyTitle: "Datenschutz-Schild",
-    privacyDesc: "Ihre Daten werden niemals gespeichert. Alles passiert in Ihrem Browser.",
+    privacyDesc: "Nur im Browser.",
     problemTitle: "Wohnungssuche mit Haustier?",
     problemDesc: "In der Schweiz ist der Wohnungsmarkt hart umkämpft. Viele Vermieter sind skeptisch gegenüber Haustieren.",
     solutionTitle: "Ihre Lösung: Das Pet-Dossier",
