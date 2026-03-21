@@ -62,6 +62,7 @@ export default {
     tip3: "Fund neutral"
   },
   ui: {
+    mainLandmark: "Applicaziun principala Pet-Bewerbung",
     select: "Tscherner",
     preview: "Prevista",
     previewMode: "Modus Prevista",

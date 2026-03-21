@@ -62,6 +62,7 @@ export default {
     tip3: "Sfondo neutro"
   },
   ui: {
+    mainLandmark: "Domanda di affitto con animale",
     select: "Seleziona",
     preview: "Anteprima",
     previewMode: "Modalità Anteprima",

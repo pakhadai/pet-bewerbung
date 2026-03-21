@@ -50,6 +50,7 @@ export default {
   },
   finalMessage: "Thank you for using our service!",
   ui: {
+    mainLandmark: "Pet rental dossier application",
     select: "Select",
     selected: "Selected",
     templateSelected: "Template selected",

@@ -1,19 +1,46 @@
 /**
- * Simple storage - PII in sessionStorage, photo in IndexedDB.
- * Replaces StorageManager/adapters. KISS.
+ * Simple storage - form draft in localStorage (survives tab close), photo in IndexedDB.
+ * Migrates one-time from legacy sessionStorage.
  */
 
 import { get, set, del } from 'idb-keyval';
 import type { PetData } from '../types/form';
 
 const DRAFT_KEY = 'pet_cv_draft';
+/** Legacy key — migrated to localStorage on first read */
+const LEGACY_SESSION_KEY = DRAFT_KEY;
 const PHOTO_KEY = 'pet_cv_photo';
+
+function readLocalDraft(): string | null {
+  try {
+    return localStorage.getItem(DRAFT_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalDraft(json: string): void {
+  localStorage.setItem(DRAFT_KEY, json);
+}
+
+/** One-time migration from sessionStorage → localStorage */
+function migrateSessionToLocal(): void {
+  try {
+    if (readLocalDraft()) return;
+    const legacy = sessionStorage.getItem(LEGACY_SESSION_KEY);
+    if (!legacy) return;
+    writeLocalDraft(legacy);
+    sessionStorage.removeItem(LEGACY_SESSION_KEY);
+  } catch {
+    /* quota / private mode */
+  }
+}
 
 export const simpleStorage = {
   saveDraft(data: Record<string, unknown>): void {
     try {
       const { photo, ...rest } = data;
-      sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ ...rest, updatedAt: Date.now() }));
+      writeLocalDraft(JSON.stringify({ ...rest, updatedAt: Date.now() }));
     } catch (e) {
       console.error('[Storage] saveDraft failed', e);
       if (typeof window !== 'undefined') {
@@ -24,7 +51,8 @@ export const simpleStorage = {
 
   loadDraft(): Partial<PetData> | null {
     try {
-      const raw = sessionStorage.getItem(DRAFT_KEY);
+      migrateSessionToLocal();
+      const raw = readLocalDraft();
       return raw ? (JSON.parse(raw) as Partial<PetData>) : null;
     } catch {
       return null;
@@ -56,7 +84,16 @@ export const simpleStorage = {
 
   async clearAll(): Promise<void> {
     try {
-      sessionStorage.removeItem(DRAFT_KEY);
+      try {
+        localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* ignore */
+      }
+      try {
+        sessionStorage.removeItem(LEGACY_SESSION_KEY);
+      } catch {
+        /* ignore */
+      }
       await del(PHOTO_KEY);
     } catch (e) {
       if (import.meta.env.DEV) console.warn('[Storage] clearAll failed', e);

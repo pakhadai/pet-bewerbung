@@ -15,7 +15,8 @@ export default {
         "primary-dark": "#9575cd",
         "accent-pink": "#f8bbd0",
         "text-main": "#4a4a4a",
-        "text-secondary": "#6a6a6a",
+        /** Darker than #6a6a6a: ≥4.5:1 on pastel cards incl. trust-green #c8e6c9 (WCAG AA body text) */
+        "text-secondary": "#5a5a5a",
         "trust-green": "#c8e6c9",
         // Dark mode specific palette
         "dark-bg": "#111827",

@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import vsharp from 'vite-plugin-vsharp'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -22,6 +23,32 @@ export default defineConfig(({ mode }) => ({
     }),
     /** Embed CSS in JS — removes render-blocking <link rel="stylesheet"> (Lighthouse). */
     cssInjectedByJsPlugin(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'robots.txt', 'sitemap.xml', 'logo-header.webp'],
+      manifest: {
+        name: 'Pet-Bewerbung',
+        short_name: 'Pet-CV',
+        description: 'Professionelles Haustier-CV für die Wohnungsbewerbung (Schweiz)',
+        theme_color: '#b39ddb',
+        background_color: '#ffffff',
+        display: 'standalone',
+        scope: '/',
+        start_url: '/',
+        icons: [
+          { src: '/android-chrome-192x192.webp', sizes: '192x192', type: 'image/webp' },
+          { src: '/android-chrome-512x512.webp', sizes: '512x512', type: 'image/webp' },
+        ],
+      },
+      workbox: {
+        navigateFallback: '/index.html',
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2,ttf,json,webmanifest}'],
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+      },
+      devOptions: {
+        enabled: false,
+      },
+    }),
   ],
   define: {
     'global': 'globalThis',

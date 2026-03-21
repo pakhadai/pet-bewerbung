@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "fonts:woff2": "node scripts/convert-fonts-to-woff2.mjs",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui"
   },
@@ -28,10 +29,13 @@
     "@playwright/test": "^1.58.2",
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.23",
+    "fontmin": "^1.1.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "vite": "^4.4.5",
     "vite-plugin-css-injected-by-js": "^4.0.1",
-    "vite-plugin-vsharp": "^1.9.1"
+    "vite-plugin-pwa": "^0.21.2",
+    "vite-plugin-vsharp": "^1.9.1",
+    "workbox-window": "^7.4.0"
   }
 }

@@ -70,7 +70,9 @@ export const useToastContext = (): ToastContextValue => {
   if (!ctx) {
     if (import.meta.env.DEV) console.warn('useToastContext: missing provider, using fallback');
     return {
+      toast: null,
       showToast: () => undefined,
+      hideToast: () => undefined,
     } as ToastContextValue;
   }
   return ctx;
@@ -78,6 +80,50 @@ export const useToastContext = (): ToastContextValue => {
 
 let saveErrorShownAt = 0;
 const SAVE_ERROR_THROTTLE_MS = 60000;
+
+const toastTypeClass: Record<string, string> = {
+  info: 'bg-slate-800/95 text-slate-100 border-slate-600',
+  success: 'bg-emerald-900/95 text-emerald-50 border-emerald-600',
+  error: 'bg-red-900/95 text-red-50 border-red-600',
+  warning: 'bg-amber-900/95 text-amber-50 border-amber-600',
+};
+
+/** Toast UI + aria-live (must live inside ToastContext; defined here to avoid circular imports). */
+const ToastViewport: React.FC = () => {
+  const ctx = useContext(ToastContext);
+  if (!ctx?.toast) return null;
+  const { toast, hideToast } = ctx;
+
+  const live = toast.type === 'error' || toast.type === 'warning' ? 'assertive' : 'polite';
+  const role = toast.type === 'error' ? 'alert' : 'status';
+
+  return (
+    <div
+      className="fixed bottom-24 sm:bottom-28 left-1/2 z-[100] max-w-[min(100%,24rem)] -translate-x-1/2 px-4 print:hidden"
+      role={role}
+      aria-live={live}
+      aria-atomic="true"
+    >
+      <div
+        className={`rounded-xl border px-4 py-3 text-sm shadow-lg backdrop-blur-sm ${
+          toastTypeClass[toast.type] ?? toastTypeClass.info
+        }`}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <p className="font-medium leading-snug">{toast.msg}</p>
+          <button
+            type="button"
+            onClick={hideToast}
+            className="shrink-0 rounded-md px-1.5 py-0.5 text-xs opacity-80 hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+            aria-label="Dismiss notification"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const WizardProviders: React.FC<{ children: ReactNode }> = ({ children }) => {
   const translation = useTranslation();
@@ -137,6 +183,7 @@ export const WizardProviders: React.FC<{ children: ReactNode }> = ({ children })
         <ThemeContext.Provider value={theme}>
           <ToastContext.Provider value={toast}>
             {children}
+            <ToastViewport />
           </ToastContext.Provider>
         </ThemeContext.Provider>
       </WizardNavigationContext.Provider>

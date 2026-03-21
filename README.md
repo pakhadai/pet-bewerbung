@@ -165,8 +165,18 @@ Zustand store:
 Storage adapters (local-first):
 
 - `src/utils/simpleStorage.ts`
-  - draft text: `sessionStorage`
+  - draft text: **`localStorage`** (persists after closing the tab; migrates once from legacy `sessionStorage`)
   - photo: IndexedDB via `idb-keyval`
+
+## PWA & offline
+
+- **vite-plugin-pwa** precaches the production build (including large `react-pdf` chunk) so repeat visits and offline use can work after the first load.
+- Service worker files: `sw.js`, `workbox-*.js` in `dist/` — nginx snippet in `nginx.conf` avoids long caching of the SW script.
+
+## Fonts (WOFF2)
+
+- Run `npm run fonts:woff2` after changing TTF sources in `public/fonts/` (uses `fontmin` / `scripts/convert-fonts-to-woff2.mjs`).
+- See `docs/PRODUCT_IMPROVEMENTS.md` for subsetting ideas.
 
 ---
 

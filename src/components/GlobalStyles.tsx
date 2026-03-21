@@ -14,14 +14,16 @@ const GlobalStyles: React.FC = () => (
       font-style: normal;
       font-weight: 400;
       font-display: swap;
-      src: url('/fonts/TUZyzwprpvBS1izr_vO0DQ.ttf') format('truetype');
+      src: url('/fonts/TUZyzwprpvBS1izr_vO0DQ.woff2') format('woff2'),
+           url('/fonts/TUZyzwprpvBS1izr_vO0DQ.ttf') format('truetype');
     }
     @font-face {
       font-family: 'Amatic SC';
       font-style: normal;
       font-weight: 700;
       font-display: swap;
-      src: url('/fonts/TUZ3zwprpvBS1izr_vOMscG6eQ.ttf') format('truetype');
+      src: url('/fonts/TUZ3zwprpvBS1izr_vOMscG6eQ.woff2') format('woff2'),
+           url('/fonts/TUZ3zwprpvBS1izr_vOMscG6eQ.ttf') format('truetype');
     }
     @font-face {
       font-family: 'Quicksand';
@@ -35,7 +37,8 @@ const GlobalStyles: React.FC = () => (
       font-style: normal;
       font-weight: 500;
       font-display: swap;
-      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkM0o18E.ttf') format('truetype');
+      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkM0o18E.woff2') format('woff2'),
+           url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkM0o18E.ttf') format('truetype');
     }
     @font-face {
       font-family: 'Quicksand';
@@ -49,7 +52,8 @@ const GlobalStyles: React.FC = () => (
       font-style: normal;
       font-weight: 700;
       font-display: swap;
-      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkBgv18E.ttf') format('truetype');
+      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkBgv18E.woff2') format('woff2'),
+           url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkBgv18E.ttf') format('truetype');
     }
 
     /* To use Inter locally, download from https://rsms.me/inter/ and uncomment below: */

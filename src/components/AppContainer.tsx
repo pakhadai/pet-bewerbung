@@ -152,10 +152,23 @@ export const AppContainer: React.FC<AppContainerProps> = ({
           t={t}
         />
 
-        <main className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 6 ? 'pt-24 md:pt-28' : ''}`}>
+        <main
+          className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 6 ? 'pt-24 md:pt-28' : ''}`}
+          aria-label={t?.ui?.mainLandmark ?? 'Pet application'}
+          id="main-content"
+        >
           {step >= 1 && step <= 6 && (
-            <div className="sticky top-0 z-20 w-full p-0 print:hidden border-b border-[var(--border)] bg-transparent backdrop-blur-[2px]">
+            <div className="sticky top-0 z-20 w-full p-0 print:hidden border-b border-[var(--border)]/80 bg-transparent backdrop-blur-[2px]">
               <StepProgress step={step} t={t} onStepClick={goToStep} />
+              <div className="px-4 md:px-8 pt-2 pb-2.5 flex justify-center print:hidden">
+                <div
+                  className="inline-flex max-w-[min(100%,28rem)] items-center gap-2 px-3 py-1.5 rounded-full border text-center text-[11px] sm:text-xs font-semibold leading-snug bg-primary/10 text-[var(--primary)] border-primary/30"
+                  role="status"
+                >
+                  <MaterialIcon name="shield_lock" className="text-base shrink-0 text-inherit" aria-hidden />
+                  <span>{t?.hero?.privacyDesc ?? 'Your data is never stored. Everything happens in your browser.'}</span>
+                </div>
+              </div>
             </div>
           )}
           <div

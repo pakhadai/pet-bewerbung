@@ -62,6 +62,7 @@ export default {
     tip3: "Arrière-plan neutre"
   },
   ui: {
+    mainLandmark: "Dossier animal pour la location",
     select: "Sélectionner",
     preview: "Aperçu",
     previewMode: "Mode Aperçu",

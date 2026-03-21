@@ -50,6 +50,7 @@ export default {
   },
   finalMessage: "Vielen Dank für die Nutzung unseres Service!",
   ui: {
+    mainLandmark: "Pet-Bewerbung: Hauptbereich",
     select: "Wählen",
     selected: "Gewählt",
     templateSelected: "Vorlage ausgewählt",
