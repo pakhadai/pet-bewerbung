@@ -51,5 +51,7 @@ export const TEMPLATE_OPTIONS = [
   { id: 'compact', label: 'Compact' },
 ] as const;
 
-/** Logo in /public (WebP). Keep in sync with index.html preload. */
+/** Full-size logo in /public (WebP) — PDF, templates, previews. */
 export const PUBLIC_LOGO_PATH = '/logo.webp';
+/** Small WebP for header / LCP (~80px); generated from logo.webp via sharp-cli. */
+export const PUBLIC_LOGO_HEADER_PATH = '/logo-header.webp';

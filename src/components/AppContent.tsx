@@ -7,8 +7,13 @@
 import React, { useEffect, useRef } from 'react';
 import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS } from '../constants';
 import AppContainer from './AppContainer';
-import { buildPdfTranslations } from '../services/pdfService';
-import { downloadPdf, downloadAllTemplatesAsZip } from '../services/exportService';
+import {
+  buildPdfTranslations,
+  generatePdfBlob,
+  preparePdfData,
+} from '../services/pdfService';
+import { toJpegDataUrl } from '../utils/imageCompression';
+import { downloadPdf } from '../services/exportPdfService';
 import { useTranslationContext, useToastContext } from '../context/WizardProviders';
 import { useFormStore } from '../stores/formStore';
 import { trackUmamiEvent } from '../utils/umami';
@@ -198,10 +203,16 @@ const AppContent: React.FC = () => {
     showToast(t?.labels?.generatingZip || 'Generiere alle Vorlagen...', 'info');
     const pdfT = buildPdfTranslations(t);
     try {
+      const { downloadAllTemplatesAsZip } = await import('../services/exportZipService');
       const { successCount, failedTemplates } = await downloadAllTemplatesAsZip(
         data,
         TEMPLATE_OPTIONS,
         pdfT,
+        {
+          generatePdfBlob,
+          preparePdfData,
+          toJpegDataUrl,
+        },
         {
           zipMobileDisabled: t?.labels?.zipMobileDisabled ?? 'ZIP-Download auf Mobilgeräten deaktiviert.',
           generatingZip: t?.labels?.generatingZip || 'Generiere alle Vorlagen...',

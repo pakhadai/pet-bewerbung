@@ -31,6 +31,7 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "vite": "^4.4.5",
+    "vite-plugin-css-injected-by-js": "^4.0.1",
     "vite-plugin-vsharp": "^1.9.1"
   }
 }

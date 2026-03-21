@@ -532,15 +532,14 @@ const GlobalStyles: React.FC = () => (
       }
     }
 
-    /* Smooth theme transition for all elements */
+    /* Theme: avoid transitioning color on universal selector (Lighthouse non-composited animations). */
     * {
-      transition-property: background-color, border-color, color, fill, stroke;
+      transition-property: background-color, border-color, fill, stroke;
       transition-duration: 600ms;
       transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     }
-    /* Exclude animations and transforms from theme transition */
     *:not(.no-transition) {
-      transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+      transition-property: background-color, border-color, fill, stroke, box-shadow;
       transition-duration: 600ms;
     }
 

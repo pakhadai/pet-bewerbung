@@ -95,7 +95,7 @@ Main entry + composition:
 - `src/App.tsx` - wraps the app in `AppProviders` and renders `AppContent`
 - `src/components/AppContent.tsx` - business logic:
   - generate “character/behavior” text locally
-  - download single PDF or ZIP of all templates via `exportService`
+  - download single PDF via `exportPdfService`; ZIP uses dynamic `exportZipService` (JSZip only after click)
 - `src/components/AppContainer.tsx` - UI orchestration:
   - wizard step rendering
   - theme + step progress
@@ -129,7 +129,15 @@ PDF:
   - `pdfTemplateRegistry.ts` - maps `templateType` -> thin wrapper components
   - `templates/*Pdf.tsx` - wrappers (`ClassicPdf`, `ModernPdf`, `CompactPdf`)
 - `src/services/pdfService.tsx` - builds PDF translations and renders `toBlob()`
-- `src/services/exportService.ts` - download logic (single PDF / ZIP)
+- `src/services/exportPdfService.ts` - single PDF download
+- `src/services/exportZipService.ts` - ZIP (lazy chunk; injects `generatePdfBlob` / `preparePdfData` from caller)
+- `src/services/exportService.ts` - re-exports both (compat)
+
+**Build / perf**
+
+- `vite-plugin-css-injected-by-js` — CSS embedded in JS in production (no render-blocking `.css` link; possible brief FOUC on very slow devices).
+- JSZip is **not** in the main entry chunk; ZIP loads `jszip` only when the user starts a ZIP download.
+- `@react-pdf/renderer` stays in its own chunk; loads on first `generatePdfBlob()` (PDF download / ZIP).
 
 ---
 
@@ -201,7 +209,7 @@ Implemented in code and `nginx.conf`:
 
 Further improvements (optional):
 
-- Brand assets in `public/`: `logo.webp`, `apple-touch-icon.webp`, `android-chrome-*.webp` (paths referenced via `PUBLIC_LOGO_PATH` in `src/constants.ts`)
+- Brand assets in `public/`: `logo.webp` (PDF/templates), `logo-header.webp` (header/LCP, small), `apple-touch-icon.webp`, `android-chrome-*.webp` (`PUBLIC_LOGO_PATH` / `PUBLIC_LOGO_HEADER_PATH` in `src/constants.ts`)
 - UI icons: SVG in `public/icons/material/` (see `docs/material-icons-used.md`, component `MaterialIcon`)
 
 ---

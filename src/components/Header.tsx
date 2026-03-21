@@ -1,6 +1,6 @@
 import React from 'react';
 import MaterialIcon from './MaterialIcon';
-import { PUBLIC_LOGO_PATH } from '../constants';
+import { PUBLIC_LOGO_HEADER_PATH } from '../constants';
 
 interface HeaderProps {
   darkMode: boolean;
@@ -36,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({
           <div className={`flex size-10 items-center justify-center hand-drawn-border border-2 border-text-main rotate-[-3deg] transition-transform group-hover:rotate-0 overflow-hidden
             ${darkMode ? 'bg-gray-700' : 'bg-lavender'}`}>
             <img
-              src={PUBLIC_LOGO_PATH}
+              src={PUBLIC_LOGO_HEADER_PATH}
               alt="pet-bewerbung.ch"
               className="w-full h-full object-contain"
               width={40}
@@ -77,14 +77,30 @@ const Header: React.FC<HeaderProps> = ({
           </div>
           
           {/* Language Switcher */}
-          <div className={`hidden md:flex items-center gap-2 text-lg font-bold font-display ${darkMode ? 'text-gray-300' : 'text-text-main'}`}>
+          <div
+            className={`hidden md:flex items-center gap-2 text-lg font-bold font-display ${
+              darkMode ? 'text-gray-200' : 'text-text-main'
+            }`}
+          >
             {languages.map((lng, index) => (
               <React.Fragment key={lng.code}>
-                {index > 0 && <span className="opacity-50">/</span>}
-                <button 
+                {index > 0 && (
+                  <span className={darkMode ? 'text-gray-500' : 'text-gray-400'} aria-hidden>
+                    /
+                  </span>
+                )}
+                <button
                   type="button"
                   onClick={() => onLangChange(lng.code)}
-                  className={`hover:text-primary transition-colors ${lang === lng.code ? 'border-b-2 border-primary' : 'opacity-70 hover:opacity-100'}`}
+                  className={`transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm ${
+                    lang === lng.code
+                      ? darkMode
+                        ? 'border-b-2 border-primary text-white'
+                        : 'border-b-2 border-primary text-text-main'
+                      : darkMode
+                        ? 'text-gray-300 hover:text-white'
+                        : 'text-gray-700 hover:text-text-main'
+                  }`}
                 >
                   {lng.label}
                 </button>
@@ -97,7 +113,7 @@ const Header: React.FC<HeaderProps> = ({
             onClick={toggleDarkMode}
             aria-label="Toggle dark mode" 
             className={`hidden md:flex items-center justify-center p-2 rounded-full transition-colors
-               ${darkMode ? 'hover:bg-gray-700 text-yellow-300' : 'hover:bg-lavender text-text-main'}`}
+               ${darkMode ? 'hover:bg-gray-700 text-amber-200' : 'hover:bg-lavender text-text-main'}`}
           >
             <MaterialIcon name={darkMode ? 'light_mode' : 'dark_mode'} className="text-2xl" />
           </button>

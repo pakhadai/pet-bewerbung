@@ -12,9 +12,18 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
     <div className="flex flex-col items-center gap-4 max-w-5xl">
       
       {/* Badge */}
-      <div className={`inline-flex items-center gap-2 px-4 py-1 text-sm font-bold font-display uppercase tracking-widest hand-drawn-border border-2 border-text-main rotate-1 select-none
-        ${darkMode ? 'bg-gray-800 text-primary-300' : 'bg-mint/50 text-primary-dark'}`}>
-        <span className="size-2 rounded-full bg-primary-dark animate-pulse"></span>
+      <div
+        className={`inline-flex items-center gap-2 px-4 py-1 text-sm font-bold font-display uppercase tracking-widest hand-drawn-border border-2 rotate-1 select-none
+        ${
+          darkMode
+            ? 'border-gray-400 bg-gray-900 text-gray-100'
+            : 'border-text-main bg-white text-text-main shadow-sm'
+        }`}
+      >
+        <span
+          className={`size-2 shrink-0 rounded-full animate-pulse ${darkMode ? 'bg-emerald-400' : 'bg-emerald-600'}`}
+          aria-hidden
+        />
         {t?.hero?.badge || 'Free Start & No Signup'}
       </div>
 
@@ -80,7 +89,7 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
           {t?.hero?.transparencyTitle || 'Alles kostenlos'}
         </h3>
         <div className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <ul className={`space-y-3 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          <ul className={`space-y-3 text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
             {(t?.hero?.freeFeatures || ['3 Vorlagen', 'KI-Textgenerierung', 'PDF-Download', 'ZIP mit allen Designs']).map((feature: string, i: number) => (
               <li key={i} className="flex items-center gap-3">
                 <MaterialIcon name="check" className={`text-base ${darkMode ? 'text-green-400' : 'text-green-500'}`} />
@@ -92,7 +101,11 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
       </div>
 
       {/* Trust Badges */}
-      <div className="flex flex-wrap justify-center gap-4 mt-3 text-xs font-bold uppercase tracking-widest opacity-70">
+      <div
+        className={`flex flex-wrap justify-center gap-4 mt-3 text-xs font-bold uppercase tracking-widest ${
+          darkMode ? 'text-gray-300' : 'text-gray-700'
+        }`}
+      >
         <div className="flex items-center gap-1">
           <MaterialIcon name="lock" className="text-sm" />
           {t?.hero?.transparencyBadge1 || 'Lokale Daten'}

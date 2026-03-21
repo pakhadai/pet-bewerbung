@@ -13,6 +13,8 @@ yarn-error.log*
 .parcel-cache/
 coverage/
 .cache/
+test-results/
+playwright-report/
 *.log
 /.eslintcache
 /thumbs.db
