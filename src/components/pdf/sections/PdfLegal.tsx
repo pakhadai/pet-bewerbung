@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text } from '@react-pdf/renderer';
-import { commonStyles } from '../PdfBase';
+import { commonStyles, pdfBorderRadius } from '../PdfBase';
 import type { PetData } from '../../../types/form';
 import type { PdfTranslations } from '../../../services/pdfService';
-import type { PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
+import { buildPdfSectionHeadingStyle, type PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
 import { sanitizeForPdf, withFallback } from '../../../utils/documentHelpers';
 import { getShowAdvancedHealthInfo } from '../../../utils/getShowAdvancedHealthInfo';
 
@@ -19,17 +19,7 @@ export const PdfLegal: React.FC<PdfLegalProps> = ({ data, t, templateConfig }) =
   if (!getShowAdvancedHealthInfo(data)) return null;
   const { colors } = templateConfig;
 
-  const headingStyle = [
-    commonStyles.sectionHeading,
-    templateConfig.useModernHeading && commonStyles.sectionHeadingModern,
-    {
-      borderBottomColor: templateConfig.headingBorderColor,
-      color: templateConfig.headingColor,
-      fontWeight: 'bold',
-      fontStyle: 'normal',
-      fontSize: 9,
-    },
-  ];
+  const headingStyle = buildPdfSectionHeadingStyle(templateConfig);
 
   const textColor = '#334155';
   const textStyle = [
@@ -42,7 +32,24 @@ export const PdfLegal: React.FC<PdfLegalProps> = ({ data, t, templateConfig }) =
 
   return (
     <View style={commonStyles.sectionBlock} key="legal">
-      <View style={[commonStyles.box, { borderColor: colors.light, backgroundColor: '#f8fafc' }]}>
+      <View
+        style={[
+          commonStyles.box,
+          {
+            borderColor: colors.border,
+            backgroundColor: colors.light,
+            borderRadius: pdfBorderRadius(
+              templateConfig.templateType === 'modern' ||
+              templateConfig.templateType === 'buddy' ||
+              templateConfig.templateType === 'buddyTest'
+                ? 4
+                : templateConfig.templateType === 'compact'
+                  ? 2
+                  : 0,
+            ),
+          },
+        ]}
+      >
         <Text style={[headingStyle, { marginBottom: 4 }]}>{t.doc.sectionLegal ?? 'Insurance & Legal'}</Text>
 
         <View style={commonStyles.gridRow}>
@@ -88,7 +95,15 @@ export const PdfLegal: React.FC<PdfLegalProps> = ({ data, t, templateConfig }) =
         </View>
 
         {data.medicalConditions ? (
-          <View style={{ marginTop: 4, paddingTop: 4, borderTopWidth: 1, borderTopColor: colors.light }}>
+          <View
+            style={{
+              marginTop: 4,
+              paddingTop: 4,
+              borderTopWidth: 1,
+              borderTopColor: colors.border,
+              borderRadius: pdfBorderRadius(0),
+            }}
+          >
             <Text style={[commonStyles.label, { fontSize: 7 }]}>{t.labels.medicalConditions ?? t.step2Emergency.displayMedical}</Text>
             <Text style={[textStyle, { fontSize: 8 }]}>{sanitizeForPdf(data.medicalConditions)}</Text>
           </View>

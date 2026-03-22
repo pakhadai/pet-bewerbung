@@ -83,7 +83,7 @@ export interface PetData {
 /** Form data as stored in Zustand - flexible shape for form state */
 export type FormData = Partial<PetData> & Record<string, unknown>;
 
-export type TemplateType = 'classic' | 'modern' | 'compact';
+export type TemplateType = 'classic' | 'modern' | 'compact' | 'buddy' | 'buddyTest';
 
 export interface FormValidationError {
   field: keyof PetData;

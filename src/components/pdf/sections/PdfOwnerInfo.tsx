@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, Image } from '@react-pdf/renderer';
-import { commonStyles } from '../PdfBase';
+import { commonStyles, pdfBorderRadius } from '../PdfBase';
 import type { PetData } from '../../../types/form';
 import type { PdfTranslations } from '../../../services/pdfService';
-import type { PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
+import { buildPdfSectionHeadingStyle, type PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
 import { sanitizeForPdf, withFallback } from '../../../utils/documentHelpers';
 
 export interface PdfOwnerInfoProps {
@@ -19,17 +19,7 @@ const s = (val: unknown) => sanitizeForPdf(withFallback(val));
 export const PdfOwnerInfo: React.FC<PdfOwnerInfoProps> = ({ data, t, templateConfig, addressLines, qrUrl }) => {
   const { colors } = templateConfig;
 
-  const headingStyle = [
-    commonStyles.sectionHeading,
-    templateConfig.useModernHeading && commonStyles.sectionHeadingModern,
-    {
-      borderBottomColor: templateConfig.headingBorderColor,
-      color: templateConfig.headingColor,
-      fontWeight: 'bold',
-      fontStyle: 'normal',
-      fontSize: 9,
-    },
-  ];
+  const headingStyle = buildPdfSectionHeadingStyle(templateConfig);
 
   const textColor = '#334155';
   const textStyle = [
@@ -61,6 +51,7 @@ export const PdfOwnerInfo: React.FC<PdfOwnerInfoProps> = ({ data, t, templateCon
             borderTopWidth: 1,
             borderTopColor: colors.light,
             borderTopStyle: 'dashed',
+            borderRadius: pdfBorderRadius(0),
           }}
         >
           <View style={{ flex: 1 }}>

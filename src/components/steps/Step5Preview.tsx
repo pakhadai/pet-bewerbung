@@ -16,6 +16,8 @@ const TEMPLATE_LABELS: Record<string, string> = {
   classic: 'Classic',
   modern: 'Modern',
   compact: 'Compact',
+  buddy: 'Buddy',
+  buddyTest: 'Buddy (test)',
 };
 
 interface Step5PreviewProps {

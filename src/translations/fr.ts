@@ -301,7 +301,7 @@ export default {
     transparencyBadge1: "Données locales",
     transparencyBadge2: "Sans pub",
     transparencyBadge3: "100% gratuit",
-    freeFeatures: ["3 modèles", "Génération automatique de texte", "Téléchargement PDF", "ZIP avec tous les designs"],
+    freeFeatures: ["5 modèles", "Génération automatique de texte", "Téléchargement PDF", "ZIP avec tous les designs"],
     seoSectionTitle: "CV pour animal & dossier de candidature locative en Suisse",
     seoParagraphs: [
       "CV pour chien, chat ou autre animal : présentez votre compagnon lors d’une recherche d’appartement ou de location en Suisse. Générateur gratuit de PDF avec plusieurs modèles pour propriétaires et agences.",
@@ -381,8 +381,8 @@ export default {
     items: [
       { id: "q1", category: "general", q: "Ce dossier garantit-il que j'obtiendrai l'appartement?", a: "Non, aucune garantie. Mais un dossier professionnel montre au propriétaire que vous prenez vos responsabilités (assurance, éducation). En Suisse, les propriétaires choisissent souvent le candidat à moindre risque – ce document minimise les inquiétudes." },
       { id: "q2", category: "privacy", q: "Où sont stockées mes données, et quittent-elles mon appareil?", a: "Nulle part sur nos serveurs. Avec la technologie 'Local-First', toutes vos données (noms, photos, adresses) sont traitées uniquement dans votre navigateur. Une fois le PDF téléchargé et l'onglet fermé, les données disparaissent." },
-      { id: "q3", category: "cost", q: "Combien coûte le service?", a: "Le service est entièrement gratuit. Vous obtenez 3 modèles (Classic, Modern, Compact) et pouvez les télécharger en PDF (et ZIP sur ordinateur)." },
-      { id: "q4", category: "cost", q: "Qu'est-ce qui est inclus?", a: "Les 3 designs, génération automatique de texte, téléchargement PDF et téléchargement ZIP sur ordinateur." },
+      { id: "q3", category: "cost", q: "Combien coûte le service?", a: "Le service est entièrement gratuit. Vous obtenez 5 modèles (Classic, Modern, Compact, Buddy, Buddy test) et pouvez les télécharger en PDF (et ZIP sur ordinateur)." },
+      { id: "q4", category: "cost", q: "Qu'est-ce qui est inclus?", a: "Les 5 designs, génération automatique de texte, téléchargement PDF et téléchargement ZIP sur ordinateur." },
       { id: "q5", category: "privacy", q: "Comment est créée la description ? Des services externes lisent-elles mes données ?", a: "La description est générée automatiquement dans votre navigateur à partir de modèles. Nous n'utilisons pas de services externes de génération de texte, donc vos données ne sont jamais envoyées à des tiers." },
       { id: "q6", category: "tips", q: "Pourquoi le téléchargement ZIP n'est-il pas disponible sur mon téléphone ?", a: "Générer plusieurs PDF en même temps demande beaucoup de mémoire. Pour éviter les plantages du navigateur (OOM), le ZIP est désactivé sur les appareils mobiles." },
       { id: "q7", category: "privacy", q: "Le téléchargement de ma photo est-il sûr ?", a: "Oui. Votre photo est traitée et compressée localement sur votre appareil avant d'être intégrée au PDF. Elle n'est pas envoyée à un serveur." },

@@ -10,9 +10,9 @@ import { useWizardContext } from '../../context/WizardContext';
 import { useFormStore } from '../../stores/formStore';
 import type { FormData } from '../../types/form';
 import { getShowAdvancedHealthInfo } from '../../utils/getShowAdvancedHealthInfo';
+import { MAX_MEDICAL_CONDITIONS_LENGTH } from '../../constants';
 
 const INSURANCE_AFFILIATE_LINK = import.meta.env.VITE_INSURANCE_AFFILIATE_LINK || '';
-const MEDICAL_CONDITIONS_MAX_LENGTH = 200;
 
 const Step2HealthInsurance: React.FC = () => {
   const data = useFormStore((s) => s.data) as FormData;
@@ -217,14 +217,14 @@ const Step2HealthInsurance: React.FC = () => {
                 <Label>{t?.step2Emergency?.displayMedical ?? 'Allergien / Medikamente'}</Label>
                 <textarea
                   value={data.medicalConditions ?? ''}
-                  onChange={(e) => updateData('medicalConditions', e.target.value.slice(0, MEDICAL_CONDITIONS_MAX_LENGTH))}
+                  onChange={(e) => updateData('medicalConditions', e.target.value.slice(0, MAX_MEDICAL_CONDITIONS_LENGTH))}
                   placeholder={t?.step2Emergency?.medicalHint ?? 'z.B. Pollenallergie, Medikament X'}
-                  maxLength={MEDICAL_CONDITIONS_MAX_LENGTH}
+                  maxLength={MAX_MEDICAL_CONDITIONS_LENGTH}
                   rows={3}
                   className="w-full px-4 py-3 rounded-xl border-2 hand-drawn-border text-sm resize-y theme-input mt-1"
                 />
                 <div className={`mt-1 text-right text-xs ${mutedCl}`}>
-                  {(data.medicalConditions ?? '').length} / {MEDICAL_CONDITIONS_MAX_LENGTH}
+                  {(data.medicalConditions ?? '').length} / {MAX_MEDICAL_CONDITIONS_LENGTH}
                 </div>
               </div>
             </div>

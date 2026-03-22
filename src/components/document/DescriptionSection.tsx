@@ -33,7 +33,8 @@ const DescriptionSection: React.FC<DescriptionSectionProps> = ({ text, t, varian
       case 'modern':
         return {
           container: '',
-          heading: 'font-semibold text-sm mb-3 pb-2 border-b border-slate-200',
+          heading:
+            'font-bold text-base mb-3 pl-3 border-l-4 border-teal-500 text-slate-900',
           text: 'text-sm leading-relaxed text-slate-700 text-left'
         };
 
@@ -44,12 +45,28 @@ const DescriptionSection: React.FC<DescriptionSectionProps> = ({ text, t, varian
           text: 'text-sm leading-relaxed text-slate-700 text-left'
         };
 
+      case 'buddy':
+        return {
+          container: '',
+          heading:
+            'text-xl font-bold text-[#004541] mb-3 flex items-center gap-2',
+          text: 'text-sm leading-relaxed text-[#3f4947] text-left bg-white p-5 rounded-2xl border border-[#bec9c7]/30',
+        };
+
+      case 'buddyTest':
+        return {
+          container: '',
+          heading: 'text-xl font-extrabold text-[#0f3d3a] mb-3 flex items-center gap-2',
+          text: 'text-sm leading-relaxed text-[#422006] text-left bg-gradient-to-br from-white to-amber-50/40 p-5 rounded-2xl border-2 border-amber-200/50 shadow-inner',
+        };
+
       case 'compact':
       default:
         return {
           container: '',
-          heading: 'text-[10px] font-bold uppercase tracking-wider mb-2 pb-1 border-b border-slate-300',
-          text: 'text-[11px] leading-relaxed text-slate-700 text-left'
+          heading:
+            'text-[10px] font-mono font-bold uppercase tracking-[0.2em] mb-2 pb-1 border-b border-dashed border-stone-500 text-stone-900',
+          text: 'text-[11px] leading-relaxed text-stone-800 text-left'
         };
     }
   };
@@ -60,7 +77,15 @@ const DescriptionSection: React.FC<DescriptionSectionProps> = ({ text, t, varian
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.heading}>{doc?.sectionAbout ?? 'Character'}</h3>
+      <h3 className={styles.heading}>
+        {(variant === 'buddy' || variant === 'buddyTest') && (
+          <span
+            className={`w-8 h-1 rounded-full shrink-0 ${variant === 'buddyTest' ? 'bg-amber-500' : 'bg-[#006b5f]'}`}
+            aria-hidden
+          />
+        )}
+        {doc?.sectionAbout ?? 'Character'}
+      </h3>
       <div className={styles.text}>
         {isEmptyText(text) ? (
           <span className="text-slate-300 italic">{ui?.noDescription ?? 'No description'}</span>

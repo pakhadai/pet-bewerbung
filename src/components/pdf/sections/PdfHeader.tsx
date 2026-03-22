@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image } from '@react-pdf/renderer';
-import { commonStyles } from '../PdfBase';
+import { commonStyles, pdfBorderRadius } from '../PdfBase';
 import type { PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
 import type { PdfTranslations } from '../../../services/pdfService';
 
@@ -14,11 +14,75 @@ export interface PdfHeaderProps {
 
 export const PdfHeader: React.FC<PdfHeaderProps> = ({ today, city, logoUrl, t, templateConfig }) => {
   const colors = templateConfig.colors;
-  const headerStyle = [commonStyles.header, { borderBottomColor: colors.primary }];
+  const tt = templateConfig.templateType;
+  const isBuddyLike = tt === 'buddy' || tt === 'buddyTest';
+
+  const headerRule =
+    tt === 'classic'
+      ? { borderBottomWidth: 2, borderBottomColor: colors.primary, borderRadius: pdfBorderRadius(0) }
+      : tt === 'modern'
+        ? { borderBottomWidth: 1, borderBottomColor: colors.accent, borderRadius: pdfBorderRadius(0) }
+        : isBuddyLike
+          ? {
+              borderBottomWidth: 1,
+              borderBottomColor: colors.primary,
+              backgroundColor: '#eff4ff',
+              borderRadius: pdfBorderRadius(0),
+            }
+          : {
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border,
+              borderBottomStyle: 'dashed' as const,
+              borderRadius: pdfBorderRadius(0),
+            };
+
+  const headerStyle = [commonStyles.header, headerRule];
+
   const headerIconStyle = [
     commonStyles.headerIcon,
-    logoUrl && { backgroundColor: 'white', padding: 2 },
-  ];
+    tt === 'classic' && { backgroundColor: colors.primary },
+    tt === 'modern' && {
+      backgroundColor: colors.light,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 8,
+    },
+    tt === 'compact' && {
+      backgroundColor: '#ffffff',
+      borderWidth: 1,
+      borderColor: colors.accent,
+      borderRadius: pdfBorderRadius(0),
+    },
+    isBuddyLike && {
+      backgroundColor: '#ffffff',
+      borderWidth: 1,
+      borderColor: '#bec9c7',
+      borderRadius: 8,
+    },
+    logoUrl && tt === 'classic' && { backgroundColor: 'white', padding: 2 },
+    logoUrl && tt === 'modern' && { backgroundColor: 'white' },
+    logoUrl && isBuddyLike && { backgroundColor: 'white' },
+  ].filter(Boolean);
+
+  const titleStyle = [
+    commonStyles.headerTitle,
+    tt === 'classic' && { color: colors.primary, textTransform: 'uppercase', fontSize: 16 },
+    tt === 'modern' && { color: '#0f172a', textTransform: 'none', fontSize: 17, fontWeight: 'bold' },
+    tt === 'compact' && {
+      color: colors.primary,
+      textTransform: 'uppercase',
+      fontSize: 13,
+      letterSpacing: 2,
+    },
+    isBuddyLike && { color: colors.primary, textTransform: 'none', fontSize: 17, fontWeight: 'bold' },
+  ].filter(Boolean);
+
+  const subtitleStyle = [
+    commonStyles.headerSubtitle,
+    tt === 'modern' && { color: colors.accent, textTransform: 'none', fontSize: 10 },
+    tt === 'compact' && { letterSpacing: 1, fontSize: 8 },
+    isBuddyLike && { color: '#3f4947', textTransform: 'uppercase', fontSize: 9, letterSpacing: 1.5 },
+  ].filter(Boolean);
 
   const dateText = city?.trim() ? `${city.trim()}, ${today}` : today;
 
@@ -29,16 +93,15 @@ export const PdfHeader: React.FC<PdfHeaderProps> = ({ today, city, logoUrl, t, t
           {logoUrl ? (
             <Image src={logoUrl} style={{ width: 28, height: 28, objectFit: 'contain' }} />
           ) : (
-            <Text style={{ color: 'white', fontSize: 14 }}>•</Text>
+            <Text style={{ color: tt === 'classic' ? 'white' : colors.primary, fontSize: 14 }}>•</Text>
           )}
         </View>
         <View>
-          <Text style={[commonStyles.headerTitle, { color: colors.primary }]}>{t.doc.title ?? 'Pet Dossier'}</Text>
-          <Text style={commonStyles.headerSubtitle}>{t.doc.subtitle ?? 'Application document'}</Text>
+          <Text style={titleStyle}>{t.doc.title ?? 'Pet Dossier'}</Text>
+          <Text style={subtitleStyle}>{t.doc.subtitle ?? 'Application document'}</Text>
         </View>
       </View>
       <Text style={commonStyles.headerDate}>{dateText}</Text>
     </View>
   );
 };
-

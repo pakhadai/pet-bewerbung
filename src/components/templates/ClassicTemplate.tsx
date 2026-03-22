@@ -32,6 +32,8 @@ export interface TemplateConfig {
   sidebarSpace: string;
   mainWidth: string;
   mainSpace: string;
+  /** Optional shell around sidebar column (borders, tint) */
+  sidebarShell?: string;
   footerContainer: string;
   footerText: string;
   footerSignContainer: string | null;
@@ -86,7 +88,7 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors
       {/* Main Content - Sidebar + Main */}
       <div className={config.mainLayout}>
         {/* Sidebar */}
-        <div className={`${config.sidebarWidth} ${config.sidebarSpace}`}>
+        <div className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''}`}>
           <PetPhoto photo={data.photo} petType={data.petType} t={t} variant="classic" customColors={customColors} />
           <OwnerInfo data={data} t={t} variant="classic" customColors={customColors} />
           <BehaviorSection data={data} t={t} variant="classic" customColors={customColors} />
@@ -126,19 +128,21 @@ export default ClassicTemplate;
  * Template configuration for Classic template
  */
 export const getClassicConfig = (today: string): TemplateConfig => ({
-  container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[12mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
-  headerContainer: 'mb-4 pb-2.5 border-b-2 border-slate-900',
+  container:
+    'w-[210mm] h-[292mm] bg-white text-slate-900 p-[12mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+  headerContainer: 'mb-4 pb-2.5 border-b-[3px] border-slate-900',
   headerFlex: 'flex items-start justify-between',
   headerIconContainer: 'flex items-center gap-3',
   headerIconBg: 'bg-white p-2 rounded-sm border-2 border-slate-900',
   headerIconSize: 16,
-  titleText: 'text-xl font-bold uppercase tracking-tight text-slate-900',
+  titleText: 'text-xl font-black uppercase tracking-tight text-slate-900',
   subtitleText: 'text-[10px] uppercase tracking-wider text-slate-500 mt-1',
   dateText: 'text-[10px] text-slate-500 text-right',
   dateLabel: today,
   mainLayout: 'flex gap-5 flex-1 min-h-0 overflow-hidden',
   sidebarWidth: 'w-[35%] flex-shrink-0',
   sidebarSpace: 'space-y-3',
+  sidebarShell: '',
   mainWidth: 'flex-1 min-w-0',
   mainSpace: 'space-y-3',
   footerContainer: 'mt-auto pt-2 border-t-2 border-slate-900 flex-shrink-0 pb-[3mm]',

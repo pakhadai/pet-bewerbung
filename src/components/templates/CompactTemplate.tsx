@@ -57,7 +57,7 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors
       {/* Main Content - Sidebar + Main */}
       <div className={config.mainLayout}>
         {/* Sidebar */}
-        <div className={`${config.sidebarWidth} ${config.sidebarSpace}`}>
+        <div className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''}`}>
           <PetPhoto photo={data.photo} petType={data.petType} t={t} variant="compact" customColors={customColors} />
           <OwnerInfo data={data} t={t} variant="compact" customColors={customColors} />
           <BehaviorSection data={data} t={t} variant="compact" customColors={customColors} />
@@ -75,7 +75,7 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors
       {/* Footer - Subtle branding */}
       <div className={config.footerContainer} style={footer}>
         <div className="flex justify-between items-end">
-          <p className="text-[6px] text-slate-300 tracking-wide">
+          <p className="text-[6px] text-amber-900/55 tracking-widest font-mono uppercase">
             pet-bewerbung.ch
           </p>
           {config.footerSignContainer && (
@@ -95,22 +95,24 @@ export default CompactTemplate;
  * Template configuration for Compact template
  */
 export const getCompactConfig = (today: string): TemplateConfig => ({
-  container: 'w-[210mm] h-[292mm] bg-white text-slate-900 p-[10mm] text-[10px] font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
-  headerContainer: 'mb-3 pb-2 border-b border-slate-300',
+  container:
+    'w-[210mm] h-[292mm] bg-stone-100 text-stone-900 p-[10mm] text-[10px] font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+  headerContainer: 'mb-3 pb-2 border-b border-dashed border-amber-800/35',
   headerFlex: 'flex items-start justify-between',
   headerIconContainer: 'flex items-center gap-2',
-  headerIconBg: 'bg-white p-1.5 rounded-sm border-2 border-slate-700',
+  headerIconBg: 'bg-amber-50 p-1.5 border border-amber-700/80 rounded-sm',
   headerIconSize: 14,
-  titleText: 'text-base font-bold uppercase tracking-tight',
-  subtitleText: 'text-[9px] uppercase tracking-wider text-slate-500 mt-0.5',
-  dateText: 'text-[9px] text-slate-400 text-right',
+  titleText: 'text-sm font-bold uppercase tracking-[0.18em] text-stone-900',
+  subtitleText: 'text-[9px] uppercase tracking-widest text-amber-900/70 mt-0.5',
+  dateText: 'text-[9px] text-stone-500 text-right font-mono',
   dateLabel: today,
   mainLayout: 'flex gap-4 flex-1 min-h-0 overflow-hidden',
   sidebarWidth: 'w-[32%] flex-shrink-0',
   sidebarSpace: 'space-y-2',
+  sidebarShell: 'border-r border-dashed border-stone-400/60 pr-2',
   mainWidth: 'flex-1 min-w-0',
   mainSpace: 'space-y-2',
-  footerContainer: 'mt-auto pt-3 border-t border-slate-300 flex-shrink-0 pb-[4mm]',
+  footerContainer: 'mt-auto pt-2.5 border-t border-dashed border-stone-400 flex-shrink-0 pb-[4mm]',
   footerText: 'text-[8px] text-slate-400 text-center mb-2',
   footerSignContainer: 'w-40 border-t border-slate-300 pt-2 mt-5',
   footerSignText: 'text-[8px] uppercase font-medium tracking-wider text-slate-500 text-center',

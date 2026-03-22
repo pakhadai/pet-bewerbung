@@ -6,6 +6,8 @@ import type { ComponentType } from 'react';
 import ClassicPdf from './templates/ClassicPdf';
 import ModernPdf from './templates/ModernPdf';
 import CompactPdf from './templates/CompactPdf';
+import BuddyPdf from './templates/BuddyPdf';
+import BuddyTestPdf from './templates/BuddyTestPdf';
 import type { TemplateType } from '../../types/form';
 import type { PdfDocumentProps } from './PdfDocument';
 
@@ -15,6 +17,8 @@ export const pdfTemplateRegistry: Record<TemplateType, PdfTemplateComponent> = {
   classic: ClassicPdf,
   modern: ModernPdf,
   compact: CompactPdf,
+  buddy: BuddyPdf,
+  buddyTest: BuddyTestPdf,
 };
 
 export function getPdfTemplate(templateType: TemplateType): PdfTemplateComponent {

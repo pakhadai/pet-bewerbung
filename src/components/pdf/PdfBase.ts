@@ -27,11 +27,47 @@ export const getLocale = (lang: string | undefined): string => {
 export const PAGE_WIDTH = 595.28;
 export const PAGE_HEIGHT = 841.89;
 
-// Template-specific accent colors
-export const TEMPLATE_COLORS: Record<string, { primary: string; border: string; muted: string; light: string }> = {
-  classic: { primary: '#0f172a', border: '#0f172a', muted: '#64748b', light: '#e2e8f0' },
-  modern: { primary: '#334155', border: '#e2e8f0', muted: '#64748b', light: '#f1f5f9' },
-  compact: { primary: '#334155', border: '#cbd5e1', muted: '#64748b', light: '#e2e8f0' },
+/** Distinct palettes so Classic / Modern / Compact read clearly in preview + PDF */
+export const TEMPLATE_COLORS: Record<
+  string,
+  { primary: string; border: string; muted: string; light: string; accent: string }
+> = {
+  classic: {
+    primary: '#0f172a',
+    border: '#0f172a',
+    muted: '#64748b',
+    light: '#f1f5f9',
+    accent: '#0f172a',
+  },
+  modern: {
+    primary: '#115e59',
+    border: '#ccfbf1',
+    muted: '#64748b',
+    light: '#f0fdfa',
+    accent: '#14b8a6',
+  },
+  compact: {
+    primary: '#44403c',
+    border: '#a8a29e',
+    muted: '#78716c',
+    light: '#fafaf9',
+    accent: '#d97706',
+  },
+  buddy: {
+    primary: '#004541',
+    border: '#bec9c7',
+    muted: '#64748b',
+    light: '#eff4ff',
+    accent: '#006b5f',
+  },
+  /** Test copy of Buddy — same PDF tokens; preview HTML differs more */
+  buddyTest: {
+    primary: '#004541',
+    border: '#bec9c7',
+    muted: '#64748b',
+    light: '#eff4ff',
+    accent: '#006b5f',
+  },
 };
 
 export const DEFAULT_LAYOUT_ORDER = ['photo', 'owner', 'details', 'behavior', 'description', 'legal', 'reference'];
@@ -53,6 +89,23 @@ export const getLayoutSections = (): { sidebarSections: string[]; mainSections: 
 
 // ============= COMMON PDF STYLES =============
 
+/**
+ * @react-pdf/stylesheet: `borderRadius` runs through `resolveBorderShorthand`, which does
+ * `const radius = value ? transformUnit(...) : undefined` — numeric `0` is falsy, so it throws
+ * "Invalid border radius: undefined". Use this for any `borderRadius` that may be 0.
+ */
+export function pdfBorderRadius(value: number): number | '0' {
+  return value === 0 ? '0' : value;
+}
+
+/**
+ * Same engine quirk: `borderWidth: 0` hits `resolveBorderShorthand` and throws
+ * "Invalid border width: undefined" (falsy `0` → width undefined inside empty regex match).
+ */
+export function pdfBorderWidth(value: number): number | '0' {
+  return value === 0 ? '0' : value;
+}
+
 // Use system fonts so no network required (Helvetica is built-in in react-pdf)
 export const commonStyles = StyleSheet.create({
   page: {
@@ -69,6 +122,7 @@ export const commonStyles = StyleSheet.create({
     paddingBottom: 12,
     borderBottomWidth: 2,
     borderBottomColor: '#0f172a',
+    borderRadius: pdfBorderRadius(0),
   },
   headerLeft: {
     flexDirection: 'row',
@@ -133,6 +187,7 @@ export const commonStyles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#0f172a',
     color: '#0f172a',
+    borderRadius: pdfBorderRadius(0),
   },
   sectionHeadingModern: {
     borderBottomColor: '#e2e8f0',
@@ -168,6 +223,7 @@ export const commonStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e2e8f0',
     marginBottom: 6,
+    borderRadius: pdfBorderRadius(0),
   },
   footer: {
     marginTop: 'auto',
@@ -178,6 +234,7 @@ export const commonStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     minHeight: 50,
+    borderRadius: pdfBorderRadius(0),
   },
   footerGenerated: {
     fontSize: 7,
@@ -210,10 +267,12 @@ export const commonStyles = StyleSheet.create({
     color: '#475569',
     marginTop: 20,
     textAlign: 'center',
+    borderRadius: pdfBorderRadius(0),
   },
   photoContainer: {
     width: '100%',
     overflow: 'hidden',
+    borderRadius: pdfBorderRadius(0),
   },
   photoPlaceholder: {
     width: '100%',

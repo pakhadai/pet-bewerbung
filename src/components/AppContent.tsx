@@ -12,7 +12,6 @@ import {
   generatePdfBlob,
   preparePdfData,
 } from '../services/pdfService';
-import { toJpegDataUrl } from '../utils/imageCompression';
 import { downloadPdf } from '../services/exportPdfService';
 import { useTranslationContext, useToastContext } from '../context/WizardProviders';
 import { useFormStore } from '../stores/formStore';
@@ -203,7 +202,6 @@ const AppContent: React.FC = () => {
         {
           generatePdfBlob,
           preparePdfData,
-          toJpegDataUrl,
         },
         {
           zipMobileDisabled: t?.labels?.zipMobileDisabled ?? 'ZIP-Download auf Mobilgeräten deaktiviert.',

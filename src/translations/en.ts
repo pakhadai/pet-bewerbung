@@ -314,7 +314,7 @@ export default {
     transparencyBadge1: "Local Data",
     transparencyBadge2: "No Ads",
     transparencyBadge3: "100% free",
-    freeFeatures: ["3 templates", "Automatic text generation", "PDF download", "ZIP with all designs"],
+    freeFeatures: ["5 templates", "Automatic text generation", "PDF download", "ZIP with all designs"],
     seoSectionTitle: "Pet CV & rental dossier for Switzerland (dog, cat, pet)",
     seoParagraphs: [
       "Create a pet CV, pet resume, and application dossier for renting a flat in Switzerland. Present your dog, cat, or other pet professionally to landlords and agencies. Free PDF templates generated in your browser.",
@@ -423,8 +423,8 @@ export default {
     items: [
       { id: "q1", category: "general", q: "Does this Pet Dossier guarantee I get the apartment?", a: "No, there is no guarantee. But a professional dossier shows the landlord that you take responsibility (insurance, training). In Switzerland, landlords often choose the candidate who poses the least risk – this document minimizes concerns." },
       { id: "q2", category: "privacy", q: "Where are my data stored, and do they leave my device?", a: "Nowhere on our servers. 'Local-First' means all your data (names, photos, addresses) is processed only in your browser. Once you download the PDF and close the tab, the data is gone." },
-      { id: "q3", category: "cost", q: "How much does the service cost?", a: "The service is completely free. You get 3 templates (Classic, Modern, Compact) and can download them as PDF (and ZIP on desktop)." },
-      { id: "q4", category: "cost", q: "What's included?", a: "All 3 template designs, automatic text generation based on your input, PDF download, and ZIP download on desktop." },
+      { id: "q3", category: "cost", q: "How much does the service cost?", a: "The service is completely free. You get 5 templates (Classic, Modern, Compact, Buddy, Buddy test) and can download them as PDF (and ZIP on desktop)." },
+      { id: "q4", category: "cost", q: "What's included?", a: "All 5 template designs, automatic text generation based on your input, PDF download, and ZIP download on desktop." },
       { id: "q5", category: "privacy", q: "How is the pet description generated? Does ChatGPT read my data?", a: "The description is created automatically in your browser using template-based logic. We intentionally do not use external text-generation services, so your data is never sent to third parties." },
       { id: "q6", category: "tips", q: "Why can't I download a ZIP on my phone?", a: "Generating multiple PDFs at once requires a lot of memory. To keep the app stable and prevent browser crashes (OOM), ZIP downloads are disabled on mobile devices." },
       { id: "q7", category: "privacy", q: "Is uploading my pet photo safe?", a: "Yes. Your photo is processed and compressed locally on your device before being embedded into the PDF. It is not uploaded to any server." },

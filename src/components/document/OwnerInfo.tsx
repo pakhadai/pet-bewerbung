@@ -5,7 +5,7 @@ import { generateQrDataUrl, getQrContent } from '../../utils/qrCode';
 import type { FormData } from '../../types/form';
 import type { TranslationObject } from '../../types/template';
 
-export type DocumentVariant = 'classic' | 'modern' | 'swiss' | 'compact';
+export type DocumentVariant = 'classic' | 'modern' | 'swiss' | 'compact' | 'buddy' | 'buddyTest';
 
 export interface OwnerInfoProps {
   data: FormData;
@@ -63,11 +63,12 @@ const OwnerInfo: React.FC<OwnerInfoProps> = ({ data, t, variant = 'classic' }) =
       case 'modern':
         return {
           container: '',
-          heading: 'font-semibold text-sm mb-3 pb-2 border-b border-slate-200',
+          heading:
+            'font-bold text-base mb-3 pl-3 border-l-4 border-teal-500 text-slate-900',
           content: 'space-y-2',
           name: 'font-semibold text-base text-slate-900',
           address: 'text-slate-600 text-sm',
-          contactContainer: 'pt-3 space-y-2 text-slate-500 text-xs',
+          contactContainer: 'pt-3 space-y-2 text-teal-900/70 text-xs',
           contactItem: 'flex items-center gap-2',
           iconSize: 12
         };
@@ -84,15 +85,42 @@ const OwnerInfo: React.FC<OwnerInfoProps> = ({ data, t, variant = 'classic' }) =
           iconSize: 12
         };
 
+      case 'buddy':
+        return {
+          container: '',
+          heading:
+            'text-[#004541] font-semibold text-sm uppercase tracking-wider mb-3 pb-2 border-b border-[#d3e4fe]',
+          content: 'space-y-2.5',
+          name: 'font-semibold text-[#0b1c30] text-sm',
+          address: 'text-[#3f4947] text-xs leading-relaxed',
+          contactContainer: 'pt-2 space-y-2 text-[#0b1c30] text-xs',
+          contactItem: 'flex items-center gap-2',
+          iconSize: 14,
+        };
+
+      case 'buddyTest':
+        return {
+          container: '',
+          heading:
+            'text-[#0f3d3a] font-bold text-xs uppercase tracking-[0.15em] mb-3 pb-2 border-b-2 border-amber-400/50',
+          content: 'space-y-2.5',
+          name: 'font-bold text-[#0b1c30] text-sm',
+          address: 'text-[#3f4947] text-xs leading-relaxed',
+          contactContainer: 'pt-2 space-y-2 text-[#0b1c30] text-xs',
+          contactItem: 'flex items-center gap-2',
+          iconSize: 14,
+        };
+
       case 'compact':
       default:
         return {
           container: '',
-          heading: 'text-[10px] font-bold uppercase tracking-wider mb-2 pb-1 border-b border-slate-300',
+          heading:
+            'text-[10px] font-mono font-bold uppercase tracking-[0.2em] mb-2 pb-1 border-b border-dashed border-stone-500 text-stone-900',
           content: 'space-y-1.5',
-          name: 'font-semibold text-sm text-slate-900',
-          address: 'text-slate-600 text-xs',
-          contactContainer: 'pt-2 space-y-1.5 text-slate-500 text-[10px]',
+          name: 'font-semibold text-sm text-stone-900',
+          address: 'text-stone-600 text-xs',
+          contactContainer: 'pt-2 space-y-1.5 text-stone-600 text-[10px]',
           contactItem: 'flex items-center gap-1.5',
           iconSize: 10
         };

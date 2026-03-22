@@ -1,8 +1,10 @@
 import { useState, useCallback } from 'react';
 import { TEMPLATE_OPTIONS } from '../constants';
+import { useFormStore } from '../stores/formStore';
+import type { TemplateType } from '../types/form';
 
 export interface UseTemplateSelectionReturn {
-  /** Currently selected template ID */
+  /** Currently selected template ID (persisted in form store — same as PDF download) */
   selectedTemplate: string;
   /** Set the selected template */
   setSelectedTemplate: (templateId: string) => void;
@@ -16,17 +18,29 @@ export interface UseTemplateSelectionReturn {
   closePreview: () => void;
 }
 
+const defaultId = TEMPLATE_OPTIONS[0].id;
+
 /**
- * Template selection hook
- * Manages template preview and selection state
- *
- * @param initialTemplate - Initial template ID (defaults to first template)
- * @returns Template selection state and handlers
+ * Template selection — source of truth is Zustand `data.selectedTemplate` (saved with draft).
+ * Previously only React state was used, so after reload / remount the PDF fell back to classic
+ * while the on-screen preview could still show the last chosen design from a child view.
  */
 export const useTemplateSelection = (
-  initialTemplate: string = TEMPLATE_OPTIONS[0].id
+  initialTemplate: string = defaultId
 ): UseTemplateSelectionReturn => {
-  const [selectedTemplate, setSelectedTemplate] = useState<string>(initialTemplate);
+  const selectedTemplate = useFormStore((s) => {
+    const id = s.data.selectedTemplate;
+    return typeof id === 'string' && id.length > 0 ? id : initialTemplate;
+  });
+  const updateData = useFormStore((s) => s.updateData);
+
+  const setSelectedTemplate = useCallback(
+    (templateId: string) => {
+      updateData('selectedTemplate', templateId as TemplateType);
+    },
+    [updateData]
+  );
+
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const [previewTemplate, setPreviewTemplate] = useState<string>(initialTemplate);
 
@@ -45,6 +59,6 @@ export const useTemplateSelection = (
     previewOpen,
     previewTemplate,
     openPreview,
-    closePreview
+    closePreview,
   };
 };

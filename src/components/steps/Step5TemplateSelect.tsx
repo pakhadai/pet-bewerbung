@@ -1,5 +1,5 @@
 /**
- * Step5TemplateSelect - Template selection (3 free templates)
+ * Step5TemplateSelect - Template selection (free templates)
  */
 import React, { lazy, Suspense } from 'react';
 import { Palette } from 'lucide-react';
@@ -17,6 +17,8 @@ const TEMPLATE_LABELS: Record<string, string> = {
   classic: 'Classic',
   modern: 'Modern',
   compact: 'Compact',
+  buddy: 'Buddy',
+  buddyTest: 'Buddy (test)',
 };
 
 const TemplateSkeleton: React.FC = () => (

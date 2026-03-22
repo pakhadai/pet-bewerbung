@@ -44,13 +44,13 @@ const LegalSection: React.FC<LegalSectionProps> = ({ data, t, variant = 'classic
 
       case 'modern':
         return {
-          container: 'bg-slate-50 p-2.5 border border-slate-200 rounded-md',
-          heading: 'font-semibold text-[11px] mb-2',
+          container: 'bg-teal-50/50 p-2.5 border border-teal-200 rounded-xl',
+          heading: 'font-bold text-[11px] mb-2 pl-2 border-l-4 border-teal-500 text-teal-950',
           grid: 'grid grid-cols-2 gap-y-1.5 gap-x-3',
-          fieldLabel: 'block text-[9px] text-slate-500 uppercase tracking-wide mb-0.5 font-medium',
-          fieldValue: 'font-mono bg-white px-1.5 py-0.5 border border-slate-200 rounded text-[10px] inline-block',
+          fieldLabel: 'block text-[9px] text-teal-900/65 uppercase tracking-wide mb-0.5 font-semibold',
+          fieldValue: 'font-mono bg-white px-1.5 py-0.5 border border-teal-200 rounded text-[10px] inline-block',
           fieldValueText: 'font-medium text-[11px]',
-          statusContainer: 'col-span-2 flex flex-wrap gap-3 mt-2 pt-2 border-t border-slate-200'
+          statusContainer: 'col-span-2 flex flex-wrap gap-3 mt-2 pt-2 border-t border-teal-200/70'
         };
 
       case 'swiss':
@@ -64,16 +64,38 @@ const LegalSection: React.FC<LegalSectionProps> = ({ data, t, variant = 'classic
           statusContainer: 'col-span-2 flex flex-wrap gap-3 mt-2 pt-2 border-t border-gray-300'
         };
 
+      case 'buddy':
+        return {
+          container: 'bg-[#dce9ff] p-4 border border-[#93c5fd]/50 rounded-2xl',
+          heading: 'text-[#004541] font-bold text-base mb-3 pb-2 border-b border-[#006b5f]/25',
+          grid: 'grid grid-cols-2 gap-y-2 gap-x-4',
+          fieldLabel: 'block text-[9px] text-[#3f4947] uppercase tracking-wide mb-0.5 font-semibold',
+          fieldValue: 'font-mono bg-white px-1.5 py-0.5 border border-[#bec9c7] text-[10px] inline-block text-[#0b1c30]',
+          fieldValueText: 'font-medium text-[11px] text-[#0b1c30]',
+          statusContainer: 'col-span-2 flex flex-wrap gap-2 mt-2 pt-3 border-t border-[#93c5fd]/40',
+        };
+
+      case 'buddyTest':
+        return {
+          container: 'bg-gradient-to-br from-[#e0f2fe] to-[#fffbeb] p-4 border-2 border-amber-200/60 rounded-2xl shadow-sm',
+          heading: 'text-[#0f3d3a] font-extrabold text-base mb-3 pb-2 border-b-2 border-amber-400/40',
+          grid: 'grid grid-cols-2 gap-y-2 gap-x-4',
+          fieldLabel: 'block text-[9px] text-[#92400e] uppercase tracking-wide mb-0.5 font-bold',
+          fieldValue: 'font-mono bg-white px-1.5 py-0.5 border border-amber-200 text-[10px] inline-block text-[#0b1c30]',
+          fieldValueText: 'font-medium text-[11px] text-[#0b1c30]',
+          statusContainer: 'col-span-2 flex flex-wrap gap-2 mt-2 pt-3 border-t border-amber-200/60',
+        };
+
       case 'compact':
       default:
         return {
-          container: 'bg-slate-50 p-2 border border-slate-300 rounded',
-          heading: 'text-[9px] font-bold uppercase tracking-wider mb-1.5',
+          container: 'bg-white p-2 border border-dashed border-amber-800/40 rounded-sm',
+          heading: 'text-[9px] font-mono font-bold uppercase tracking-widest mb-1.5 text-amber-950',
           grid: 'grid grid-cols-2 gap-y-1 gap-x-2',
-          fieldLabel: 'block text-[8px] text-slate-500 uppercase tracking-wider mb-0.5 font-semibold',
-          fieldValue: 'font-mono bg-white px-1 py-0.5 border border-slate-200 text-[9px] inline-block',
+          fieldLabel: 'block text-[8px] text-stone-600 uppercase tracking-wider mb-0.5 font-semibold',
+          fieldValue: 'font-mono bg-stone-50 px-1 py-0.5 border border-stone-300 text-[9px] inline-block',
           fieldValueText: 'font-medium text-[10px]',
-          statusContainer: 'col-span-2 flex flex-wrap gap-2 mt-1.5 pt-1.5 border-t border-slate-300'
+          statusContainer: 'col-span-2 flex flex-wrap gap-2 mt-1.5 pt-1.5 border-t border-dashed border-stone-400'
         };
     }
   };

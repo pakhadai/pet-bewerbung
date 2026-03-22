@@ -3,7 +3,7 @@ import { View, Text } from '@react-pdf/renderer';
 import { commonStyles } from '../PdfBase';
 import type { PetData } from '../../../types/form';
 import type { PdfTranslations } from '../../../services/pdfService';
-import type { PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
+import { buildPdfSectionHeadingStyle, type PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
 import { sanitizeForPdf, withFallback } from '../../../utils/documentHelpers';
 import { getShowAdvancedHealthInfo } from '../../../utils/getShowAdvancedHealthInfo';
 
@@ -17,17 +17,7 @@ const s = (val: unknown) => sanitizeForPdf(withFallback(val));
 
 export const PdfBehavior: React.FC<PdfBehaviorProps> = ({ data, t, templateConfig }) => {
   if (!getShowAdvancedHealthInfo(data)) return null;
-  const headingStyle = [
-    commonStyles.sectionHeading,
-    templateConfig.useModernHeading && commonStyles.sectionHeadingModern,
-    {
-      borderBottomColor: templateConfig.headingBorderColor,
-      color: templateConfig.headingColor,
-      fontWeight: 'bold',
-      fontStyle: 'normal',
-      fontSize: 9,
-    },
-  ];
+  const headingStyle = buildPdfSectionHeadingStyle(templateConfig);
 
   const textColor = '#334155';
 

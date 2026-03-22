@@ -300,7 +300,7 @@ export default {
     transparencyBadge1: "Datas localas",
     transparencyBadge2: "Senza reclama",
     transparencyBadge3: "100% gratuit",
-    freeFeatures: ["3 models", "Generaziun automatica dal text", "Download PDF", "ZIP cun tut ils designs"],
+    freeFeatures: ["5 models", "Generaziun automatica dal text", "Download PDF", "ZIP cun tut ils designs"],
     seoSectionTitle: "Pet-CV & dossier per ina retschertga dad in apartmant en Svizra",
     seoParagraphs: [
       "Pet-CV e dossier per chien, chat u auter animal: mussai voss animal professiunalamain tar la retschertga dad in apartmant. Generatur gratuit da PDF cun plirs models per inquilins e administraziuns.",
@@ -380,8 +380,8 @@ export default {
     items: [
       { id: "q1", category: "general", q: "Garantescha quest dossier in'acceptaziun?", a: "Na, nagina garantia. Ma in dossier professiunal mussa al patrun che Vus prendais responsabilitad (assicuranza, educaziun). En Svizra tschernan patruns savens il candidat cun il pli pitschen risc." },
       { id: "q2", category: "privacy", q: "Nua vegnan memorisadas mias datas, e bandunan ellas miu apparat?", a: "Da nagin lieu sin noss servers. Cun 'Local-First' succeda tut mo en voss navigatur. Suenter che Vus telechargià il PDF e serrai la pagina, las datas vegnan stizzadas." },
-      { id: "q3", category: "cost", q: "Quant costa il servetsch?", a: "Il servetsch è cumplettamain gratuit. Vus survegnis 3 models (Classic, Modern, Compact) e pudais telechargiar els sco PDF (e ZIP sin desktop)." },
-      { id: "q4", category: "cost", q: "Tge è inclus?", a: "Tut ils 3 designs, generaziun automatica dal text, download PDF e download ZIP sin desktop." },
+      { id: "q3", category: "cost", q: "Quant costa il servetsch?", a: "Il servetsch è cumplettamain gratuit. Vus survegnis 5 models (Classic, Modern, Compact, Buddy, Buddy test) e pudais telechargiar els sco PDF (e ZIP sin desktop)." },
+      { id: "q4", category: "cost", q: "Tge è inclus?", a: "Tut ils 5 designs, generaziun automatica dal text, download PDF e download ZIP sin desktop." },
       { id: "q5", category: "privacy", q: "Cura vegn creada la descripziun? Legian servetschs extèrns mias datas?", a: "La descripziun vegn creada automaticamain en voss navigatur tras logica da templates. Nus duvrain betg servetschs extèrns da generaziun da text; las datas vegnan mai tramessas a terzs." },
       { id: "q6", category: "tips", q: "Pertge na po jau betg telechargiar ZIP sin il miu telefon?", a: "La creaziun da plirs PDF a medem temp pretenda blera memoria. Per evitar crashs dal navigatur (OOM), nus disactivain ZIP sin apparats mobiles." },
       { id: "q7", category: "privacy", q: "È il telechargiar da mia foto segir?", a: "Igen. La foto vegn elavurada e cumpressada localmain sin voss apparat avant ch'ella vegn integrada en il PDF. Ella na vegn betg tramessa a servetschs." },

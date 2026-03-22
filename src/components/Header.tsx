@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({
               width={40}
               height={40}
               decoding="async"
-              fetchPriority="high"
+              fetchpriority="high"
             />
           </div>
           <h1 className={`text-3xl font-bold font-display tracking-wide transition-colors ${darkMode ? 'text-white' : 'text-text-main'}`}>

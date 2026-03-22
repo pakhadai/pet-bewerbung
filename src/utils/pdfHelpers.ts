@@ -3,8 +3,6 @@
  * Extracted from App.tsx for better maintainability
  */
 
-import { PUBLIC_LOGO_PATH } from '../constants';
-
 /**
  * Convert blob URL to data URL
  * @param blobUrl - Blob URL to convert
@@ -50,27 +48,6 @@ export async function toJpegDataUrl(webpDataUrl: string): Promise<string> {
     img.onerror = reject;
     img.src = webpDataUrl;
   });
-}
-
-/**
- * Fetch logo as data URL
- * @returns Logo data URL or null
- */
-export async function fetchLogoAsDataUrl(): Promise<string | null> {
-  try {
-    const response = await fetch(PUBLIC_LOGO_PATH);
-    const blob = await response.blob();
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  } catch (err) {
-    // Logo fetch is optional - silently fall back
-    if (typeof window !== 'undefined' && import.meta.env?.DEV) console.warn('Logo fetch failed:', err);
-    return null;
-  }
 }
 
 /**

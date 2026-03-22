@@ -41,14 +41,22 @@ export const INITIAL_DATA: FormData & Record<string, unknown> = {
   showAdvancedHealthInfo: false,
   behaviorWithChildren: '',
   behaviorWithPets: '',
+  /** Persisted with draft — must match PDF / preview (see useTemplateSelection). */
+  selectedTemplate: 'classic',
 };
 
-export const MAX_DESCRIPTION_LENGTH = 940;
+/** Generated / edited pet description (Step 3) */
+export const MAX_DESCRIPTION_LENGTH = 1090;
+
+/** Medical notes in advanced health step */
+export const MAX_MEDICAL_CONDITIONS_LENGTH = 300;
 
 export const TEMPLATE_OPTIONS = [
   { id: 'classic', label: 'Classic' },
   { id: 'modern', label: 'Modern' },
   { id: 'compact', label: 'Compact' },
+  { id: 'buddy', label: 'Buddy' },
+  { id: 'buddyTest', label: 'Buddy (test)' },
 ] as const;
 
 /** Full-size logo in /public (WebP) — PDF, templates, previews. */

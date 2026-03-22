@@ -322,7 +322,7 @@ export default {
     transparencyBadge1: "Lokale Daten",
     transparencyBadge2: "Keine Werbung",
     transparencyBadge3: "100% kostenlos",
-    freeFeatures: ["3 Vorlagen", "Automatische Textgenerierung", "PDF-Download", "ZIP mit allen Designs"],
+    freeFeatures: ["5 Vorlagen", "Automatische Textgenerierung", "PDF-Download", "ZIP mit allen Designs"],
     seoSectionTitle: "Pet-CV & Haustier-Dossier für die Wohnungsbewerbung in der Schweiz",
     seoParagraphs: [
       "Pet-CV, Haustier-Lebenslauf und Bewerbungsdossier für Hund, Katze oder anderes Tier: Stellen Sie Ihr Haustier bei der Wohnungssuche und Mietwohnung in der Schweiz professionell vor. Der kostenlose Generator erstellt ein PDF mit mehreren Vorlagen — für Vermieter, Verwaltungen und Mieterbewerbungen.",
@@ -433,8 +433,8 @@ export default {
     items: [
       { id: "q1", category: "general", q: "Garantiert dieses Pet-Dossier eine Wohnungszusage?", a: "Nein, eine Garantie gibt es nicht. Aber ein professionelles Dossier zeigt dem Vermieter, dass Sie Verantwortung übernehmen (Versicherung, Erziehung). In der Schweiz entscheiden sich Vermieter oft für den Kandidaten, der das geringste Risiko darstellt – dieses Dokument minimiert Bedenken." },
       { id: "q2", category: "privacy", q: "Wo werden meine Daten gespeichert, und verlassen sie mein Gerät?", a: "Nirgendwo auf unseren Servern. 'Local-First' bedeutet: Alle Ihre Daten (Namen, Fotos, Adressen) werden nur in Ihrem Browser verarbeitet. Sobald Sie das PDF herunterladen und den Tab schliessen, sind die Daten weg." },
-      { id: "q3", category: "cost", q: "Was kostet der Service?", a: "Der Service ist vollständig kostenlos. Sie erhalten 3 Vorlagen (Classic, Modern, Compact) und können diese als PDF herunterladen (ZIP ist auf dem Desktop verfügbar)." },
-      { id: "q4", category: "cost", q: "Was ist enthalten?", a: "Alle 3 Vorlagendesigns, automatische Texterstellung basierend auf Ihren Angaben, PDF-Download sowie ZIP-Download auf dem Desktop." },
+      { id: "q3", category: "cost", q: "Was kostet der Service?", a: "Der Service ist vollständig kostenlos. Sie erhalten 5 Vorlagen (Classic, Modern, Compact, Buddy, Buddy Test) und können diese als PDF herunterladen (ZIP ist auf dem Desktop verfügbar)." },
+      { id: "q4", category: "cost", q: "Was ist enthalten?", a: "Alle 5 Vorlagendesigns, automatische Texterstellung basierend auf Ihren Angaben, PDF-Download sowie ZIP-Download auf dem Desktop." },
       { id: "q5", category: "privacy", q: "Wie wird die Beschreibung erstellt? Liest ChatGPT meine Daten?", a: "Die Beschreibung wird automatisch in Ihrem Browser erstellt – basierend auf Vorlage-Logik. Wir verwenden bewusst keine externen Texterstellungsdienste, damit Ihre Daten nie an Dritte gesendet werden." },
       { id: "q6", category: "tips", q: "Warum kann ich auf dem Handy kein ZIP herunterladen?", a: "Das gleichzeitige Erstellen mehrerer PDFs benötigt viel Speicher. Damit die App stabil bleibt und Browser-Crashes (OOM) verhindert werden, sind ZIP-Downloads auf Mobilgeräten deaktiviert." },
       { id: "q7", category: "privacy", q: "Ist das Hochladen meines Fotos sicher?", a: "Ja. Ihr Foto wird auf Ihrem Gerät verarbeitet und komprimiert, bevor es in das PDF eingebettet wird. Es wird nicht auf einen Server hochgeladen." },

@@ -8,10 +8,17 @@ import {
   preparePdfData,
   type PdfTranslations,
 } from './pdfService';
+import type { TemplateType } from '../types/form';
 
 export interface TemplateOption {
   id: string;
   label?: string;
+}
+
+/** Strip characters that break `download=` or filesystem paths */
+function sanitizeFilename(name: string): string {
+  const trimmed = name.replace(/[/\\?%*:|"<>]/g, '-').replace(/\s+/g, ' ').trim();
+  return trimmed.length > 0 ? trimmed.slice(0, 180) : 'Pet-CV';
 }
 
 /**
@@ -31,8 +38,6 @@ function downloadBlob(blob: Blob, filename: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
-let pdfDownloadInFlight: Promise<void> | null = null;
-
 export async function downloadPdf(
   data: Record<string, any>,
   templateType: string,
@@ -44,29 +49,21 @@ export async function downloadPdf(
     pdfSaveHint?: string;
   } = {}
 ): Promise<void> {
-  if (pdfDownloadInFlight) return pdfDownloadInFlight;
+  const rawName = typeof data.name === 'string' && data.name.trim() ? data.name.trim() : 'Pet-CV';
+  const filename = `${sanitizeFilename(rawName)}-${Date.now()}.pdf`;
+  const pdfData = await preparePdfData(data);
 
-  pdfDownloadInFlight = (async () => {
-    const filename = `${data.name || 'Pet-CV'}-${Date.now()}.pdf`;
-    const pdfData = await preparePdfData(data);
+  const blob = await generatePdfBlob(pdfData, templateType as TemplateType, pdfT);
 
-    const blob = await generatePdfBlob(pdfData, templateType, pdfT);
+  const isIOS = options.isIOS ?? /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if (isIOS) {
+    // New tab needs the blob URL to stay valid while Safari loads the PDF; revoking too early breaks the view/download.
     const url = URL.createObjectURL(blob);
-
-    const isIOS = options.isIOS ?? /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const isMobile = options.isMobile ?? /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-    if (isIOS) {
-      const newWindow = window.open(url, '_blank');
-      if (!newWindow) window.location.href = url;
-      requestAnimationFrame(() => setTimeout(() => URL.revokeObjectURL(url), 500));
-    } else {
-      downloadBlob(blob, filename);
-      URL.revokeObjectURL(url);
-    }
-  })().finally(() => {
-    pdfDownloadInFlight = null;
-  });
-
-  return pdfDownloadInFlight;
+    const newWindow = window.open(url, '_blank');
+    if (!newWindow) window.location.href = url;
+    setTimeout(() => URL.revokeObjectURL(url), 120_000);
+  } else {
+    downloadBlob(blob, filename);
+  }
 }

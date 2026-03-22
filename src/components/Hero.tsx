@@ -90,7 +90,7 @@ const Hero: React.FC<HeroProps> = ({ darkMode, t, onStartClick }) => {
         </h2>
         <div className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
           <ul className={`space-y-3 text-sm ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-            {(t?.hero?.freeFeatures || ['3 Vorlagen', 'KI-Textgenerierung', 'PDF-Download', 'ZIP mit allen Designs']).map((feature: string, i: number) => (
+            {(t?.hero?.freeFeatures || ['5 Vorlagen', 'KI-Textgenerierung', 'PDF-Download', 'ZIP mit allen Designs']).map((feature: string, i: number) => (
               <li key={i} className="flex items-center gap-3">
                 <MaterialIcon name="check" className={`text-base ${darkMode ? 'text-green-400' : 'text-green-500'}`} />
                 {feature}

@@ -1,9 +1,13 @@
 import React from 'react';
 import { View, Text } from '@react-pdf/renderer';
-import { commonStyles } from '../PdfBase';
+import { commonStyles, pdfBorderRadius } from '../PdfBase';
 import type { PetData } from '../../../types/form';
 import type { PdfTranslations } from '../../../services/pdfService';
-import type { PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
+import {
+  buildPdfSectionHeadingStyle,
+  getPdfReferencePanelStyle,
+  type PdfTemplateConfig,
+} from '../templates/getPdfTemplateConfig';
 import { sanitizeForPdf, withFallback } from '../../../utils/documentHelpers';
 import { getShowAdvancedHealthInfo } from '../../../utils/getShowAdvancedHealthInfo';
 
@@ -17,7 +21,6 @@ const s = (val: unknown) => sanitizeForPdf(withFallback(val));
 
 export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateConfig }) => {
   if (!getShowAdvancedHealthInfo(data)) return null;
-  const { colors } = templateConfig;
 
   const hasLandlordInfo =
     data.previousLandlordName || data.previousLandlordPhone || data.previousLandlordEmail;
@@ -25,17 +28,8 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
 
   if (!hasLandlordInfo && !hasEmergencyInfo && !data.secondaryEmergencyContact) return null;
 
-  const headingStyle = [
-    commonStyles.sectionHeading,
-    templateConfig.useModernHeading && commonStyles.sectionHeadingModern,
-    {
-      borderBottomColor: templateConfig.headingBorderColor,
-      color: templateConfig.headingColor,
-      fontWeight: 'bold',
-      fontStyle: 'normal',
-      fontSize: 9,
-    },
-  ];
+  const refPanel = getPdfReferencePanelStyle(templateConfig.templateType);
+  const headingStyle = buildPdfSectionHeadingStyle(templateConfig);
 
   const textColor = '#334155';
   const textStyle = [
@@ -47,14 +41,35 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
     <View
       style={[
         commonStyles.sectionBlock,
-        { backgroundColor: '#eff6ff', padding: 8, borderWidth: 1, borderColor: '#bfdbfe' },
+        {
+          backgroundColor: refPanel.backgroundColor,
+          padding: 8,
+          borderWidth: 1,
+          borderColor: refPanel.borderColor,
+          borderRadius: pdfBorderRadius(
+            templateConfig.templateType === 'modern' ||
+            templateConfig.templateType === 'buddy' ||
+            templateConfig.templateType === 'buddyTest'
+              ? 4
+              : templateConfig.templateType === 'compact'
+                ? 2
+                : 0,
+          ),
+        },
       ]}
       key="reference"
     >
       <Text
         style={[
           headingStyle,
-          { marginBottom: 6, paddingBottom: 4, borderBottomWidth: 1, borderBottomColor: '#bfdbfe' },
+          {
+            marginBottom: 6,
+            paddingBottom: 4,
+            borderBottomWidth: 1,
+            borderBottomColor: refPanel.headingRuleColor,
+            color: refPanel.labelColor,
+            borderRadius: pdfBorderRadius(0),
+          },
         ]}
       >
         {t.labels.referenceTitle ?? t.doc.sectionReference ?? 'References'}
@@ -63,7 +78,7 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
       <View style={{ flexDirection: 'row', gap: 12 }}>
         {hasLandlordInfo && (
           <View style={{ flex: 1 }}>
-            <Text style={[commonStyles.label, { marginBottom: 2, fontSize: 7, color: '#1e40af' }]}>
+            <Text style={[commonStyles.label, { marginBottom: 2, fontSize: 7, color: refPanel.labelColor }]}>
               {t.labels.previousLandlord ?? 'Previous landlord'}
             </Text>
             {data.previousLandlordName ? (
@@ -85,7 +100,7 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
 
         {hasEmergencyInfo && (
           <View style={{ flex: 1 }}>
-            <Text style={[commonStyles.label, { marginBottom: 2, fontSize: 7, color: '#1e40af' }]}>
+            <Text style={[commonStyles.label, { marginBottom: 2, fontSize: 7, color: refPanel.labelColor }]}>
               {t.labels.emergencyContact ?? 'Emergency contact'}
             </Text>
             {data.emergencyContactName ? (
@@ -104,7 +119,15 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
       </View>
 
       {data.secondaryEmergencyContact ? (
-        <View style={{ marginTop: 6, paddingTop: 4, borderTopWidth: 1, borderTopColor: '#bfdbfe' }}>
+        <View
+          style={{
+            marginTop: 6,
+            paddingTop: 4,
+            borderTopWidth: 1,
+            borderTopColor: refPanel.headingRuleColor,
+            borderRadius: pdfBorderRadius(0),
+          }}
+        >
           <Text style={[commonStyles.text, { fontSize: 8, color: textColor }]}>
             {t.labels.secondaryEmergencyContact ?? 'Zweiter Kontakt'}: {s(data.secondaryEmergencyContact)}
           </Text>
@@ -113,4 +136,3 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
     </View>
   );
 };
-

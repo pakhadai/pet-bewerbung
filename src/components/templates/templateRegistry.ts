@@ -6,6 +6,8 @@ import React from 'react';
 import ClassicTemplate, { getClassicConfig } from './ClassicTemplate';
 import ModernTemplate, { getModernConfig } from './ModernTemplate';
 import CompactTemplate, { getCompactConfig } from './CompactTemplate';
+import BuddyTemplate, { getBuddyConfig } from './BuddyTemplate';
+import BuddyTestTemplate, { getBuddyTestConfig } from './BuddyTestTemplate';
 import type { TemplateType } from '../../types/form';
 import type { TemplateConfig } from './ClassicTemplate';
 
@@ -21,12 +23,16 @@ export const TEMPLATE_COMPONENTS: Record<TemplateType, React.ComponentType<Templ
   classic: ClassicTemplate,
   modern: ModernTemplate,
   compact: CompactTemplate,
+  buddy: BuddyTemplate,
+  buddyTest: BuddyTestTemplate,
 };
 
 export const TEMPLATE_CONFIG_GETTERS: Record<TemplateType, (today: string) => TemplateConfig> = {
   classic: getClassicConfig,
   modern: getModernConfig,
   compact: getCompactConfig,
+  buddy: getBuddyConfig,
+  buddyTest: getBuddyTestConfig,
 };
 
 export const getTemplateComponent = (templateType: string): React.ComponentType<TemplateComponentProps> =>

@@ -26,6 +26,7 @@ const SwissDocumentPdf: React.FC<SwissDocumentPdfProps> = ({
   const Template = getPdfTemplate(templateType);
   return (
     <Template
+      key={templateType}
       data={data}
       t={t}
       logoUrl={logoUrl}

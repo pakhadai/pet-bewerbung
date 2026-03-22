@@ -30,7 +30,9 @@ const GlobalStyles: React.FC = () => (
       font-style: normal;
       font-weight: 400;
       font-display: swap;
-      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkP8o18E.ttf') format('truetype');
+      /* woff2 first — matches <link rel="preload"> in index.html (avoids unused preload warning) */
+      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkP8o18E.woff2') format('woff2'),
+           url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkP8o18E.ttf') format('truetype');
     }
     @font-face {
       font-family: 'Quicksand';
@@ -45,7 +47,8 @@ const GlobalStyles: React.FC = () => (
       font-style: normal;
       font-weight: 600;
       font-display: swap;
-      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkCEv18E.ttf') format('truetype');
+      src: url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkCEv18E.woff2') format('woff2'),
+           url('/fonts/6xK-dSZaM9iE8KbpRA_LJ3z8mH9BOJvgkCEv18E.ttf') format('truetype');
     }
     @font-face {
       font-family: 'Quicksand';

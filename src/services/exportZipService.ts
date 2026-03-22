@@ -17,7 +17,6 @@ export interface ZipGenerationDeps {
     pdfT: PdfTranslations
   ) => Promise<Blob>;
   preparePdfData: (data: PetData) => Promise<PetData>;
-  toJpegDataUrl: (dataUrl: string) => Promise<string>;
 }
 
 function downloadBlob(blob: Blob, filename: string): void {
@@ -52,35 +51,24 @@ export async function downloadAllTemplatesAsZip(
 ): Promise<{ successCount: number; failedTemplates: string[] }> {
   if (zipDownloadInFlight) return zipDownloadInFlight;
 
-  const { generatePdfBlob, preparePdfData, toJpegDataUrl } = deps;
+  const { generatePdfBlob, preparePdfData } = deps;
 
   zipDownloadInFlight = (async () => {
     const { default: JSZip } = await import('jszip');
-
-    let optimizedData: Record<string, any> | undefined;
-    if (data.photo && typeof data.photo === 'string') {
-      try {
-        let photoUrl = data.photo;
-        if (photoUrl.startsWith('data:image/webp')) {
-          photoUrl = await toJpegDataUrl(photoUrl);
-        }
-        optimizedData = { ...data, photo: photoUrl };
-      } catch (err) {
-        if (import.meta.env.DEV) console.warn('Photo conversion failed for ZIP:', err);
-        optimizedData = { ...data, photo: null };
-      }
-    }
 
     const zip = new JSZip();
     const petName = data.name || 'Pet-CV';
     const failedTemplates: string[] = [];
     let successCount = 0;
 
+    // Single preparePdfData handles blob: → data URL, webp → jpeg (same as single PDF download)
+    const pdfData = await preparePdfData(data as PetData);
+
     for (const template of templateOptions) {
       try {
-        const pdfData = optimizedData ?? (await preparePdfData(data as PetData));
-        const blob = await generatePdfBlob(pdfData, template.id as TemplateType, pdfT);
-        zip.file(`${petName}-${template.id}.pdf`, blob);
+        const id = template.id as TemplateType;
+        const blob = await generatePdfBlob(pdfData, id, pdfT);
+        zip.file(`${petName}-${id}.pdf`, blob);
         successCount++;
         await new Promise((r) => setTimeout(r, PDF_GENERATION_PAUSE_MS));
       } catch (err) {

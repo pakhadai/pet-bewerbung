@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { Document, Page, View } from '@react-pdf/renderer';
-import { getLayoutSections, getLocale, commonStyles } from './PdfBase';
+import { getLayoutSections, getLocale, commonStyles, pdfBorderRadius } from './PdfBase';
 import { formatAddress } from '../../utils/documentHelpers';
 import type { PetData, TemplateType } from '../../types/form';
 import type { PdfTranslations } from '../../services/pdfService';
@@ -33,13 +33,24 @@ const PdfDocument: React.FC<PdfDocumentProps> = ({ data, t, logoUrl, qrUrl, temp
   const templateConfig = getPdfTemplateConfig(templateType);
   const today = new Date().toLocaleDateString(getLocale(data.lang));
 
-  const pageStyle = [
-    commonStyles.page,
-    { backgroundColor: '#ffffff', color: '#334155' },
-    templateConfig.pagePadding != null && templateConfig.pageFontSize != null
-      ? { padding: templateConfig.pagePadding, fontSize: templateConfig.pageFontSize }
-      : null,
-  ].filter(Boolean);
+  /**
+   * Single plain object for Page — do NOT merge StyleSheet + object in an array.
+   * @see pdfBorderRadius — numeric `borderRadius: 0` throws in @react-pdf/stylesheet.
+   */
+  const pageStyle = {
+    padding: templateConfig.pagePadding ?? 40,
+    fontSize: templateConfig.pageFontSize ?? 10,
+    fontFamily: 'Helvetica',
+    position: 'relative' as const,
+    backgroundColor: templateConfig.pageBackgroundColor,
+    color:
+      templateConfig.templateType === 'compact'
+        ? '#44403c'
+        : templateConfig.templateType === 'buddy' || templateConfig.templateType === 'buddyTest'
+          ? '#0b1c30'
+          : '#334155',
+    borderRadius: pdfBorderRadius(0),
+  };
 
   const addressLines = formatAddress(data.street, data.houseNumber, data.postal, data.city);
   const { sidebarSections, mainSections } = getLayoutSections();
@@ -67,11 +78,22 @@ const PdfDocument: React.FC<PdfDocumentProps> = ({ data, t, logoUrl, qrUrl, temp
 
   return (
     <Document title={t.doc.title ?? 'Pet CV'}>
-      <Page size="A4" style={pageStyle} wrap>
+      <Page size="A4" style={pageStyle as React.ComponentProps<typeof Page>['style']} wrap>
         <PdfHeader today={today} city={data.city} logoUrl={logoUrl} t={t} templateConfig={templateConfig} />
 
         <View style={commonStyles.mainRow}>
-          <View style={commonStyles.sidebar}>
+          <View
+            style={[
+              commonStyles.sidebar,
+              templateConfig.sidebarBackgroundColor
+                ? {
+                    backgroundColor: templateConfig.sidebarBackgroundColor,
+                    padding: templateConfig.sidebarPadding ?? 0,
+                    borderRadius: pdfBorderRadius(templateConfig.sidebarRadius ?? 0),
+                  }
+                : null,
+            ].filter(Boolean)}
+          >
             {sidebarSections.map((id) => (
               <React.Fragment key={id}>{SECTION_RENDERERS[id]?.()}</React.Fragment>
             ))}

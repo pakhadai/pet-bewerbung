@@ -301,7 +301,7 @@ export default {
     transparencyBadge1: "Dati locali",
     transparencyBadge2: "Niente annunci",
     transparencyBadge3: "100% gratuito",
-    freeFeatures: ["3 modelli", "Generazione automatica del testo", "Download PDF", "ZIP con tutti i design"],
+    freeFeatures: ["5 modelli", "Generazione automatica del testo", "Download PDF", "ZIP con tutti i design"],
     seoSectionTitle: "CV per animali & dossier per affitto in Svizzera",
     seoParagraphs: [
       "Pet CV e dossier di candidatura per cane, gatto o altro animale: presentate il vostro animale in modo professionale nella ricerca di un appartamento in Svizzera. Generatore PDF gratuito con più modelli.",
@@ -381,8 +381,8 @@ export default {
     items: [
       { id: "q1", category: "general", q: "Questo dossier garantisce che otterrò l'appartamento?", a: "No, non c'è garanzia. Ma un dossier professionale mostra al proprietario che ti assumi le responsabilità (assicurazione, addestramento). In Svizzera i proprietari scelgono spesso il candidato a minor rischio – questo documento minimizza le preoccupazioni." },
       { id: "q2", category: "privacy", q: "Dove vengono memorizzati i miei dati, e lasciano il mio dispositivo?", a: "Da nessuna parte sui nostri server. Con 'Local-First', tutti i tuoi dati (nomi, foto, indirizzi) vengono elaborati solo nel browser. Una volta scaricato il PDF e chiusa la scheda, i dati spariscono." },
-      { id: "q3", category: "cost", q: "Quanto costa il servizio?", a: "Il servizio è completamente gratuito. Ottieni 3 modelli (Classic, Modern, Compact) e puoi scaricarli come PDF (e ZIP su desktop)." },
-      { id: "q4", category: "cost", q: "Cosa è incluso?", a: "I 3 design, generazione automatica del testo, download PDF e download ZIP su desktop." },
+      { id: "q3", category: "cost", q: "Quanto costa il servizio?", a: "Il servizio è completamente gratuito. Ottieni 5 modelli (Classic, Modern, Compact, Buddy, Buddy test) e puoi scaricarli come PDF (e ZIP su desktop)." },
+      { id: "q4", category: "cost", q: "Cosa è incluso?", a: "I 5 design, generazione automatica del testo, download PDF e download ZIP su desktop." },
       { id: "q5", category: "privacy", q: "Come viene creata la descrizione? Alcuni servizi esterni leggono i miei dati?", a: "La descrizione viene creata automaticamente nel tuo browser usando logica basata su modelli. Non utilizziamo servizi esterni per la generazione del testo, quindi i tuoi dati non vengono inviati a terze parti." },
       { id: "q6", category: "tips", q: "Perché non posso scaricare ZIP sul mio telefono?", a: "Creare più PDF contemporaneamente richiede molta memoria. Per mantenere l'app stabile ed evitare crash del browser (OOM), gli ZIP sono disattivati sui dispositivi mobili." },
       { id: "q7", category: "privacy", q: "Caricare la mia foto è sicuro?", a: "Sì. La tua foto viene elaborata e compressa localmente sul tuo dispositivo prima di essere incorporata nel PDF. Non viene caricata su alcun server." },

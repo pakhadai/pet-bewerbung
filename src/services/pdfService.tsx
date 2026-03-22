@@ -9,6 +9,7 @@ import type { PetData, TemplateType } from '../types/form';
 import { PUBLIC_LOGO_PATH } from '../constants';
 import { toJpegDataUrl } from '../utils/imageCompression';
 import { blobUrlToDataUrl } from '../utils/pdfHelpers';
+import { buildPublicFileUrl } from '../utils/publicAssetUrl';
 import { generateQrDataUrl, getQrContent } from '../utils/qrCode';
 
 export type PdfTranslations = ReturnType<typeof buildPdfTranslations>;
@@ -115,16 +116,25 @@ export function buildPdfTranslations(t: Record<string, any>) {
  */
 export async function fetchLogoAsDataUrl(): Promise<string | null> {
   try {
-    const url = `${window.location.origin}${PUBLIC_LOGO_PATH}`;
+    const url = buildPublicFileUrl(
+      window.location.origin,
+      import.meta.env.BASE_URL || '/',
+      PUBLIC_LOGO_PATH
+    );
     const res = await fetch(url);
     if (!res.ok) return null;
     const blob = await res.blob();
-    return new Promise((resolve, reject) => {
+    let dataUrl = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result as string);
       reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
+    // @react-pdf/renderer Image is unreliable with WebP in some environments
+    if (dataUrl.startsWith('data:image/webp')) {
+      dataUrl = await toJpegDataUrl(dataUrl);
+    }
+    return dataUrl;
   } catch (err) {
     if (import.meta.env.DEV) console.warn('Logo fetch failed:', err);
     return null;
@@ -153,6 +163,29 @@ export async function preparePdfData(data: PetData): Promise<PetData> {
   }
 }
 
+/** Forces a fresh React tree for each render — @react-pdf/renderer may reuse state without this */
+let pdfRenderSeq = 0;
+
+/**
+ * Load the concrete PDF root (Classic/Modern/Compact) — avoids routing through one component,
+ * which could cause identical PDFs across template switches in some react-pdf builds.
+ */
+async function loadPdfRootForTemplate(templateType: TemplateType) {
+  switch (templateType) {
+    case 'modern':
+      return (await import('../components/pdf/templates/ModernPdf')).default;
+    case 'compact':
+      return (await import('../components/pdf/templates/CompactPdf')).default;
+    case 'buddy':
+      return (await import('../components/pdf/templates/BuddyPdf')).default;
+    case 'buddyTest':
+      return (await import('../components/pdf/templates/BuddyTestPdf')).default;
+    case 'classic':
+    default:
+      return (await import('../components/pdf/templates/ClassicPdf')).default;
+  }
+}
+
 /**
  * Generate PDF blob for a template
  * @param data - Form data (use preparePdfData first if photo needs conversion)
@@ -168,16 +201,15 @@ export async function generatePdfBlob(
   const qrContent = getQrContent(data);
   const qrUrl = qrContent ? await generateQrDataUrl(qrContent, { size: 400, margin: 2 }) : null;
 
-  const [{ pdf }, { default: SwissDocumentPdf }] = await Promise.all([
-    import('@react-pdf/renderer'),
-    import('../components/SwissDocumentPdf'),
-  ]);
+  const [{ pdf }, PdfRoot] = await Promise.all([import('@react-pdf/renderer'), loadPdfRootForTemplate(templateType)]);
+
+  const instanceKey = `${templateType}-${++pdfRenderSeq}`;
 
   return pdf(
-    React.createElement(SwissDocumentPdf, {
+    React.createElement(PdfRoot, {
+      key: instanceKey,
       data,
       t: pdfT,
-      templateType,
       logoUrl,
       qrUrl,
     })
