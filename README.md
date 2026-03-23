@@ -78,6 +78,7 @@ Analytics note:
 
 - Public URLs: `https://pet-bewerbung.ch/{de|fr|it|en|rm}/`
 - `SeoHead` sets per-locale `<title>`, `meta description`, `canonical`, Open Graph, Twitter cards, and `hreflang` alternates.
+- Build step generates static locale entry files in `dist/{lang}/index.html` so crawlers see correct canonical/hreflang metadata before JavaScript runs.
 - `FaqJsonLd` injects `FAQPage` JSON-LD from translations.
 - Sitemap lists all locale entry points (`public/sitemap.xml`).
 - Landing page includes **visible** SEO paragraphs (`hero.seoParagraphs`) and an **FAQ preview** (`<details>`) so content matches structured data; `SeoHead` adds **Organization** JSON-LD.

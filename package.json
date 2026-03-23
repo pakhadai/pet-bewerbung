@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/generate-locale-html.mjs",
     "preview": "vite preview",
     "fonts:woff2": "node scripts/convert-fonts-to-woff2.mjs",
     "e2e": "playwright test",
