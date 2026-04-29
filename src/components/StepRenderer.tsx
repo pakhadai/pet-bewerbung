@@ -3,10 +3,12 @@
  * Routes: Hero (0), Wizard (1-6). Step 7 (ThankYou) is handled by AppContainer.
  */
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import HeroRoute from '../routes/HeroRoute';
 import WizardRoute from '../routes/WizardRoute';
 import { WizardProvider } from '../context/WizardContext';
 import type { TranslationObject } from '../types/template';
+import { useTranslationContext } from '../context/WizardProviders';
 
 export interface WizardContextValue {
   t: Record<string, unknown>;
@@ -50,12 +52,15 @@ const StepRenderer: React.FC<StepRendererProps> = ({
   t,
   onOpenFaq,
 }) => {
+  const navigate = useNavigate();
+  const { lang } = useTranslationContext();
+
   if (step === 0) {
     return (
       <HeroRoute
         darkMode={darkMode}
         t={t}
-        onStartClick={() => wizardContextValue.goToStep(1)}
+        onStartClick={() => navigate(`/${lang}/builder`)}
         onOpenFaq={onOpenFaq}
       />
     );

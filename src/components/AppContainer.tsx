@@ -5,7 +5,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MaterialIcon from './MaterialIcon';
-import GlobalStyles from './GlobalStyles';
 import Header from './Header';
 import Footer from './Footer';
 import StepProgress from './StepProgress';
@@ -13,7 +12,6 @@ import FloatingNavigation from './FloatingNavigation';
 import ModalsLayer from './ModalsLayer';
 import FaqJsonLd from './FaqJsonLd';
 import SeoHead from './SeoHead';
-import ErrorBoundary from './ErrorBoundary';
 import {
   useTranslationContext,
   useWizardNavigationContext,
@@ -22,8 +20,6 @@ import {
 } from '../context/WizardProviders';
 import { useFormStore } from '../stores/formStore';
 import { useTemplateSelection, useFormValidation, validateStep } from '../hooks';
-import WizardRoute from '../routes/WizardRoute';
-import HeroRoute from '../routes/HeroRoute';
 import ThankYouRoute from '../routes/ThankYouRoute';
 import StepRenderer from './StepRenderer';
 import { WizardProvider } from '../context/WizardContext';
@@ -121,7 +117,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       <>
         <SeoHead />
         <FaqJsonLd t={t} />
-        <GlobalStyles />
         <WizardProvider value={wizardContextValue}>
           <ThankYouRoute onFaqClick={() => setFaqOpen(true)} />
         </WizardProvider>
@@ -146,7 +141,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     <>
       <SeoHead />
       <FaqJsonLd t={t} />
-      <GlobalStyles />
       <div className="min-h-screen font-sans theme-text theme-bg pb-6 print:bg-white print:p-0">
         <Header
           darkMode={darkMode}

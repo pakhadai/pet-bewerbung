@@ -5,8 +5,11 @@
  */
 
 import React, { useRef } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { MAX_DESCRIPTION_LENGTH, TEMPLATE_OPTIONS } from '../constants';
 import AppContainer from './AppContainer';
+import BuilderRoute from '../routes/BuilderRoute';
+import PrintRoute from '../routes/PrintRoute';
 import {
   buildPdfTranslations,
   generatePdfBlob,
@@ -228,11 +231,32 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <AppContainer
-      onDownloadPDF={handleDownloadPDF}
-      onDownloadAllTemplates={handleDownloadAllTemplates}
-      onGenerateText={generateText}
-    />
+    <Routes>
+      <Route
+        index
+        element={
+          <AppContainer
+            onDownloadPDF={handleDownloadPDF}
+            onDownloadAllTemplates={handleDownloadAllTemplates}
+            onGenerateText={generateText}
+          />
+        }
+      />
+      <Route path="builder" element={<BuilderRoute onGenerateText={generateText} />} />
+      <Route path="print" element={<PrintRoute />} />
+      {/* Legacy wizard entry point (optional/back-compat) */}
+      <Route
+        path="wizard"
+        element={
+          <AppContainer
+            onDownloadPDF={handleDownloadPDF}
+            onDownloadAllTemplates={handleDownloadAllTemplates}
+            onGenerateText={generateText}
+          />
+        }
+      />
+      <Route path="*" element={<Navigate to="." replace />} />
+    </Routes>
   );
 };
 

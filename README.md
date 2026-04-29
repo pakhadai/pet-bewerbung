@@ -18,12 +18,12 @@ Principles:
 
 ## What it does
 
-- Multi-step form (wizard) to collect owner + pet details
+- Single-page **Builder** to collect owner + pet details with live A4 preview
 - Local text generation for the “character/behavior” section (runs in the browser; no server calls)
   - 3 rotating text variants per language (DE/EN/FR/IT/RM), now managed in `translations/*`
 - Generates:
   - HTML preview (A4 layout)
-  - PDF dossier (client-side, downloaded as a file)
+  - Print/PDF (client-side, via browser print dialog on a dedicated print route)
   - ZIP download for all free templates (desktop-only to reduce OOM risk)
 - QR code embedded in the PDF (vCard 3.0)
 - Photo upload & compression before storage/generation (JPG/PNG/WEBP/HEIC/HEIF, max 10 MB, with HEIC fallback hint)
@@ -56,7 +56,7 @@ Analytics note:
 | ZIP export | JSZip |
 | QR code | `qrcode` |
 | Photo | `react-image-crop` + compression |
-| Storage | `idb-keyval` (IndexedDB) + `sessionStorage` (draft) |
+| Storage | `idb-keyval` (IndexedDB) + `localStorage` (draft) |
 
 ---
 
@@ -73,6 +73,12 @@ Analytics note:
 3. Open (locale in URL for SEO & sharing):
    - http://localhost:3000/de/ (or `/fr/`, `/it/`, `/en/`, `/rm/`)
    - `http://localhost:3000/` redirects to the browser’s preferred language when supported, otherwise German.
+
+App routes (within a locale):
+
+- `/{lang}/` - landing page
+- `/{lang}/builder` - main builder (single-page editor + live preview)
+- `/{lang}/print` - print-only view (opened on demand, triggers `window.print()`)
 
 ### SEO (locales)
 
@@ -105,15 +111,18 @@ Main entry + composition:
 - `src/App.tsx` - wraps the app in `AppProviders` and renders `AppContent`
 - `src/components/AppContent.tsx` - business logic:
   - generate “character/behavior” text locally
-  - download single PDF via `exportPdfService`; ZIP uses dynamic `exportZipService` (JSZip only after click)
+  - print/PDF uses `/{lang}/print` route (document-only + `window.print()`)
+  - ZIP uses dynamic `exportZipService` (JSZip only after click)
 - `src/components/AppContainer.tsx` - UI orchestration:
-  - wizard step rendering
+  - legacy wizard UI (kept for back-compat at `/{lang}/wizard`)
   - theme + step progress
   - modals (FAQ/legal/preview/cookie consent)
 
 Routing helpers:
 
-- `src/components/StepRenderer.tsx` - switches between `HeroRoute` and `WizardRoute`
+- `src/routes/BuilderRoute.tsx` - builder (single-page form + live preview + print button)
+- `src/routes/PrintRoute.tsx` - print-only view (document-only)
+- `src/components/StepRenderer.tsx` - legacy helper (Hero + wizard steps)
 - `src/routes/HeroRoute.tsx`, `src/routes/WizardRoute.tsx`, `src/routes/ThankYouRoute.tsx`
 
 Modals:
