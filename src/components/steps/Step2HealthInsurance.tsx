@@ -14,7 +14,11 @@ import { MAX_MEDICAL_CONDITIONS_LENGTH } from '../../constants';
 
 const INSURANCE_AFFILIATE_LINK = import.meta.env.VITE_INSURANCE_AFFILIATE_LINK || '';
 
-const Step2HealthInsurance: React.FC = () => {
+interface Step2HealthInsuranceProps {
+  embedded?: boolean;
+}
+
+const Step2HealthInsurance: React.FC<Step2HealthInsuranceProps> = ({ embedded = false }) => {
   const data = useFormStore((s) => s.data) as FormData;
   const updateData = useFormStore((s) => s.updateData);
   const { t, animDir, darkMode } = useWizardContext();
@@ -40,17 +44,18 @@ const Step2HealthInsurance: React.FC = () => {
     label: string;
   }>;
 
-  return (
-    <div className={`page page-enter-${animDir} reveal fade-enter max-w-3xl mx-auto pb-32`}>
-      <div className={`hand-drawn-border border-2 rounded-2xl p-6 md:p-8 ${cardCl} shadow-lg`}>
-        <h2 className={`font-display font-bold text-2xl md:text-3xl mb-1 ${titleCl}`}>
-          {t?.stepsNew?.step2?.title ?? 'Emergency Info'}
-        </h2>
-        <p className={`font-sans text-sm md:text-base mb-6 ${mutedCl}`}>
-          {t?.stepsNew?.step2?.subtitle ?? 'Vet & contacts'}
-        </p>
+  const content = (
+    <>
+      {!embedded && (
+        <>
+          <h2 className={`font-display font-bold text-2xl md:text-3xl mb-1 ${titleCl}`}>
+            {t?.stepsNew?.step2?.title ?? 'Emergency Info'}
+          </h2>
+          <p className={`font-sans text-sm md:text-base mb-6 ${mutedCl}`}>{t?.stepsNew?.step2?.subtitle ?? 'Vet & contacts'}</p>
+        </>
+      )}
 
-        <div className="space-y-4">
+      <div className="space-y-4">
           <h3 className={`font-display font-bold text-lg flex items-center gap-2 ${titleCl}`}>
             <MaterialIcon name="medical_services" className="text-primary" />
             {t?.step2Emergency?.emergencyContacts ?? 'Emergency contacts'}
@@ -229,8 +234,15 @@ const Step2HealthInsurance: React.FC = () => {
               </div>
             </div>
           )}
-        </div>
       </div>
+    </>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <div className={`page page-enter-${animDir} reveal fade-enter max-w-3xl mx-auto pb-32`}>
+      <div className={`hand-drawn-border border-2 rounded-2xl p-6 md:p-8 ${cardCl} shadow-lg`}>{content}</div>
     </div>
   );
 };

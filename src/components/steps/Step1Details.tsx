@@ -10,7 +10,11 @@ import { useWizardContext } from '../../context/WizardContext';
 import { useFormStore } from '../../stores/formStore';
 import type { FormData } from '../../types/form';
 
-const Step1Details: React.FC = () => {
+interface Step1DetailsProps {
+  embedded?: boolean;
+}
+
+const Step1Details: React.FC<Step1DetailsProps> = ({ embedded = false }) => {
   const data = useFormStore((s) => s.data) as FormData;
   const updateData = useFormStore((s) => s.updateData);
   const { t, animDir, darkMode, validationErrors = {} } = useWizardContext();
@@ -27,17 +31,21 @@ const Step1Details: React.FC = () => {
   const titleCl = darkMode ? 'text-white' : 'text-text-main';
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary';
 
-  return (
-    <div className={`page page-enter-${animDir} reveal fade-enter max-w-4xl mx-auto pb-32`}>
-      <div className={`hand-drawn-border border-2 rounded-2xl p-6 md:p-8 ${cardCl} shadow-lg`}>
-        <h2 className={`font-display font-bold text-2xl md:text-3xl mb-1 ${titleCl}`}>
-          {t?.stepsNew?.step1?.title ?? 'Pet Owner & Pet Details'}
-        </h2>
-        <p className={`font-sans text-sm md:text-base mb-6 ${mutedCl}`}>
-          {t?.stepsNew?.step1?.subtitle ?? "Let's start with the basics. This information will be used to generate your Pet's CV."}
-        </p>
+  const content = (
+    <>
+      {!embedded && (
+        <>
+          <h2 className={`font-display font-bold text-2xl md:text-3xl mb-1 ${titleCl}`}>
+            {t?.stepsNew?.step1?.title ?? 'Pet Owner & Pet Details'}
+          </h2>
+          <p className={`font-sans text-sm md:text-base mb-6 ${mutedCl}`}>
+            {t?.stepsNew?.step1?.subtitle ??
+              "Let's start with the basics. This information will be used to generate your Pet's CV."}
+          </p>
+        </>
+      )}
 
-        <div className="space-y-6">
+      <div className="space-y-6">
           <div className="space-y-4">
             <h3 className={`font-display font-bold text-lg ${titleCl}`}>
               {t?.step1Details?.ownerSection ?? 'Owner Information'}
@@ -172,9 +180,15 @@ const Step1Details: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-
       </div>
+    </>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <div className={`page page-enter-${animDir} reveal fade-enter max-w-4xl mx-auto pb-32`}>
+      <div className={`hand-drawn-border border-2 rounded-2xl p-6 md:p-8 ${cardCl} shadow-lg`}>{content}</div>
     </div>
   );
 };

@@ -13,9 +13,10 @@ import type { FormData } from '../../types/form';
 interface Step4PhotoProps {
   onNavigationVisibilityChange?: (visible: boolean) => void;
   showToast?: (msg: string, type?: 'info' | 'success' | 'error' | 'warning') => void;
+  embedded?: boolean;
 }
 
-const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, showToast }) => {
+const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, showToast, embedded = false }) => {
   const data = useFormStore((s) => s.data) as FormData;
   const updateData = useFormStore((s) => s.updateData);
   const { t, animDir, darkMode } = useWizardContext();
@@ -225,8 +226,8 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
 
   return (
     <>
-      <div className={`page page-enter-${animDir} reveal fade-enter w-full max-w-2xl mx-auto pb-32`}>
-        <div className={`hand-drawn-border border-2 rounded-2xl p-6 md:p-8 ${cardCl} shadow-lg`}>
+      <div className={embedded ? '' : `page page-enter-${animDir} reveal fade-enter w-full max-w-2xl mx-auto pb-32`}>
+        <div className={embedded ? '' : `hand-drawn-border border-2 rounded-2xl p-6 md:p-8 ${cardCl} shadow-lg`}>
           <div className="text-center mb-6">
             <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${darkMode ? 'bg-primary/20' : 'bg-primary/10'}`}>
               <Camera size={32} className="text-primary" />

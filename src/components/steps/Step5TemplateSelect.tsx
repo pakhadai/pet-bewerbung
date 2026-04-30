@@ -30,9 +30,10 @@ const TemplateSkeleton: React.FC = () => (
 interface Step5TemplateSelectProps {
   selectedTemplate: TemplateType;
   onSelectTemplate: (id: TemplateType) => void;
+  embedded?: boolean;
 }
 
-const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({ selectedTemplate, onSelectTemplate }) => {
+const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({ selectedTemplate, onSelectTemplate, embedded = false }) => {
   const data = useFormStore((s) => s.data) as FormData;
   const { t, animDir, darkMode } = useWizardContext();
   const visibleTemplates = TEMPLATE_OPTIONS.map((x) => x.id);
@@ -40,9 +41,9 @@ const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({ selectedTempl
   const textMain = darkMode ? 'text-white' : 'text-text-main';
   const textMuted = darkMode ? 'text-gray-400' : 'text-text-secondary';
 
-  return (
-    <div className={`page page-enter-${animDir} reveal fade-enter w-full max-w-6xl mx-auto pb-32`}>
-      <div className="text-center mb-8">
+  const content = (
+    <>
+      {!embedded && <div className="text-center mb-8">
         <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${darkMode ? 'bg-primary/20' : 'bg-primary/10'}`}>
           <Palette size={32} className="text-primary" />
         </div>
@@ -52,7 +53,7 @@ const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({ selectedTempl
         <p className={`font-sans text-sm md:text-lg max-w-xl mx-auto ${textMuted}`}>
           {t?.stepsNew?.step5?.subtitle ?? 'Wählen Sie ein Design für Ihr Pet-Dossier'}
         </p>
-      </div>
+      </div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {TEMPLATE_OPTIONS.map((opt) => {
@@ -102,8 +103,12 @@ const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({ selectedTempl
           );
         })}
       </div>
-    </div>
+    </>
   );
+
+  if (embedded) return content;
+
+  return <div className={`page page-enter-${animDir} reveal fade-enter w-full max-w-6xl mx-auto pb-32`}>{content}</div>;
 };
 
 export default Step5TemplateSelect;
