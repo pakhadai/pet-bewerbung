@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import vsharp from 'vite-plugin-vsharp'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -12,14 +11,6 @@ export default defineConfig(({ mode }) => ({
     nodePolyfills({
       include: ['buffer'],
       globals: { Buffer: true },
-    }),
-    vsharp({
-      include: /\.(png|jpg|jpeg|webp)$/,
-      exclude: ['og-image.jpg'],
-      png: { quality: 85 },
-      jpeg: { quality: 85 },
-      width: 256,
-      height: 256,
     }),
     /** Embed CSS in JS — removes render-blocking <link rel="stylesheet"> (Lighthouse). */
     cssInjectedByJsPlugin(),

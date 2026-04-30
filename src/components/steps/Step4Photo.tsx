@@ -1,93 +1,98 @@
 /**
  * Step4Photo - Photo upload with cropping
  */
-import React, { useState, useEffect, useRef } from 'react';
-import { Crop, Camera, Upload } from 'lucide-react';
-import MaterialIcon from '../MaterialIcon';
-import ImageCropper from '../ImageCropper';
-import compressImage from '../../utils/imageCompression';
-import { useWizardContext } from '../../context/WizardContext';
-import { useFormStore } from '../../stores/formStore';
-import type { FormData } from '../../types/form';
+
+import { Camera, Crop, Upload } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
+import { useWizardContext } from '../../context/WizardContext'
+import { useFormStore } from '../../stores/formStore'
+import type { FormData } from '../../types/form'
+import compressImage from '../../utils/imageCompression'
+import ImageCropper from '../ImageCropper'
+import MaterialIcon from '../MaterialIcon'
 
 interface Step4PhotoProps {
-  onNavigationVisibilityChange?: (visible: boolean) => void;
-  showToast?: (msg: string, type?: 'info' | 'success' | 'error' | 'warning') => void;
-  embedded?: boolean;
+  onNavigationVisibilityChange?: (visible: boolean) => void
+  showToast?: (msg: string, type?: 'info' | 'success' | 'error' | 'warning') => void
+  embedded?: boolean
 }
 
-const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, showToast, embedded = false }) => {
-  const data = useFormStore((s) => s.data) as FormData;
-  const updateData = useFormStore((s) => s.updateData);
-  const { t, animDir, darkMode } = useWizardContext();
-  const [showCropper, setShowCropper] = useState(false);
-  const [tempImage, setTempImage] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isWindowDragging, setIsWindowDragging] = useState(false);
-  const [isCompressing, setIsCompressing] = useState(false);
-  const dragDepthRef = useRef(0);
+const Step4Photo: React.FC<Step4PhotoProps> = ({
+  onNavigationVisibilityChange,
+  showToast,
+  embedded = false,
+}) => {
+  const data = useFormStore((s) => s.data) as FormData
+  const updateData = useFormStore((s) => s.updateData)
+  const { t, animDir, darkMode } = useWizardContext()
+  const [showCropper, setShowCropper] = useState(false)
+  const [tempImage, setTempImage] = useState<string | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [isWindowDragging, setIsWindowDragging] = useState(false)
+  const [isCompressing, setIsCompressing] = useState(false)
+  const dragDepthRef = useRef(0)
 
   useEffect(() => {
-    onNavigationVisibilityChange?.(!showCropper);
-  }, [showCropper, onNavigationVisibilityChange]);
+    onNavigationVisibilityChange?.(!showCropper)
+  }, [showCropper, onNavigationVisibilityChange])
 
   useEffect(
     () => () => {
       if (tempImage && tempImage.startsWith('blob:')) {
-        URL.revokeObjectURL(tempImage);
+        URL.revokeObjectURL(tempImage)
       }
     },
     [tempImage]
-  );
+  )
 
   useEffect(() => {
     const hasFiles = (event: DragEvent): boolean =>
-      Array.from(event.dataTransfer?.types ?? []).includes('Files');
+      Array.from(event.dataTransfer?.types ?? []).includes('Files')
 
     const handleWindowDragEnter = (event: DragEvent) => {
-      if (!hasFiles(event)) return;
-      dragDepthRef.current += 1;
-      setIsWindowDragging(true);
-    };
+      if (!hasFiles(event)) return
+      dragDepthRef.current += 1
+      setIsWindowDragging(true)
+    }
 
     const handleWindowDragOver = (event: DragEvent) => {
-      if (!hasFiles(event)) return;
-      event.preventDefault();
-      setIsWindowDragging(true);
-    };
+      if (!hasFiles(event)) return
+      event.preventDefault()
+      setIsWindowDragging(true)
+    }
 
     const handleWindowDragLeave = (event: DragEvent) => {
-      if (!hasFiles(event)) return;
-      dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
-      if (dragDepthRef.current === 0) setIsWindowDragging(false);
-    };
+      if (!hasFiles(event)) return
+      dragDepthRef.current = Math.max(0, dragDepthRef.current - 1)
+      if (dragDepthRef.current === 0) setIsWindowDragging(false)
+    }
 
     const handleWindowDrop = (event: DragEvent) => {
-      if (!hasFiles(event)) return;
-      event.preventDefault();
-      dragDepthRef.current = 0;
-      setIsWindowDragging(false);
-      const file = event.dataTransfer?.files?.[0];
+      if (!hasFiles(event)) return
+      event.preventDefault()
+      dragDepthRef.current = 0
+      setIsWindowDragging(false)
+      const file = event.dataTransfer?.files?.[0]
       if (file) {
-        void processFile(file);
+        void processFile(file)
       }
-    };
+    }
 
-    window.addEventListener('dragenter', handleWindowDragEnter);
-    window.addEventListener('dragover', handleWindowDragOver);
-    window.addEventListener('dragleave', handleWindowDragLeave);
-    window.addEventListener('drop', handleWindowDrop);
+    window.addEventListener('dragenter', handleWindowDragEnter)
+    window.addEventListener('dragover', handleWindowDragOver)
+    window.addEventListener('dragleave', handleWindowDragLeave)
+    window.addEventListener('drop', handleWindowDrop)
 
     return () => {
-      window.removeEventListener('dragenter', handleWindowDragEnter);
-      window.removeEventListener('dragover', handleWindowDragOver);
-      window.removeEventListener('dragleave', handleWindowDragLeave);
-      window.removeEventListener('drop', handleWindowDrop);
-    };
-  }, []);
+      window.removeEventListener('dragenter', handleWindowDragEnter)
+      window.removeEventListener('dragover', handleWindowDragOver)
+      window.removeEventListener('dragleave', handleWindowDragLeave)
+      window.removeEventListener('drop', handleWindowDrop)
+    }
+  }, [])
 
-  const MAX_FILE_SIZE = 10 * 1024 * 1024;
-  const ACCEPT_ATTR = 'image/jpeg,image/png,image/webp,image/heic,image/heif';
+  const MAX_FILE_SIZE = 10 * 1024 * 1024
+  const ACCEPT_ATTR = 'image/jpeg,image/png,image/webp,image/heic,image/heif'
   const ALLOWED_MIME_TYPES = new Set([
     'image/jpeg',
     'image/jpg',
@@ -95,50 +100,50 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
     'image/webp',
     'image/heic',
     'image/heif',
-  ]);
-  const ALLOWED_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif']);
+  ])
+  const ALLOWED_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'])
 
   const isSupportedImageFile = (file: File): boolean => {
-    const mime = (file.type || '').toLowerCase();
-    if (mime && ALLOWED_MIME_TYPES.has(mime)) return true;
-    const ext = file.name.split('.').pop()?.toLowerCase() || '';
-    return ALLOWED_EXTENSIONS.has(ext);
-  };
+    const mime = (file.type || '').toLowerCase()
+    if (mime && ALLOWED_MIME_TYPES.has(mime)) return true
+    const ext = file.name.split('.').pop()?.toLowerCase() || ''
+    return ALLOWED_EXTENSIONS.has(ext)
+  }
 
   const isHeicLikeFile = (file: File): boolean => {
-    const mime = (file.type || '').toLowerCase();
-    if (mime === 'image/heic' || mime === 'image/heif') return true;
-    const ext = file.name.split('.').pop()?.toLowerCase() || '';
-    return ext === 'heic' || ext === 'heif';
-  };
+    const mime = (file.type || '').toLowerCase()
+    if (mime === 'image/heic' || mime === 'image/heif') return true
+    const ext = file.name.split('.').pop()?.toLowerCase() || ''
+    return ext === 'heic' || ext === 'heif'
+  }
 
   const processFile = async (file: File) => {
-    if (!file) return;
-    const isHeicLike = isHeicLikeFile(file);
+    if (!file) return
+    const isHeicLike = isHeicLikeFile(file)
     if (!isSupportedImageFile(file)) {
       showToast?.(
         t?.step4?.invalidImage ??
           'Ungültiges Bildformat. Bitte JPG, PNG, WEBP oder HEIC/HEIF hochladen.',
         'error'
-      );
-      return;
+      )
+      return
     }
     if (file.size > MAX_FILE_SIZE) {
-      showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error');
-      return;
+      showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error')
+      return
     }
     if (isHeicLike) {
-      const isApplePlatform = /iPhone|iPad|iPod|Macintosh/i.test(navigator.userAgent);
+      const isApplePlatform = /iPhone|iPad|iPod|Macintosh/i.test(navigator.userAgent)
       if (!isApplePlatform) {
         showToast?.(
           t?.step4?.heicFallback ??
             'HEIC/HEIF can be unstable on some browsers. If this file fails, please convert it to JPG and upload again.',
           'info'
-        );
+        )
       }
     }
-    onNavigationVisibilityChange?.(false);
-    setIsCompressing(true);
+    onNavigationVisibilityChange?.(false)
+    setIsCompressing(true)
     try {
       const blob = await compressImage(file, {
         maxWidth: 800,
@@ -146,90 +151,103 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
         quality: 0.8,
         maxSizeKB: 500,
         returnBlob: true,
-      });
-      const url = URL.createObjectURL(blob);
-      setTempImage(url);
-      setShowCropper(true);
+      })
+      if (!(blob instanceof Blob)) throw new Error('Expected Blob from compressor')
+      const url = URL.createObjectURL(blob)
+      setTempImage(url)
+      setShowCropper(true)
     } catch {
       showToast?.(
         isHeicLike
           ? (t?.step4?.heicFallback ??
-            'HEIC/HEIF can be unstable on some browsers. If this file fails, please convert it to JPG and upload again.')
+              'HEIC/HEIF can be unstable on some browsers. If this file fails, please convert it to JPG and upload again.')
           : (t?.step4?.invalidImage ??
-            'Bild konnte nicht verarbeitet werden. Bitte JPG, PNG, WEBP oder HEIC/HEIF verwenden.'),
+              'Bild konnte nicht verarbeitet werden. Bitte JPG, PNG, WEBP oder HEIC/HEIF verwenden.'),
         'error'
-      );
+      )
     } finally {
-      setIsCompressing(false);
+      setIsCompressing(false)
     }
-  };
+  }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) processFile(file);
-  };
+    const file = e.target.files?.[0]
+    if (file) processFile(file)
+  }
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      setIsDragging(false);
+      setIsDragging(false)
     }
-  };
+  }
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    const file = e.dataTransfer?.files?.[0];
-    if (file) processFile(file);
-  };
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    const file = e.dataTransfer?.files?.[0]
+    if (file) processFile(file)
+  }
 
   const handleCropComplete = (img: string) => {
-    updateData('photo', img);
-    setShowCropper(false);
+    updateData('photo', img)
+    setShowCropper(false)
     if (tempImage && tempImage.startsWith('blob:')) {
-      URL.revokeObjectURL(tempImage);
+      URL.revokeObjectURL(tempImage)
     }
-    setTempImage(null);
-  };
+    setTempImage(null)
+  }
 
   const handleCropCancel = () => {
-    setShowCropper(false);
+    setShowCropper(false)
     if (tempImage && tempImage.startsWith('blob:')) {
-      URL.revokeObjectURL(tempImage);
+      URL.revokeObjectURL(tempImage)
     }
-    setTempImage(null);
-  };
+    setTempImage(null)
+  }
 
   const handleRecrop = () => {
     if (data.photo) {
-      onNavigationVisibilityChange?.(false);
-      setTempImage(data.photo);
-      setShowCropper(true);
+      onNavigationVisibilityChange?.(false)
+      setTempImage(data.photo)
+      setShowCropper(true)
     }
-  };
+  }
 
   const handleRemovePhoto = () => {
-    updateData('photo', null);
-  };
+    updateData('photo', null)
+  }
 
-  const cardCl = darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300';
-  const textMain = darkMode ? 'text-white' : 'text-text-main';
-  const textMuted = darkMode ? 'text-gray-400' : 'text-text-secondary';
+  const cardCl = darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'
+  const textMain = darkMode ? 'text-white' : 'text-text-main'
+  const textMuted = darkMode ? 'text-gray-400' : 'text-text-secondary'
 
   return (
     <>
-      <div className={embedded ? '' : `page page-enter-${animDir} reveal fade-enter w-full max-w-2xl mx-auto pb-32`}>
-        <div className={embedded ? '' : `hand-drawn-border border-2 rounded-2xl p-6 md:p-8 ${cardCl} shadow-lg`}>
+      <div
+        className={
+          embedded
+            ? ''
+            : `page page-enter-${animDir} reveal fade-enter w-full max-w-2xl mx-auto pb-32`
+        }
+      >
+        <div
+          className={
+            embedded ? '' : `hand-drawn-border border-2 rounded-2xl p-6 md:p-8 ${cardCl} shadow-lg`
+          }
+        >
           <div className="text-center mb-6">
-            <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${darkMode ? 'bg-primary/20' : 'bg-primary/10'}`}>
+            <div
+              className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${darkMode ? 'bg-primary/20' : 'bg-primary/10'}`}
+            >
               <Camera size={32} className="text-primary" />
             </div>
             <h2 className={`font-display font-bold text-2xl md:text-3xl mb-2 ${textMain}`}>
@@ -242,7 +260,9 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
 
           <div
             className={`relative min-h-[350px] md:min-h-[400px] hand-drawn-border border-2 border-dashed rounded-2xl flex flex-col items-center justify-center p-8 cursor-pointer transition-all ${
-              darkMode ? 'bg-white/5 hover:bg-white/10 border-gray-500' : 'bg-gray-50 hover:bg-gray-100 border-gray-300'
+              darkMode
+                ? 'bg-white/5 hover:bg-white/10 border-gray-500'
+                : 'bg-gray-50 hover:bg-gray-100 border-gray-300'
             } ${isDragging ? (darkMode ? 'bg-primary/20 border-primary' : 'bg-primary/10 border-primary') : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -265,9 +285,9 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
                   <button
                     type="button"
                     onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleRecrop();
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleRecrop()
                     }}
                     className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold hand-drawn-button hover:bg-primary-dark transition-colors"
                   >
@@ -277,41 +297,54 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
                   <button
                     type="button"
                     onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleRemovePhoto();
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleRemovePhoto()
                     }}
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold hand-drawn-button transition-colors ${
-                      darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      darkMode
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }`}
                   >
                     {t?.labels?.remove ?? 'Entfernen'}
                   </button>
                 </div>
                 <p className={`text-sm ${textMuted} text-center`}>
-                  {t?.step4?.changePhotoHint ?? 'Klicken Sie auf das Bild oder ziehen Sie ein neues hierher'}
+                  {t?.step4?.changePhotoHint ??
+                    'Klicken Sie auf das Bild oder ziehen Sie ein neues hierher'}
                 </p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-4">
-                <div className={`w-24 h-24 flex items-center justify-center rounded-full transition-transform ${darkMode ? 'bg-primary/30' : 'bg-primary/20'} ${isDragging ? 'scale-110' : ''}`}>
+                <div
+                  className={`w-24 h-24 flex items-center justify-center rounded-full transition-transform ${darkMode ? 'bg-primary/30' : 'bg-primary/20'} ${isDragging ? 'scale-110' : ''}`}
+                >
                   <Upload size={40} className="text-primary" />
                 </div>
                 <div className="text-center">
                   <p className={`text-2xl font-display font-bold mb-2 ${textMain}`}>
                     {t?.ui?.clickOrDrop ?? 'Klicken oder per Drag & Drop'}
                   </p>
-                  <p className={`text-sm ${textMuted}`}>JPG, PNG, WEBP, HEIC/HEIF {t?.step4?.maxSize ?? 'bis zu 10MB'}</p>
+                  <p className={`text-sm ${textMuted}`}>
+                    JPG, PNG, WEBP, HEIC/HEIF {t?.step4?.maxSize ?? 'bis zu 10MB'}
+                  </p>
                 </div>
-                <div className={`mt-4 px-4 py-2 rounded-full border-2 ${darkMode ? 'border-gray-600' : 'border-gray-300'}`}>
-                  <p className={`text-xs ${textMuted}`}>{t?.step4?.tipFormat ?? 'Tipp: Hochformat (3:4) funktioniert am besten'}</p>
+                <div
+                  className={`mt-4 px-4 py-2 rounded-full border-2 ${darkMode ? 'border-gray-600' : 'border-gray-300'}`}
+                >
+                  <p className={`text-xs ${textMuted}`}>
+                    {t?.step4?.tipFormat ?? 'Tipp: Hochformat (3:4) funktioniert am besten'}
+                  </p>
                 </div>
               </div>
             )}
           </div>
 
           <div className={`mt-6 p-4 rounded-xl ${darkMode ? 'bg-blue-900/20' : 'bg-blue-50'}`}>
-            <h4 className={`font-display font-bold text-sm mb-2 ${darkMode ? 'text-blue-300' : 'text-blue-800'}`}>
+            <h4
+              className={`font-display font-bold text-sm mb-2 ${darkMode ? 'text-blue-300' : 'text-blue-800'}`}
+            >
               {t?.step4?.tipsTitle ?? 'Tipps für ein perfektes Foto:'}
             </h4>
             <ul className={`text-xs space-y-1 ${darkMode ? 'text-blue-200' : 'text-blue-700'}`}>
@@ -333,7 +366,13 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
       </div>
 
       {showCropper && tempImage && (
-        <ImageCropper imageSrc={tempImage} onCropComplete={handleCropComplete} onCancel={handleCropCancel} aspectRatio={3 / 4} t={t} />
+        <ImageCropper
+          imageSrc={tempImage}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={3 / 4}
+          t={t}
+        />
       )}
 
       {isWindowDragging && !showCropper && (
@@ -352,7 +391,7 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({ onNavigationVisibilityChange, s
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Step4Photo;
+export default Step4Photo

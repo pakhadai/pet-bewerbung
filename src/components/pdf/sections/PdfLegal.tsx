@@ -1,34 +1,36 @@
-import React from 'react';
-import { View, Text } from '@react-pdf/renderer';
-import { commonStyles, pdfBorderRadius } from '../PdfBase';
-import type { PetData } from '../../../types/form';
-import type { PdfTranslations } from '../../../services/pdfService';
-import { buildPdfSectionHeadingStyle, type PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
-import { sanitizeForPdf, withFallback } from '../../../utils/documentHelpers';
-import { getShowAdvancedHealthInfo } from '../../../utils/getShowAdvancedHealthInfo';
+import type { TextProps } from '@react-pdf/renderer'
+import { Text, View } from '@react-pdf/renderer'
+import React from 'react'
+import type { PdfTranslations } from '../../../services/pdfService'
+import type { PetData } from '../../../types/form'
+import { sanitizeForPdf, withFallback } from '../../../utils/documentHelpers'
+import { getShowAdvancedHealthInfo } from '../../../utils/getShowAdvancedHealthInfo'
+import { commonStyles, pdfBorderRadius } from '../PdfBase'
+import {
+  buildPdfSectionHeadingStyle,
+  type PdfTemplateConfig,
+} from '../templates/getPdfTemplateConfig'
 
 export interface PdfLegalProps {
-  data: PetData;
-  t: PdfTranslations;
-  templateConfig: PdfTemplateConfig;
+  data: PetData
+  t: PdfTranslations
+  templateConfig: PdfTemplateConfig
 }
 
-const s = (val: unknown) => sanitizeForPdf(withFallback(val));
+const s = (val: unknown) => sanitizeForPdf(withFallback(val))
+const asTextStyle = (style: unknown): TextProps['style'] => style as unknown as TextProps['style']
 
 export const PdfLegal: React.FC<PdfLegalProps> = ({ data, t, templateConfig }) => {
-  if (!getShowAdvancedHealthInfo(data)) return null;
-  const { colors } = templateConfig;
+  if (!getShowAdvancedHealthInfo(data)) return null
+  const { colors } = templateConfig
 
-  const headingStyle = buildPdfSectionHeadingStyle(templateConfig);
+  const headingStyle = buildPdfSectionHeadingStyle(templateConfig) ?? {}
 
-  const textColor = '#334155';
-  const textStyle = [
-    commonStyles.text,
-    { color: textColor, fontWeight: 'normal', fontStyle: 'normal', fontSize: 10 },
-  ];
+  const textColor = '#334155'
+  const baseTextStyle = { ...commonStyles.text, color: textColor, fontSize: 10 }
 
-  const yes = t.labels.yes ?? 'Yes';
-  const no = t.labels.no ?? 'No';
+  const yes = t.labels.yes ?? 'Yes'
+  const no = t.labels.no ?? 'No'
 
   return (
     <View style={commonStyles.sectionBlock} key="legal">
@@ -40,57 +42,76 @@ export const PdfLegal: React.FC<PdfLegalProps> = ({ data, t, templateConfig }) =
             backgroundColor: colors.light,
             borderRadius: pdfBorderRadius(
               templateConfig.templateType === 'modern' ||
-              templateConfig.templateType === 'buddy' ||
-              templateConfig.templateType === 'buddyTest'
+                templateConfig.templateType === 'buddy' ||
+                templateConfig.templateType === 'buddyTest'
                 ? 4
                 : templateConfig.templateType === 'compact'
                   ? 2
-                  : 0,
+                  : 0
             ),
           },
         ]}
       >
-        <Text style={[headingStyle, { marginBottom: 4 }]}>{t.doc.sectionLegal ?? 'Insurance & Legal'}</Text>
+        <Text style={asTextStyle([headingStyle, { marginBottom: 4 }])}>
+          {t.doc.sectionLegal ?? 'Insurance & Legal'}
+        </Text>
 
         <View style={commonStyles.gridRow}>
           <View style={commonStyles.gridHalf}>
-            <Text style={[commonStyles.label, { fontSize: 7 }]}>{t.labels.chipId ?? 'Chip ID'}</Text>
-            <Text style={[textStyle, { fontSize: 9 }]}>{s(data.chipId)}</Text>
+            <Text style={[commonStyles.label, { fontSize: 7 }]}>
+              {t.labels.chipId ?? 'Chip ID'}
+            </Text>
+            <Text style={[baseTextStyle, { fontSize: 9 }]}>{s(data.chipId)}</Text>
           </View>
           <View style={commonStyles.gridHalf}>
-            <Text style={[commonStyles.label, { fontSize: 7 }]}>{t.labels.insurance ?? 'Insurance'}</Text>
-            <Text style={[textStyle, { fontSize: 9 }]}>{s(data.insuranceProvider)}</Text>
+            <Text style={[commonStyles.label, { fontSize: 7 }]}>
+              {t.labels.insurance ?? 'Insurance'}
+            </Text>
+            <Text style={[baseTextStyle, { fontSize: 9 }]}>{s(data.insuranceProvider)}</Text>
           </View>
         </View>
 
         <View style={commonStyles.gridRow}>
           <View style={commonStyles.gridHalf}>
             <Text style={[commonStyles.label, { fontSize: 7 }]}>{t.labels.vet ?? 'Vet'}</Text>
-            <Text style={[textStyle, { fontSize: 9 }]}>
-              {[data.vetName, data.vetPhone].filter(Boolean).map((v) => s(v)).join(' · ') || '—'}
+            <Text style={[baseTextStyle, { fontSize: 9 }]}>
+              {[data.vetName, data.vetPhone]
+                .filter(Boolean)
+                .map((v) => s(v))
+                .join(' · ') || '—'}
             </Text>
           </View>
           <View style={commonStyles.gridHalf}>
-            <Text style={[commonStyles.label, { fontSize: 7 }]}>{t.labels.neutered ?? 'Neutered'}</Text>
-            <Text style={[textStyle, { fontSize: 9 }]}>{data.isNeutered ? yes : no}</Text>
+            <Text style={[commonStyles.label, { fontSize: 7 }]}>
+              {t.labels.neutered ?? 'Neutered'}
+            </Text>
+            <Text style={[baseTextStyle, { fontSize: 9 }]}>{data.isNeutered ? yes : no}</Text>
           </View>
         </View>
 
         <View style={[commonStyles.gridRow, { marginTop: 2 }]}>
           <View style={commonStyles.gridHalf}>
-            <Text style={[commonStyles.label, { fontSize: 7 }]}>{t.labels.vaccination ?? 'Vaccinated'}</Text>
-            <Text style={[textStyle, { fontSize: 9 }]}>{data.hasVaccination ? yes : no}</Text>
+            <Text style={[commonStyles.label, { fontSize: 7 }]}>
+              {t.labels.vaccination ?? 'Vaccinated'}
+            </Text>
+            <Text style={[baseTextStyle, { fontSize: 9 }]}>{data.hasVaccination ? yes : no}</Text>
           </View>
           <View style={commonStyles.gridHalf}>
-            <Text style={[commonStyles.label, { fontSize: 7 }]}>{t.labels.registration ?? 'Registered'}</Text>
-            <Text style={[textStyle, { fontSize: 9 }]}>{data.hasRegistration ? yes : no}</Text>
+            <Text style={[commonStyles.label, { fontSize: 7 }]}>
+              {t.labels.registration ?? 'Registered'}
+            </Text>
+            <Text style={[baseTextStyle, { fontSize: 9 }]}>{data.hasRegistration ? yes : no}</Text>
           </View>
         </View>
 
         <View style={commonStyles.gridRow}>
           <View style={{ flex: 1 }}>
-            <Text style={[commonStyles.label, { fontSize: 7 }]}>{t.labels.willingToPayDeposit ?? 'Pet Deposit'}</Text>
-            <Text style={[textStyle, { fontSize: 9 }]}>{data.willingToPayDeposit ? yes : no}</Text>
+            <Text style={[commonStyles.label, { fontSize: 7 }]}>
+              {t.labels.willingToPayDeposit ?? 'Pet Deposit'}
+            </Text>
+            <Text style={[baseTextStyle, { fontSize: 9 }]}>
+              {data.willingToPayDeposit ? yes : no}
+            </Text>
           </View>
         </View>
 
@@ -104,12 +125,15 @@ export const PdfLegal: React.FC<PdfLegalProps> = ({ data, t, templateConfig }) =
               borderRadius: pdfBorderRadius(0),
             }}
           >
-            <Text style={[commonStyles.label, { fontSize: 7 }]}>{t.labels.medicalConditions ?? t.step2Emergency.displayMedical}</Text>
-            <Text style={[textStyle, { fontSize: 8 }]}>{sanitizeForPdf(data.medicalConditions)}</Text>
+            <Text style={[commonStyles.label, { fontSize: 7 }]}>
+              {t.labels.medicalConditions ?? t.step2Emergency.displayMedical}
+            </Text>
+            <Text style={[baseTextStyle, { fontSize: 8 }]}>
+              {sanitizeForPdf(data.medicalConditions)}
+            </Text>
           </View>
         ) : null}
       </View>
     </View>
-  );
-};
-
+  )
+}

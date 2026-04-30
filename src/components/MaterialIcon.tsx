@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 /**
  * Self-hosted Material Symbols as SVG (public/icons/material).
@@ -31,16 +31,16 @@ export const MATERIAL_ICON_NAMES = [
   'task_alt',
   'tune',
   'verified',
-] as const;
+] as const
 
-export type MaterialIconName = (typeof MATERIAL_ICON_NAMES)[number];
+export type MaterialIconName = (typeof MATERIAL_ICON_NAMES)[number]
 
-const ICON_BASE = '/icons/material';
+const ICON_BASE = '/icons/material'
 
 export interface MaterialIconProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'children'> {
-  name: MaterialIconName;
+  name: MaterialIconName
   /** Use for loading spinner (progress_activity) */
-  spin?: boolean;
+  spin?: boolean
 }
 
 export const MaterialIcon: React.FC<MaterialIconProps> = ({
@@ -50,7 +50,7 @@ export const MaterialIcon: React.FC<MaterialIconProps> = ({
   style,
   ...rest
 }) => {
-  const url = `${ICON_BASE}/${name}.svg`;
+  const url = `${ICON_BASE}/${name}.svg`
   return (
     <span
       aria-hidden
@@ -74,7 +74,7 @@ export const MaterialIcon: React.FC<MaterialIconProps> = ({
       }}
       {...rest}
     />
-  );
-};
+  )
+}
 
-export default MaterialIcon;
+export default MaterialIcon

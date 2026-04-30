@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
 
 const LANGUAGES = [
   { id: 'de', label: 'Deutsch', flag: 'de' },
@@ -7,36 +7,36 @@ const LANGUAGES = [
   { id: 'it', label: 'Italiano', flag: 'it' },
   { id: 'rm', label: 'Rumantsch', flag: 'ch' },
   { id: 'en', label: 'English', flag: 'gb' },
-] as const;
+] as const
 
-export type LanguageId = typeof LANGUAGES[number]['id'];
+export type LanguageId = (typeof LANGUAGES)[number]['id']
 
 export interface LanguageSelectorProps {
-  value: string;
-  onChange: (langId: LanguageId) => void;
+  value: string
+  onChange: (langId: LanguageId) => void
 }
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({ value, onChange }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const currentLang = LANGUAGES.find(l => l.id === value) || LANGUAGES[0];
+  const currentLang = LANGUAGES.find((l) => l.id === value) || LANGUAGES[0]
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
+        setIsOpen(false)
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleSelect = (langId: LanguageId) => {
-    onChange(langId);
-    setIsOpen(false);
-  };
+    onChange(langId)
+    setIsOpen(false)
+  }
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -45,10 +45,14 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ value, onChange }) 
         className="flex items-center gap-2 px-3 py-2 rounded-lg theme-card theme-border border hover:theme-card-bg-hover hover:shadow-md"
         style={{
           transition: 'transform 500ms ease-in-out',
-          transform: 'scale(1)'
+          transform: 'scale(1)',
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.03)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.03)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)'
+        }}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-label={`Select language. Current: ${currentLang.label}`}
@@ -107,7 +111,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ value, onChange }) 
                   strokeWidth={3}
                   aria-hidden={true}
                 >
-                  <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               )}
             </button>
@@ -115,7 +119,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ value, onChange }) 
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default LanguageSelector;
+export default LanguageSelector

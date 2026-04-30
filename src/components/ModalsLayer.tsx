@@ -2,29 +2,31 @@
  * ModalsLayer - Renders all app modals in one place
  * FaqModal, LegalPages, PreviewModal
  */
-import React, { Suspense, useEffect } from 'react';
-import { X, Camera } from 'lucide-react';
-import FaqModal from './FaqModal';
-import LegalPages from './LegalPages';
-import ErrorBoundary from './ErrorBoundary';
-import { lazyRetry } from '../utils/lazyRetry';
-import type { TranslationObject } from '../types/template';
 
-const SwissDocument = lazyRetry(() => import('./SwissDocument'));
+import { Camera, X } from 'lucide-react'
+import React, { Suspense, useEffect } from 'react'
+import type { PetData, TemplateType } from '../types/form'
+import type { TranslationObject } from '../types/template'
+import { lazyRetry } from '../utils/lazyRetry'
+import ErrorBoundary from './ErrorBoundary'
+import FaqModal from './FaqModal'
+import LegalPages, { type LegalPageType } from './LegalPages'
+
+const SwissDocument = lazyRetry(() => import('./SwissDocument'))
 
 export interface ModalsLayerProps {
-  t: TranslationObject;
-  darkMode: boolean;
-  faqOpen: boolean;
-  setFaqOpen: (open: boolean) => void;
-  legalPage: string | null;
-  setLegalPage: (page: string | null) => void;
-  previewOpen: boolean;
-  previewTemplate: string;
-  closePreview: () => void;
-  data: Record<string, unknown>;
+  t: TranslationObject
+  darkMode: boolean
+  faqOpen: boolean
+  setFaqOpen: (open: boolean) => void
+  legalPage: LegalPageType
+  setLegalPage: (page: LegalPageType) => void
+  previewOpen: boolean
+  previewTemplate: TemplateType
+  closePreview: () => void
+  data: PetData
   /** When false (e.g. step 7 ThankYou), hide LegalPages */
-  showLayoutModals?: boolean;
+  showLayoutModals?: boolean
 }
 
 const ModalsLayer: React.FC<ModalsLayerProps> = ({
@@ -40,42 +42,44 @@ const ModalsLayer: React.FC<ModalsLayerProps> = ({
   data,
   showLayoutModals = true,
 }) => {
-  const anyModalOpen = faqOpen || legalPage !== null || previewOpen;
+  const anyModalOpen = faqOpen || legalPage !== null || previewOpen
 
   /** Block page scroll under any overlay */
   useEffect(() => {
-    if (!anyModalOpen) return;
-    const html = document.documentElement;
-    const body = document.body;
-    const prevHtml = html.style.overflow;
-    const prevBody = body.style.overflow;
-    html.style.overflow = 'hidden';
-    body.style.overflow = 'hidden';
+    if (!anyModalOpen) return
+    const html = document.documentElement
+    const body = document.body
+    const prevHtml = html.style.overflow
+    const prevBody = body.style.overflow
+    html.style.overflow = 'hidden'
+    body.style.overflow = 'hidden'
     return () => {
-      html.style.overflow = prevHtml;
-      body.style.overflow = prevBody;
-    };
-  }, [anyModalOpen]);
+      html.style.overflow = prevHtml
+      body.style.overflow = prevBody
+    }
+  }, [anyModalOpen])
 
   /** Close topmost overlay with Escape */
   useEffect(() => {
-    if (!anyModalOpen) return;
+    if (!anyModalOpen) return
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      e.preventDefault();
-      if (previewOpen) closePreview();
-      else if (legalPage) setLegalPage(null);
-      else if (faqOpen) setFaqOpen(false);
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [anyModalOpen, previewOpen, legalPage, faqOpen, closePreview, setLegalPage, setFaqOpen]);
+      if (e.key !== 'Escape') return
+      e.preventDefault()
+      if (previewOpen) closePreview()
+      else if (legalPage) setLegalPage(null)
+      else if (faqOpen) setFaqOpen(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [anyModalOpen, previewOpen, legalPage, faqOpen, closePreview, setLegalPage, setFaqOpen])
 
   return (
     <>
       <FaqModal isOpen={faqOpen} onClose={() => setFaqOpen(false)} t={t} darkMode={darkMode} />
 
-      {showLayoutModals && <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />}
+      {showLayoutModals && (
+        <LegalPages t={t} openPage={legalPage} onClose={() => setLegalPage(null)} />
+      )}
 
       {previewOpen && (
         <div className="fixed inset-0 z-50 print:hidden">
@@ -90,8 +94,8 @@ const ModalsLayer: React.FC<ModalsLayerProps> = ({
               <button
                 type="button"
                 onClick={(e) => {
-                  e.stopPropagation();
-                  closePreview();
+                  e.stopPropagation()
+                  closePreview()
                 }}
                 className="absolute top-4 right-4 z-20 text-white/70 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
                 aria-label={t?.ui?.closePreview ?? 'Close preview'}
@@ -110,7 +114,9 @@ const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     fallbackMessage="Failed to render document preview. Please check your data and try again."
                     onReset={closePreview}
                   >
-                    <Suspense fallback={<div className="bg-white p-8 rounded-lg">Loading preview...</div>}>
+                    <Suspense
+                      fallback={<div className="bg-white p-8 rounded-lg">Loading preview...</div>}
+                    >
                       <SwissDocument data={data} t={t} templateType={previewTemplate} />
                     </Suspense>
                   </ErrorBoundary>
@@ -121,6 +127,6 @@ const ModalsLayer: React.FC<ModalsLayerProps> = ({
         </div>
       )}
     </>
-  );
-};
-export default ModalsLayer;
+  )
+}
+export default ModalsLayer

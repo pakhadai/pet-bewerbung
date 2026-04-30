@@ -1,6 +1,6 @@
-import type { FormData } from './types/form';
+import type { PetData, TemplateType } from './types/form'
 
-export const INITIAL_DATA: FormData & Record<string, unknown> = {
+export const INITIAL_DATA: PetData = {
   lang: 'de',
   petType: 'dog',
   ownerName: '',
@@ -18,6 +18,7 @@ export const INITIAL_DATA: FormData & Record<string, unknown> = {
   photo: null,
   chipId: '',
   insuranceProvider: '',
+  insuranceNumber: '',
   vetName: '',
   vetPhone: '',
   medicalConditions: '',
@@ -43,13 +44,13 @@ export const INITIAL_DATA: FormData & Record<string, unknown> = {
   behaviorWithPets: '',
   /** Persisted with draft — must match PDF / preview (see useTemplateSelection). */
   selectedTemplate: 'classic',
-};
+}
 
 /** Generated / edited pet description (Step 3) */
-export const MAX_DESCRIPTION_LENGTH = 1090;
+export const MAX_DESCRIPTION_LENGTH = 1090
 
 /** Medical notes in advanced health step */
-export const MAX_MEDICAL_CONDITIONS_LENGTH = 300;
+export const MAX_MEDICAL_CONDITIONS_LENGTH = 300
 
 export const TEMPLATE_OPTIONS = [
   { id: 'classic', label: 'Classic' },
@@ -57,9 +58,17 @@ export const TEMPLATE_OPTIONS = [
   { id: 'compact', label: 'Compact' },
   { id: 'buddy', label: 'Buddy' },
   { id: 'buddyTest', label: 'Buddy (test)' },
-] as const;
+] as const
+
+export const TEMPLATE_LABELS: Record<TemplateType, string> = {
+  classic: 'Classic',
+  modern: 'Modern',
+  compact: 'Compact',
+  buddy: 'Buddy',
+  buddyTest: 'Buddy (test)',
+}
 
 /** Full-size logo in /public (WebP) — PDF, templates, previews. */
-export const PUBLIC_LOGO_PATH = '/logo.webp';
+export const PUBLIC_LOGO_PATH = '/logo.webp'
 /** Small WebP for header / LCP (~80px); generated from logo.webp via sharp-cli. */
-export const PUBLIC_LOGO_HEADER_PATH = '/logo-header.webp';
+export const PUBLIC_LOGO_HEADER_PATH = '/logo-header.webp'

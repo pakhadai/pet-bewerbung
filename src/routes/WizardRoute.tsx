@@ -3,23 +3,24 @@
  * Handles rendering of wizard steps (1-6)
  * Uses WizardContext for data, updateData, t, darkMode, animDir
  */
-import React from 'react';
+import React from 'react'
 import {
   Step1Details,
   Step2HealthInsurance,
   Step3Description,
   Step4Photo,
-  Step5TemplateSelect,
   Step5Preview,
-} from '../components/steps/index';
+  Step5TemplateSelect,
+} from '../components/steps/index'
+import type { TemplateType } from '../types/form'
 
 interface WizardRouteProps {
-  step: number;
-  selectedTemplate: string;
-  onSelectTemplate: (templateId: string) => void;
-  showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
-  onGenerateText: () => void;
-  onNavigationVisibilityChange: (visible: boolean) => void;
+  step: number
+  selectedTemplate: TemplateType
+  onSelectTemplate: (templateId: TemplateType) => void
+  showToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void
+  onGenerateText: () => void
+  onNavigationVisibilityChange: (visible: boolean) => void
 }
 
 export const WizardRoute: React.FC<WizardRouteProps> = ({
@@ -32,30 +33,30 @@ export const WizardRoute: React.FC<WizardRouteProps> = ({
 }) => {
   switch (step) {
     case 1:
-      return <Step1Details />;
+      return <Step1Details />
     case 2:
-      return <Step2HealthInsurance />;
+      return <Step2HealthInsurance />
     case 3:
-      return <Step3Description onGenerate={onGenerateText} />;
+      return <Step3Description onGenerate={onGenerateText} />
     case 4:
       return (
         <Step4Photo
           onNavigationVisibilityChange={onNavigationVisibilityChange}
           showToast={showToast}
         />
-      );
+      )
     case 5:
       return (
         <Step5TemplateSelect
           selectedTemplate={selectedTemplate}
           onSelectTemplate={onSelectTemplate}
         />
-      );
+      )
     case 6:
-      return <Step5Preview selectedTemplate={selectedTemplate} />;
+      return <Step5Preview selectedTemplate={selectedTemplate} />
     default:
-      return null;
+      return null
   }
-};
+}
 
-export default WizardRoute;
+export default WizardRoute

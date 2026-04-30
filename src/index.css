@@ -31,10 +31,14 @@ html.dark body {
     border-radius: 20px 5px 20px 5px / 5px 20px 5px 20px;
   }
   .sketch-icon {
-    font-variation-settings: 'FILL' 0, 'wght' 300;
+    font-variation-settings:
+      "FILL" 0,
+      "wght" 300;
   }
   .sketch-icon-filled {
-    font-variation-settings: 'FILL' 1, 'wght' 400;
+    font-variation-settings:
+      "FILL" 1,
+      "wght" 400;
   }
   .blob-shape,
   .blob-accent {
@@ -63,7 +67,9 @@ html.dark body {
 
 /* Respect user preference for reduced motion (accessibility, battery on mobile) */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-play-state: paused !important;
   }
 }

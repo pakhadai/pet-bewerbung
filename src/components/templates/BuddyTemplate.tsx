@@ -3,40 +3,43 @@
  * Uses the same document sections and PetData fields as other templates.
  */
 
-import React from 'react';
-import { MapPin } from 'lucide-react';
-import PetPhoto from '../document/PetPhoto';
-import OwnerInfo from '../document/OwnerInfo';
-import PetDetails from '../document/PetDetails';
-import BehaviorSection from '../document/BehaviorSection';
-import DescriptionSection from '../document/DescriptionSection';
-import LegalSection from '../document/LegalSection';
-import ReferenceSection from '../document/ReferenceSection';
-import { PUBLIC_LOGO_PATH } from '../../constants';
-import type { FormData } from '../../types/form';
-import type { TemplateConfig, StyleOverrides } from './ClassicTemplate';
-import type { TranslationObject } from '../../types/template';
+import { MapPin } from 'lucide-react'
+import React from 'react'
+import { PUBLIC_LOGO_PATH } from '../../constants'
+import type { FormData } from '../../types/form'
+import type { TranslationObject } from '../../types/template'
+import BehaviorSection from '../document/BehaviorSection'
+import DescriptionSection from '../document/DescriptionSection'
+import LegalSection from '../document/LegalSection'
+import OwnerInfo from '../document/OwnerInfo'
+import PetDetails from '../document/PetDetails'
+import PetPhoto from '../document/PetPhoto'
+import ReferenceSection from '../document/ReferenceSection'
+import type { StyleOverrides, TemplateConfig } from './ClassicTemplate'
 
 export interface BuddyTemplateProps {
-  data: FormData;
-  t: TranslationObject;
-  customColors: unknown;
-  config: TemplateConfig;
-  styleOverrides: StyleOverrides;
+  data: FormData
+  t: TranslationObject
+  customColors: unknown
+  config: TemplateConfig
+  styleOverrides: StyleOverrides
 }
 
 const BuddyTemplate: React.FC<BuddyTemplateProps> = ({ data, t, customColors, config }) => {
-  const doc = t.doc;
+  const doc = t.doc
 
-  const cityDate =
-    data.city?.toString().trim() ? `${String(data.city).trim()}, ${config.dateLabel}` : config.dateLabel;
+  const cityDate = data.city?.toString().trim()
+    ? `${String(data.city).trim()}, ${config.dateLabel}`
+    : config.dateLabel
 
   return (
     <>
       <header className={config.headerContainer}>
         <div className={config.headerFlex}>
           <div className={config.headerIconContainer}>
-            <div className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}>
+            <div
+              className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}
+            >
               <img
                 src={PUBLIC_LOGO_PATH}
                 alt=""
@@ -61,15 +64,28 @@ const BuddyTemplate: React.FC<BuddyTemplateProps> = ({ data, t, customColors, co
       </header>
 
       <div className={config.mainLayout}>
-        <aside className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''}`}>
-          <PetPhoto photo={data.photo} petType={data.petType} t={t} variant="buddy" customColors={customColors} />
+        <aside
+          className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''}`}
+        >
+          <PetPhoto
+            photo={data.photo}
+            petType={data.petType}
+            t={t}
+            variant="buddy"
+            customColors={customColors}
+          />
           <OwnerInfo data={data} t={t} variant="buddy" customColors={customColors} />
           <BehaviorSection data={data} t={t} variant="buddy" customColors={customColors} />
         </aside>
 
         <main className={`${config.mainWidth} ${config.mainSpace}`}>
           <PetDetails data={data} t={t} variant="buddy" customColors={customColors} />
-          <DescriptionSection text={data.generatedText} t={t} variant="buddy" customColors={customColors} />
+          <DescriptionSection
+            text={data.generatedText}
+            t={t}
+            variant="buddy"
+            customColors={customColors}
+          />
           <LegalSection data={data} t={t} variant="buddy" customColors={customColors} />
           <ReferenceSection data={data} t={t} variant="buddy" customColors={customColors} />
         </main>
@@ -91,10 +107,10 @@ const BuddyTemplate: React.FC<BuddyTemplateProps> = ({ data, t, customColors, co
         </div>
       </footer>
     </>
-  );
-};
+  )
+}
 
-export default BuddyTemplate;
+export default BuddyTemplate
 
 export const getBuddyConfig = (today: string): TemplateConfig => ({
   container:
@@ -120,4 +136,4 @@ export const getBuddyConfig = (today: string): TemplateConfig => ({
   footerSignContainer: 'w-44 border-b border-[#abefe8]/50 pb-2',
   footerSignText: 'text-[0.6875rem] uppercase tracking-[0.1em] text-[#f8f9ff]/90 text-right',
   badge: null,
-});
+})

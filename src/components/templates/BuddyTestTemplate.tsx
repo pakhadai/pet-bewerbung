@@ -3,33 +3,34 @@
  * колонки з overflow для стабільності на A4 (контент скролиться всередині сторінки).
  */
 
-import React from 'react';
-import { MapPin } from 'lucide-react';
-import PetPhoto from '../document/PetPhoto';
-import OwnerInfo from '../document/OwnerInfo';
-import PetDetails from '../document/PetDetails';
-import BehaviorSection from '../document/BehaviorSection';
-import DescriptionSection from '../document/DescriptionSection';
-import LegalSection from '../document/LegalSection';
-import ReferenceSection from '../document/ReferenceSection';
-import { PUBLIC_LOGO_PATH } from '../../constants';
-import type { FormData } from '../../types/form';
-import type { TemplateConfig, StyleOverrides } from './ClassicTemplate';
-import type { TranslationObject } from '../../types/template';
+import { MapPin } from 'lucide-react'
+import React from 'react'
+import { PUBLIC_LOGO_PATH } from '../../constants'
+import type { FormData } from '../../types/form'
+import type { TranslationObject } from '../../types/template'
+import BehaviorSection from '../document/BehaviorSection'
+import DescriptionSection from '../document/DescriptionSection'
+import LegalSection from '../document/LegalSection'
+import OwnerInfo from '../document/OwnerInfo'
+import PetDetails from '../document/PetDetails'
+import PetPhoto from '../document/PetPhoto'
+import ReferenceSection from '../document/ReferenceSection'
+import type { StyleOverrides, TemplateConfig } from './ClassicTemplate'
 
 export interface BuddyTestTemplateProps {
-  data: FormData;
-  t: TranslationObject;
-  customColors: unknown;
-  config: TemplateConfig;
-  styleOverrides: StyleOverrides;
+  data: FormData
+  t: TranslationObject
+  customColors: unknown
+  config: TemplateConfig
+  styleOverrides: StyleOverrides
 }
 
 const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({ data, t, customColors, config }) => {
-  const doc = t.doc;
+  const doc = t.doc
 
-  const cityDate =
-    data.city?.toString().trim() ? `${String(data.city).trim()}, ${config.dateLabel}` : config.dateLabel;
+  const cityDate = data.city?.toString().trim()
+    ? `${String(data.city).trim()}, ${config.dateLabel}`
+    : config.dateLabel
 
   return (
     <>
@@ -42,7 +43,9 @@ const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({ data, t, customCo
             >
               Test
             </span>
-            <div className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}>
+            <div
+              className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}
+            >
               <img
                 src={PUBLIC_LOGO_PATH}
                 alt=""
@@ -72,14 +75,25 @@ const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({ data, t, customCo
         <aside
           className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''} min-h-0 overflow-y-auto pr-1`}
         >
-          <PetPhoto photo={data.photo} petType={data.petType} t={t} variant="buddyTest" customColors={customColors} />
+          <PetPhoto
+            photo={data.photo}
+            petType={data.petType}
+            t={t}
+            variant="buddyTest"
+            customColors={customColors}
+          />
           <OwnerInfo data={data} t={t} variant="buddyTest" customColors={customColors} />
           <BehaviorSection data={data} t={t} variant="buddyTest" customColors={customColors} />
         </aside>
 
         <main className={`${config.mainWidth} ${config.mainSpace} min-h-0 overflow-y-auto pl-1`}>
           <PetDetails data={data} t={t} variant="buddyTest" customColors={customColors} />
-          <DescriptionSection text={data.generatedText} t={t} variant="buddyTest" customColors={customColors} />
+          <DescriptionSection
+            text={data.generatedText}
+            t={t}
+            variant="buddyTest"
+            customColors={customColors}
+          />
           <LegalSection data={data} t={t} variant="buddyTest" customColors={customColors} />
           <ReferenceSection data={data} t={t} variant="buddyTest" customColors={customColors} />
         </main>
@@ -88,7 +102,9 @@ const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({ data, t, customCo
       <footer className={config.footerContainer}>
         <div className="flex justify-between items-end gap-4 w-full">
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-200">Test layout</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-200">
+              Test layout
+            </span>
             <a
               href="https://pet-bewerbung.ch"
               className="font-sans text-[0.6875rem] uppercase tracking-[0.1em] font-bold text-[#abefe8] hover:underline"
@@ -104,15 +120,16 @@ const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({ data, t, customCo
         </div>
       </footer>
     </>
-  );
-};
+  )
+}
 
-export default BuddyTestTemplate;
+export default BuddyTestTemplate
 
 export const getBuddyTestConfig = (today: string): TemplateConfig => ({
   container:
     'w-[210mm] h-[292mm] bg-[#fffefb] text-[#0b1c30] p-[9mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden border-2 border-dashed border-amber-400/50 rounded-xl',
-  headerContainer: 'mb-0 pb-5 px-2 -mx-1 pt-2 bg-gradient-to-r from-[#eff4ff] to-[#fff7ed] border-b-2 border-amber-400/30',
+  headerContainer:
+    'mb-0 pb-5 px-2 -mx-1 pt-2 bg-gradient-to-r from-[#eff4ff] to-[#fff7ed] border-b-2 border-amber-400/30',
   headerFlex: 'flex items-start justify-between gap-4',
   headerIconContainer: 'flex items-center gap-3 min-w-0 flex-wrap',
   headerIconBg: 'bg-white p-2 rounded-xl border-2 border-amber-200/80 shadow-md shrink-0',
@@ -134,4 +151,4 @@ export const getBuddyTestConfig = (today: string): TemplateConfig => ({
   footerSignContainer: 'w-44 border-b border-[#abefe8]/50 pb-2',
   footerSignText: 'text-[0.6875rem] uppercase tracking-[0.1em] text-[#f8f9ff]/90 text-right',
   badge: null,
-});
+})

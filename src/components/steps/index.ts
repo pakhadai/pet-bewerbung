@@ -16,10 +16,10 @@
  * | Step6ThankYou.tsx         | 7      | Thank you page                       |
  */
 
-export { default as Step1Details } from './Step1Details';
-export { default as Step2HealthInsurance } from './Step2HealthInsurance';
-export { default as Step3Description } from './Step3Description';
-export { default as Step4Photo } from './Step4Photo';
-export { default as Step5TemplateSelect } from './Step5TemplateSelect';
-export { default as Step5Preview } from './Step5Preview';
-export { default as Step6ThankYou } from './Step6ThankYou';
+export { default as Step1Details } from './Step1Details'
+export { default as Step2HealthInsurance } from './Step2HealthInsurance'
+export { default as Step3Description } from './Step3Description'
+export { default as Step4Photo } from './Step4Photo'
+export { default as Step5Preview } from './Step5Preview'
+export { default as Step5TemplateSelect } from './Step5TemplateSelect'
+export { default as Step6ThankYou } from './Step6ThankYou'

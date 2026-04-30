@@ -1,24 +1,24 @@
-import { useState, useCallback } from 'react';
-import { TEMPLATE_OPTIONS } from '../constants';
-import { useFormStore } from '../stores/formStore';
-import type { TemplateType } from '../types/form';
+import { useCallback, useState } from 'react'
+import { TEMPLATE_OPTIONS } from '../constants'
+import { useFormStore } from '../stores/formStore'
+import type { TemplateType } from '../types/form'
 
 export interface UseTemplateSelectionReturn {
   /** Currently selected template ID (persisted in form store — same as PDF download) */
-  selectedTemplate: string;
+  selectedTemplate: TemplateType
   /** Set the selected template */
-  setSelectedTemplate: (templateId: string) => void;
+  setSelectedTemplate: (templateId: TemplateType) => void
   /** Whether preview modal is open */
-  previewOpen: boolean;
+  previewOpen: boolean
   /** Template ID being previewed */
-  previewTemplate: string;
+  previewTemplate: TemplateType
   /** Open preview modal for a template */
-  openPreview: (templateId: string) => void;
+  openPreview: (templateId: TemplateType) => void
   /** Close preview modal */
-  closePreview: () => void;
+  closePreview: () => void
 }
 
-const defaultId = TEMPLATE_OPTIONS[0].id;
+const defaultId = TEMPLATE_OPTIONS[0].id
 
 /**
  * Template selection — source of truth is Zustand `data.selectedTemplate` (saved with draft).
@@ -26,32 +26,32 @@ const defaultId = TEMPLATE_OPTIONS[0].id;
  * while the on-screen preview could still show the last chosen design from a child view.
  */
 export const useTemplateSelection = (
-  initialTemplate: string = defaultId
+  initialTemplate: TemplateType = defaultId
 ): UseTemplateSelectionReturn => {
   const selectedTemplate = useFormStore((s) => {
-    const id = s.data.selectedTemplate;
-    return typeof id === 'string' && id.length > 0 ? id : initialTemplate;
-  });
-  const updateData = useFormStore((s) => s.updateData);
+    const id = s.data.selectedTemplate
+    return typeof id === 'string' && id.length > 0 ? (id as TemplateType) : initialTemplate
+  })
+  const updateData = useFormStore((s) => s.updateData)
 
   const setSelectedTemplate = useCallback(
-    (templateId: string) => {
-      updateData('selectedTemplate', templateId as TemplateType);
+    (templateId: TemplateType) => {
+      updateData('selectedTemplate', templateId)
     },
     [updateData]
-  );
+  )
 
-  const [previewOpen, setPreviewOpen] = useState<boolean>(false);
-  const [previewTemplate, setPreviewTemplate] = useState<string>(initialTemplate);
+  const [previewOpen, setPreviewOpen] = useState<boolean>(false)
+  const [previewTemplate, setPreviewTemplate] = useState<TemplateType>(initialTemplate)
 
-  const openPreview = useCallback((templateId: string) => {
-    setPreviewTemplate(templateId);
-    setPreviewOpen(true);
-  }, []);
+  const openPreview = useCallback((templateId: TemplateType) => {
+    setPreviewTemplate(templateId)
+    setPreviewOpen(true)
+  }, [])
 
   const closePreview = useCallback(() => {
-    setPreviewOpen(false);
-  }, []);
+    setPreviewOpen(false)
+  }, [])
 
   return {
     selectedTemplate,
@@ -60,5 +60,5 @@ export const useTemplateSelection = (
     previewTemplate,
     openPreview,
     closePreview,
-  };
-};
+  }
+}

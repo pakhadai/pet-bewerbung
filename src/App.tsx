@@ -9,21 +9,21 @@
  * while business logic is distributed across focused modules.
  */
 
-import React, { useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import AppProviders from './components/AppProviders';
-import AppContent from './components/AppContent';
-import RouteLangSync from './components/RouteLangSync';
-import RootRedirect from './components/RootRedirect';
-import { initUmami } from './utils/umami';
+import { useEffect } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import AppContent from './components/AppContent'
+import AppProviders from './components/AppProviders'
+import RootRedirect from './components/RootRedirect'
+import RouteLangSync from './components/RouteLangSync'
+import { initUmami } from './utils/umami'
 
 /**
  * App: locale URLs /{de|fr|it|en|rm}/ for SEO + BrowserRouter.
  */
 export default function App() {
   useEffect(() => {
-    initUmami();
-  }, []);
+    initUmami()
+  }, [])
 
   return (
     <BrowserRouter
@@ -45,5 +45,5 @@ export default function App() {
         />
       </Routes>
     </BrowserRouter>
-  );
+  )
 }

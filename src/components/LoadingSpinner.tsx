@@ -3,26 +3,26 @@
  * Reusable loading indicator for async operations
  */
 
-import React from 'react';
+import React from 'react'
 
 interface LoadingSpinnerProps {
-  message?: string;
-  size?: 'small' | 'medium' | 'large';
-  fullScreen?: boolean;
+  message?: string
+  size?: 'small' | 'medium' | 'large'
+  fullScreen?: boolean
 }
 
 const sizeMap = {
   small: '24px',
   medium: '48px',
   large: '64px',
-};
+}
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   message,
   size = 'medium',
   fullScreen = false,
 }) => {
-  const spinnerSize = sizeMap[size];
+  const spinnerSize = sizeMap[size]
 
   const containerStyle: React.CSSProperties = fullScreen
     ? {
@@ -44,7 +44,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
         padding: '2rem',
-      };
+      }
 
   const spinnerStyle: React.CSSProperties = {
     width: spinnerSize,
@@ -53,7 +53,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     borderTop: `4px solid #3b82f6`,
     borderRadius: '50%',
     animation: 'spin 1s linear infinite',
-  };
+  }
 
   return (
     <div style={containerStyle}>
@@ -79,7 +79,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         </p>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default LoadingSpinner;
+export default LoadingSpinner

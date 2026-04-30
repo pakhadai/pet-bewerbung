@@ -1,24 +1,24 @@
-import React from 'react';
-import { X, HelpCircle } from 'lucide-react';
-import FaqContent from './FaqContent';
-import type { TranslationObject } from '../types/template';
+import { HelpCircle, X } from 'lucide-react'
+import React from 'react'
+import type { TranslationObject } from '../types/template'
+import FaqContent from './FaqContent'
 
 export interface FaqModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  t?: TranslationObject;
-  darkMode?: boolean;
+  isOpen: boolean
+  onClose: () => void
+  t?: TranslationObject
+  darkMode?: boolean
 }
 
 /**
  * Modal wrapper for FAQ. Uses modular FaqContent for the answers panel.
  */
 const FaqModal: React.FC<FaqModalProps> = ({ isOpen, onClose, t, darkMode }) => {
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
-  const cardBg = darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200';
-  const textMain = darkMode ? 'text-white' : 'text-gray-900';
-  const faq = t?.faq;
+  const cardBg = darkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'
+  const textMain = darkMode ? 'text-white' : 'text-gray-900'
+  const faq = t?.faq
 
   return (
     <div
@@ -27,17 +27,19 @@ const FaqModal: React.FC<FaqModalProps> = ({ isOpen, onClose, t, darkMode }) => 
     >
       <div
         className={`w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl shadow-2xl border ${cardBg} overflow-hidden modal-enter`}
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`p-6 border-b flex-shrink-0 ${darkMode ? 'border-gray-700' : 'border-gray-100'} flex justify-between items-center`}>
+        <div
+          className={`p-6 border-b flex-shrink-0 ${darkMode ? 'border-gray-700' : 'border-gray-100'} flex justify-between items-center`}
+        >
           <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${darkMode ? 'bg-primary/20 text-primary' : 'bg-primary/10 text-primary-dark'}`}>
+            <div
+              className={`p-2 rounded-lg ${darkMode ? 'bg-primary/20 text-primary' : 'bg-primary/10 text-primary-dark'}`}
+            >
               <HelpCircle size={24} />
             </div>
-            <h2 className={`text-xl font-display font-bold ${textMain}`}>
-              {faq?.title || 'FAQ'}
-            </h2>
+            <h2 className={`text-xl font-display font-bold ${textMain}`}>{faq?.title || 'FAQ'}</h2>
           </div>
           <button
             onClick={onClose}
@@ -51,7 +53,7 @@ const FaqModal: React.FC<FaqModalProps> = ({ isOpen, onClose, t, darkMode }) => 
         <FaqContent t={t} darkMode={darkMode} className="flex-1 min-h-0 overflow-hidden" />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default FaqModal;
+export default FaqModal

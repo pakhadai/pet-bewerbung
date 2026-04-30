@@ -4,20 +4,28 @@
  * Uses React-PDF for rendering.
  */
 
-import React from 'react';
-import type { PetData, TemplateType } from '../types/form';
-import { PUBLIC_LOGO_PATH } from '../constants';
-import { toJpegDataUrl } from '../utils/imageCompression';
-import { blobUrlToDataUrl } from '../utils/pdfHelpers';
-import { buildPublicFileUrl } from '../utils/publicAssetUrl';
-import { generateQrDataUrl, getQrContent } from '../utils/qrCode';
+import React from 'react'
+import { PUBLIC_LOGO_PATH } from '../constants'
+import type { PetData, TemplateType } from '../types/form'
+import type { TranslationObject } from '../types/template'
+import { toJpegDataUrl } from '../utils/imageCompression'
+import { blobUrlToDataUrl } from '../utils/pdfHelpers'
+import { buildPublicFileUrl } from '../utils/publicAssetUrl'
+import { generateQrDataUrl, getQrContent } from '../utils/qrCode'
 
-export type PdfTranslations = ReturnType<typeof buildPdfTranslations>;
+export type PdfTranslations = ReturnType<typeof buildPdfTranslations>
+
+type PdfRootProps = {
+  data: PetData
+  t: PdfTranslations
+  logoUrl?: string
+  qrUrl?: string | null
+}
 
 /**
  * Build PDF translation object from app translations
  */
-export function buildPdfTranslations(t: Record<string, any>) {
+export function buildPdfTranslations(t: TranslationObject) {
   return {
     doc: {
       title: t?.doc?.title ?? 'Pet CV',
@@ -108,7 +116,7 @@ export function buildPdfTranslations(t: Record<string, any>) {
       secondaryContact: t?.step2Emergency?.secondaryContact ?? 'Zweiter Kontakt',
     },
     ui: { noDescription: t?.ui?.noDescription ?? '—' },
-  };
+  }
 }
 
 /**
@@ -120,24 +128,24 @@ export async function fetchLogoAsDataUrl(): Promise<string | null> {
       window.location.origin,
       import.meta.env.BASE_URL || '/',
       PUBLIC_LOGO_PATH
-    );
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const blob = await res.blob();
+    )
+    const res = await fetch(url)
+    if (!res.ok) return null
+    const blob = await res.blob()
     let dataUrl = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
     // @react-pdf/renderer Image is unreliable with WebP in some environments
     if (dataUrl.startsWith('data:image/webp')) {
-      dataUrl = await toJpegDataUrl(dataUrl);
+      dataUrl = await toJpegDataUrl(dataUrl)
     }
-    return dataUrl;
+    return dataUrl
   } catch (err) {
-    if (import.meta.env.DEV) console.warn('Logo fetch failed:', err);
-    return null;
+    if (import.meta.env.DEV) console.warn('Logo fetch failed:', err)
+    return null
   }
 }
 
@@ -146,25 +154,25 @@ export async function fetchLogoAsDataUrl(): Promise<string | null> {
  */
 export async function preparePdfData(data: PetData): Promise<PetData> {
   if (!data.photo || typeof data.photo !== 'string') {
-    return { ...data };
+    return { ...data }
   }
   try {
-    let photoUrl = data.photo;
+    let photoUrl = data.photo
     if (photoUrl.startsWith('blob:')) {
-      photoUrl = (await blobUrlToDataUrl(photoUrl)) ?? data.photo;
+      photoUrl = (await blobUrlToDataUrl(photoUrl)) ?? data.photo
     }
     if (photoUrl && photoUrl.startsWith('data:image/webp')) {
-      photoUrl = await toJpegDataUrl(photoUrl);
+      photoUrl = await toJpegDataUrl(photoUrl)
     }
-    return { ...data, photo: photoUrl };
+    return { ...data, photo: photoUrl }
   } catch (err) {
-    if (import.meta.env.DEV) console.warn('Photo conversion failed for PDF:', err);
-    return { ...data, photo: null };
+    if (import.meta.env.DEV) console.warn('Photo conversion failed for PDF:', err)
+    return { ...data, photo: null }
   }
 }
 
 /** Forces a fresh React tree for each render — @react-pdf/renderer may reuse state without this */
-let pdfRenderSeq = 0;
+let pdfRenderSeq = 0
 
 /**
  * Load the concrete PDF root (Classic/Modern/Compact) — avoids routing through one component,
@@ -173,16 +181,16 @@ let pdfRenderSeq = 0;
 async function loadPdfRootForTemplate(templateType: TemplateType) {
   switch (templateType) {
     case 'modern':
-      return (await import('../components/pdf/templates/ModernPdf')).default;
+      return (await import('../components/pdf/templates/ModernPdf')).default
     case 'compact':
-      return (await import('../components/pdf/templates/CompactPdf')).default;
+      return (await import('../components/pdf/templates/CompactPdf')).default
     case 'buddy':
-      return (await import('../components/pdf/templates/BuddyPdf')).default;
+      return (await import('../components/pdf/templates/BuddyPdf')).default
     case 'buddyTest':
-      return (await import('../components/pdf/templates/BuddyTestPdf')).default;
+      return (await import('../components/pdf/templates/BuddyTestPdf')).default
     case 'classic':
     default:
-      return (await import('../components/pdf/templates/ClassicPdf')).default;
+      return (await import('../components/pdf/templates/ClassicPdf')).default
   }
 }
 
@@ -197,21 +205,24 @@ export async function generatePdfBlob(
   templateType: TemplateType,
   pdfT: PdfTranslations
 ): Promise<Blob> {
-  const logoUrl = (await fetchLogoAsDataUrl()) || undefined;
-  const qrContent = getQrContent(data);
-  const qrUrl = qrContent ? await generateQrDataUrl(qrContent, { size: 400, margin: 2 }) : null;
+  const logoUrl = (await fetchLogoAsDataUrl()) || undefined
+  const qrContent = getQrContent(data)
+  const qrUrl = qrContent ? await generateQrDataUrl(qrContent, { size: 400, margin: 2 }) : null
 
-  const [{ pdf }, PdfRoot] = await Promise.all([import('@react-pdf/renderer'), loadPdfRootForTemplate(templateType)]);
+  const [{ pdf }, PdfRoot] = await Promise.all([
+    import('@react-pdf/renderer'),
+    loadPdfRootForTemplate(templateType),
+  ])
 
-  const instanceKey = `${templateType}-${++pdfRenderSeq}`;
+  const instanceKey = `${templateType}-${++pdfRenderSeq}`
 
   return pdf(
-    React.createElement(PdfRoot, {
+    React.createElement(PdfRoot as React.ComponentType<PdfRootProps>, {
       key: instanceKey,
       data,
       t: pdfT,
       logoUrl,
       qrUrl,
-    })
-  ).toBlob();
+    }) as unknown as React.ReactElement
+  ).toBlob()
 }

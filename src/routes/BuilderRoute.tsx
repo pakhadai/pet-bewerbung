@@ -1,59 +1,68 @@
-import React, { Suspense, lazy, useCallback, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import MaterialIcon from '../components/MaterialIcon';
-import ModalsLayer from '../components/ModalsLayer';
-import AccordionSection from '../components/builder/AccordionSection';
-import { WizardProvider } from '../context/WizardContext';
-import { useThemeContext, useToastContext, useTranslationContext } from '../context/WizardProviders';
-import { useFormStore } from '../stores/formStore';
-import { useTemplateSelection } from '../hooks';
-import { validateStep } from '../hooks/useFormValidation';
+import { lazy, Suspense, useCallback, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import AccordionSection from '../components/builder/AccordionSection'
+import Header from '../components/Header'
+import MaterialIcon from '../components/MaterialIcon'
+import ModalsLayer from '../components/ModalsLayer'
 import {
   Step1Details,
   Step2HealthInsurance,
   Step3Description,
   Step4Photo,
   Step5TemplateSelect,
-} from '../components/steps/index';
+} from '../components/steps/index'
+import { WizardProvider } from '../context/WizardContext'
+import { useThemeContext, useToastContext, useTranslationContext } from '../context/WizardProviders'
+import { useTemplateSelection } from '../hooks'
+import { validateStep } from '../hooks/useFormValidation'
+import { type Language, SUPPORTED_LANGS } from '../hooks/useTranslation'
+import { useFormStore } from '../stores/formStore'
 
-const SwissDocument = lazy(() => import('../components/SwissDocument'));
+const SwissDocument = lazy(() => import('../components/SwissDocument'))
 
 type Props = {
-  onGenerateText: () => void;
-};
+  onGenerateText: () => void
+}
 
-const noopAsync = async () => undefined;
-const noop = () => undefined;
+const noopAsync = async () => undefined
+const noop = () => undefined
 
 export default function BuilderRoute({ onGenerateText }: Props) {
-  const navigate = useNavigate();
-  const data = useFormStore((s) => s.data);
-  const resetForm = useFormStore((s) => s.resetForm);
-  const { t, lang, setLang } = useTranslationContext();
-  const { darkMode, toggleTheme, setDarkMode } = useThemeContext();
-  const { showToast } = useToastContext();
+  const navigate = useNavigate()
+  const data = useFormStore((s) => s.data)
+  const resetForm = useFormStore((s) => s.resetForm)
+  const { t, lang, setLang } = useTranslationContext()
+  const { darkMode, toggleTheme, setDarkMode } = useThemeContext()
+  const { showToast } = useToastContext()
 
-  const { selectedTemplate, setSelectedTemplate, previewOpen, previewTemplate, openPreview, closePreview } = useTemplateSelection();
-  const [inlinePreviewOpen, setInlinePreviewOpen] = useState<boolean>(false);
+  const {
+    selectedTemplate,
+    setSelectedTemplate,
+    previewOpen,
+    previewTemplate,
+    openPreview,
+    closePreview,
+  } = useTemplateSelection()
+  const [inlinePreviewOpen, setInlinePreviewOpen] = useState<boolean>(false)
 
-  const { isValid: isStep1Valid } = useMemo(() => validateStep(data as any, 1), [data]);
+  const { isValid: isStep1Valid } = useMemo(() => validateStep(data, 1), [data])
 
   const openPrint = useCallback(() => {
-    const w = window.open(`/${lang}/print`, '_blank', 'noopener,noreferrer');
+    const w = window.open(`/${lang}/print`, '_blank', 'noopener,noreferrer')
     if (!w) {
-      showToast(t?.ui?.popupBlocked ?? 'Please allow popups to open the print view.', 'warning');
+      showToast(t?.ui?.popupBlocked ?? 'Please allow popups to open the print view.', 'warning')
     }
-  }, [lang, showToast, t]);
+  }, [lang, showToast, t])
 
   const onLangChange = useCallback(
     (nextLang: string) => {
-      setLang(nextLang as any);
-      useFormStore.getState().updateData('lang', nextLang as any);
-      navigate(`/${nextLang}/builder`, { replace: true });
+      if (!SUPPORTED_LANGS.includes(nextLang as Language)) return
+      setLang(nextLang as Language)
+      useFormStore.getState().updateData('lang', nextLang as Language)
+      navigate(`/${nextLang}/builder`, { replace: true })
     },
     [navigate, setLang]
-  );
+  )
 
   const wizardContextValue = useMemo(
     () => ({
@@ -71,7 +80,7 @@ export default function BuilderRoute({ onGenerateText }: Props) {
       resetForm,
     }),
     [t, darkMode, openPrint, onLangChange, setDarkMode, showToast, resetForm]
-  );
+  )
 
   return (
     <>
@@ -89,7 +98,9 @@ export default function BuilderRoute({ onGenerateText }: Props) {
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
-                <h2 className={`font-display font-bold text-2xl md:text-3xl ${darkMode ? 'text-white' : 'text-text-main'}`}>
+                <h2
+                  className={`font-display font-bold text-2xl md:text-3xl ${darkMode ? 'text-white' : 'text-text-main'}`}
+                >
                   {t?.builder?.title ?? 'Pet-CV Builder'}
                 </h2>
                 <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-text-secondary'}`}>
@@ -113,8 +124,10 @@ export default function BuilderRoute({ onGenerateText }: Props) {
                   }`}
                   title={
                     isStep1Valid
-                      ? (t?.builder?.draftHint ?? 'Create a first draft PDF now (you can refine later).')
-                      : (t?.builder?.draftDisabledHint ?? 'Fill in the required basics first (Owner name, Pet name, Pet type).')
+                      ? (t?.builder?.draftHint ??
+                        'Create a first draft PDF now (you can refine later).')
+                      : (t?.builder?.draftDisabledHint ??
+                        'Fill in the required basics first (Owner name, Pet name, Pet type).')
                   }
                 >
                   <MaterialIcon name="auto_awesome" className="text-xl" />
@@ -124,10 +137,12 @@ export default function BuilderRoute({ onGenerateText }: Props) {
                   type="button"
                   onClick={openPrint}
                   className={`btn-press px-4 py-2 rounded-xl font-semibold flex items-center gap-2 border ${
-                    darkMode ? 'text-gray-100 bg-gray-800 border-gray-700 hover:bg-gray-750' : 'text-text-main bg-white border-gray-200 hover:bg-gray-50'
+                    darkMode
+                      ? 'text-gray-100 bg-gray-800 border-gray-700 hover:bg-gray-750'
+                      : 'text-text-main bg-white border-gray-200 hover:bg-gray-50'
                   }`}
                 >
-                  <MaterialIcon name="print" className="text-xl" />
+                  <MaterialIcon name="picture_as_pdf" className="text-xl" />
                   <span>{t?.ui?.print ?? 'PDF / Print'}</span>
                 </button>
               </div>
@@ -146,13 +161,15 @@ export default function BuilderRoute({ onGenerateText }: Props) {
 
                 <AccordionSection
                   title={t?.stepsNew?.step2?.title ?? 'Emergency & more'}
-                  description={t?.stepsNew?.step2?.subtitle ?? 'Vet, insurance, behavior, references'}
+                  description={
+                    t?.stepsNew?.step2?.subtitle ?? 'Vet, insurance, behavior, references'
+                  }
                 >
                   <Step2HealthInsurance embedded />
                 </AccordionSection>
 
                 <AccordionSection
-                  title={t?.stepsNew?.step3?.title ?? (t?.labels?.tellUsAboutPet ?? 'About your pet')}
+                  title={t?.stepsNew?.step3?.title ?? t?.labels?.tellUsAboutPet ?? 'About your pet'}
                   description={t?.labels?.descriptionHint ?? 'Personality, habits, special notes'}
                 >
                   <Step3Description embedded onGenerate={onGenerateText} />
@@ -169,15 +186,25 @@ export default function BuilderRoute({ onGenerateText }: Props) {
                   title={t?.stepsNew?.step5?.title ?? 'Template'}
                   description={t?.stepsNew?.step5?.subtitle ?? 'Choose the document design'}
                 >
-                  <Step5TemplateSelect embedded selectedTemplate={selectedTemplate as any} onSelectTemplate={setSelectedTemplate as any} />
+                  <Step5TemplateSelect
+                    embedded
+                    selectedTemplate={selectedTemplate}
+                    onSelectTemplate={setSelectedTemplate}
+                  />
                 </AccordionSection>
               </div>
 
               {/* Live preview (desktop) — opt-in to reduce cognitive load */}
               <div className="hidden lg:block lg:sticky lg:top-24">
-                <div className={`rounded-2xl border overflow-hidden ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-                  <div className={`px-4 py-3 border-b flex items-center justify-between ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                    <div className={`text-sm font-semibold ${darkMode ? 'text-gray-200' : 'text-text-main'}`}>
+                <div
+                  className={`rounded-2xl border overflow-hidden ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}
+                >
+                  <div
+                    className={`px-4 py-3 border-b flex items-center justify-between ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}
+                  >
+                    <div
+                      className={`text-sm font-semibold ${darkMode ? 'text-gray-200' : 'text-text-main'}`}
+                    >
                       {t?.ui?.preview ?? 'Preview'}
                     </div>
                     <div className="flex items-center gap-2">
@@ -185,7 +212,9 @@ export default function BuilderRoute({ onGenerateText }: Props) {
                         type="button"
                         onClick={() => openPreview(selectedTemplate)}
                         className={`text-xs font-semibold px-3 py-1 rounded-lg border ${
-                          darkMode ? 'border-gray-700 text-gray-200 hover:bg-gray-750' : 'border-gray-200 text-text-main hover:bg-gray-50'
+                          darkMode
+                            ? 'border-gray-700 text-gray-200 hover:bg-gray-750'
+                            : 'border-gray-200 text-text-main hover:bg-gray-50'
                         }`}
                       >
                         {t?.builder?.openPreview ?? 'Open'}
@@ -194,17 +223,24 @@ export default function BuilderRoute({ onGenerateText }: Props) {
                         type="button"
                         onClick={() => setInlinePreviewOpen((v) => !v)}
                         className={`text-xs font-semibold px-3 py-1 rounded-lg border ${
-                          darkMode ? 'border-gray-700 text-gray-200 hover:bg-gray-750' : 'border-gray-200 text-text-main hover:bg-gray-50'
+                          darkMode
+                            ? 'border-gray-700 text-gray-200 hover:bg-gray-750'
+                            : 'border-gray-200 text-text-main hover:bg-gray-50'
                         }`}
                         aria-expanded={inlinePreviewOpen}
                       >
-                        {inlinePreviewOpen ? (t?.builder?.hidePreview ?? 'Hide') : (t?.builder?.showPreview ?? 'Show')}
+                        {inlinePreviewOpen
+                          ? (t?.builder?.hidePreview ?? 'Hide')
+                          : (t?.builder?.showPreview ?? 'Show')}
                       </button>
                     </div>
                   </div>
 
                   {inlinePreviewOpen ? (
-                    <div className="overflow-auto flex justify-center bg-gray-100 dark:bg-gray-900/50" style={{ height: '72vh' }}>
+                    <div
+                      className="overflow-auto flex justify-center bg-gray-100 dark:bg-gray-900/50"
+                      style={{ height: '72vh' }}
+                    >
                       <div className="py-6">
                         <div
                           className="bg-white shadow-2xl rounded-sm relative"
@@ -216,15 +252,21 @@ export default function BuilderRoute({ onGenerateText }: Props) {
                             transformOrigin: 'top center',
                           }}
                         >
-                          <Suspense fallback={<div className="bg-white p-8 rounded-lg">Loading preview...</div>}>
-                            <SwissDocument data={data as any} t={t as any} templateType={selectedTemplate as any} />
+                          <Suspense
+                            fallback={
+                              <div className="bg-white p-8 rounded-lg">Loading preview...</div>
+                            }
+                          >
+                            <SwissDocument data={data} t={t} templateType={selectedTemplate} />
                           </Suspense>
                         </div>
                       </div>
                     </div>
                   ) : (
                     <div className={`p-5 ${darkMode ? 'text-gray-300' : 'text-text-secondary'}`}>
-                      <div className={`text-sm font-semibold ${darkMode ? 'text-gray-100' : 'text-text-main'}`}>
+                      <div
+                        className={`text-sm font-semibold ${darkMode ? 'text-gray-100' : 'text-text-main'}`}
+                      >
                         {t?.builder?.previewCollapsedTitle ?? 'Focus on the form first'}
                       </div>
                       <div className="text-sm mt-1 leading-relaxed">
@@ -237,17 +279,19 @@ export default function BuilderRoute({ onGenerateText }: Props) {
                           onClick={() => setInlinePreviewOpen(true)}
                           className="theme-button-primary btn-press px-4 py-2 rounded-xl font-semibold flex items-center gap-2"
                         >
-                          <MaterialIcon name="visibility" className="text-xl" />
+                          <MaterialIcon name="verified" className="text-xl" />
                           <span>{t?.builder?.showPreview ?? 'Show preview'}</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => openPreview(selectedTemplate)}
                           className={`btn-press px-4 py-2 rounded-xl font-semibold flex items-center gap-2 border ${
-                            darkMode ? 'text-gray-100 bg-gray-800 border-gray-700 hover:bg-gray-750' : 'text-text-main bg-white border-gray-200 hover:bg-gray-50'
+                            darkMode
+                              ? 'text-gray-100 bg-gray-800 border-gray-700 hover:bg-gray-750'
+                              : 'text-text-main bg-white border-gray-200 hover:bg-gray-50'
                           }`}
                         >
-                          <MaterialIcon name="open_in_new" className="text-xl" />
+                          <MaterialIcon name="arrow_forward" className="text-xl" />
                           <span>{t?.builder?.openPreview ?? 'Open preview'}</span>
                         </button>
                       </div>
@@ -275,7 +319,7 @@ export default function BuilderRoute({ onGenerateText }: Props) {
       </WizardProvider>
 
       <ModalsLayer
-        t={t as any}
+        t={t}
         darkMode={darkMode}
         faqOpen={false}
         setFaqOpen={noop}
@@ -284,10 +328,9 @@ export default function BuilderRoute({ onGenerateText }: Props) {
         previewOpen={previewOpen}
         previewTemplate={previewTemplate || selectedTemplate}
         closePreview={closePreview}
-        data={data as any}
+        data={data}
         showLayoutModals={false}
       />
     </>
-  );
+  )
 }
-

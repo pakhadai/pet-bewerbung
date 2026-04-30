@@ -3,94 +3,101 @@
  * Complete type definitions for pet CV form data
  */
 
-export type Language = 'de' | 'en' | 'fr' | 'it' | 'rm';
+export type Language = 'de' | 'en' | 'fr' | 'it' | 'rm'
 
-export type PetType = 'dog' | 'cat' | 'other';
+export type PetType = 'dog' | 'cat' | 'other'
 
-export type Gender = 'm' | 'f';
+export type Gender = 'm' | 'f'
 
-export type NoiseLevel = 'low' | 'medium' | 'high';
+export type NoiseLevel = 'low' | 'medium' | 'high'
 
-export type BehaviorLevel = 'good' | 'neutral' | 'bad';
+/** Behavior level used in UI + PDF (good/neutral/avoid) */
+export type BehaviorLevel = 'good' | 'neutral' | 'avoid'
 
 export interface PetData {
   // Step 1: Basic Info
-  ownerName: string;
-  street: string;
-  houseNumber: string;
-  postal: string;
-  city: string;
-  phone: string;
-  email: string;
+  ownerName: string
+  street: string
+  houseNumber: string
+  postal: string
+  city: string
+  phone: string
+  email: string
 
   // Pet Basic Info
-  name: string;
-  petType: PetType;
-  breed: string;
-  age: number | string;
-  weight: number | string;
-  gender: Gender;
+  name: string
+  petType: PetType
+  breed: string
+  age: number | string
+  weight: number | string
+  gender: Gender
 
   // Step 2: Health & Insurance
-  vetName: string;
-  vetPhone: string;
-  insuranceProvider: string;
-  insuranceNumber?: string;
-  chipId: string;
-  hasVaccination: boolean;
-  isNeutered: boolean;
-  hasRegistration: boolean;
-  medicalConditions: string;
+  vetName: string
+  vetPhone: string
+  insuranceProvider: string
+  insuranceNumber?: string
+  chipId: string
+  hasVaccination: boolean
+  isNeutered: boolean
+  hasRegistration: boolean
+  medicalConditions: string
 
   // Behavior
-  noiseLevel: NoiseLevel;
-  aloneTime: number | string;
-  activeHours: string;
-  behaviorWithChildren: BehaviorLevel | '';
-  behaviorWithPets: BehaviorLevel | '';
-  behaviorNotes?: string;
+  noiseLevel: NoiseLevel
+  aloneTime: number | string
+  activeHours: string
+  behaviorWithChildren: BehaviorLevel | ''
+  behaviorWithPets: BehaviorLevel | ''
+  behaviorNotes?: string
 
   // References
-  previousLandlordName: string;
-  previousLandlordPhone: string;
-  previousLandlordEmail?: string;
-  previousDuration: string;
-  emergencyContactName: string;
-  emergencyContactPhone: string;
-  emergencyContactRelation: string;
-  secondaryEmergencyContact?: string;
+  previousLandlordName: string
+  previousLandlordPhone: string
+  previousLandlordEmail?: string
+  previousDuration: string
+  emergencyContactName: string
+  emergencyContactPhone: string
+  emergencyContactRelation: string
+  secondaryEmergencyContact?: string
 
   // Step 3: Description
-  keywords?: string;
-  generatedText: string;
+  keywords?: string
+  generatedText: string
 
   // Step 4: Photo & Template
-  photo: string | null;
-  selectedTemplate?: TemplateType;
+  photo: string | null
+  selectedTemplate?: TemplateType
 
   // Extra
-  willingToPayDeposit?: boolean;
+  willingToPayDeposit?: boolean
 
   // Step 2: advanced health info visibility toggle (controls HTML preview + PDF blocks)
-  showAdvancedHealthInfo?: boolean;
+  showAdvancedHealthInfo?: boolean
 
   // Metadata
-  lang: Language;
-  createdAt?: string;
-  updatedAt?: string;
+  lang: Language
+  createdAt?: string
+  updatedAt?: string
 }
 
-/** Form data as stored in Zustand - flexible shape for form state */
-export type FormData = Partial<PetData> & Record<string, unknown>;
+/**
+ * Form data as stored in Zustand.
+ *
+ * Previously this was `Partial<PetData> & Record<string, unknown>`, which made TS treat
+ * the real store data (`PetData`) as incompatible (no string index signature).
+ * The app relies on a complete `INITIAL_DATA` baseline, so we keep this strict.
+ */
+export type FormData = PetData
 
-export type TemplateType = 'classic' | 'modern' | 'compact' | 'buddy' | 'buddyTest';
+export type TemplateType = 'classic' | 'modern' | 'compact' | 'buddy' | 'buddyTest'
 
 export interface FormValidationError {
-  field: keyof PetData;
-  message: string;
+  field: keyof PetData
+  message: string
 }
 
 export interface FormValidationResult {
-  isValid: boolean;
-  errors: FormValidationError[];
+  isValid: boolean
+  errors: FormValidationError[]
 }

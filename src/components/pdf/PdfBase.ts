@@ -3,8 +3,8 @@
  * Contains common styles, colors, helpers, and watermark component used across PDF templates
  */
 
-import { StyleSheet } from '@react-pdf/renderer';
-import { INITIAL_DATA } from '../../constants';
+import { StyleSheet } from '@react-pdf/renderer'
+import { INITIAL_DATA } from '../../constants'
 
 // ============= LOCALE HELPERS =============
 
@@ -13,19 +13,24 @@ import { INITIAL_DATA } from '../../constants';
  */
 export const getLocale = (lang: string | undefined): string => {
   switch (lang) {
-    case 'de': return 'de-CH';
-    case 'fr': return 'fr-CH';
-    case 'it': return 'it-CH';
-    case 'rm': return 'de-CH';
-    default: return 'en-GB';
+    case 'de':
+      return 'de-CH'
+    case 'fr':
+      return 'fr-CH'
+    case 'it':
+      return 'it-CH'
+    case 'rm':
+      return 'de-CH'
+    default:
+      return 'en-GB'
   }
-};
+}
 
 // ============= CONSTANTS =============
 
 // Page dimensions (A4)
-export const PAGE_WIDTH = 595.28;
-export const PAGE_HEIGHT = 841.89;
+export const PAGE_WIDTH = 595.28
+export const PAGE_HEIGHT = 841.89
 
 /** Distinct palettes so Classic / Modern / Compact read clearly in preview + PDF */
 export const TEMPLATE_COLORS: Record<
@@ -68,24 +73,36 @@ export const TEMPLATE_COLORS: Record<
     light: '#eff4ff',
     accent: '#006b5f',
   },
-};
+}
 
-export const DEFAULT_LAYOUT_ORDER = ['photo', 'owner', 'details', 'behavior', 'description', 'legal', 'reference'];
+export const DEFAULT_LAYOUT_ORDER = [
+  'photo',
+  'owner',
+  'details',
+  'behavior',
+  'description',
+  'legal',
+  'reference',
+]
 
 // Sidebar sections (left column)
-export const SIDEBAR_SECTION_IDS = ['photo', 'owner', 'behavior'];
+export const SIDEBAR_SECTION_IDS = ['photo', 'owner', 'behavior']
 // Main sections (right column)
-export const MAIN_SECTION_IDS = ['details', 'description', 'legal', 'reference'];
+export const MAIN_SECTION_IDS = ['details', 'description', 'legal', 'reference']
 
 /**
  * Get layout sections (fixed default - layout customization removed, premium no longer exists)
  */
-export const getLayoutSections = (): { sidebarSections: string[]; mainSections: string[]; visibleSections: string[] } => {
-  const visibleSections = [...DEFAULT_LAYOUT_ORDER];
-  const sidebarSections = visibleSections.filter(id => SIDEBAR_SECTION_IDS.includes(id));
-  const mainSections = visibleSections.filter(id => MAIN_SECTION_IDS.includes(id));
-  return { sidebarSections, mainSections, visibleSections };
-};
+export const getLayoutSections = (): {
+  sidebarSections: string[]
+  mainSections: string[]
+  visibleSections: string[]
+} => {
+  const visibleSections = [...DEFAULT_LAYOUT_ORDER]
+  const sidebarSections = visibleSections.filter((id) => SIDEBAR_SECTION_IDS.includes(id))
+  const mainSections = visibleSections.filter((id) => MAIN_SECTION_IDS.includes(id))
+  return { sidebarSections, mainSections, visibleSections }
+}
 
 // ============= COMMON PDF STYLES =============
 
@@ -95,7 +112,7 @@ export const getLayoutSections = (): { sidebarSections: string[]; mainSections: 
  * "Invalid border radius: undefined". Use this for any `borderRadius` that may be 0.
  */
 export function pdfBorderRadius(value: number): number | '0' {
-  return value === 0 ? '0' : value;
+  return value === 0 ? '0' : value
 }
 
 /**
@@ -103,7 +120,7 @@ export function pdfBorderRadius(value: number): number | '0' {
  * "Invalid border width: undefined" (falsy `0` → width undefined inside empty regex match).
  */
 export function pdfBorderWidth(value: number): number | '0' {
-  return value === 0 ? '0' : value;
+  return value === 0 ? '0' : value
 }
 
 // Use system fonts so no network required (Helvetica is built-in in react-pdf)
@@ -285,7 +302,7 @@ export const commonStyles = StyleSheet.create({
     height: '100%',
     objectFit: 'cover',
   },
-});
+})
 
 // ============= FONT FAMILIES =============
 
@@ -293,11 +310,11 @@ export const FONT_FAMILIES: Record<string, string> = {
   helvetica: 'Helvetica',
   courier: 'Courier',
   times: 'Times-Roman',
-};
+}
 
 // ============= RE-EXPORT CONSTANTS =============
 
 /**
  * Re-export INITIAL_DATA for use in PDF templates
  */
-export { INITIAL_DATA };
+export { INITIAL_DATA }

@@ -4,30 +4,36 @@
  * Theme: Gray/blue tones, soft borders, modern aesthetics
  */
 
-import React from 'react';
-import PetPhoto from '../document/PetPhoto';
-import OwnerInfo from '../document/OwnerInfo';
-import PetDetails from '../document/PetDetails';
-import BehaviorSection from '../document/BehaviorSection';
-import DescriptionSection from '../document/DescriptionSection';
-import LegalSection from '../document/LegalSection';
-import ReferenceSection from '../document/ReferenceSection';
-import { PUBLIC_LOGO_PATH } from '../../constants';
-import type { FormData } from '../../types/form';
-import type { TemplateConfig, StyleOverrides } from './ClassicTemplate';
-import type { TranslationObject } from '../../types/template';
+import React from 'react'
+import { PUBLIC_LOGO_PATH } from '../../constants'
+import type { FormData } from '../../types/form'
+import type { TranslationObject } from '../../types/template'
+import BehaviorSection from '../document/BehaviorSection'
+import DescriptionSection from '../document/DescriptionSection'
+import LegalSection from '../document/LegalSection'
+import OwnerInfo from '../document/OwnerInfo'
+import PetDetails from '../document/PetDetails'
+import PetPhoto from '../document/PetPhoto'
+import ReferenceSection from '../document/ReferenceSection'
+import type { StyleOverrides, TemplateConfig } from './ClassicTemplate'
 
 export interface ModernTemplateProps {
-  data: FormData;
-  t: TranslationObject;
-  customColors: unknown;
-  config: TemplateConfig;
-  styleOverrides: StyleOverrides;
+  data: FormData
+  t: TranslationObject
+  customColors: unknown
+  config: TemplateConfig
+  styleOverrides: StyleOverrides
 }
 
-const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, t, customColors, config, styleOverrides }) => {
-  const { header, accent, border, footer } = styleOverrides;
-  const doc = t.doc;
+const ModernTemplate: React.FC<ModernTemplateProps> = ({
+  data,
+  t,
+  customColors,
+  config,
+  styleOverrides,
+}) => {
+  const { header, accent, border, footer } = styleOverrides
+  const doc = t.doc
 
   return (
     <>
@@ -35,7 +41,10 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, t, customColors, 
       <div className={config.headerContainer} style={header}>
         <div className={config.headerFlex}>
           <div className={config.headerIconContainer}>
-            <div className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`} style={border}>
+            <div
+              className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}
+              style={border}
+            >
               <img
                 src={PUBLIC_LOGO_PATH}
                 alt=""
@@ -45,7 +54,9 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, t, customColors, 
             </div>
             <div className="flex flex-col">
               <h1 className={config.titleText}>{doc?.title ?? 'Pet Dossier'}</h1>
-              <p className={config.subtitleText} style={accent}>{doc?.subtitle ?? 'Application document'}</p>
+              <p className={config.subtitleText} style={accent}>
+                {doc?.subtitle ?? 'Application document'}
+              </p>
             </div>
           </div>
           <div className="text-right">
@@ -57,8 +68,16 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, t, customColors, 
       {/* Main Content - Sidebar + Main */}
       <div className={config.mainLayout}>
         {/* Sidebar */}
-        <div className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''}`}>
-          <PetPhoto photo={data.photo} petType={data.petType} t={t} variant="modern" customColors={customColors} />
+        <div
+          className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''}`}
+        >
+          <PetPhoto
+            photo={data.photo}
+            petType={data.petType}
+            t={t}
+            variant="modern"
+            customColors={customColors}
+          />
           <OwnerInfo data={data} t={t} variant="modern" customColors={customColors} />
           <BehaviorSection data={data} t={t} variant="modern" customColors={customColors} />
         </div>
@@ -66,7 +85,12 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, t, customColors, 
         {/* Main Content */}
         <div className={`${config.mainWidth} ${config.mainSpace}`}>
           <PetDetails data={data} t={t} variant="modern" customColors={customColors} />
-          <DescriptionSection text={data.generatedText} t={t} variant="modern" customColors={customColors} />
+          <DescriptionSection
+            text={data.generatedText}
+            t={t}
+            variant="modern"
+            customColors={customColors}
+          />
           <LegalSection data={data} t={t} variant="modern" customColors={customColors} />
           <ReferenceSection data={data} t={t} variant="modern" customColors={customColors} />
         </div>
@@ -75,9 +99,7 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, t, customColors, 
       {/* Footer - Subtle branding */}
       <div className={config.footerContainer} style={footer}>
         <div className="flex justify-between items-end">
-          <p className="text-[6px] text-teal-700/80 tracking-wide font-medium">
-            pet-bewerbung.ch
-          </p>
+          <p className="text-[6px] text-teal-700/80 tracking-wide font-medium">pet-bewerbung.ch</p>
           {config.footerSignContainer && (
             <div className={config.footerSignContainer}>
               <p className={config.footerSignText}>{doc?.sign ?? 'Signature'}</p>
@@ -86,10 +108,10 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, t, customColors, 
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default ModernTemplate;
+export default ModernTemplate
 
 /**
  * Template configuration for Modern template
@@ -109,12 +131,13 @@ export const getModernConfig = (today: string): TemplateConfig => ({
   mainLayout: 'flex gap-5 flex-1 min-h-0 overflow-hidden',
   sidebarWidth: 'w-[35%] flex-shrink-0',
   sidebarSpace: 'space-y-3',
-  sidebarShell: 'rounded-2xl bg-white/70 backdrop-blur-[2px] border border-teal-100/80 p-2.5 shadow-sm',
+  sidebarShell:
+    'rounded-2xl bg-white/70 backdrop-blur-[2px] border border-teal-100/80 p-2.5 shadow-sm',
   mainWidth: 'flex-1 min-w-0',
   mainSpace: 'space-y-3',
   footerContainer: 'mt-auto pt-3 border-t border-teal-200/60 flex-shrink-0 pb-[5mm]',
   footerText: 'text-[9px] text-slate-400 text-center mb-3',
   footerSignContainer: 'w-44 border-t border-slate-300 pt-3 mt-6',
   footerSignText: 'text-[9px] uppercase font-medium tracking-wider text-slate-500 text-center',
-  badge: null
-});
+  badge: null,
+})

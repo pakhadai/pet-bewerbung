@@ -3,57 +3,60 @@
  * Catches React rendering errors and displays fallback UI
  */
 
-import React, { Component, ReactNode, ErrorInfo } from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle, RefreshCw } from 'lucide-react'
+import type { ErrorInfo, ReactNode } from 'react'
+import { Component } from 'react'
 
 interface Props {
-  children: ReactNode;
-  fallback?: ReactNode;
-  fallbackTitle?: string;
-  fallbackMessage?: string;
-  onError?: (error: Error, errorInfo: ErrorInfo) => void;
-  onReset?: () => void;
+  children: ReactNode
+  fallback?: ReactNode
+  fallbackTitle?: string
+  fallbackMessage?: string
+  onError?: (error: Error, errorInfo: ErrorInfo) => void
+  onReset?: () => void
 }
 
 interface State {
-  hasError: boolean;
-  error: Error | null;
-  errorInfo: ErrorInfo | null;
+  hasError: boolean
+  error: Error | null
+  errorInfo: ErrorInfo | null
 }
 
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
-    super(props);
+    super(props)
     this.state = {
       hasError: false,
       error: null,
       errorInfo: null,
-    };
+    }
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
-    return { hasError: true, error };
+    return { hasError: true, error }
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     if (import.meta.env?.DEV) {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+      console.error('ErrorBoundary caught an error:', error, errorInfo)
     }
-    this.setState({ error, errorInfo });
-    this.props.onError?.(error, errorInfo);
+    this.setState({ error, errorInfo })
+    this.props.onError?.(error, errorInfo)
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
-    this.props.onReset?.();
-  };
+    this.setState({ hasError: false, error: null, errorInfo: null })
+    this.props.onReset?.()
+  }
 
   render() {
     if (this.state.hasError) {
-      if (this.props.fallback) return this.props.fallback;
+      if (this.props.fallback) return this.props.fallback
 
-      const title = this.props.fallbackTitle || 'Etwas ist schiefgelaufen';
-      const message = this.props.fallbackMessage || 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+      const title = this.props.fallbackTitle || 'Etwas ist schiefgelaufen'
+      const message =
+        this.props.fallbackMessage ||
+        'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.'
 
       return (
         <div className="flex flex-col items-center justify-center p-8 theme-card rounded-2xl border theme-border">
@@ -63,6 +66,7 @@ class ErrorBoundary extends Component<Props, State> {
           <h3 className="text-lg font-semibold theme-text mb-2">{title}</h3>
           <p className="text-sm theme-text-muted text-center mb-4 max-w-md">{message}</p>
           <button
+            type="button"
             onClick={this.handleReset}
             className="flex items-center gap-2 px-4 py-2 rounded-lg theme-button-primary transition-all hover:scale-105"
           >
@@ -70,11 +74,11 @@ class ErrorBoundary extends Component<Props, State> {
             Erneut versuchen
           </button>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }
 
-export default ErrorBoundary;
+export default ErrorBoundary

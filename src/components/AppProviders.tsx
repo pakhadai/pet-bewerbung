@@ -6,13 +6,13 @@
  * - Global styles
  */
 
-import React, { ReactNode } from 'react';
-import ErrorBoundary from './ErrorBoundary';
-import GlobalStyles from './GlobalStyles';
-import { WizardProviders } from '../context/WizardProviders';
+import React, { ReactNode } from 'react'
+import { WizardProviders } from '../context/WizardProviders'
+import ErrorBoundary from './ErrorBoundary'
+import GlobalStyles from './GlobalStyles'
 
 interface AppProvidersProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 /**
@@ -27,7 +27,7 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
         {children}
       </WizardProviders>
     </ErrorBoundary>
-  );
-};
+  )
+}
 
-export default AppProviders;
+export default AppProviders

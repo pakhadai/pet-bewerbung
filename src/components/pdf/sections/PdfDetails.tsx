@@ -1,27 +1,33 @@
-import React from 'react';
-import { View, Text } from '@react-pdf/renderer';
-import { commonStyles } from '../PdfBase';
-import type { PetData } from '../../../types/form';
-import type { PdfTranslations } from '../../../services/pdfService';
-import { buildPdfSectionHeadingStyle, type PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
-import { getGenderLabel, formatAge, formatWeight, sanitizeForPdf, withFallback } from '../../../utils/documentHelpers';
+import { Text, View } from '@react-pdf/renderer'
+import React from 'react'
+import type { PdfTranslations } from '../../../services/pdfService'
+import type { PetData } from '../../../types/form'
+import {
+  formatAge,
+  formatWeight,
+  getGenderLabel,
+  sanitizeForPdf,
+  withFallback,
+} from '../../../utils/documentHelpers'
+import { commonStyles } from '../PdfBase'
+import {
+  buildPdfSectionHeadingStyle,
+  type PdfTemplateConfig,
+} from '../templates/getPdfTemplateConfig'
 
 export interface PdfDetailsProps {
-  data: PetData;
-  t: PdfTranslations;
-  templateConfig: PdfTemplateConfig;
+  data: PetData
+  t: PdfTranslations
+  templateConfig: PdfTemplateConfig
 }
 
-const s = (val: unknown) => sanitizeForPdf(withFallback(val));
+const s = (val: unknown) => sanitizeForPdf(withFallback(val))
 
 export const PdfDetails: React.FC<PdfDetailsProps> = ({ data, t, templateConfig }) => {
-  const headingStyle = buildPdfSectionHeadingStyle(templateConfig);
+  const headingStyle = buildPdfSectionHeadingStyle(templateConfig)
 
-  const textColor = '#334155';
-  const textStyle = [
-    commonStyles.text,
-    { color: textColor, fontWeight: 'normal', fontStyle: 'normal', fontSize: 10 },
-  ];
+  const textColor = '#334155'
+  const textStyle = [commonStyles.text, { color: textColor, fontSize: 10 }]
 
   return (
     <View style={commonStyles.sectionBlock} key="details">
@@ -53,6 +59,5 @@ export const PdfDetails: React.FC<PdfDetailsProps> = ({ data, t, templateConfig 
         </View>
       </View>
     </View>
-  );
-};
-
+  )
+}

@@ -1,19 +1,21 @@
-import QRCode from 'qrcode';
+import QRCode from 'qrcode'
 
-import type { PetData } from '../types/form';
+import type { PetData } from '../types/form'
 
-type QrDataInput = Partial<PetData>;
+type QrDataInput = Partial<PetData>
 
 export function buildVCard(data: QrDataInput): string {
-  const name = String(data?.ownerName || '').trim();
-  const email = String(data?.email || '').trim();
-  const phone = String(data?.phone || '').trim().replace(/\s/g, '');
-  const street = [data?.street, data?.houseNumber].filter(Boolean).join(' ');
-  const city = String(data?.city || '');
-  const postal = String(data?.postal || '');
+  const name = String(data?.ownerName || '').trim()
+  const email = String(data?.email || '').trim()
+  const phone = String(data?.phone || '')
+    .trim()
+    .replace(/\s/g, '')
+  const street = [data?.street, data?.houseNumber].filter(Boolean).join(' ')
+  const city = String(data?.city || '')
+  const postal = String(data?.postal || '')
 
   const escapeVCard = (str: string) =>
-    str.replace(/\\/g, '\\\\').replace(/[;,]/g, '\\$&').replace(/\n/g, '\\n').replace(/\r/g, '');
+    str.replace(/\\/g, '\\\\').replace(/[;,]/g, '\\$&').replace(/\n/g, '\\n').replace(/\r/g, '')
 
   const lines = [
     'BEGIN:VCARD',
@@ -26,40 +28,43 @@ export function buildVCard(data: QrDataInput): string {
       ? `ADR:;;${escapeVCard(street)};${escapeVCard(city)};;${escapeVCard(postal)};CH`
       : null,
     'END:VCARD',
-  ].filter(Boolean) as string[];
+  ].filter(Boolean) as string[]
 
-  return lines.join('\r\n');
+  return lines.join('\r\n')
 }
 
 export function buildMailto(data: Record<string, unknown>): string | null {
-  const email = String(data?.email || '').trim();
-  if (!email) return null;
-  return `mailto:${email}`;
+  const email = String(data?.email || '').trim()
+  if (!email) return null
+  return `mailto:${email}`
 }
 
 export interface QrOptions {
-  size?: number;
-  margin?: number;
+  size?: number
+  margin?: number
 }
 
-export async function generateQrDataUrl(content: string, options: QrOptions = {}): Promise<string | null> {
-  const { size = 120, margin = 2 } = options;
-  if (!content || content.length < 2) return null;
+export async function generateQrDataUrl(
+  content: string,
+  options: QrOptions = {}
+): Promise<string | null> {
+  const { size = 120, margin = 2 } = options
+  if (!content || content.length < 2) return null
   try {
     return await QRCode.toDataURL(content, {
       width: size,
       margin,
       color: { dark: '#000000', light: '#ffffff' },
       errorCorrectionLevel: 'M',
-    });
+    })
   } catch (err) {
-    console.warn('QR generation failed:', err);
-    return null;
+    console.warn('QR generation failed:', err)
+    return null
   }
 }
 
 export function getQrContent(data: QrDataInput): string | null {
-  const hasContact = data?.ownerName || data?.email || data?.phone;
-  if (!hasContact) return null;
-  return buildVCard(data);
+  const hasContact = data?.ownerName || data?.email || data?.phone
+  if (!hasContact) return null
+  return buildVCard(data)
 }

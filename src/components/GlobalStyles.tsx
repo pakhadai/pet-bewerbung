@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 /**
  * GlobalStyles - CSS variables and utility classes
@@ -910,6 +910,6 @@ const GlobalStyles: React.FC = () => (
 
     @media print { @page { size: A4; margin: 0; } body { -webkit-print-color-adjust: exact; background: white; } .print\\:hidden { display: none !important; } }
   `}</style>
-);
+)
 
-export default GlobalStyles;
+export default GlobalStyles

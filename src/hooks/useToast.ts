@@ -1,21 +1,21 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-export type ToastType = 'info' | 'success' | 'error' | 'warning';
+export type ToastType = 'info' | 'success' | 'error' | 'warning'
 
 export interface Toast {
   /** Toast message */
-  msg: string;
+  msg: string
   /** Toast type (determines styling) */
-  type: ToastType;
+  type: ToastType
 }
 
 export interface UseToastReturn {
   /** Current toast (null if no toast) */
-  toast: Toast | null;
+  toast: Toast | null
   /** Show a toast message */
-  showToast: (msg: string, type?: ToastType) => void;
+  showToast: (msg: string, type?: ToastType) => void
   /** Hide the current toast */
-  hideToast: () => void;
+  hideToast: () => void
 }
 
 /**
@@ -26,41 +26,44 @@ export interface UseToastReturn {
  * @returns Toast state and handlers
  */
 export const useToast = (duration: number = 5000): UseToastReturn => {
-  const [toast, setToast] = useState<Toast | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [toast, setToast] = useState<Toast | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   /**
    * Show a toast message
    * Clears any existing toast and sets a new auto-dismiss timer
    */
-  const showToast = useCallback((msg: string, type: ToastType = 'info') => {
-    // Clear existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    setToast({ msg, type });
-    timeoutRef.current = setTimeout(() => setToast(null), duration);
-  }, [duration]);
+  const showToast = useCallback(
+    (msg: string, type: ToastType = 'info') => {
+      // Clear existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      setToast({ msg, type })
+      timeoutRef.current = setTimeout(() => setToast(null), duration)
+    },
+    [duration]
+  )
 
   /**
    * Manually hide the current toast
    */
   const hideToast = useCallback(() => {
     if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
     }
-    setToast(null);
-  }, []);
+    setToast(null)
+  }, [])
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+        clearTimeout(timeoutRef.current)
       }
-    };
-  }, []);
+    }
+  }, [])
 
-  return { toast, showToast, hideToast };
-};
+  return { toast, showToast, hideToast }
+}

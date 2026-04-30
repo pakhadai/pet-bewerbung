@@ -4,61 +4,67 @@
  * Theme: Black/slate colors, clean professional design
  */
 
-import React from 'react';
-import PetPhoto from '../document/PetPhoto';
-import OwnerInfo from '../document/OwnerInfo';
-import PetDetails from '../document/PetDetails';
-import BehaviorSection from '../document/BehaviorSection';
-import DescriptionSection from '../document/DescriptionSection';
-import LegalSection from '../document/LegalSection';
-import ReferenceSection from '../document/ReferenceSection';
-import { PUBLIC_LOGO_PATH } from '../../constants';
-import type { FormData } from '../../types/form';
-import type { TranslationObject } from '../../types/template';
+import React from 'react'
+import { PUBLIC_LOGO_PATH } from '../../constants'
+import type { FormData } from '../../types/form'
+import type { TranslationObject } from '../../types/template'
+import BehaviorSection from '../document/BehaviorSection'
+import DescriptionSection from '../document/DescriptionSection'
+import LegalSection from '../document/LegalSection'
+import OwnerInfo from '../document/OwnerInfo'
+import PetDetails from '../document/PetDetails'
+import PetPhoto from '../document/PetPhoto'
+import ReferenceSection from '../document/ReferenceSection'
 
 export interface TemplateConfig {
-  container: string;
-  headerContainer: string;
-  headerFlex: string;
-  headerIconContainer: string;
-  headerIconBg: string;
-  headerIconSize: number;
-  titleText: string;
-  subtitleText: string;
-  dateText: string;
-  dateLabel: string;
-  mainLayout: string;
-  sidebarWidth: string;
-  sidebarSpace: string;
-  mainWidth: string;
-  mainSpace: string;
+  container: string
+  headerContainer: string
+  headerFlex: string
+  headerIconContainer: string
+  headerIconBg: string
+  headerIconSize: number
+  titleText: string
+  subtitleText: string
+  dateText: string
+  dateLabel: string
+  mainLayout: string
+  sidebarWidth: string
+  sidebarSpace: string
+  mainWidth: string
+  mainSpace: string
   /** Optional shell around sidebar column (borders, tint) */
-  sidebarShell?: string;
-  footerContainer: string;
-  footerText: string;
-  footerSignContainer: string | null;
-  footerSignText: string;
-  badge: unknown;
+  sidebarShell?: string
+  footerContainer: string
+  footerText: string
+  footerSignContainer: string | null
+  footerSignText: string
+  badge: unknown
 }
 
 export interface StyleOverrides {
-  header?: React.CSSProperties;
-  accent?: React.CSSProperties;
-  border?: React.CSSProperties;
-  footer?: React.CSSProperties;
+  header?: React.CSSProperties
+  accent?: React.CSSProperties
+  border?: React.CSSProperties
+  footer?: React.CSSProperties
 }
 
 export interface ClassicTemplateProps {
-  data: FormData;
-  t: TranslationObject;
-  customColors: unknown;
-  config: TemplateConfig;
-  styleOverrides: StyleOverrides;
+  data: FormData
+  t: TranslationObject
+  customColors: unknown
+  config: TemplateConfig
+  styleOverrides: StyleOverrides
 }
 
-const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors, config, styleOverrides }) => {
-  const { header, accent, border, footer } = styleOverrides;
-  const doc = t.doc;
+const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
+  data,
+  t,
+  customColors,
+  config,
+  styleOverrides,
+}) => {
+  const { header, accent, border, footer } = styleOverrides
+  const doc = t.doc
 
   return (
     <>
@@ -66,7 +72,10 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors
       <div className={config.headerContainer} style={header}>
         <div className={config.headerFlex}>
           <div className={config.headerIconContainer}>
-            <div className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`} style={border}>
+            <div
+              className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}
+              style={border}
+            >
               <img
                 src={PUBLIC_LOGO_PATH}
                 alt=""
@@ -76,7 +85,9 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors
             </div>
             <div className="flex flex-col">
               <h1 className={config.titleText}>{doc?.title ?? 'Pet Dossier'}</h1>
-              <p className={config.subtitleText} style={accent}>{doc?.subtitle ?? 'Application document'}</p>
+              <p className={config.subtitleText} style={accent}>
+                {doc?.subtitle ?? 'Application document'}
+              </p>
             </div>
           </div>
           <div className="text-right">
@@ -88,8 +99,16 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors
       {/* Main Content - Sidebar + Main */}
       <div className={config.mainLayout}>
         {/* Sidebar */}
-        <div className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''}`}>
-          <PetPhoto photo={data.photo} petType={data.petType} t={t} variant="classic" customColors={customColors} />
+        <div
+          className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''}`}
+        >
+          <PetPhoto
+            photo={data.photo}
+            petType={data.petType}
+            t={t}
+            variant="classic"
+            customColors={customColors}
+          />
           <OwnerInfo data={data} t={t} variant="classic" customColors={customColors} />
           <BehaviorSection data={data} t={t} variant="classic" customColors={customColors} />
         </div>
@@ -97,7 +116,12 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors
         {/* Main Content */}
         <div className={`${config.mainWidth} ${config.mainSpace}`}>
           <PetDetails data={data} t={t} variant="classic" customColors={customColors} />
-          <DescriptionSection text={data.generatedText} t={t} variant="classic" customColors={customColors} />
+          <DescriptionSection
+            text={data.generatedText}
+            t={t}
+            variant="classic"
+            customColors={customColors}
+          />
           <LegalSection data={data} t={t} variant="classic" customColors={customColors} />
           <ReferenceSection data={data} t={t} variant="classic" customColors={customColors} />
         </div>
@@ -119,10 +143,10 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, t, customColors
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default ClassicTemplate;
+export default ClassicTemplate
 
 /**
  * Template configuration for Classic template
@@ -149,5 +173,5 @@ export const getClassicConfig = (today: string): TemplateConfig => ({
   footerText: 'text-[8px] text-slate-300 uppercase tracking-[0.08em] font-medium text-center mb-3',
   footerSignContainer: 'w-44 border-t border-slate-400 pt-2 mt-3',
   footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600 text-center',
-  badge: null
-});
+  badge: null,
+})

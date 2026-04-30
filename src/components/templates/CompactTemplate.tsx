@@ -4,30 +4,36 @@
  * Theme: Minimal gray/white, space-efficient design
  */
 
-import React from 'react';
-import PetPhoto from '../document/PetPhoto';
-import OwnerInfo from '../document/OwnerInfo';
-import PetDetails from '../document/PetDetails';
-import BehaviorSection from '../document/BehaviorSection';
-import DescriptionSection from '../document/DescriptionSection';
-import LegalSection from '../document/LegalSection';
-import ReferenceSection from '../document/ReferenceSection';
-import { PUBLIC_LOGO_PATH } from '../../constants';
-import type { FormData } from '../../types/form';
-import type { TemplateConfig, StyleOverrides } from './ClassicTemplate';
-import type { TranslationObject } from '../../types/template';
+import React from 'react'
+import { PUBLIC_LOGO_PATH } from '../../constants'
+import type { FormData } from '../../types/form'
+import type { TranslationObject } from '../../types/template'
+import BehaviorSection from '../document/BehaviorSection'
+import DescriptionSection from '../document/DescriptionSection'
+import LegalSection from '../document/LegalSection'
+import OwnerInfo from '../document/OwnerInfo'
+import PetDetails from '../document/PetDetails'
+import PetPhoto from '../document/PetPhoto'
+import ReferenceSection from '../document/ReferenceSection'
+import type { StyleOverrides, TemplateConfig } from './ClassicTemplate'
 
 export interface CompactTemplateProps {
-  data: FormData;
-  t: TranslationObject;
-  customColors: unknown;
-  config: TemplateConfig;
-  styleOverrides: StyleOverrides;
+  data: FormData
+  t: TranslationObject
+  customColors: unknown
+  config: TemplateConfig
+  styleOverrides: StyleOverrides
 }
 
-const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors, config, styleOverrides }) => {
-  const { header, accent, border, footer } = styleOverrides;
-  const doc = t.doc;
+const CompactTemplate: React.FC<CompactTemplateProps> = ({
+  data,
+  t,
+  customColors,
+  config,
+  styleOverrides,
+}) => {
+  const { header, accent, border, footer } = styleOverrides
+  const doc = t.doc
 
   return (
     <>
@@ -35,7 +41,10 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors
       <div className={config.headerContainer} style={header}>
         <div className={config.headerFlex}>
           <div className={config.headerIconContainer}>
-            <div className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`} style={border}>
+            <div
+              className={`${config.headerIconBg} flex items-center justify-center overflow-hidden p-1`}
+              style={border}
+            >
               <img
                 src={PUBLIC_LOGO_PATH}
                 alt=""
@@ -45,7 +54,9 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors
             </div>
             <div className="flex flex-col">
               <h1 className={config.titleText}>{doc?.title ?? 'Pet Dossier'}</h1>
-              <p className={config.subtitleText} style={accent}>{doc?.subtitle ?? 'Application document'}</p>
+              <p className={config.subtitleText} style={accent}>
+                {doc?.subtitle ?? 'Application document'}
+              </p>
             </div>
           </div>
           <div className="text-right">
@@ -57,8 +68,16 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors
       {/* Main Content - Sidebar + Main */}
       <div className={config.mainLayout}>
         {/* Sidebar */}
-        <div className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''}`}>
-          <PetPhoto photo={data.photo} petType={data.petType} t={t} variant="compact" customColors={customColors} />
+        <div
+          className={`${config.sidebarWidth} ${config.sidebarSpace} ${config.sidebarShell ?? ''}`}
+        >
+          <PetPhoto
+            photo={data.photo}
+            petType={data.petType}
+            t={t}
+            variant="compact"
+            customColors={customColors}
+          />
           <OwnerInfo data={data} t={t} variant="compact" customColors={customColors} />
           <BehaviorSection data={data} t={t} variant="compact" customColors={customColors} />
         </div>
@@ -66,7 +85,12 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors
         {/* Main Content */}
         <div className={`${config.mainWidth} ${config.mainSpace}`}>
           <PetDetails data={data} t={t} variant="compact" customColors={customColors} />
-          <DescriptionSection text={data.generatedText} t={t} variant="compact" customColors={customColors} />
+          <DescriptionSection
+            text={data.generatedText}
+            t={t}
+            variant="compact"
+            customColors={customColors}
+          />
           <LegalSection data={data} t={t} variant="compact" customColors={customColors} />
           <ReferenceSection data={data} t={t} variant="compact" customColors={customColors} />
         </div>
@@ -86,10 +110,10 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({ data, t, customColors
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default CompactTemplate;
+export default CompactTemplate
 
 /**
  * Template configuration for Compact template
@@ -116,5 +140,5 @@ export const getCompactConfig = (today: string): TemplateConfig => ({
   footerText: 'text-[8px] text-slate-400 text-center mb-2',
   footerSignContainer: 'w-40 border-t border-slate-300 pt-2 mt-5',
   footerSignText: 'text-[8px] uppercase font-medium tracking-wider text-slate-500 text-center',
-  badge: null
-});
+  badge: null,
+})

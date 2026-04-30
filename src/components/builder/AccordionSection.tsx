@@ -1,13 +1,18 @@
-import React from 'react';
+import React from 'react'
 
 export interface AccordionSectionProps {
-  title: React.ReactNode;
-  description?: React.ReactNode;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
+  title: React.ReactNode
+  description?: React.ReactNode
+  defaultOpen?: boolean
+  children: React.ReactNode
 }
 
-export default function AccordionSection({ title, description, defaultOpen, children }: AccordionSectionProps) {
+export default function AccordionSection({
+  title,
+  description,
+  defaultOpen,
+  children,
+}: AccordionSectionProps) {
   return (
     <details
       className="group rounded-2xl border theme-border theme-card overflow-hidden"
@@ -20,7 +25,10 @@ export default function AccordionSection({ title, description, defaultOpen, chil
         </div>
         <div className="shrink-0 mt-0.5">
           <span className="inline-flex items-center justify-center w-8 h-8 rounded-xl border theme-border theme-card group-open:bg-primary/10 group-open:border-primary/40 transition-colors">
-            <span className="text-lg leading-none theme-text group-open:text-primary transition-colors" aria-hidden>
+            <span
+              className="text-lg leading-none theme-text group-open:text-primary transition-colors"
+              aria-hidden
+            >
               +
             </span>
           </span>
@@ -28,6 +36,5 @@ export default function AccordionSection({ title, description, defaultOpen, chil
       </summary>
       <div className="px-5 pb-5 pt-0">{children}</div>
     </details>
-  );
+  )
 }
-

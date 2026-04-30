@@ -1,9 +1,9 @@
-import React from 'react';
-import { Check } from 'lucide-react';
+import { Check } from 'lucide-react'
+import React from 'react'
 
 export interface StatusItemProps {
-  label: string;
-  active: boolean;
+  label: string
+  active: boolean
 }
 
 const StatusItem: React.FC<StatusItemProps> = ({ label, active }) => (
@@ -23,6 +23,6 @@ const StatusItem: React.FC<StatusItemProps> = ({ label, active }) => (
       {label}
     </span>
   </div>
-);
+)
 
-export default StatusItem;
+export default StatusItem

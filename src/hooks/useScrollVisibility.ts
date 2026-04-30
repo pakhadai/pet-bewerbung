@@ -1,4 +1,4 @@
-import { useState, useEffect, type RefObject } from 'react';
+import { type RefObject, useEffect, useState } from 'react'
 
 /**
  * Scroll visibility hook
@@ -13,24 +13,21 @@ export const useScrollVisibility = (
   ref: RefObject<HTMLElement | null>,
   threshold: number = 120
 ): boolean => {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false)
 
   useEffect(() => {
-    const el = ref?.current;
-    if (!el) return;
+    const el = ref?.current
+    if (!el) return
 
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      {
-        root: null,
-        rootMargin: `0px 0px ${threshold}px 0px`,
-        threshold: 0,
-      }
-    );
+    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), {
+      root: null,
+      rootMargin: `0px 0px ${threshold}px 0px`,
+      threshold: 0,
+    })
 
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [ref, threshold]);
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [ref, threshold])
 
-  return isVisible;
-};
+  return isVisible
+}

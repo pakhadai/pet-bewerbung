@@ -1,16 +1,16 @@
-import React from 'react';
-import MaterialIcon from './MaterialIcon';
-import type { TranslationObject } from '../types/template';
+import React from 'react'
+import type { TranslationObject } from '../types/template'
+import MaterialIcon from './MaterialIcon'
 
 export interface StepProgressProps {
-  step: number;
-  t: TranslationObject;
-  onStepClick?: (step: number) => void;
+  step: number
+  t: TranslationObject
+  onStepClick?: (step: number) => void
 }
 
 const StepProgress: React.FC<StepProgressProps> = ({ step, t, onStepClick }) => {
-  const stepsNew = t?.stepsNew;
-  const ui = t?.ui;
+  const stepsNew = t?.stepsNew
+  const ui = t?.ui
   const steps = [
     { key: 'step1', label: stepsNew?.step1?.short || 'Daten', short: '1' },
     { key: 'step2', label: stepsNew?.step2?.short || 'Gesundheit', short: '2' },
@@ -18,22 +18,22 @@ const StepProgress: React.FC<StepProgressProps> = ({ step, t, onStepClick }) => 
     { key: 'step4', label: stepsNew?.step4?.short || 'Foto', short: '4' },
     { key: 'step5', label: stepsNew?.step5?.short || 'Design', short: '5' },
     { key: 'step6', label: stepsNew?.step6?.short || 'Vorschau', short: '6' },
-  ];
-  const current = step >= 6 ? 6 : Math.min(step, 6);
+  ]
+  const current = step >= 6 ? 6 : Math.min(step, 6)
 
   const handleStepClick = (targetStep: number) => {
     if (onStepClick && targetStep <= current) {
-      onStepClick(targetStep);
+      onStepClick(targetStep)
     }
-  };
+  }
 
   return (
     <div className="flex items-center justify-center gap-2 sm:gap-4 py-0 theme-text-secondary">
       {steps.map((s, i) => {
-        const idx = i + 1;
-        const active = idx === current;
-        const done = idx < current;
-        const clickable = idx <= current && !!onStepClick;
+        const idx = i + 1
+        const active = idx === current
+        const done = idx < current
+        const clickable = idx <= current && !!onStepClick
 
         return (
           <React.Fragment key={s.key}>
@@ -51,11 +51,7 @@ const StepProgress: React.FC<StepProgressProps> = ({ step, t, onStepClick }) => 
                   ${!active && !done ? 'theme-border bg-[var(--card-bg-hover)] theme-text-muted' : ''}
                   ${clickable ? 'hover:scale-105 active:scale-100 transition-transform duration-200 ease-out' : ''}`}
               >
-                {done ? (
-                  <MaterialIcon name="check" className="text-lg text-inherit" />
-                ) : (
-                  s.short
-                )}
+                {done ? <MaterialIcon name="check" className="text-lg text-inherit" /> : s.short}
               </div>
               <span
                 className={`hidden sm:inline font-sans text-sm font-semibold transition-colors
@@ -74,10 +70,10 @@ const StepProgress: React.FC<StepProgressProps> = ({ step, t, onStepClick }) => 
               />
             )}
           </React.Fragment>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
-export default StepProgress;
+export default StepProgress

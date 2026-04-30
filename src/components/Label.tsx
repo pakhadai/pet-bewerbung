@@ -1,8 +1,8 @@
-import React from 'react';
+import React from 'react'
 
 export interface LabelProps {
-  children?: React.ReactNode;
-  required?: boolean;
+  children?: React.ReactNode
+  required?: boolean
 }
 
 const Label: React.FC<LabelProps> = ({ children, required }) => (
@@ -10,6 +10,6 @@ const Label: React.FC<LabelProps> = ({ children, required }) => (
     {children}
     {required && <span className="text-red-500 ml-1">*</span>}
   </label>
-);
+)
 
-export default Label;
+export default Label

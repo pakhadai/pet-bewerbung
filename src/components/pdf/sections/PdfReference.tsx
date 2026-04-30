@@ -1,41 +1,40 @@
-import React from 'react';
-import { View, Text } from '@react-pdf/renderer';
-import { commonStyles, pdfBorderRadius } from '../PdfBase';
-import type { PetData } from '../../../types/form';
-import type { PdfTranslations } from '../../../services/pdfService';
+import type { TextProps } from '@react-pdf/renderer'
+import { Text, View } from '@react-pdf/renderer'
+import React from 'react'
+import type { PdfTranslations } from '../../../services/pdfService'
+import type { PetData } from '../../../types/form'
+import { sanitizeForPdf, withFallback } from '../../../utils/documentHelpers'
+import { getShowAdvancedHealthInfo } from '../../../utils/getShowAdvancedHealthInfo'
+import { commonStyles, pdfBorderRadius } from '../PdfBase'
 import {
   buildPdfSectionHeadingStyle,
   getPdfReferencePanelStyle,
   type PdfTemplateConfig,
-} from '../templates/getPdfTemplateConfig';
-import { sanitizeForPdf, withFallback } from '../../../utils/documentHelpers';
-import { getShowAdvancedHealthInfo } from '../../../utils/getShowAdvancedHealthInfo';
+} from '../templates/getPdfTemplateConfig'
 
 export interface PdfReferenceProps {
-  data: PetData;
-  t: PdfTranslations;
-  templateConfig: PdfTemplateConfig;
+  data: PetData
+  t: PdfTranslations
+  templateConfig: PdfTemplateConfig
 }
 
-const s = (val: unknown) => sanitizeForPdf(withFallback(val));
+const s = (val: unknown) => sanitizeForPdf(withFallback(val))
+const asTextStyle = (style: unknown): TextProps['style'] => style as unknown as TextProps['style']
 
 export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateConfig }) => {
-  if (!getShowAdvancedHealthInfo(data)) return null;
+  if (!getShowAdvancedHealthInfo(data)) return null
 
   const hasLandlordInfo =
-    data.previousLandlordName || data.previousLandlordPhone || data.previousLandlordEmail;
-  const hasEmergencyInfo = data.emergencyContactName || data.emergencyContactPhone;
+    data.previousLandlordName || data.previousLandlordPhone || data.previousLandlordEmail
+  const hasEmergencyInfo = data.emergencyContactName || data.emergencyContactPhone
 
-  if (!hasLandlordInfo && !hasEmergencyInfo && !data.secondaryEmergencyContact) return null;
+  if (!hasLandlordInfo && !hasEmergencyInfo && !data.secondaryEmergencyContact) return null
 
-  const refPanel = getPdfReferencePanelStyle(templateConfig.templateType);
-  const headingStyle = buildPdfSectionHeadingStyle(templateConfig);
+  const refPanel = getPdfReferencePanelStyle(templateConfig.templateType)
+  const headingStyle = buildPdfSectionHeadingStyle(templateConfig) ?? {}
 
-  const textColor = '#334155';
-  const textStyle = [
-    commonStyles.text,
-    { color: textColor, fontWeight: 'normal', fontStyle: 'normal', fontSize: 10 },
-  ];
+  const textColor = '#334155'
+  const baseTextStyle = [commonStyles.text, { color: textColor, fontSize: 10 }]
 
   return (
     <View
@@ -48,19 +47,19 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
           borderColor: refPanel.borderColor,
           borderRadius: pdfBorderRadius(
             templateConfig.templateType === 'modern' ||
-            templateConfig.templateType === 'buddy' ||
-            templateConfig.templateType === 'buddyTest'
+              templateConfig.templateType === 'buddy' ||
+              templateConfig.templateType === 'buddyTest'
               ? 4
               : templateConfig.templateType === 'compact'
                 ? 2
-                : 0,
+                : 0
           ),
         },
       ]}
       key="reference"
     >
       <Text
-        style={[
+        style={asTextStyle([
           headingStyle,
           {
             marginBottom: 6,
@@ -70,7 +69,7 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
             color: refPanel.labelColor,
             borderRadius: pdfBorderRadius(0),
           },
-        ]}
+        ])}
       >
         {t.labels.referenceTitle ?? t.doc.sectionReference ?? 'References'}
       </Text>
@@ -78,41 +77,62 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
       <View style={{ flexDirection: 'row', gap: 12 }}>
         {hasLandlordInfo && (
           <View style={{ flex: 1 }}>
-            <Text style={[commonStyles.label, { marginBottom: 2, fontSize: 7, color: refPanel.labelColor }]}>
+            <Text
+              style={[
+                commonStyles.label,
+                { marginBottom: 2, fontSize: 7, color: refPanel.labelColor },
+              ]}
+            >
               {t.labels.previousLandlord ?? 'Previous landlord'}
             </Text>
             {data.previousLandlordName ? (
-              <Text style={[textStyle, { fontWeight: 'bold', fontSize: 9 }]}>{s(data.previousLandlordName)}</Text>
+              <Text style={asTextStyle([baseTextStyle, { fontWeight: 'bold', fontSize: 9 }])}>
+                {s(data.previousLandlordName)}
+              </Text>
             ) : null}
             {data.previousDuration ? (
-              <Text style={[textStyle, { fontSize: 8 }]}>
+              <Text style={asTextStyle([baseTextStyle, { fontSize: 8 }])}>
                 {t.labels.previousDuration ?? 'Duration'}: {s(data.previousDuration)}
               </Text>
             ) : null}
             {data.previousLandlordPhone ? (
-              <Text style={[textStyle, { fontSize: 8 }]}>{s(data.previousLandlordPhone)}</Text>
+              <Text style={asTextStyle([baseTextStyle, { fontSize: 8 }])}>
+                {s(data.previousLandlordPhone)}
+              </Text>
             ) : null}
             {data.previousLandlordEmail ? (
-              <Text style={[textStyle, { fontSize: 8 }]}>{s(data.previousLandlordEmail)}</Text>
+              <Text style={asTextStyle([baseTextStyle, { fontSize: 8 }])}>
+                {s(data.previousLandlordEmail)}
+              </Text>
             ) : null}
           </View>
         )}
 
         {hasEmergencyInfo && (
           <View style={{ flex: 1 }}>
-            <Text style={[commonStyles.label, { marginBottom: 2, fontSize: 7, color: refPanel.labelColor }]}>
+            <Text
+              style={[
+                commonStyles.label,
+                { marginBottom: 2, fontSize: 7, color: refPanel.labelColor },
+              ]}
+            >
               {t.labels.emergencyContact ?? 'Emergency contact'}
             </Text>
             {data.emergencyContactName ? (
-              <Text style={[textStyle, { fontWeight: 'bold', fontSize: 9 }]}>{s(data.emergencyContactName)}</Text>
+              <Text style={asTextStyle([baseTextStyle, { fontWeight: 'bold', fontSize: 9 }])}>
+                {s(data.emergencyContactName)}
+              </Text>
             ) : null}
             {data.emergencyContactRelation ? (
-              <Text style={[textStyle, { fontSize: 8 }]}>
-                {t.labels.emergencyContactRelation ?? 'Relation'}: {s(data.emergencyContactRelation)}
+              <Text style={asTextStyle([baseTextStyle, { fontSize: 8 }])}>
+                {t.labels.emergencyContactRelation ?? 'Relation'}:{' '}
+                {s(data.emergencyContactRelation)}
               </Text>
             ) : null}
             {data.emergencyContactPhone ? (
-              <Text style={[textStyle, { fontSize: 8 }]}>{s(data.emergencyContactPhone)}</Text>
+              <Text style={asTextStyle([baseTextStyle, { fontSize: 8 }])}>
+                {s(data.emergencyContactPhone)}
+              </Text>
             ) : null}
           </View>
         )}
@@ -129,10 +149,11 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
           }}
         >
           <Text style={[commonStyles.text, { fontSize: 8, color: textColor }]}>
-            {t.labels.secondaryEmergencyContact ?? 'Zweiter Kontakt'}: {s(data.secondaryEmergencyContact)}
+            {t.labels.secondaryEmergencyContact ?? 'Zweiter Kontakt'}:{' '}
+            {s(data.secondaryEmergencyContact)}
           </Text>
         </View>
       ) : null}
     </View>
-  );
-};
+  )
+}

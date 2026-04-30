@@ -1,26 +1,26 @@
-import React from 'react';
-import { Camera } from 'lucide-react';
-import { getPetTypeIcon } from '../../utils/documentHelpers';
-import type { PetType } from '../../types/form';
-import type { DocumentVariant } from './OwnerInfo';
-import type { TranslationObject } from '../../types/template';
+import { Camera } from 'lucide-react'
+import React from 'react'
+import type { PetType } from '../../types/form'
+import type { TranslationObject } from '../../types/template'
+import { getPetTypeIcon } from '../../utils/documentHelpers'
+import type { DocumentVariant } from './OwnerInfo'
 
 export interface PetPhotoProps {
-  photo: string | null | undefined;
-  petType?: PetType;
-  t: TranslationObject;
-  variant?: DocumentVariant;
-  customColors?: unknown;
+  photo: string | null | undefined
+  petType?: PetType
+  t: TranslationObject
+  variant?: DocumentVariant
+  customColors?: unknown
 }
 
 interface VariantStyles {
-  container: string;
-  image: string;
-  placeholder: string;
-  placeholderIcon: number;
-  placeholderText: string;
-  badge: string;
-  badgeIcon: number;
+  container: string
+  image: string
+  placeholder: string
+  placeholderIcon: number
+  placeholderText: string
+  badge: string
+  badgeIcon: number
 }
 
 /**
@@ -32,14 +32,15 @@ const PetPhoto: React.FC<PetPhotoProps> = ({ photo, petType = 'dog', t, variant 
     switch (variant) {
       case 'classic':
         return {
-          container: 'aspect-[3/4] w-full bg-slate-50 flex items-center justify-center overflow-hidden relative border-2 border-slate-900',
+          container:
+            'aspect-[3/4] w-full bg-slate-50 flex items-center justify-center overflow-hidden relative border-2 border-slate-900',
           image: 'w-full h-full object-cover',
           placeholder: 'text-slate-300 text-center',
           placeholderIcon: 32,
           placeholderText: 'text-xs text-slate-400',
           badge: 'absolute top-2 right-2 bg-slate-900 text-white p-2 rounded-sm',
-          badgeIcon: 16
-        };
+          badgeIcon: 16,
+        }
 
       case 'modern':
         return {
@@ -50,19 +51,20 @@ const PetPhoto: React.FC<PetPhotoProps> = ({ photo, petType = 'dog', t, variant 
           placeholderIcon: 32,
           placeholderText: 'text-xs text-slate-400',
           badge: 'absolute top-2 right-2 bg-teal-700 text-white p-2 rounded-lg shadow-sm',
-          badgeIcon: 16
-        };
+          badgeIcon: 16,
+        }
 
       case 'swiss':
         return {
-          container: 'aspect-[3/4] w-full bg-gray-50 flex items-center justify-center overflow-hidden relative border-2 border-red-600',
+          container:
+            'aspect-[3/4] w-full bg-gray-50 flex items-center justify-center overflow-hidden relative border-2 border-red-600',
           image: 'w-full h-full object-cover',
           placeholder: 'text-gray-300 text-center',
           placeholderIcon: 32,
           placeholderText: 'text-xs text-slate-400',
           badge: 'absolute top-2 right-2 bg-red-600 text-white p-2 rounded-sm',
-          badgeIcon: 16
-        };
+          badgeIcon: 16,
+        }
 
       case 'buddy':
         return {
@@ -72,9 +74,10 @@ const PetPhoto: React.FC<PetPhotoProps> = ({ photo, petType = 'dog', t, variant 
           placeholder: 'text-slate-300 text-center',
           placeholderIcon: 32,
           placeholderText: 'text-xs text-slate-400',
-          badge: 'absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full border border-[#bec9c7]/50 shadow-sm',
+          badge:
+            'absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full border border-[#bec9c7]/50 shadow-sm',
           badgeIcon: 14,
-        };
+        }
 
       case 'buddyTest':
         return {
@@ -84,9 +87,10 @@ const PetPhoto: React.FC<PetPhotoProps> = ({ photo, petType = 'dog', t, variant 
           placeholder: 'text-slate-300 text-center',
           placeholderIcon: 36,
           placeholderText: 'text-xs text-slate-500',
-          badge: 'absolute top-2 right-2 bg-amber-500 text-white px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider shadow',
+          badge:
+            'absolute top-2 right-2 bg-amber-500 text-white px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider shadow',
           badgeIcon: 12,
-        };
+        }
 
       case 'compact':
       default:
@@ -98,13 +102,13 @@ const PetPhoto: React.FC<PetPhotoProps> = ({ photo, petType = 'dog', t, variant 
           placeholderIcon: 24,
           placeholderText: 'text-[10px] text-stone-500',
           badge: 'absolute top-1.5 right-1.5 bg-amber-800 text-white p-1.5 rounded-sm',
-          badgeIcon: 14
-        };
+          badgeIcon: 14,
+        }
     }
-  };
+  }
 
-  const styles = getVariantStyles();
-  const ui = t.ui;
+  const styles = getVariantStyles()
+  const ui = t.ui
 
   return (
     <div className={styles.container}>
@@ -116,11 +120,9 @@ const PetPhoto: React.FC<PetPhotoProps> = ({ photo, petType = 'dog', t, variant 
           <span className={styles.placeholderText}>{ui?.noImage ?? 'No image'}</span>
         </div>
       )}
-      <div className={styles.badge}>
-        {getPetTypeIcon(petType, styles.badgeIcon)}
-      </div>
+      <div className={styles.badge}>{getPetTypeIcon(petType, styles.badgeIcon)}</div>
     </div>
-  );
-};
+  )
+}
 
-export default PetPhoto;
+export default PetPhoto

@@ -1,22 +1,24 @@
-import React from 'react';
-import MaterialIcon from './MaterialIcon';
-import { PUBLIC_LOGO_HEADER_PATH } from '../constants';
+import React from 'react'
+import { PUBLIC_LOGO_HEADER_PATH } from '../constants'
+import { type Language, SUPPORTED_LANGS } from '../hooks/useTranslation'
+import type { TranslationObject } from '../types/template'
+import MaterialIcon from './MaterialIcon'
 
 interface HeaderProps {
-  darkMode: boolean;
-  toggleDarkMode: () => void;
-  lang: string;
-  onLangChange: (lang: string) => void;
-  onLogoClick: () => void;
-  t: any;
+  darkMode: boolean
+  toggleDarkMode: () => void
+  lang: Language
+  onLangChange: (lang: Language) => void
+  onLogoClick: () => void
+  t: TranslationObject
 }
 
-const Header: React.FC<HeaderProps> = ({ 
-  darkMode, 
-  toggleDarkMode, 
-  lang, 
-  onLangChange, 
-  onLogoClick, 
+const Header: React.FC<HeaderProps> = ({
+  darkMode,
+  toggleDarkMode,
+  lang,
+  onLangChange,
+  onLogoClick,
   t,
 }) => {
   const languages = [
@@ -24,17 +26,18 @@ const Header: React.FC<HeaderProps> = ({
     { code: 'de', label: 'DE' },
     { code: 'fr', label: 'FR' },
     { code: 'it', label: 'IT' },
-    { code: 'rm', label: 'RM' }
-  ];
+    { code: 'rm', label: 'RM' },
+  ]
 
   return (
     <header className="w-full absolute top-0 z-50 px-4 py-4 lg:px-12 lg:py-6">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
-        
         {/* Logo Section */}
         <div className="flex items-center gap-2 cursor-pointer group" onClick={onLogoClick}>
-          <div className={`flex size-10 items-center justify-center hand-drawn-border border-2 border-text-main rotate-[-3deg] transition-transform group-hover:rotate-0 overflow-hidden
-            ${darkMode ? 'bg-gray-700' : 'bg-lavender'}`}>
+          <div
+            className={`flex size-10 items-center justify-center hand-drawn-border border-2 border-text-main rotate-[-3deg] transition-transform group-hover:rotate-0 overflow-hidden
+            ${darkMode ? 'bg-gray-700' : 'bg-lavender'}`}
+          >
             <img
               src={PUBLIC_LOGO_HEADER_PATH}
               alt="pet-bewerbung.ch"
@@ -42,10 +45,12 @@ const Header: React.FC<HeaderProps> = ({
               width={40}
               height={40}
               decoding="async"
-              fetchpriority="high"
+              fetchPriority="high"
             />
           </div>
-          <h1 className={`text-3xl font-bold font-display tracking-wide transition-colors ${darkMode ? 'text-white' : 'text-text-main'}`}>
+          <h1
+            className={`text-3xl font-bold font-display tracking-wide transition-colors ${darkMode ? 'text-white' : 'text-text-main'}`}
+          >
             {t?.header?.title || 'pet-bewerbung.ch'}
           </h1>
         </div>
@@ -60,7 +65,10 @@ const Header: React.FC<HeaderProps> = ({
             <select
               id="lang-mobile"
               value={lang}
-              onChange={(e) => onLangChange(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value
+                if ((SUPPORTED_LANGS as readonly string[]).includes(v)) onLangChange(v as Language)
+              }}
               className={`rounded-lg border px-2 py-1 text-sm font-display font-bold ${
                 darkMode
                   ? 'bg-gray-800 text-gray-100 border-gray-600'
@@ -75,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({
               ))}
             </select>
           </div>
-          
+
           {/* Language Switcher */}
           <div
             className={`hidden md:flex items-center gap-2 text-lg font-bold font-display ${
@@ -91,7 +99,11 @@ const Header: React.FC<HeaderProps> = ({
                 )}
                 <button
                   type="button"
-                  onClick={() => onLangChange(lng.code)}
+                  onClick={() => {
+                    const v = lng.code
+                    if ((SUPPORTED_LANGS as readonly string[]).includes(v))
+                      onLangChange(v as Language)
+                  }}
                   className={`transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm ${
                     lang === lng.code
                       ? darkMode
@@ -109,10 +121,10 @@ const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Dark Mode Toggle — visible on mobile too (was hidden md:flex) */}
-          <button 
+          <button
             type="button"
             onClick={toggleDarkMode}
-            aria-label="Toggle dark mode" 
+            aria-label="Toggle dark mode"
             className={`flex shrink-0 items-center justify-center p-2 rounded-full transition-colors
                ${darkMode ? 'hover:bg-gray-700 text-amber-200' : 'hover:bg-lavender text-text-main'}`}
           >
@@ -121,7 +133,7 @@ const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

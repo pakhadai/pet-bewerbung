@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-const STORAGE_STEP_KEY = 'pet-bewerbung-step';
+const STORAGE_STEP_KEY = 'pet-bewerbung-step'
 
 /**
  * Load saved step from localStorage
@@ -8,35 +8,35 @@ const STORAGE_STEP_KEY = 'pet-bewerbung-step';
  */
 const loadSavedStep = (): number => {
   try {
-    const saved = localStorage.getItem(STORAGE_STEP_KEY);
+    const saved = localStorage.getItem(STORAGE_STEP_KEY)
     if (saved) {
-      const step = parseInt(saved, 10);
+      const step = parseInt(saved, 10)
       // Only restore steps 1-5
       if (step >= 1 && step <= 5) {
-        return step;
+        return step
       }
     }
   } catch (e) {
     // ignore
   }
-  return 0;
-};
+  return 0
+}
 
-export type AnimationDirection = 'left' | 'right';
+export type AnimationDirection = 'left' | 'right'
 
 export interface UseWizardNavigationReturn {
   /** Current step number (0-6) */
-  step: number;
+  step: number
   /** Animation direction for step transitions */
-  animDir: AnimationDirection;
+  animDir: AnimationDirection
   /** Navigate to a specific step */
-  goToStep: (newStep: number) => void;
+  goToStep: (newStep: number) => void
   /** Go to next step */
-  nextStep: () => void;
+  nextStep: () => void
   /** Go to previous step */
-  prevStep: () => void;
+  prevStep: () => void
   /** Manually set step (use goToStep for navigation with animation) */
-  setStep: (step: number) => void;
+  setStep: (step: number) => void
 }
 
 /**
@@ -47,45 +47,45 @@ export interface UseWizardNavigationReturn {
  * @returns Navigation state and handlers
  */
 export const useWizardNavigation = (): UseWizardNavigationReturn => {
-  const [step, setStep] = useState<number>(() => loadSavedStep());
-  const [animDir, setAnimDir] = useState<AnimationDirection>('left');
-  const prevStepRef = useRef<number>(step);
+  const [step, setStep] = useState<number>(() => loadSavedStep())
+  const [animDir, setAnimDir] = useState<AnimationDirection>('left')
+  const prevStepRef = useRef<number>(step)
 
   // Save step to localStorage when it changes
   useEffect(() => {
     try {
       // Don't save step 0 (landing) or step 6 (thank you)
       if (step >= 1 && step <= 5) {
-        localStorage.setItem(STORAGE_STEP_KEY, String(step));
+        localStorage.setItem(STORAGE_STEP_KEY, String(step))
       } else {
-        localStorage.removeItem(STORAGE_STEP_KEY);
+        localStorage.removeItem(STORAGE_STEP_KEY)
       }
     } catch (e) {
       // ignore
     }
-  }, [step]);
+  }, [step])
 
   /**
    * Navigate to a specific step with animation
    * Scrolls to top of page
    */
   const goToStep = useCallback((newStep: number) => {
-    setAnimDir(newStep > prevStepRef.current ? 'right' : 'left');
-    prevStepRef.current = newStep;
-    setStep(newStep);
+    setAnimDir(newStep > prevStepRef.current ? 'right' : 'left')
+    prevStepRef.current = newStep
+    setStep(newStep)
     // Scroll to top so the next step is visible from the start
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
 
   /** Navigate to next step */
   const nextStep = useCallback(() => {
-    goToStep(step + 1);
-  }, [step, goToStep]);
+    goToStep(step + 1)
+  }, [step, goToStep])
 
   /** Navigate to previous step */
   const prevStep = useCallback(() => {
-    goToStep(step - 1);
-  }, [step, goToStep]);
+    goToStep(step - 1)
+  }, [step, goToStep])
 
   return {
     step,
@@ -93,6 +93,6 @@ export const useWizardNavigation = (): UseWizardNavigationReturn => {
     goToStep,
     nextStep,
     prevStep,
-    setStep
-  };
-};
+    setStep,
+  }
+}

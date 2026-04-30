@@ -7,13 +7,9 @@ export function buildPublicFileUrl(
   viteBase: string,
   publicPathFromRoot: string
 ): string {
-  const rel = publicPathFromRoot.replace(/^\//, '');
+  const rel = publicPathFromRoot.replace(/^\//, '')
   const base =
-    !viteBase || viteBase === '/'
-      ? '/'
-      : viteBase.endsWith('/')
-        ? viteBase
-        : `${viteBase}/`;
-  const baseUrl = `${origin}${base}`;
-  return new URL(rel, baseUrl).href;
+    !viteBase || viteBase === '/' ? '/' : viteBase.endsWith('/') ? viteBase : `${viteBase}/`
+  const baseUrl = `${origin}${base}`
+  return new URL(rel, baseUrl).href
 }

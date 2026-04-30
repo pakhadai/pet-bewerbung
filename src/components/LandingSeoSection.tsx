@@ -1,19 +1,19 @@
-import React from 'react';
-import type { TranslationObject } from '../types/template';
+import React from 'react'
+import type { TranslationObject } from '../types/template'
 
 interface LandingSeoSectionProps {
-  darkMode: boolean;
-  t: TranslationObject;
+  darkMode: boolean
+  t: TranslationObject
 }
 
 /**
  * Visible keyword-rich copy for crawlers and users (DE/FR/IT/EN/RM).
  */
 const LandingSeoSection: React.FC<LandingSeoSectionProps> = ({ darkMode, t }) => {
-  const hero = t.hero as Record<string, unknown> | undefined;
-  const title = typeof hero?.seoSectionTitle === 'string' ? hero.seoSectionTitle : '';
-  const paragraphs = Array.isArray(hero?.seoParagraphs) ? (hero.seoParagraphs as string[]) : [];
-  if (!title || paragraphs.length === 0) return null;
+  const hero = t.hero as Record<string, unknown> | undefined
+  const title = typeof hero?.seoSectionTitle === 'string' ? hero.seoSectionTitle : ''
+  const paragraphs = Array.isArray(hero?.seoParagraphs) ? (hero.seoParagraphs as string[]) : []
+  if (!title || paragraphs.length === 0) return null
 
   return (
     <section
@@ -28,13 +28,15 @@ const LandingSeoSection: React.FC<LandingSeoSectionProps> = ({ darkMode, t }) =>
       >
         {title}
       </h2>
-      <div className={`space-y-4 text-sm sm:text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-text-secondary'}`}>
+      <div
+        className={`space-y-4 text-sm sm:text-base leading-relaxed ${darkMode ? 'text-gray-300' : 'text-text-secondary'}`}
+      >
         {paragraphs.map((p, i) => (
           <p key={i}>{p}</p>
         ))}
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default LandingSeoSection;
+export default LandingSeoSection

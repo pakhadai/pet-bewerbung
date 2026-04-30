@@ -3,28 +3,37 @@
  * Contains common functions, constants, and helper components used across all document templates
  */
 
-import React from 'react';
-import PetPhoto from '../document/PetPhoto';
-import OwnerInfo from '../document/OwnerInfo';
-import PetDetails from '../document/PetDetails';
-import BehaviorSection from '../document/BehaviorSection';
-import DescriptionSection from '../document/DescriptionSection';
-import LegalSection from '../document/LegalSection';
-import ReferenceSection from '../document/ReferenceSection';
-import type { FormData } from '../../types/form';
-import type { DocumentVariant } from '../document/OwnerInfo';
+import React from 'react'
+import type { FormData } from '../../types/form'
+import BehaviorSection from '../document/BehaviorSection'
+import DescriptionSection from '../document/DescriptionSection'
+import LegalSection from '../document/LegalSection'
+import type { DocumentVariant } from '../document/OwnerInfo'
+import OwnerInfo from '../document/OwnerInfo'
+import PetDetails from '../document/PetDetails'
+import PetPhoto from '../document/PetPhoto'
+import ReferenceSection from '../document/ReferenceSection'
 
 export interface TemplateSectionProps {
-  data: FormData;
-  t: Record<string, unknown>;
-  variant: DocumentVariant;
-  customColors?: unknown;
+  data: FormData
+  t: Record<string, unknown>
+  variant: DocumentVariant
+  customColors?: unknown
 }
 
 // Section component mapping for dynamic template rendering
-export const SECTION_COMPONENTS: Record<string, React.FC<TemplateSectionProps & { customColors?: unknown }>> = {
+export const SECTION_COMPONENTS: Record<
+  string,
+  React.FC<TemplateSectionProps & { customColors?: unknown }>
+> = {
   photo: ({ data, t, variant, customColors }) => (
-    <PetPhoto photo={data.photo} petType={data.petType} t={t} variant={variant} customColors={customColors} />
+    <PetPhoto
+      photo={data.photo}
+      petType={data.petType}
+      t={t}
+      variant={variant}
+      customColors={customColors}
+    />
   ),
   owner: ({ data, t, variant, customColors }) => (
     <OwnerInfo data={data} t={t} variant={variant} customColors={customColors} />
@@ -36,39 +45,49 @@ export const SECTION_COMPONENTS: Record<string, React.FC<TemplateSectionProps & 
     <BehaviorSection data={data} t={t} variant={variant} customColors={customColors} />
   ),
   description: ({ data, t, variant, customColors }) => (
-    <DescriptionSection text={data.generatedText} t={t} variant={variant} customColors={customColors} />
+    <DescriptionSection
+      text={data.generatedText}
+      t={t}
+      variant={variant}
+      customColors={customColors}
+    />
   ),
   legal: ({ data, t, variant, customColors }) => (
     <LegalSection data={data} t={t} variant={variant} customColors={customColors} />
   ),
   reference: ({ data, t, variant, customColors }) => (
     <ReferenceSection data={data} t={t} variant={variant} customColors={customColors} />
-  )
-};
+  ),
+}
 
 // Sidebar sections (left column)
-export const SIDEBAR_SECTIONS = ['photo', 'owner', 'behavior'];
+export const SIDEBAR_SECTIONS = ['photo', 'owner', 'behavior']
 // Main sections (right column)
-export const MAIN_SECTIONS = ['details', 'description', 'legal', 'reference'];
+export const MAIN_SECTIONS = ['details', 'description', 'legal', 'reference']
 
 /**
  * Get locale code from language
  */
 export const getLocale = (lang: string | undefined): string => {
   switch (lang) {
-    case 'de': return 'de-CH';
-    case 'fr': return 'fr-CH';
-    case 'it': return 'it-CH';
-    case 'rm': return 'de-CH';
-    default: return 'en-GB';
+    case 'de':
+      return 'de-CH'
+    case 'fr':
+      return 'fr-CH'
+    case 'it':
+      return 'it-CH'
+    case 'rm':
+      return 'de-CH'
+    default:
+      return 'en-GB'
   }
-};
+}
 
 /**
  * No visual editor — customization always returns null/empty.
  * Kept as stubs so template components don't need to change their signatures.
  */
-export const getCustomColors = (): null => null;
+export const getCustomColors = (): null => null
 
 /**
  * Subtle watermark component
@@ -93,12 +112,17 @@ export const Watermark: React.FC = () => (
       Pet-Bewerbung.ch
     </div>
   </div>
-);
+)
 
-export const getCustomStyle = (): Record<string, unknown> => ({});
-export const getStyleOverrides = (): { header: React.CSSProperties; accent: React.CSSProperties; border: React.CSSProperties; footer: React.CSSProperties } => ({
+export const getCustomStyle = (): Record<string, unknown> => ({})
+export const getStyleOverrides = (): {
+  header: React.CSSProperties
+  accent: React.CSSProperties
+  border: React.CSSProperties
+  footer: React.CSSProperties
+} => ({
   header: {},
   accent: {},
   border: {},
-  footer: {}
-});
+  footer: {},
+})

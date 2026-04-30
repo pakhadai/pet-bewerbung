@@ -1,25 +1,25 @@
-import React from 'react';
-import type { TranslationObject } from '../types/template';
+import React from 'react'
+import type { TranslationObject } from '../types/template'
 
 interface LandingFaqPreviewProps {
-  darkMode: boolean;
-  t: TranslationObject;
-  onOpenFullFaq: () => void;
+  darkMode: boolean
+  t: TranslationObject
+  onOpenFullFaq: () => void
 }
 
-const PREVIEW_COUNT = 5;
+const PREVIEW_COUNT = 5
 
 /**
  * Crawlable FAQ excerpt (same Q&A as modal) using native <details> for indexable HTML.
  */
 const LandingFaqPreview: React.FC<LandingFaqPreviewProps> = ({ darkMode, t, onOpenFullFaq }) => {
-  const items = t.faq?.items;
-  if (!items?.length) return null;
+  const items = t.faq?.items
+  if (!items?.length) return null
 
-  const preview = items.slice(0, PREVIEW_COUNT);
-  const heroExtra = t.hero as { faqTeaserTitle?: string; faqTeaserCta?: string } | undefined;
-  const teaserTitle = heroExtra?.faqTeaserTitle ?? t.faq?.title ?? 'FAQ';
-  const cta = heroExtra?.faqTeaserCta ?? 'FAQ';
+  const preview = items.slice(0, PREVIEW_COUNT)
+  const heroExtra = t.hero as { faqTeaserTitle?: string; faqTeaserCta?: string } | undefined
+  const teaserTitle = heroExtra?.faqTeaserTitle ?? t.faq?.title ?? 'FAQ'
+  const cta = heroExtra?.faqTeaserCta ?? 'FAQ'
 
   return (
     <section
@@ -74,7 +74,7 @@ const LandingFaqPreview: React.FC<LandingFaqPreviewProps> = ({ darkMode, t, onOp
         {cta}
       </button>
     </section>
-  );
-};
+  )
+}
 
-export default LandingFaqPreview;
+export default LandingFaqPreview

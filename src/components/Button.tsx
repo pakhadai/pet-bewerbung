@@ -1,12 +1,12 @@
-import React from 'react';
+import React from 'react'
 
-type ButtonVariant = 'primary' | 'secondary' | 'magic' | 'ghost';
+type ButtonVariant = 'primary' | 'secondary' | 'magic' | 'ghost'
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  className?: string;
-  children?: React.ReactNode;
-  'aria-label'?: string;
+  variant?: ButtonVariant
+  className?: string
+  children?: React.ReactNode
+  'aria-label'?: string
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -16,14 +16,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     focus:outline-none focus:ring-2 focus:ring-offset-2 
     disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none 
     relative overflow-hidden group
-  `;
+  `
 
     const styles: Record<ButtonVariant, string> = {
       primary: 'theme-button-primary text-white shadow-lg',
       secondary: 'theme-button-secondary shadow-md',
       magic: 'theme-button-magic text-white shadow-lg',
       ghost: 'theme-button-ghost',
-    };
+    }
 
     return (
       <button
@@ -36,28 +36,30 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         }}
         onMouseEnter={(e) => {
           if (!props.disabled) {
-            e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+            e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
             e.currentTarget.style.boxShadow =
-              variant !== 'ghost' ? '0 20px 40px -12px rgba(0, 0, 0, 0.2)' : '0 4px 12px rgba(0, 0, 0, 0.1)';
+              variant !== 'ghost'
+                ? '0 20px 40px -12px rgba(0, 0, 0, 0.2)'
+                : '0 4px 12px rgba(0, 0, 0, 0.1)'
           }
-          props.onMouseEnter?.(e);
+          props.onMouseEnter?.(e)
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.transform = '';
-          e.currentTarget.style.boxShadow = '';
-          props.onMouseLeave?.(e);
+          e.currentTarget.style.transform = ''
+          e.currentTarget.style.boxShadow = ''
+          props.onMouseLeave?.(e)
         }}
         onMouseDown={(e) => {
           if (!props.disabled) {
-            e.currentTarget.style.transform = 'scale(0.97)';
-            e.currentTarget.style.transition = 'all 0.15s cubic-bezier(0.16, 1, 0.3, 1)';
+            e.currentTarget.style.transform = 'scale(0.97)'
+            e.currentTarget.style.transition = 'all 0.15s cubic-bezier(0.16, 1, 0.3, 1)'
           }
-          props.onMouseDown?.(e);
+          props.onMouseDown?.(e)
         }}
         onMouseUp={(e) => {
-          e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
-          e.currentTarget.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
-          props.onMouseUp?.(e);
+          e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
+          e.currentTarget.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+          props.onMouseUp?.(e)
         }}
         {...props}
       >
@@ -70,10 +72,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           />
         )}
       </button>
-    );
+    )
   }
-);
+)
 
-Button.displayName = 'Button';
+Button.displayName = 'Button'
 
-export default Button;
+export default Button

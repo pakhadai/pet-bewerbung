@@ -2,15 +2,15 @@
  * Per-locale SEO (title, description, Open Graph locale).
  * URLs: https://pet-bewerbung.ch/{de|fr|it|en|rm}/
  */
-import type { Language } from '../hooks/useTranslation';
+import type { Language } from '../hooks/useTranslation'
 
-export const SITE_ORIGIN = 'https://pet-bewerbung.ch';
+export const SITE_ORIGIN = 'https://pet-bewerbung.ch'
 
 export interface SeoMeta {
-  pageTitle: string;
-  pageDescription: string;
+  pageTitle: string
+  pageDescription: string
   /** Open Graph locale, e.g. de_CH */
-  ogLocale: string;
+  ogLocale: string
 }
 
 export const SEO_META: Record<Language, SeoMeta> = {
@@ -44,7 +44,7 @@ export const SEO_META: Record<Language, SeoMeta> = {
       'Dossier gratuit per chien, chat e pli: retschertga dad in apartmant en Svizra. Las datas restan en il navigatur.',
     ogLocale: 'rm_CH',
   },
-};
+}
 
 /** hreflang → URL path segment (same as our Language codes) */
 export const HREFLANG_LOCALES: Record<Language, string> = {
@@ -53,4 +53,4 @@ export const HREFLANG_LOCALES: Record<Language, string> = {
   it: 'it-CH',
   en: 'en-CH',
   rm: 'rm-CH',
-};
+}

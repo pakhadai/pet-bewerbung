@@ -1,41 +1,46 @@
-import type { TranslationObject } from '../types/template';
+import type { TranslationObject } from '../types/template'
 
 export const validateSwissPhone = (phone: string | undefined | null): boolean => {
-  if (!phone) return true;
-  const cleaned = phone.replace(/[\s\-()]/g, '');
-  return /^\+?[0-9]{7,15}$/.test(cleaned);
-};
+  if (!phone) return true
+  const cleaned = phone.replace(/[\s\-()]/g, '')
+  return /^\+?[0-9]{7,15}$/.test(cleaned)
+}
 
 export const formatSwissPhone = (phone: string | undefined): string => {
-  if (!phone) return '';
-  const cleaned = phone.replace(/[\s\-()]/g, '');
-  let formatted = cleaned;
+  if (!phone) return ''
+  const cleaned = phone.replace(/[\s\-()]/g, '')
+  let formatted = cleaned
   if (cleaned.startsWith('0')) {
-    formatted = '+41' + cleaned.substring(1);
+    formatted = '+41' + cleaned.substring(1)
   }
   if (formatted.startsWith('+41')) {
-    const number = formatted.substring(3);
+    const number = formatted.substring(3)
     if (number.length === 9) {
-      return `+41 ${number.substring(0, 2)} ${number.substring(2, 5)} ${number.substring(5, 7)} ${number.substring(7)}`;
+      return `+41 ${number.substring(0, 2)} ${number.substring(2, 5)} ${number.substring(5, 7)} ${number.substring(7)}`
     }
   }
-  return phone;
-};
+  return phone
+}
 
 export const validateSwissPostal = (postal: string | undefined | null): boolean => {
-  if (!postal) return true;
-  return /^[1-9]\d{3}$/.test(postal);
-};
+  if (!postal) return true
+  return /^[1-9]\d{3}$/.test(postal)
+}
 
 export const validateEmail = (email: string | undefined | null): boolean => {
-  if (!email) return true;
-  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!emailPattern.test(email)) return false;
-  if (email.includes('..') || email.startsWith('.') || email.includes('@.') || email.includes('.@')) {
-    return false;
+  if (!email) return true
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  if (!emailPattern.test(email)) return false
+  if (
+    email.includes('..') ||
+    email.startsWith('.') ||
+    email.includes('@.') ||
+    email.includes('.@')
+  ) {
+    return false
   }
-  return true;
-};
+  return true
+}
 
 export const formatSwissAddress = (
   street: string | undefined,
@@ -43,19 +48,22 @@ export const formatSwissAddress = (
   postal: string | undefined,
   city: string | undefined
 ): string => {
-  const streetLine = [street, number].filter(Boolean).join(' ');
-  const cityLine = [postal, city].filter(Boolean).join(' ');
-  return [streetLine, cityLine].filter(Boolean).join(', ');
-};
+  const streetLine = [street, number].filter(Boolean).join(' ')
+  const cityLine = [postal, city].filter(Boolean).join(' ')
+  return [streetLine, cityLine].filter(Boolean).join(', ')
+}
 
 export const getPhoneErrorMessage = (t: TranslationObject): string => {
-  const validation = t?.validation;
-  return validation?.phoneFormat ?? "Format: +41 XX XXX XX XX oder internationale Nummer (+49, +33, etc.)";
-};
+  const validation = t?.validation
+  return (
+    validation?.phoneFormat ??
+    'Format: +41 XX XXX XX XX oder internationale Nummer (+49, +33, etc.)'
+  )
+}
 
 export const getPostalErrorMessage = (): string => {
-  return "PLZ muss 4-stellig sein (1000-9999)";
-};
+  return 'PLZ muss 4-stellig sein (1000-9999)'
+}
 
 export const SWISS_CANTONS = [
   { code: 'ZH', de: 'Zürich', fr: 'Zurich' },
@@ -84,11 +92,14 @@ export const SWISS_CANTONS = [
   { code: 'NE', de: 'Neuenburg', fr: 'Neuchâtel' },
   { code: 'GE', de: 'Genf', fr: 'Genève' },
   { code: 'JU', de: 'Jura', fr: 'Jura' },
-] as const;
+] as const
 
-export const CANTON_PET_RULES: Record<string, { requiresAmicus: boolean; dogTax: boolean; note: string }> = {
+export const CANTON_PET_RULES: Record<
+  string,
+  { requiresAmicus: boolean; dogTax: boolean; note: string }
+> = {
   ZH: { requiresAmicus: true, dogTax: true, note: 'Hundesteuer obligatorisch' },
   BE: { requiresAmicus: true, dogTax: true, note: 'AMICUS-Registrierung Pflicht' },
   VD: { requiresAmicus: true, dogTax: true, note: 'Taxe pour chiens obligatoire' },
   GE: { requiresAmicus: true, dogTax: true, note: 'Taxe pour chiens obligatoire' },
-};
+}

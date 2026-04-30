@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import type { TranslationObject } from '../types/template';
+import React, { useEffect } from 'react'
+import type { TranslationObject } from '../types/template'
 
-const SCRIPT_ID = 'app-faq-jsonld';
+const SCRIPT_ID = 'app-faq-jsonld'
 
 /**
  * Injects schema.org FAQPage JSON-LD (https://schema.org/FAQPage).
@@ -17,8 +17,8 @@ const SCRIPT_ID = 'app-faq-jsonld';
  */
 export const FaqJsonLd: React.FC<{ t: TranslationObject }> = ({ t }) => {
   useEffect(() => {
-    const items = t?.faq?.items;
-    if (!items?.length) return;
+    const items = t?.faq?.items
+    if (!items?.length) return
 
     const data: Record<string, unknown> = {
       '@context': 'https://schema.org',
@@ -31,23 +31,23 @@ export const FaqJsonLd: React.FC<{ t: TranslationObject }> = ({ t }) => {
           text: item.a,
         },
       })),
-    };
+    }
 
-    const prev = document.getElementById(SCRIPT_ID);
-    prev?.remove();
+    const prev = document.getElementById(SCRIPT_ID)
+    prev?.remove()
 
-    const script = document.createElement('script');
-    script.id = SCRIPT_ID;
-    script.type = 'application/ld+json';
-    script.textContent = JSON.stringify(data);
-    document.head.appendChild(script);
+    const script = document.createElement('script')
+    script.id = SCRIPT_ID
+    script.type = 'application/ld+json'
+    script.textContent = JSON.stringify(data)
+    document.head.appendChild(script)
 
     return () => {
-      document.getElementById(SCRIPT_ID)?.remove();
-    };
-  }, [t]);
+      document.getElementById(SCRIPT_ID)?.remove()
+    }
+  }, [t])
 
-  return null;
-};
+  return null
+}
 
-export default FaqJsonLd;
+export default FaqJsonLd

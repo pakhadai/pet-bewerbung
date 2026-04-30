@@ -1,17 +1,17 @@
-import React from 'react';
-import { View, Text, Link } from '@react-pdf/renderer';
-import { commonStyles, pdfBorderRadius } from '../PdfBase';
-import type { PdfTemplateConfig } from '../templates/getPdfTemplateConfig';
-import type { PdfTranslations } from '../../../services/pdfService';
+import { Link, Text, View } from '@react-pdf/renderer'
+import React from 'react'
+import type { PdfTranslations } from '../../../services/pdfService'
+import { commonStyles, pdfBorderRadius } from '../PdfBase'
+import type { PdfTemplateConfig } from '../templates/getPdfTemplateConfig'
 
 export interface PdfFooterProps {
-  t: PdfTranslations;
-  templateConfig: PdfTemplateConfig;
+  t: PdfTranslations
+  templateConfig: PdfTemplateConfig
 }
 
 export const PdfFooter: React.FC<PdfFooterProps> = ({ t, templateConfig }) => {
-  const { colors, footerBrandingVariant, templateType } = templateConfig;
-  const isBuddyLike = templateType === 'buddy' || templateType === 'buddyTest';
+  const { colors, footerBrandingVariant, templateType } = templateConfig
+  const isBuddyLike = templateType === 'buddy' || templateType === 'buddyTest'
 
   const footerRule =
     templateType === 'classic'
@@ -26,24 +26,25 @@ export const PdfFooter: React.FC<PdfFooterProps> = ({ t, templateConfig }) => {
               paddingBottom: 8,
               borderRadius: pdfBorderRadius(0),
             }
-          : { borderTopWidth: 1, borderTopColor: colors.border, borderTopStyle: 'dashed' as const, borderRadius: pdfBorderRadius(0) };
+          : {
+              borderTopWidth: 1,
+              borderTopColor: colors.border,
+              borderTopStyle: 'dashed' as const,
+              borderRadius: pdfBorderRadius(0),
+            }
 
-  const footerStyle = [commonStyles.footer, footerRule];
+  const footerStyle = [commonStyles.footer, footerRule]
 
-  const footerSignStyle = [
-    commonStyles.footerSign,
-    isBuddyLike && { borderTopColor: '#abefe8', borderTopWidth: 1 },
-  ].filter(Boolean);
-  const footerBranding = (t.doc.footer ?? 'Dokument generiert via Pet-Bewerbung.ch').toUpperCase();
+  const footerSignStyle = isBuddyLike
+    ? [commonStyles.footerSign, { borderTopColor: '#abefe8', borderTopWidth: 1 }]
+    : commonStyles.footerSign
+  const footerBranding = (t.doc.footer ?? 'Dokument generiert via Pet-Bewerbung.ch').toUpperCase()
 
   return (
     <View style={footerStyle}>
       {footerBrandingVariant === 'freeCentered' ? (
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <Link
-            src="https://pet-bewerbung.ch"
-            style={commonStyles.footerBrandingFree}
-          >
+          <Link src="https://pet-bewerbung.ch" style={commonStyles.footerBrandingFree}>
             {footerBranding}
           </Link>
         </View>
@@ -66,5 +67,5 @@ export const PdfFooter: React.FC<PdfFooterProps> = ({ t, templateConfig }) => {
         </Text>
       </View>
     </View>
-  );
-};
+  )
+}

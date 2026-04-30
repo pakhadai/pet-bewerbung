@@ -11,7 +11,11 @@
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "biome check ./src",
+    "lint:fix": "biome check --write ./src",
+    "format": "biome format --write ./src"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.3.2",
@@ -19,28 +23,31 @@
     "idb-keyval": "^6.2.2",
     "jszip": "^3.10.1",
     "lucide-react": "^0.469.0",
-    "pako": "^2.1.0",
     "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-image-crop": "^11.0.10",
     "react-router-dom": "^6.30.3",
-    "vite-plugin-node-polyfills": "^0.25.0",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.2.2",
     "@playwright/test": "^1.58.2",
-    "@vitejs/plugin-react": "^4.0.3",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^18.3.24",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^5.2.0",
     "autoprefixer": "^10.4.23",
     "fontmin": "^1.1.1",
+    "jsdom": "^25.0.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
-    "jsdom": "^25.0.1",
-    "vite": "^4.4.5",
+    "typescript": "^5.9.2",
+    "vite": "^7.3.2",
     "vite-plugin-css-injected-by-js": "^4.0.1",
-    "vite-plugin-pwa": "^0.21.2",
-    "vite-plugin-vsharp": "^1.9.1",
-    "vitest": "^2.1.9",
+    "vite-plugin-node-polyfills": "^0.26.0",
+    "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.1.5",
     "workbox-window": "^7.4.0"
   }
 }
