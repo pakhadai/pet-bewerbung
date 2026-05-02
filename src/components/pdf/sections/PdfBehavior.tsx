@@ -20,7 +20,7 @@ export const PdfBehavior: React.FC<PdfBehaviorProps> = ({ data, t, templateConfi
   if (!getShowAdvancedHealthInfo(data)) return null
   const headingStyle = buildPdfSectionHeadingStyle(templateConfig)
 
-  const textColor = '#334155'
+  const textColor = templateConfig.colors.bodyText
 
   const textStyle = [commonStyles.text, { color: textColor, fontSize: 10 }]
 

@@ -4,6 +4,7 @@
  */
 import React from 'react'
 import type { TemplateType } from '../../types/form'
+import type { TranslationObject } from '../../types/template'
 import BuddyTemplate, { getBuddyConfig } from './BuddyTemplate'
 import BuddyTestTemplate, { getBuddyTestConfig } from './BuddyTestTemplate'
 import type { TemplateConfig } from './ClassicTemplate'
@@ -13,10 +14,12 @@ import ModernTemplate, { getModernConfig } from './ModernTemplate'
 
 export type TemplateComponentProps = {
   data: import('../../types/form').FormData
-  t: Record<string, unknown>
+  t: TranslationObject
   customColors: unknown
   config: TemplateConfig
   styleOverrides: import('./ClassicTemplate').StyleOverrides
+  /** HTML section styling variant (matches templateType for all current templates) */
+  variant: TemplateType
 }
 
 export const TEMPLATE_COMPONENTS: Record<

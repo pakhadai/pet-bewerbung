@@ -26,7 +26,7 @@ const s = (val: unknown) => sanitizeForPdf(withFallback(val))
 export const PdfDetails: React.FC<PdfDetailsProps> = ({ data, t, templateConfig }) => {
   const headingStyle = buildPdfSectionHeadingStyle(templateConfig)
 
-  const textColor = '#334155'
+  const textColor = templateConfig.colors.bodyText
   const textStyle = [commonStyles.text, { color: textColor, fontSize: 10 }]
 
   return (

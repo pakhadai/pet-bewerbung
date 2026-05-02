@@ -1,7 +1,8 @@
 import { Image, Text, View } from '@react-pdf/renderer'
 import React from 'react'
 import type { PdfTranslations } from '../../../services/pdfService'
-import { commonStyles, pdfBorderRadius } from '../PdfBase'
+import { TEMPLATE_TOKENS } from '../../../templates/templateTokens'
+import { commonStyles, PDF_NEUTRAL, pdfBorderRadius } from '../PdfBase'
 import type { PdfTemplateConfig } from '../templates/getPdfTemplateConfig'
 
 export interface PdfHeaderProps {
@@ -43,7 +44,7 @@ export const PdfHeader: React.FC<PdfHeaderProps> = ({
           ? {
               borderBottomWidth: 1,
               borderBottomColor: colors.primary,
-              backgroundColor: '#eff4ff',
+              backgroundColor: colors.light,
               borderRadius: pdfBorderRadius(0),
             }
           : {
@@ -71,7 +72,7 @@ export const PdfHeader: React.FC<PdfHeaderProps> = ({
     ...(tt === 'compact'
       ? [
           {
-            backgroundColor: '#ffffff',
+            backgroundColor: PDF_NEUTRAL.white,
             borderWidth: 1,
             borderColor: colors.accent,
             borderRadius: pdfBorderRadius(0),
@@ -81,16 +82,16 @@ export const PdfHeader: React.FC<PdfHeaderProps> = ({
     ...(isBuddyLike
       ? [
           {
-            backgroundColor: '#ffffff',
+            backgroundColor: PDF_NEUTRAL.white,
             borderWidth: 1,
-            borderColor: '#bec9c7',
+            borderColor: colors.border,
             borderRadius: 8,
           },
         ]
       : []),
-    ...(logoUrl && tt === 'classic' ? [{ backgroundColor: 'white', padding: 2 }] : []),
-    ...(logoUrl && tt === 'modern' ? [{ backgroundColor: 'white' }] : []),
-    ...(logoUrl && isBuddyLike ? [{ backgroundColor: 'white' }] : []),
+    ...(logoUrl && tt === 'classic' ? [{ backgroundColor: PDF_NEUTRAL.white, padding: 2 }] : []),
+    ...(logoUrl && tt === 'modern' ? [{ backgroundColor: PDF_NEUTRAL.white }] : []),
+    ...(logoUrl && isBuddyLike ? [{ backgroundColor: PDF_NEUTRAL.white }] : []),
   ]
 
   const titleStyle: TextStyle = [
@@ -101,7 +102,7 @@ export const PdfHeader: React.FC<PdfHeaderProps> = ({
     ...(tt === 'modern'
       ? [
           {
-            color: '#0f172a',
+            color: TEMPLATE_TOKENS.classic.pdf.colors.primary,
             textTransform: 'none' as const,
             fontSize: 17,
             fontWeight: 'bold' as const,
@@ -139,7 +140,7 @@ export const PdfHeader: React.FC<PdfHeaderProps> = ({
     ...(isBuddyLike
       ? [
           {
-            color: '#3f4947',
+            color: colors.muted,
             textTransform: 'uppercase' as const,
             fontSize: 9,
             letterSpacing: 1.5,

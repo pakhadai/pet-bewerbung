@@ -69,6 +69,7 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
         darkMode={darkMode}
         toggleDarkMode={() => setDarkMode(!darkMode)}
         lang={data.lang ?? 'de'}
+        showSaveStatus={false}
         onLangChange={(v) => {
           if ((SUPPORTED_LANGS as readonly string[]).includes(v)) handleLangChange(v as Language)
         }}
@@ -101,7 +102,7 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
             <span
               className={`absolute -top-4 -right-4 px-3 py-1 font-display font-bold text-xl rounded-full rotate-12 hand-drawn-border ${
                 darkMode
-                  ? 'bg-accent-pink text-[#121212] border-[#121212]'
+                  ? 'bg-accent-pink text-gray-900 border-gray-900'
                   : 'bg-accent-pink text-gray-900 border-gray-200'
               }`}
             >
@@ -130,7 +131,7 @@ const Step6ThankYou: React.FC<Step6ThankYouProps> = ({ onFaqClick: onFaqClickPro
                 type="button"
                 onClick={handleDownloadPdf}
                 disabled={isGeneratingPdf}
-                className={`group relative w-full px-10 py-6 text-3xl sm:text-4xl font-bold font-display hand-drawn-button bg-primary hover:bg-primary-dark transition-all hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-4 shadow-[8px_8px_0px_0px_rgba(179,157,219,0.2)] ${darkMode ? 'text-white' : 'text-[#121212]'}`}
+                className={`group relative w-full px-10 py-6 text-3xl sm:text-4xl font-bold font-display hand-drawn-button bg-primary hover:bg-primary-dark transition-all hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-4 shadow-[8px_8px_0px_0px_rgba(179,157,219,0.2)] ${darkMode ? 'text-white' : 'text-gray-900'}`}
               >
                 {isGeneratingPdf ? (
                   <Loader2 size={28} className="animate-spin" />

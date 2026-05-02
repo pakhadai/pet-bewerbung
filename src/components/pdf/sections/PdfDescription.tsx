@@ -18,7 +18,7 @@ export interface PdfDescriptionProps {
 export const PdfDescription: React.FC<PdfDescriptionProps> = ({ data, t, templateConfig }) => {
   const headingStyle = buildPdfSectionHeadingStyle(templateConfig)
 
-  const textColor = '#334155'
+  const textColor = templateConfig.colors.bodyText
   const textStyle = [commonStyles.text, { color: textColor, fontSize: 10 }]
 
   const descriptionText = sanitizeForPdf(data.generatedText) || (t.ui?.noDescription ?? '—')

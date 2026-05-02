@@ -30,8 +30,8 @@
         "noControlCharactersInRegex": "off"
       },
       "correctness": {
-        "useExhaustiveDependencies": "off",
-        "noUnusedVariables": "off"
+        "useExhaustiveDependencies": "error",
+        "noUnusedVariables": "error"
       },
       "nursery": {
         "recommended": false
@@ -56,4 +56,3 @@
     }
   }
 }
-

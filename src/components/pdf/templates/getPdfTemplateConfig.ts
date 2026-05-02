@@ -1,12 +1,21 @@
 import type { TextProps } from '@react-pdf/renderer'
+import {
+  getTemplateTokens,
+  type PdfColorTokens,
+  type PdfReferencePanelTokens,
+  TEMPLATE_TOKENS,
+} from '../../../templates/templateTokens'
 import type { TemplateType } from '../../../types/form'
-import { pdfBorderRadius, TEMPLATE_COLORS } from '../PdfBase'
+import { pdfBorderRadius } from '../PdfBase'
 
 export type PdfFooterBrandingVariant = 'freeCentered' | 'altSmall'
 
+/** Slate title text used for modern PDF headings (matches classic primary). */
+const MODERN_HEADING_TEXT = TEMPLATE_TOKENS.classic.pdf.colors.primary
+
 export interface PdfTemplateConfig {
   templateType: TemplateType
-  colors: (typeof TEMPLATE_COLORS)[TemplateType]
+  colors: PdfColorTokens
   photoHeight: number
 
   pagePadding?: number
@@ -23,34 +32,19 @@ export interface PdfTemplateConfig {
 }
 
 export function getPdfTemplateConfig(templateType: TemplateType): PdfTemplateConfig {
-  const colors = TEMPLATE_COLORS[templateType] ?? TEMPLATE_COLORS.classic
-  const isCompact = templateType === 'compact'
-  const isModern = templateType === 'modern'
-  const isBuddyLayout = templateType === 'buddy' || templateType === 'buddyTest'
+  const tokens = getTemplateTokens(templateType).pdf
 
   return {
     templateType,
-    colors,
-    photoHeight: isCompact ? 210 : isBuddyLayout ? 248 : isModern ? 232 : 240,
-    pagePadding: isCompact ? 30 : isBuddyLayout ? 32 : isModern ? 36 : 40,
-    pageFontSize: isCompact ? 9 : 10,
-    footerBrandingVariant: templateType === 'classic' ? 'freeCentered' : 'altSmall',
-    pageBackgroundColor: isCompact
-      ? '#fafaf9'
-      : isModern
-        ? '#fafafa'
-        : isBuddyLayout
-          ? '#f8f9ff'
-          : '#ffffff',
-    sidebarBackgroundColor: isModern
-      ? '#f0fdfa'
-      : isCompact
-        ? '#f5f5f4'
-        : isBuddyLayout
-          ? '#eff4ff'
-          : undefined,
-    sidebarPadding: isModern ? 8 : isCompact ? 6 : isBuddyLayout ? 10 : undefined,
-    sidebarRadius: isModern ? 6 : isCompact ? 3 : isBuddyLayout ? 8 : undefined,
+    colors: tokens.colors,
+    photoHeight: tokens.photoHeight,
+    pagePadding: tokens.pagePadding,
+    pageFontSize: tokens.pageFontSize,
+    footerBrandingVariant: tokens.footerBrandingVariant,
+    pageBackgroundColor: tokens.pageBackgroundColor,
+    sidebarBackgroundColor: tokens.sidebarBackgroundColor,
+    sidebarPadding: tokens.sidebarPadding,
+    sidebarRadius: tokens.sidebarRadius,
   }
 }
 
@@ -101,7 +95,7 @@ export function buildPdfSectionHeadingStyle(config: PdfTemplateConfig): TextProp
         paddingLeft: 10,
         borderLeftWidth: 4,
         borderLeftColor: config.colors.accent,
-        color: '#0f172a',
+        color: MODERN_HEADING_TEXT,
         borderRadius: pdfBorderRadius(0),
       }
     case 'compact':
@@ -122,42 +116,7 @@ export function buildPdfSectionHeadingStyle(config: PdfTemplateConfig): TextProp
   }
 }
 
-/** Tint for the “References” callout block — distinct per template */
-export function getPdfReferencePanelStyle(templateType: TemplateType): {
-  backgroundColor: string
-  borderColor: string
-  headingRuleColor: string
-  labelColor: string
-} {
-  switch (templateType) {
-    case 'buddy':
-    case 'buddyTest':
-      return {
-        backgroundColor: '#e5eeff',
-        borderColor: '#93c5fd',
-        headingRuleColor: '#006b5f',
-        labelColor: '#004541',
-      }
-    case 'modern':
-      return {
-        backgroundColor: '#f0fdfa',
-        borderColor: '#99f6e4',
-        headingRuleColor: '#5eead4',
-        labelColor: '#115e59',
-      }
-    case 'compact':
-      return {
-        backgroundColor: '#fffbeb',
-        borderColor: '#fcd34d',
-        headingRuleColor: '#fbbf24',
-        labelColor: '#b45309',
-      }
-    default:
-      return {
-        backgroundColor: '#eff6ff',
-        borderColor: '#bfdbfe',
-        headingRuleColor: '#bfdbfe',
-        labelColor: '#1e40af',
-      }
-  }
+/** Tint for the “References” callout block — from template tokens */
+export function getPdfReferencePanelStyle(templateType: TemplateType): PdfReferencePanelTokens {
+  return getTemplateTokens(templateType).pdf.referencePanel
 }

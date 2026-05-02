@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { PUBLIC_LOGO_HEADER_PATH } from '../constants'
 import { type Language, SUPPORTED_LANGS } from '../hooks/useTranslation'
+import { isFormStoreSaving } from '../stores/formStore'
 import type { TranslationObject } from '../types/template'
 import MaterialIcon from './MaterialIcon'
 
@@ -11,6 +12,7 @@ interface HeaderProps {
   onLangChange: (lang: Language) => void
   onLogoClick: () => void
   t: TranslationObject
+  showSaveStatus?: boolean
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -20,6 +22,7 @@ const Header: React.FC<HeaderProps> = ({
   onLangChange,
   onLogoClick,
   t,
+  showSaveStatus = false,
 }) => {
   const languages = [
     { code: 'en', label: 'EN' },
@@ -28,6 +31,23 @@ const Header: React.FC<HeaderProps> = ({
     { code: 'it', label: 'IT' },
     { code: 'rm', label: 'RM' },
   ]
+
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (!showSaveStatus) return
+    let mounted = true
+    const tick = () => {
+      if (!mounted) return
+      setSaving(isFormStoreSaving())
+    }
+    tick()
+    const id = window.setInterval(tick, 400)
+    return () => {
+      mounted = false
+      window.clearInterval(id)
+    }
+  }, [showSaveStatus])
 
   return (
     <header className="w-full absolute top-0 z-50 px-4 py-4 lg:px-12 lg:py-6">
@@ -45,7 +65,6 @@ const Header: React.FC<HeaderProps> = ({
               width={40}
               height={40}
               decoding="async"
-              fetchPriority="high"
             />
           </div>
           <h1
@@ -57,6 +76,30 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Navigation & Actions */}
         <div className="flex items-center gap-3 lg:gap-6">
+          {showSaveStatus && (
+            <div
+              className={`hidden sm:inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${
+                darkMode
+                  ? 'bg-gray-800/70 border-gray-700 text-gray-200'
+                  : 'bg-white/70 border-gray-200 text-text-secondary'
+              }`}
+              role="status"
+              aria-live="polite"
+            >
+              <span
+                className={`inline-block size-2 rounded-full ${
+                  saving ? 'bg-amber-400 animate-pulse' : 'bg-emerald-500'
+                }`}
+                aria-hidden
+              />
+              <span>
+                {saving
+                  ? (t?.ui?.saving ?? 'Saving…')
+                  : (t?.ui?.saved ?? 'Saved')}
+              </span>
+            </div>
+          )}
+
           {/* Mobile Language Switcher */}
           <div className="md:hidden">
             <label htmlFor="lang-mobile" className="sr-only">

@@ -2,6 +2,7 @@ import React from 'react'
 import type { FormData } from '../../types/form'
 import type { TranslationObject } from '../../types/template'
 import { formatAge, formatWeight, getGenderLabel, withFallback } from '../../utils/documentHelpers'
+import { getPetDetailsTokens } from '../../templates/htmlVariantTokens'
 import type { DocumentVariant } from './OwnerInfo'
 
 export interface PetDetailsProps {
@@ -9,15 +10,6 @@ export interface PetDetailsProps {
   t: TranslationObject
   variant?: DocumentVariant
   customColors?: unknown
-}
-
-interface VariantStyles {
-  container: string
-  heading: string
-  grid: string
-  fieldLabel: string
-  fieldValueLarge: string
-  fieldValue: string
 }
 
 /**
@@ -47,32 +39,38 @@ const PetDetails: React.FC<PetDetailsProps> = ({ data, t, variant = 'classic' })
             Experimental layout
           </span>
         </div>
-        <h2 className="text-[3.15rem] sm:text-[3.5rem] leading-[0.98] font-black text-[#004541] tracking-tight drop-shadow-sm">
+        <h2 className="text-[3.15rem] sm:text-[3.5rem] leading-[0.98] font-black text-[color:var(--tpl-primary)] tracking-tight drop-shadow-sm">
           {withFallback(data.name)}
         </h2>
-        <p className="text-[#b45309] font-semibold uppercase text-[11px] mt-3 tracking-[0.18em]">
+        <p className="text-[color:var(--tpl-accent)] font-semibold uppercase text-[11px] mt-3 tracking-[0.18em]">
           {withFallback(data.breed)}{' '}
           <span className="text-amber-300/80 normal-case tracking-normal">·</span>{' '}
           {getGenderLabel(data.gender, t)}
         </p>
         <div className="grid grid-cols-3 gap-2.5 mt-7">
-          <div className="rounded-2xl bg-gradient-to-br from-[#eff4ff] to-[#fff7ed] p-3 ring-1 ring-amber-300/50 min-w-0">
-            <p className="text-[9px] text-[#3f4947] uppercase tracking-widest font-bold">
+          <div className="rounded-2xl bg-gradient-to-br from-[color:var(--tpl-light)] to-white p-3 ring-1 ring-[color:var(--tpl-border)]/30 min-w-0">
+            <p className="text-[9px] text-[color:var(--tpl-muted)] uppercase tracking-widest font-bold">
               {labels?.age ?? 'Age'}
             </p>
-            <p className="font-black text-lg text-[#004541] mt-1">{formatAge(data.age, t)}</p>
+            <p className="font-black text-lg text-[color:var(--tpl-primary)] mt-1">
+              {formatAge(data.age, t)}
+            </p>
           </div>
-          <div className="rounded-2xl bg-gradient-to-br from-[#eff4ff] to-[#fff7ed] p-3 ring-1 ring-amber-300/50 min-w-0">
-            <p className="text-[9px] text-[#3f4947] uppercase tracking-widest font-bold">
+          <div className="rounded-2xl bg-gradient-to-br from-[color:var(--tpl-light)] to-white p-3 ring-1 ring-[color:var(--tpl-border)]/30 min-w-0">
+            <p className="text-[9px] text-[color:var(--tpl-muted)] uppercase tracking-widest font-bold">
               {labels?.weight ?? 'Weight'}
             </p>
-            <p className="font-black text-lg text-[#004541] mt-1">{formatWeight(data.weight, t)}</p>
+            <p className="font-black text-lg text-[color:var(--tpl-primary)] mt-1">
+              {formatWeight(data.weight, t)}
+            </p>
           </div>
-          <div className="rounded-2xl bg-gradient-to-br from-[#eff4ff] to-[#fff7ed] p-3 ring-1 ring-amber-300/50 min-w-0">
-            <p className="text-[9px] text-[#3f4947] uppercase tracking-widest font-bold">
+          <div className="rounded-2xl bg-gradient-to-br from-[color:var(--tpl-light)] to-white p-3 ring-1 ring-[color:var(--tpl-border)]/30 min-w-0">
+            <p className="text-[9px] text-[color:var(--tpl-muted)] uppercase tracking-widest font-bold">
               {typeColumnLabel}
             </p>
-            <p className="font-bold text-sm text-[#004541] mt-1 leading-snug">{petTypeLabel}</p>
+            <p className="font-bold text-sm text-[color:var(--tpl-primary)] mt-1 leading-snug">
+              {petTypeLabel}
+            </p>
           </div>
         </div>
       </div>
@@ -90,91 +88,45 @@ const PetDetails: React.FC<PetDetailsProps> = ({ data, t, variant = 'classic' })
 
     return (
       <div className="mb-1">
-        <h2 className="text-[2.65rem] leading-[1.05] font-extrabold text-[#004541] tracking-tight">
+        <h2 className="text-[2.65rem] leading-[1.05] font-extrabold text-[color:var(--tpl-primary)] tracking-tight">
           {withFallback(data.name)}
         </h2>
-        <p className="text-[#006b5f] font-medium uppercase text-xs mt-2 tracking-[0.2em]">
+        <p className="text-[color:var(--tpl-accent)] font-medium uppercase text-xs mt-2 tracking-[0.2em]">
           {withFallback(data.breed)}{' '}
-          <span className="text-[#94a3b8] normal-case tracking-normal">·</span>{' '}
+          <span className="text-[color:var(--tpl-muted)]/60 normal-case tracking-normal">·</span>{' '}
           {getGenderLabel(data.gender, t)}
         </p>
         <div className="grid grid-cols-3 gap-3 mt-6">
-          <div className="bg-[#eff4ff] p-3 rounded-xl border-l-4 border-[#004541] min-w-0">
-            <p className="text-[9px] text-[#3f4947] uppercase tracking-widest font-bold">
+          <div className="bg-[color:var(--tpl-light)] p-3 rounded-xl border-l-4 border-[color:var(--tpl-primary)] min-w-0">
+            <p className="text-[9px] text-[color:var(--tpl-muted)] uppercase tracking-widest font-bold">
               {labels?.age ?? 'Age'}
             </p>
-            <p className="font-bold text-base text-[#004541] mt-1">{formatAge(data.age, t)}</p>
+            <p className="font-bold text-base text-[color:var(--tpl-primary)] mt-1">
+              {formatAge(data.age, t)}
+            </p>
           </div>
-          <div className="bg-[#eff4ff] p-3 rounded-xl border-l-4 border-[#004541] min-w-0">
-            <p className="text-[9px] text-[#3f4947] uppercase tracking-widest font-bold">
+          <div className="bg-[color:var(--tpl-light)] p-3 rounded-xl border-l-4 border-[color:var(--tpl-primary)] min-w-0">
+            <p className="text-[9px] text-[color:var(--tpl-muted)] uppercase tracking-widest font-bold">
               {labels?.weight ?? 'Weight'}
             </p>
-            <p className="font-bold text-base text-[#004541] mt-1">
+            <p className="font-bold text-base text-[color:var(--tpl-primary)] mt-1">
               {formatWeight(data.weight, t)}
             </p>
           </div>
-          <div className="bg-[#eff4ff] p-3 rounded-xl border-l-4 border-[#004541] min-w-0">
-            <p className="text-[9px] text-[#3f4947] uppercase tracking-widest font-bold">
+          <div className="bg-[color:var(--tpl-light)] p-3 rounded-xl border-l-4 border-[color:var(--tpl-primary)] min-w-0">
+            <p className="text-[9px] text-[color:var(--tpl-muted)] uppercase tracking-widest font-bold">
               {typeColumnLabel}
             </p>
-            <p className="font-bold text-sm text-[#004541] mt-1 leading-snug">{petTypeLabel}</p>
+            <p className="font-bold text-sm text-[color:var(--tpl-primary)] mt-1 leading-snug">
+              {petTypeLabel}
+            </p>
           </div>
         </div>
       </div>
     )
   }
 
-  const getVariantStyles = (): VariantStyles => {
-    switch (variant) {
-      case 'classic':
-        return {
-          container: '',
-          heading:
-            'font-bold uppercase tracking-wider text-xs mb-4 pb-2 border-b-2 border-slate-900',
-          grid: 'grid grid-cols-2 gap-y-4 gap-x-6',
-          fieldLabel:
-            'block text-[10px] text-slate-600 uppercase tracking-wide mb-1.5 font-semibold',
-          fieldValueLarge: 'font-bold text-lg text-slate-900',
-          fieldValue: 'text-sm font-medium text-slate-700',
-        }
-
-      case 'modern':
-        return {
-          container: '',
-          heading: 'font-bold text-base mb-4 pl-3 border-l-4 border-teal-500 text-slate-900',
-          grid: 'grid grid-cols-2 gap-y-3 gap-x-6',
-          fieldLabel: 'block text-xs text-teal-900/60 uppercase tracking-wide mb-1.5 font-semibold',
-          fieldValueLarge: 'font-semibold text-lg text-slate-900',
-          fieldValue: 'text-sm font-medium text-slate-700',
-        }
-
-      case 'swiss':
-        return {
-          container: '',
-          heading: 'font-bold uppercase tracking-wider text-xs mb-4 pb-2 border-b-2 border-red-600',
-          grid: 'grid grid-cols-2 gap-y-4 gap-x-6',
-          fieldLabel:
-            'block text-[10px] text-slate-600 uppercase tracking-wide mb-1.5 font-semibold',
-          fieldValueLarge: 'font-bold text-lg text-slate-900',
-          fieldValue: 'text-sm font-medium text-slate-700',
-        }
-
-      case 'compact':
-      default:
-        return {
-          container: '',
-          heading:
-            'text-[10px] font-mono font-bold uppercase tracking-[0.2em] mb-2 pb-1 border-b border-dashed border-stone-500 text-stone-900',
-          grid: 'grid grid-cols-2 gap-y-2 gap-x-4',
-          fieldLabel:
-            'block text-[9px] text-amber-900/70 uppercase tracking-wider mb-1 font-semibold',
-          fieldValueLarge: 'font-bold text-sm text-stone-900',
-          fieldValue: 'text-xs font-medium text-stone-800',
-        }
-    }
-  }
-
-  const styles = getVariantStyles()
+  const styles = getPetDetailsTokens(variant)
   const labelsMain = t.labels
 
   return (

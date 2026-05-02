@@ -6,7 +6,7 @@
 import { MapPin } from 'lucide-react'
 import React from 'react'
 import { PUBLIC_LOGO_PATH } from '../../constants'
-import type { FormData } from '../../types/form'
+import type { FormData, TemplateType } from '../../types/form'
 import type { TranslationObject } from '../../types/template'
 import BehaviorSection from '../document/BehaviorSection'
 import DescriptionSection from '../document/DescriptionSection'
@@ -23,9 +23,16 @@ export interface BuddyTestTemplateProps {
   customColors: unknown
   config: TemplateConfig
   styleOverrides: StyleOverrides
+  variant: TemplateType
 }
 
-const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({ data, t, customColors, config }) => {
+const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({
+  data,
+  t,
+  customColors,
+  config,
+  variant,
+}) => {
   const doc = t.doc
 
   const cityDate = data.city?.toString().trim()
@@ -55,7 +62,7 @@ const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({ data, t, customCo
             </div>
             <div className="h-8 w-px shrink-0 bg-amber-400/40" aria-hidden />
             <div className="flex flex-col min-w-0">
-              <span className="text-lg font-black text-[#004541] uppercase tracking-wider leading-tight">
+              <span className="text-lg font-black text-[color:var(--tpl-primary)] uppercase tracking-wider leading-tight">
                 Pet-Bewerbung
               </span>
               <h1 className={`${config.titleText} mt-1`}>{doc?.title ?? 'Pet CV'}</h1>
@@ -63,8 +70,8 @@ const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({ data, t, customCo
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 text-right">
-            <div className="flex items-center gap-2 text-xs font-medium text-[#3f4947]">
-              <MapPin size={16} className="shrink-0 text-[#004541]" aria-hidden />
+            <div className="flex items-center gap-2 text-xs font-medium text-[color:var(--tpl-muted)]">
+              <MapPin size={16} className="shrink-0 text-[color:var(--tpl-primary)]" aria-hidden />
               <span>{cityDate}</span>
             </div>
           </div>
@@ -79,23 +86,23 @@ const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({ data, t, customCo
             photo={data.photo}
             petType={data.petType}
             t={t}
-            variant="buddyTest"
+            variant={variant}
             customColors={customColors}
           />
-          <OwnerInfo data={data} t={t} variant="buddyTest" customColors={customColors} />
-          <BehaviorSection data={data} t={t} variant="buddyTest" customColors={customColors} />
+          <OwnerInfo data={data} t={t} variant={variant} customColors={customColors} />
+          <BehaviorSection data={data} t={t} variant={variant} customColors={customColors} />
         </aside>
 
         <main className={`${config.mainWidth} ${config.mainSpace} min-h-0 overflow-y-auto pl-1`}>
-          <PetDetails data={data} t={t} variant="buddyTest" customColors={customColors} />
+          <PetDetails data={data} t={t} variant={variant} customColors={customColors} />
           <DescriptionSection
             text={data.generatedText}
             t={t}
-            variant="buddyTest"
+            variant={variant}
             customColors={customColors}
           />
-          <LegalSection data={data} t={t} variant="buddyTest" customColors={customColors} />
-          <ReferenceSection data={data} t={t} variant="buddyTest" customColors={customColors} />
+          <LegalSection data={data} t={t} variant={variant} customColors={customColors} />
+          <ReferenceSection data={data} t={t} variant={variant} customColors={customColors} />
         </main>
       </div>
 
@@ -107,7 +114,7 @@ const BuddyTestTemplate: React.FC<BuddyTestTemplateProps> = ({ data, t, customCo
             </span>
             <a
               href="https://pet-bewerbung.ch"
-              className="font-sans text-[0.6875rem] uppercase tracking-[0.1em] font-bold text-[#abefe8] hover:underline"
+              className="font-sans text-[0.6875rem] uppercase tracking-[0.1em] font-bold text-white/80 hover:underline"
             >
               pet-bewerbung.ch
             </a>
@@ -127,28 +134,28 @@ export default BuddyTestTemplate
 
 export const getBuddyTestConfig = (today: string): TemplateConfig => ({
   container:
-    'w-[210mm] h-[292mm] bg-[#fffefb] text-[#0b1c30] p-[9mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden border-2 border-dashed border-amber-400/50 rounded-xl',
+    'w-[210mm] h-[292mm] bg-white text-[color:var(--tpl-body-text)] p-[var(--tpl-doc-padding)] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden border-2 border-dashed border-[color:var(--tpl-accent)]/45 rounded-xl',
   headerContainer:
-    'mb-0 pb-5 px-2 -mx-1 pt-2 bg-gradient-to-r from-[#eff4ff] to-[#fff7ed] border-b-2 border-amber-400/30',
+    'mb-0 pb-5 px-2 -mx-1 pt-2 bg-gradient-to-r from-[color:var(--tpl-light)] to-white border-b-2 border-[color:var(--tpl-accent)]/30',
   headerFlex: 'flex items-start justify-between gap-4',
   headerIconContainer: 'flex items-center gap-3 min-w-0 flex-wrap',
-  headerIconBg: 'bg-white p-2 rounded-xl border-2 border-amber-200/80 shadow-md shrink-0',
+  headerIconBg: 'bg-white p-2 rounded-xl border-2 shadow-md shrink-0',
   headerIconSize: 18,
-  titleText: 'text-2xl font-extrabold text-[#004541] tracking-tight',
-  subtitleText: 'text-[10px] uppercase tracking-[0.25em] text-[#b45309] mt-0.5',
-  dateText: 'text-[10px] text-[#64748b]',
+  titleText: 'text-2xl font-extrabold tracking-tight',
+  subtitleText: 'text-[10px] uppercase tracking-[0.25em] text-[color:var(--tpl-accent)] mt-0.5',
+  dateText: 'text-[10px] text-[color:var(--tpl-muted)]',
   dateLabel: today,
   mainLayout: 'flex gap-4 flex-1 min-h-0 overflow-hidden mt-3',
   sidebarWidth:
-    'w-[34%] max-w-[34%] flex-shrink-0 bg-gradient-to-b from-[#eff4ff] to-[#fffbeb] border-2 border-[#fcd34d]/40 rounded-2xl p-3 shadow-inner',
+    'w-[34%] max-w-[34%] flex-shrink-0 bg-gradient-to-b from-[color:var(--tpl-light)] to-white border-2 border-[color:var(--tpl-accent)]/22 rounded-2xl p-3 shadow-inner',
   sidebarSpace: 'space-y-4',
   sidebarShell: '',
   mainWidth: 'flex-1 min-w-0 min-h-0 flex flex-col',
   mainSpace: 'space-y-6',
   footerContainer:
-    'mt-auto pt-3 flex-shrink-0 pb-[3mm] px-4 py-3 -mx-1 bg-[#0f3d3a] text-[#f8f9ff] rounded-t-xl border-t-4 border-amber-400',
-  footerText: 'text-[9px] text-[#abefe8]',
-  footerSignContainer: 'w-44 border-b border-[#abefe8]/50 pb-2',
-  footerSignText: 'text-[0.6875rem] uppercase tracking-[0.1em] text-[#f8f9ff]/90 text-right',
+    'mt-auto pt-3 flex-shrink-0 pb-[3mm] px-4 py-3 -mx-1 bg-[color:var(--tpl-primary)] text-white rounded-t-xl border-t-4 border-[color:var(--tpl-accent)]',
+  footerText: 'text-[9px] text-white/80',
+  footerSignContainer: 'w-44 border-b border-white/40 pb-2',
+  footerSignText: 'text-[0.6875rem] uppercase tracking-[0.1em] text-white/90 text-right',
   badge: null,
 })

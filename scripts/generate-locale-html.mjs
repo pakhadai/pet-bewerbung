@@ -1,7 +1,7 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import path from 'node:path';
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import path from 'node:path'
 
-const SITE_ORIGIN = 'https://pet-bewerbung.ch';
+const SITE_ORIGIN = 'https://pet-bewerbung.ch'
 
 const LOCALES = {
   de: {
@@ -44,22 +44,25 @@ const LOCALES = {
       'Dossier gratuit per chien, chat e pli: retschertga dad in apartmant en Svizra. Las datas restan en il navigatur.',
     ogLocale: 'rm_CH',
   },
-};
+}
 
-const X_DEFAULT = `${SITE_ORIGIN}/de/`;
+const X_DEFAULT = `${SITE_ORIGIN}/de/`
 
 function upsertMetaByName(html, name, content) {
-  const escaped = content.replace(/"/g, '&quot;');
-  const re = new RegExp(`<meta\\s+name=["']${name}["'][^>]*>`, 'i');
-  if (re.test(html)) return html.replace(re, `<meta name="${name}" content="${escaped}" />`);
-  return html.replace('</head>', `    <meta name="${name}" content="${escaped}" />\n  </head>`);
+  const escaped = content.replace(/"/g, '&quot;')
+  const re = new RegExp(`<meta\\s+name=["']${name}["'][^>]*>`, 'i')
+  if (re.test(html)) return html.replace(re, `<meta name="${name}" content="${escaped}" />`)
+  return html.replace('</head>', `    <meta name="${name}" content="${escaped}" />\n  </head>`)
 }
 
 function upsertMetaByProperty(html, property, content) {
-  const escaped = content.replace(/"/g, '&quot;');
-  const re = new RegExp(`<meta\\s+property=["']${property}["'][^>]*>`, 'i');
-  if (re.test(html)) return html.replace(re, `<meta property="${property}" content="${escaped}" />`);
-  return html.replace('</head>', `    <meta property="${property}" content="${escaped}" />\n  </head>`);
+  const escaped = content.replace(/"/g, '&quot;')
+  const re = new RegExp(`<meta\\s+property=["']${property}["'][^>]*>`, 'i')
+  if (re.test(html)) return html.replace(re, `<meta property="${property}" content="${escaped}" />`)
+  return html.replace(
+    '</head>',
+    `    <meta property="${property}" content="${escaped}" />\n  </head>`
+  )
 }
 
 function buildHreflangLinks() {
@@ -68,60 +71,63 @@ function buildHreflangLinks() {
       ([lang, cfg]) =>
         `    <link rel="alternate" hreflang="${cfg.hreflang}" href="${SITE_ORIGIN}/${lang}/" data-static-hreflang="1" />`
     )
-    .join('\n');
-  return `\n${links}\n    <link rel="alternate" hreflang="x-default" href="${X_DEFAULT}" data-static-hreflang="1" />\n`;
+    .join('\n')
+  return `\n${links}\n    <link rel="alternate" hreflang="x-default" href="${X_DEFAULT}" data-static-hreflang="1" />\n`
 }
 
 function localizeHtml(baseHtml, lang, cfg) {
-  const canonical = `${SITE_ORIGIN}/${lang}/`;
-  let html = baseHtml;
+  const canonical = `${SITE_ORIGIN}/${lang}/`
+  let html = baseHtml
 
-  html = html.replace(/<html\s+lang="[^"]*">/i, `<html lang="${cfg.htmlLang}">`);
-  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${cfg.pageTitle}</title>`);
+  html = html.replace(/<html\s+lang="[^"]*">/i, `<html lang="${cfg.htmlLang}">`)
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${cfg.pageTitle}</title>`)
 
-  html = upsertMetaByName(html, 'title', cfg.pageTitle);
-  html = upsertMetaByName(html, 'description', cfg.pageDescription);
-  html = upsertMetaByName(html, 'robots', 'index, follow');
+  html = upsertMetaByName(html, 'title', cfg.pageTitle)
+  html = upsertMetaByName(html, 'description', cfg.pageDescription)
+  html = upsertMetaByName(html, 'robots', 'index, follow')
 
-  html = html.replace(/<link\s+rel="canonical"[^>]*>/i, `<link rel="canonical" href="${canonical}" />`);
+  html = html.replace(
+    /<link\s+rel="canonical"[^>]*>/i,
+    `<link rel="canonical" href="${canonical}" />`
+  )
 
-  html = upsertMetaByProperty(html, 'og:type', 'website');
-  html = upsertMetaByProperty(html, 'og:url', canonical);
-  html = upsertMetaByProperty(html, 'og:title', cfg.pageTitle);
-  html = upsertMetaByProperty(html, 'og:description', cfg.pageDescription);
-  html = upsertMetaByProperty(html, 'og:image', `${SITE_ORIGIN}/og-image.jpg`);
-  html = upsertMetaByProperty(html, 'og:locale', cfg.ogLocale);
-  html = upsertMetaByProperty(html, 'og:site_name', 'Pet-Bewerbung.ch');
+  html = upsertMetaByProperty(html, 'og:type', 'website')
+  html = upsertMetaByProperty(html, 'og:url', canonical)
+  html = upsertMetaByProperty(html, 'og:title', cfg.pageTitle)
+  html = upsertMetaByProperty(html, 'og:description', cfg.pageDescription)
+  html = upsertMetaByProperty(html, 'og:image', `${SITE_ORIGIN}/og-image.jpg`)
+  html = upsertMetaByProperty(html, 'og:locale', cfg.ogLocale)
+  html = upsertMetaByProperty(html, 'og:site_name', 'Pet-Bewerbung.ch')
 
-  html = upsertMetaByProperty(html, 'twitter:card', 'summary_large_image');
-  html = upsertMetaByProperty(html, 'twitter:url', canonical);
-  html = upsertMetaByProperty(html, 'twitter:title', cfg.pageTitle);
-  html = upsertMetaByProperty(html, 'twitter:description', cfg.pageDescription);
-  html = upsertMetaByProperty(html, 'twitter:image', `${SITE_ORIGIN}/og-image.jpg`);
+  html = upsertMetaByProperty(html, 'twitter:card', 'summary_large_image')
+  html = upsertMetaByProperty(html, 'twitter:url', canonical)
+  html = upsertMetaByProperty(html, 'twitter:title', cfg.pageTitle)
+  html = upsertMetaByProperty(html, 'twitter:description', cfg.pageDescription)
+  html = upsertMetaByProperty(html, 'twitter:image', `${SITE_ORIGIN}/og-image.jpg`)
 
-  html = html.replace(/\s*<link\s+rel="alternate"[^>]*data-static-hreflang="1"[^>]*>\s*/gi, '\n');
-  html = html.replace('</head>', `${buildHreflangLinks()}  </head>`);
+  html = html.replace(/\s*<link\s+rel="alternate"[^>]*data-static-hreflang="1"[^>]*>\s*/gi, '\n')
+  html = html.replace('</head>', `${buildHreflangLinks()}  </head>`)
 
-  return html;
+  return html
 }
 
 async function main() {
-  const distDir = path.resolve('dist');
-  const basePath = path.join(distDir, 'index.html');
-  const baseHtml = await readFile(basePath, 'utf8');
+  const distDir = path.resolve('dist')
+  const basePath = path.join(distDir, 'index.html')
+  const baseHtml = await readFile(basePath, 'utf8')
 
   for (const [lang, cfg] of Object.entries(LOCALES)) {
-    const localized = localizeHtml(baseHtml, lang, cfg);
-    const localeDir = path.join(distDir, lang);
-    await mkdir(localeDir, { recursive: true });
-    await writeFile(path.join(localeDir, 'index.html'), localized, 'utf8');
+    const localized = localizeHtml(baseHtml, lang, cfg)
+    const localeDir = path.join(distDir, lang)
+    await mkdir(localeDir, { recursive: true })
+    await writeFile(path.join(localeDir, 'index.html'), localized, 'utf8')
   }
 
-  const rootLocalized = localizeHtml(baseHtml, 'de', LOCALES.de);
-  await writeFile(basePath, rootLocalized, 'utf8');
+  const rootLocalized = localizeHtml(baseHtml, 'de', LOCALES.de)
+  await writeFile(basePath, rootLocalized, 'utf8')
 }
 
 main().catch((error) => {
-  console.error('[generate-locale-html] Failed:', error);
-  process.exit(1);
-});
+  console.error('[generate-locale-html] Failed:', error)
+  process.exit(1)
+})

@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { defineConfig } from 'vite'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => ({
     }),
   ],
   define: {
-    'global': 'globalThis',
+    global: 'globalThis',
   },
   build: {
     /** Smaller prod bundles; keep console in dev */
@@ -53,11 +53,12 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('@react-pdf/renderer')) return 'react-pdf';
+          if (id.includes('@react-pdf/renderer')) return 'react-pdf'
           /** JSZip: no forced chunk name — avoids Rollup hoisting a static import into the entry. */
-          if (id.includes('node_modules/qrcode')) return 'qrcode';
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) return 'vendor';
-          return undefined;
+          if (id.includes('node_modules/qrcode')) return 'qrcode'
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom'))
+            return 'vendor'
+          return undefined
         },
       },
     },
@@ -65,6 +66,6 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     host: true,
-    port: 3000
+    port: 3000,
   },
 }))

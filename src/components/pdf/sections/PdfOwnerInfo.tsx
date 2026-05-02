@@ -30,7 +30,7 @@ export const PdfOwnerInfo: React.FC<PdfOwnerInfoProps> = ({
 
   const headingStyle = buildPdfSectionHeadingStyle(templateConfig)
 
-  const textColor = '#334155'
+  const textColor = templateConfig.colors.bodyText
   const textStyle = [commonStyles.text, { color: textColor, fontSize: 10 }]
 
   return (

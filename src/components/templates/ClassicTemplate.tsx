@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { PUBLIC_LOGO_PATH } from '../../constants'
-import type { FormData } from '../../types/form'
+import type { FormData, TemplateType } from '../../types/form'
 import type { TranslationObject } from '../../types/template'
 import BehaviorSection from '../document/BehaviorSection'
 import DescriptionSection from '../document/DescriptionSection'
@@ -54,6 +54,7 @@ export interface ClassicTemplateProps {
   customColors: unknown
   config: TemplateConfig
   styleOverrides: StyleOverrides
+  variant: TemplateType
 }
 
 const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
@@ -62,6 +63,7 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
   customColors,
   config,
   styleOverrides,
+  variant,
 }) => {
   const { header, accent, border, footer } = styleOverrides
   const doc = t.doc
@@ -106,24 +108,24 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
             photo={data.photo}
             petType={data.petType}
             t={t}
-            variant="classic"
+            variant={variant}
             customColors={customColors}
           />
-          <OwnerInfo data={data} t={t} variant="classic" customColors={customColors} />
-          <BehaviorSection data={data} t={t} variant="classic" customColors={customColors} />
+          <OwnerInfo data={data} t={t} variant={variant} customColors={customColors} />
+          <BehaviorSection data={data} t={t} variant={variant} customColors={customColors} />
         </div>
 
         {/* Main Content */}
         <div className={`${config.mainWidth} ${config.mainSpace}`}>
-          <PetDetails data={data} t={t} variant="classic" customColors={customColors} />
+          <PetDetails data={data} t={t} variant={variant} customColors={customColors} />
           <DescriptionSection
             text={data.generatedText}
             t={t}
-            variant="classic"
+            variant={variant}
             customColors={customColors}
           />
-          <LegalSection data={data} t={t} variant="classic" customColors={customColors} />
-          <ReferenceSection data={data} t={t} variant="classic" customColors={customColors} />
+          <LegalSection data={data} t={t} variant={variant} customColors={customColors} />
+          <ReferenceSection data={data} t={t} variant={variant} customColors={customColors} />
         </div>
       </div>
 
@@ -153,15 +155,15 @@ export default ClassicTemplate
  */
 export const getClassicConfig = (today: string): TemplateConfig => ({
   container:
-    'w-[210mm] h-[292mm] bg-white text-slate-900 p-[12mm] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
-  headerContainer: 'mb-4 pb-2.5 border-b-[3px] border-slate-900',
+    'w-[210mm] h-[292mm] bg-white text-[color:var(--tpl-body-text)] p-[var(--tpl-doc-padding)] text-xs font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+  headerContainer: 'mb-4 pb-2.5 border-b-[3px] border-[color:var(--tpl-border)]',
   headerFlex: 'flex items-start justify-between',
   headerIconContainer: 'flex items-center gap-3',
-  headerIconBg: 'bg-white p-2 rounded-sm border-2 border-slate-900',
+  headerIconBg: 'bg-white p-2 rounded-sm border-2',
   headerIconSize: 16,
-  titleText: 'text-xl font-black uppercase tracking-tight text-slate-900',
-  subtitleText: 'text-[10px] uppercase tracking-wider text-slate-500 mt-1',
-  dateText: 'text-[10px] text-slate-500 text-right',
+  titleText: 'text-xl font-black uppercase tracking-tight',
+  subtitleText: 'text-[10px] uppercase tracking-wider text-[color:var(--tpl-muted)] mt-1',
+  dateText: 'text-[10px] text-[color:var(--tpl-muted)] text-right',
   dateLabel: today,
   mainLayout: 'flex gap-5 flex-1 min-h-0 overflow-hidden',
   sidebarWidth: 'w-[35%] flex-shrink-0',
@@ -169,9 +171,12 @@ export const getClassicConfig = (today: string): TemplateConfig => ({
   sidebarShell: '',
   mainWidth: 'flex-1 min-w-0',
   mainSpace: 'space-y-3',
-  footerContainer: 'mt-auto pt-2 border-t-2 border-slate-900 flex-shrink-0 pb-[3mm]',
-  footerText: 'text-[8px] text-slate-300 uppercase tracking-[0.08em] font-medium text-center mb-3',
-  footerSignContainer: 'w-44 border-t border-slate-400 pt-2 mt-3',
-  footerSignText: 'text-[9px] uppercase font-semibold tracking-wider text-slate-600 text-center',
+  footerContainer:
+    'mt-auto pt-2 border-t-2 border-[color:var(--tpl-border)] flex-shrink-0 pb-[3mm]',
+  footerText:
+    'text-[8px] text-[color:var(--tpl-muted)] opacity-40 uppercase tracking-[0.08em] font-medium text-center mb-3',
+  footerSignContainer: 'w-44 border-t border-[color:var(--tpl-border)]/40 pt-2 mt-3',
+  footerSignText:
+    'text-[9px] uppercase font-semibold tracking-wider text-[color:var(--tpl-muted)] text-center',
   badge: null,
 })

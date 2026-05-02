@@ -7,6 +7,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useRef } from '
 import { useTheme, useToast, useTranslation, useWizardNavigation } from '../hooks'
 import {
   flushFormStoreSync,
+  hasUnsavedPhoto,
   isFormStoreSaving,
   STORAGE_FAILED_EVENT,
   useFormStore,
@@ -135,11 +136,12 @@ export const WizardProviders: React.FC<{ children: ReactNode }> = ({ children })
   // Load draft only once on mount - lang is passed so initial data has correct lang fallback.
   // Do NOT re-load on lang change: that would overwrite unsaved form state.
   const hasLoadedRef = useRef(false)
+  const initialLangRef = useRef(translation.lang)
   useEffect(() => {
     if (hasLoadedRef.current) return
     hasLoadedRef.current = true
-    useFormStore.getState().loadDraft(translation.lang)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    useFormStore.getState().loadDraft(initialLangRef.current)
+  }, [])
 
   useEffect(() => {
     const handler = () => {
@@ -160,7 +162,7 @@ export const WizardProviders: React.FC<{ children: ReactNode }> = ({ children })
     const save = () => flushFormStoreSync()
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       save()
-      if (isFormStoreSaving()) {
+      if (isFormStoreSaving() || hasUnsavedPhoto()) {
         e.preventDefault()
         e.returnValue = ''
       }

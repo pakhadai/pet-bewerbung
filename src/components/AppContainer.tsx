@@ -2,30 +2,29 @@
  * AppContainer Component
  * Main app container - delegates routing to StepRenderer and modals to ModalsLayer
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { WizardProvider } from '../context/WizardContext'
 import {
   useThemeContext,
   useToastContext,
   useTranslationContext,
   useWizardNavigationContext,
 } from '../context/WizardProviders'
+import { useFocusFirstFieldOnStep } from '../hooks/useFocusFirstFieldOnStep'
+import { useSyncHtmlLang } from '../hooks/useSyncHtmlLang'
+import { useWizardContextValue } from '../hooks/useWizardContextValue'
 import { useFormValidation, useTemplateSelection, validateStep } from '../hooks'
 import type { Language } from '../hooks/useTranslation'
-import ThankYouRoute from '../routes/ThankYouRoute'
 import { useFormStore } from '../stores/formStore'
 import type { TemplateType } from '../types/form'
 import FaqJsonLd from './FaqJsonLd'
-import FloatingNavigation from './FloatingNavigation'
-import Footer from './Footer'
-import Header from './Header'
 import type { LegalPageType } from './LegalPages'
 import MaterialIcon from './MaterialIcon'
 import ModalsLayer from './ModalsLayer'
 import SeoHead from './SeoHead'
-import StepProgress from './StepProgress'
 import StepRenderer from './StepRenderer'
+import WizardShell from './WizardShell'
+import WizardThankYouScreen from './WizardThankYouScreen'
 
 const selectData = (s: ReturnType<typeof useFormStore.getState>) => s.data
 const selectUpdateData = (s: ReturnType<typeof useFormStore.getState>) => s.updateData
@@ -54,11 +53,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     useTemplateSelection()
   const { errors: validationErrors, isValid: isStepValid } = useFormValidation(data, step)
 
-  const wrappedOnDownloadPDF = useCallback(
-    () => onDownloadPDF(selectedTemplate),
-    [onDownloadPDF, selectedTemplate]
-  )
-
   const handleNext = () => {
     const { isValid } = validateStep(data, step)
     if (!isValid) {
@@ -68,61 +62,33 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     goToStep(step + 1)
   }
 
-  useEffect(() => {
-    if (step >= 1 && step <= 6) {
-      const id = setTimeout(() => {
-        const firstInput = document.querySelector<HTMLElement>(
-          'main input:not([type="hidden"]), main select, main textarea'
-        )
-        firstInput?.focus({ preventScroll: false })
-      }, 100)
-      return () => clearTimeout(id)
-    }
-  }, [step])
+  useFocusFirstFieldOnStep(step)
 
   const [legalPage, setLegalPage] = useState<LegalPageType>(null)
   const [faqOpen, setFaqOpen] = useState(false)
   const [navigationVisible, setNavigationVisible] = useState(true)
 
-  // A11y: keep <html lang="..."> in sync with the active UI language.
-  useEffect(() => {
-    document.documentElement.lang = lang
-  }, [lang])
+  useSyncHtmlLang(lang)
 
   useEffect(() => {
     if (step !== 4) setNavigationVisible(true)
   }, [step])
 
-  const wizardContextValue = useMemo(
-    () => ({
-      t,
-      darkMode,
-      step,
-      animDir,
-      validationErrors,
-      onDownloadPDF: wrappedOnDownloadPDF,
-      onDownloadAllTemplates,
-      goToStep,
-      setLang,
-      setDarkMode,
-      showToast,
-      resetForm,
-    }),
-    [
-      t,
-      darkMode,
-      step,
-      animDir,
-      validationErrors,
-      wrappedOnDownloadPDF,
-      onDownloadAllTemplates,
-      goToStep,
-      setLang,
-      setDarkMode,
-      showToast,
-      resetForm,
-    ]
-  )
+  const wizardContextValue = useWizardContextValue({
+    t,
+    darkMode,
+    step,
+    animDir,
+    validationErrors,
+    selectedTemplate,
+    onDownloadPDF,
+    onDownloadAllTemplates,
+    goToStep,
+    setLang,
+    setDarkMode,
+    showToast,
+    resetForm,
+  })
 
   if (isTranslationLoading) {
     return (
@@ -141,12 +107,11 @@ export const AppContainer: React.FC<AppContainerProps> = ({
       <>
         <SeoHead />
         <FaqJsonLd t={t} />
-        <WizardProvider value={wizardContextValue}>
-          <ThankYouRoute onFaqClick={() => setFaqOpen(true)} />
-        </WizardProvider>
-        <ModalsLayer
+        <WizardThankYouScreen
+          wizardContextValue={wizardContextValue}
           t={t}
           darkMode={darkMode}
+          data={data}
           faqOpen={faqOpen}
           setFaqOpen={setFaqOpen}
           legalPage={legalPage}
@@ -154,8 +119,6 @@ export const AppContainer: React.FC<AppContainerProps> = ({
           previewOpen={previewOpen}
           previewTemplate={previewTemplate}
           closePreview={closePreview}
-          data={data}
-          showLayoutModals={false}
         />
       </>
     )
@@ -165,85 +128,42 @@ export const AppContainer: React.FC<AppContainerProps> = ({
     <>
       <SeoHead />
       <FaqJsonLd t={t} />
-      <div className="min-h-screen font-sans theme-text theme-bg pb-6 print:bg-white print:p-0">
-        <Header
-          darkMode={darkMode}
-          toggleDarkMode={toggleTheme}
-          lang={lang}
-          onLangChange={(v: Language) => {
-            updateData('lang', v)
-            setLang(v)
-            navigate(`/${v}/`, { replace: true })
-          }}
-          onLogoClick={() => goToStep(0)}
-          t={t}
-        />
-
-        <main
-          className={`w-full print:w-full print:max-w-none print:p-0 ${step >= 1 && step <= 6 ? 'pt-[72px]' : ''}`}
-          aria-label={t?.ui?.mainLandmark ?? 'Pet application'}
-          id="main-content"
-        >
-          {step >= 1 && step <= 6 && (
-            <div className="sticky top-0 z-20 w-full pt-2 print:hidden bg-transparent backdrop-blur-[2px]">
-              <StepProgress step={step} t={t} onStepClick={goToStep} />
-              <div className="px-4 md:px-8 pt-1.5 pb-2 flex justify-center print:hidden">
-                <div
-                  className="inline-flex max-w-[min(100%,28rem)] items-center gap-1.5 px-2.5 py-1 rounded-full border text-center text-[11px] sm:text-xs font-semibold leading-tight bg-primary/10 text-[var(--primary)] border-primary/30"
-                  role="status"
-                >
-                  <MaterialIcon
-                    name="shield_lock"
-                    className="text-sm shrink-0 text-inherit"
-                    aria-hidden
-                  />
-                  <span>{t?.hero?.privacyDesc ?? 'Browser only.'}</span>
-                </div>
-              </div>
-            </div>
-          )}
-          <div
-            className={
-              step === 0
-                ? 'w-full px-4 md:px-8'
-                : 'max-w-7xl mx-auto p-4 md:p-8 print:border-none print:shadow-none print:p-0'
-            }
-          >
-            <StepRenderer
-              step={step}
-              wizardContextValue={wizardContextValue}
-              selectedTemplate={selectedTemplate}
-              setSelectedTemplate={setSelectedTemplate}
-              showToast={showToast}
-              onGenerateText={onGenerateText}
-              onNavigationVisibilityChange={setNavigationVisible}
-              handleNext={handleNext}
-              darkMode={darkMode}
-              t={t}
-              onOpenFaq={() => setFaqOpen(true)}
-            />
-          </div>
-        </main>
-
-        <FloatingNavigation
+      <WizardShell
+        step={step}
+        animDir={animDir}
+        darkMode={darkMode}
+        toggleTheme={toggleTheme}
+        lang={lang as Language}
+        onLangChange={(v: Language) => {
+          updateData('lang', v)
+          setLang(v)
+          navigate(`/${v}/`, { replace: true })
+        }}
+        onLogoClick={() => goToStep(0)}
+        t={t}
+        isStepValid={isStepValid}
+        navigationVisible={navigationVisible}
+        onNavigationVisibilityChange={setNavigationVisible}
+        onPrev={() => goToStep(step - 1)}
+        onNext={handleNext}
+        onStepClick={goToStep}
+        onOpenLegal={(page) => setLegalPage(page)}
+        onFaqClick={() => setFaqOpen(true)}
+      >
+        <StepRenderer
           step={step}
-          onPrev={() => goToStep(step - 1)}
-          onNext={handleNext}
-          t={t}
+          wizardContextValue={wizardContextValue}
+          selectedTemplate={selectedTemplate}
+          setSelectedTemplate={setSelectedTemplate}
+          showToast={showToast}
+          onGenerateText={onGenerateText}
+          onNavigationVisibilityChange={setNavigationVisible}
+          handleNext={handleNext}
           darkMode={darkMode}
-          canProceed={isStepValid}
-          visible={navigationVisible}
+          t={t}
+          onOpenFaq={() => setFaqOpen(true)}
         />
-
-        {step === 0 && (
-          <Footer
-            darkMode={darkMode}
-            t={t}
-            onOpenLegal={(page) => setLegalPage(page)}
-            onFaqClick={() => setFaqOpen(true)}
-          />
-        )}
-      </div>
+      </WizardShell>
 
       <ModalsLayer
         t={t}

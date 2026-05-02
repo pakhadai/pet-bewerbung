@@ -33,7 +33,7 @@ export const PdfReference: React.FC<PdfReferenceProps> = ({ data, t, templateCon
   const refPanel = getPdfReferencePanelStyle(templateConfig.templateType)
   const headingStyle = buildPdfSectionHeadingStyle(templateConfig) ?? {}
 
-  const textColor = '#334155'
+  const textColor = templateConfig.colors.bodyText
   const baseTextStyle = [commonStyles.text, { color: textColor, fontSize: 10 }]
 
   return (

@@ -13,7 +13,7 @@ const loadSavedTheme = (): boolean => {
     } else if (saved === 'light') {
       return false
     }
-  } catch (e) {
+  } catch (_e) {
     // ignore
   }
   // Default to light mode

@@ -26,7 +26,7 @@ const detectLang = (): Language => {
       .toLowerCase()
     const found = SUPPORTED_LANGS.find((l) => l === nav)
     if (found) return found
-  } catch (e) {
+  } catch (_e) {
     // ignore
   }
   return 'de'

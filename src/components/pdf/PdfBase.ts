@@ -5,6 +5,23 @@
 
 import { StyleSheet } from '@react-pdf/renderer'
 import { INITIAL_DATA } from '../../constants'
+import { TEMPLATE_TOKENS } from '../../templates/templateTokens'
+
+/** Classic palette baseline for shared PDF chrome (headers/labels commonStyles). */
+const cls = TEMPLATE_TOKENS.classic.pdf.colors
+
+/** Neutrals shared across templates where variant tokens do not apply. */
+export const PDF_NEUTRAL = {
+  /** Matches `TEMPLATE_TOKENS.classic.pdf.colors.bodyText` — base paragraph color for shared StyleSheet text */
+  bodyText: '#334155',
+  white: '#ffffff',
+  borderHairline: '#e2e8f0',
+  photoMutedBg: '#e2e8f0',
+  footerSignDivider: '#94a3b8',
+  footerSignText: '#475569',
+  brandingMuted: '#a8b3c2',
+  brandingAlt: '#cbd5e1',
+} as const
 
 // ============= LOCALE HELPERS =============
 
@@ -31,49 +48,6 @@ export const getLocale = (lang: string | undefined): string => {
 // Page dimensions (A4)
 export const PAGE_WIDTH = 595.28
 export const PAGE_HEIGHT = 841.89
-
-/** Distinct palettes so Classic / Modern / Compact read clearly in preview + PDF */
-export const TEMPLATE_COLORS: Record<
-  string,
-  { primary: string; border: string; muted: string; light: string; accent: string }
-> = {
-  classic: {
-    primary: '#0f172a',
-    border: '#0f172a',
-    muted: '#64748b',
-    light: '#f1f5f9',
-    accent: '#0f172a',
-  },
-  modern: {
-    primary: '#115e59',
-    border: '#ccfbf1',
-    muted: '#64748b',
-    light: '#f0fdfa',
-    accent: '#14b8a6',
-  },
-  compact: {
-    primary: '#44403c',
-    border: '#a8a29e',
-    muted: '#78716c',
-    light: '#fafaf9',
-    accent: '#d97706',
-  },
-  buddy: {
-    primary: '#004541',
-    border: '#bec9c7',
-    muted: '#64748b',
-    light: '#eff4ff',
-    accent: '#006b5f',
-  },
-  /** Test copy of Buddy — same PDF tokens; preview HTML differs more */
-  buddyTest: {
-    primary: '#004541',
-    border: '#bec9c7',
-    muted: '#64748b',
-    light: '#eff4ff',
-    accent: '#006b5f',
-  },
-}
 
 export const DEFAULT_LAYOUT_ORDER = [
   'photo',
@@ -138,7 +112,7 @@ export const commonStyles = StyleSheet.create({
     marginBottom: 16,
     paddingBottom: 12,
     borderBottomWidth: 2,
-    borderBottomColor: '#0f172a',
+    borderBottomColor: cls.primary,
     borderRadius: pdfBorderRadius(0),
   },
   headerLeft: {
@@ -149,25 +123,25 @@ export const commonStyles = StyleSheet.create({
   headerIcon: {
     width: 32,
     height: 32,
-    backgroundColor: '#0f172a',
+    backgroundColor: cls.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   headerTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: cls.primary,
     textTransform: 'uppercase',
   },
   headerSubtitle: {
     fontSize: 9,
-    color: '#64748b',
+    color: cls.muted,
     marginTop: 2,
     textTransform: 'uppercase',
   },
   headerDate: {
     fontSize: 9,
-    color: '#64748b',
+    color: cls.muted,
   },
   mainRow: {
     flexDirection: 'row',
@@ -202,28 +176,28 @@ export const commonStyles = StyleSheet.create({
     marginBottom: 6,
     paddingBottom: 4,
     borderBottomWidth: 1,
-    borderBottomColor: '#0f172a',
-    color: '#0f172a',
+    borderBottomColor: cls.primary,
+    color: cls.primary,
     borderRadius: pdfBorderRadius(0),
   },
   sectionHeadingModern: {
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: PDF_NEUTRAL.borderHairline,
   },
   text: {
     fontSize: 10,
-    color: '#334155',
+    color: PDF_NEUTRAL.bodyText,
     lineHeight: 1.4,
   },
   textBold: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#0f172a',
+    color: cls.primary,
     marginBottom: 2,
   },
   label: {
     fontSize: 8,
     textTransform: 'uppercase',
-    color: '#64748b',
+    color: cls.muted,
     marginBottom: 2,
   },
   gridRow: {
@@ -235,10 +209,10 @@ export const commonStyles = StyleSheet.create({
     flex: 1,
   },
   box: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: cls.light,
     padding: 8,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: PDF_NEUTRAL.borderHairline,
     marginBottom: 6,
     borderRadius: pdfBorderRadius(0),
   },
@@ -246,7 +220,7 @@ export const commonStyles = StyleSheet.create({
     marginTop: 'auto',
     paddingTop: 16,
     borderTopWidth: 2,
-    borderTopColor: '#0f172a',
+    borderTopColor: cls.primary,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
@@ -256,7 +230,7 @@ export const commonStyles = StyleSheet.create({
   footerGenerated: {
     fontSize: 7,
     textTransform: 'uppercase',
-    color: '#64748b',
+    color: cls.muted,
     letterSpacing: 0.5,
   },
   // FREE template branding - more prominent
@@ -264,24 +238,24 @@ export const commonStyles = StyleSheet.create({
     fontSize: 8,
     fontWeight: 'normal',
     textTransform: 'uppercase',
-    color: '#a8b3c2',
+    color: PDF_NEUTRAL.brandingMuted,
     letterSpacing: 0.8,
     textAlign: 'center',
     marginTop: 8,
   },
   footerBrandingAlt: {
     fontSize: 6,
-    color: '#cbd5e1',
+    color: PDF_NEUTRAL.brandingAlt,
     letterSpacing: 0.3,
   },
   footerSign: {
     width: 140,
     borderTopWidth: 1,
-    borderTopColor: '#94a3b8',
+    borderTopColor: PDF_NEUTRAL.footerSignDivider,
     paddingTop: 6,
     fontSize: 8,
     textTransform: 'uppercase',
-    color: '#475569',
+    color: PDF_NEUTRAL.footerSignText,
     marginTop: 20,
     textAlign: 'center',
     borderRadius: pdfBorderRadius(0),
@@ -293,7 +267,7 @@ export const commonStyles = StyleSheet.create({
   },
   photoPlaceholder: {
     width: '100%',
-    backgroundColor: '#e2e8f0',
+    backgroundColor: PDF_NEUTRAL.photoMutedBg,
     justifyContent: 'center',
     alignItems: 'center',
   },

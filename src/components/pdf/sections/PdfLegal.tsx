@@ -26,7 +26,7 @@ export const PdfLegal: React.FC<PdfLegalProps> = ({ data, t, templateConfig }) =
 
   const headingStyle = buildPdfSectionHeadingStyle(templateConfig) ?? {}
 
-  const textColor = '#334155'
+  const textColor = templateConfig.colors.bodyText
   const baseTextStyle = { ...commonStyles.text, color: textColor, fontSize: 10 }
 
   const yes = t.labels.yes ?? 'Yes'

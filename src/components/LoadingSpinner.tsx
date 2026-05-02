@@ -24,59 +24,22 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 }) => {
   const spinnerSize = sizeMap[size]
 
-  const containerStyle: React.CSSProperties = fullScreen
-    ? {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        zIndex: 9999,
-      }
-    : {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-      }
-
-  const spinnerStyle: React.CSSProperties = {
-    width: spinnerSize,
-    height: spinnerSize,
-    border: `4px solid #f3f4f6`,
-    borderTop: `4px solid #3b82f6`,
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
-  }
-
   return (
-    <div style={containerStyle}>
-      <style>
-        {`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
-      <div style={spinnerStyle} role="status" aria-live="polite" />
+    <div
+      className={
+        fullScreen
+          ? 'fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/90'
+          : 'flex flex-col items-center justify-center p-8'
+      }
+    >
+      <div
+        className="animate-spin rounded-full border-4 border-gray-100 border-t-[color:var(--primary)]"
+        style={{ width: spinnerSize, height: spinnerSize }}
+        role="status"
+        aria-live="polite"
+      />
       {message && (
-        <p
-          style={{
-            marginTop: '1rem',
-            color: '#6b7280',
-            fontSize: '0.875rem',
-            textAlign: 'center',
-          }}
-        >
-          {message}
-        </p>
+        <p className="mt-4 text-sm text-text-secondary text-center">{message}</p>
       )}
     </div>
   )

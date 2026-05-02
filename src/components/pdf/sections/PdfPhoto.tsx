@@ -2,7 +2,7 @@ import { Image, Text, View } from '@react-pdf/renderer'
 import React from 'react'
 import type { PdfTranslations } from '../../../services/pdfService'
 import type { PetData } from '../../../types/form'
-import { commonStyles, pdfBorderRadius, pdfBorderWidth } from '../PdfBase'
+import { commonStyles, PDF_NEUTRAL, pdfBorderRadius, pdfBorderWidth } from '../PdfBase'
 import type { PdfTemplateConfig } from '../templates/getPdfTemplateConfig'
 
 export interface PdfPhotoProps {
@@ -45,7 +45,7 @@ export const PdfPhoto: React.FC<PdfPhotoProps> = ({ data, t, templateConfig }) =
             borderWidth: 1,
             borderColor: colors.accent,
             borderRadius: pdfBorderRadius(0),
-            backgroundColor: '#ffffff',
+            backgroundColor: PDF_NEUTRAL.white,
           },
         ]
       : []),

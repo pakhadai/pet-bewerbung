@@ -1,26 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-
-const STORAGE_STEP_KEY = 'pet-bewerbung-step'
-
-/**
- * Load saved step from localStorage
- * Don't restore step 0 (landing) or step 6 (thank you)
- */
-const loadSavedStep = (): number => {
-  try {
-    const saved = localStorage.getItem(STORAGE_STEP_KEY)
-    if (saved) {
-      const step = parseInt(saved, 10)
-      // Only restore steps 1-5
-      if (step >= 1 && step <= 5) {
-        return step
-      }
-    }
-  } catch (e) {
-    // ignore
-  }
-  return 0
-}
+import { useCallback, useRef, useState } from 'react'
 
 export type AnimationDirection = 'left' | 'right'
 
@@ -42,28 +20,17 @@ export interface UseWizardNavigationReturn {
 /**
  * Wizard navigation hook
  * Manages step state, navigation, and animation direction
- * Persists step to localStorage (only steps 1-5)
+ *
+ * Note: the product now uses the `/builder` flow as the primary experience.
+ * To avoid "two different flows" depending on prior sessions, wizard step
+ * state is no longer persisted/restored from localStorage.
  *
  * @returns Navigation state and handlers
  */
 export const useWizardNavigation = (): UseWizardNavigationReturn => {
-  const [step, setStep] = useState<number>(() => loadSavedStep())
+  const [step, setStep] = useState<number>(0)
   const [animDir, setAnimDir] = useState<AnimationDirection>('left')
   const prevStepRef = useRef<number>(step)
-
-  // Save step to localStorage when it changes
-  useEffect(() => {
-    try {
-      // Don't save step 0 (landing) or step 6 (thank you)
-      if (step >= 1 && step <= 5) {
-        localStorage.setItem(STORAGE_STEP_KEY, String(step))
-      } else {
-        localStorage.removeItem(STORAGE_STEP_KEY)
-      }
-    } catch (e) {
-      // ignore
-    }
-  }, [step])
 
   /**
    * Navigate to a specific step with animation

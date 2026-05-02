@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { PUBLIC_LOGO_PATH } from '../../constants'
-import type { FormData } from '../../types/form'
+import type { FormData, TemplateType } from '../../types/form'
 import type { TranslationObject } from '../../types/template'
 import BehaviorSection from '../document/BehaviorSection'
 import DescriptionSection from '../document/DescriptionSection'
@@ -23,6 +23,7 @@ export interface CompactTemplateProps {
   customColors: unknown
   config: TemplateConfig
   styleOverrides: StyleOverrides
+  variant: TemplateType
 }
 
 const CompactTemplate: React.FC<CompactTemplateProps> = ({
@@ -31,6 +32,7 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({
   customColors,
   config,
   styleOverrides,
+  variant,
 }) => {
   const { header, accent, border, footer } = styleOverrides
   const doc = t.doc
@@ -75,24 +77,24 @@ const CompactTemplate: React.FC<CompactTemplateProps> = ({
             photo={data.photo}
             petType={data.petType}
             t={t}
-            variant="compact"
+            variant={variant}
             customColors={customColors}
           />
-          <OwnerInfo data={data} t={t} variant="compact" customColors={customColors} />
-          <BehaviorSection data={data} t={t} variant="compact" customColors={customColors} />
+          <OwnerInfo data={data} t={t} variant={variant} customColors={customColors} />
+          <BehaviorSection data={data} t={t} variant={variant} customColors={customColors} />
         </div>
 
         {/* Main Content */}
         <div className={`${config.mainWidth} ${config.mainSpace}`}>
-          <PetDetails data={data} t={t} variant="compact" customColors={customColors} />
+          <PetDetails data={data} t={t} variant={variant} customColors={customColors} />
           <DescriptionSection
             text={data.generatedText}
             t={t}
-            variant="compact"
+            variant={variant}
             customColors={customColors}
           />
-          <LegalSection data={data} t={t} variant="compact" customColors={customColors} />
-          <ReferenceSection data={data} t={t} variant="compact" customColors={customColors} />
+          <LegalSection data={data} t={t} variant={variant} customColors={customColors} />
+          <ReferenceSection data={data} t={t} variant={variant} customColors={customColors} />
         </div>
       </div>
 
@@ -120,25 +122,27 @@ export default CompactTemplate
  */
 export const getCompactConfig = (today: string): TemplateConfig => ({
   container:
-    'w-[210mm] h-[292mm] bg-stone-100 text-stone-900 p-[10mm] text-[10px] font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
-  headerContainer: 'mb-3 pb-2 border-b border-dashed border-amber-800/35',
+    'w-[210mm] h-[292mm] bg-[color:var(--tpl-light)] text-[color:var(--tpl-body-text)] p-[var(--tpl-doc-padding)] text-[10px] font-sans relative box-border flex flex-col shadow-none mx-auto overflow-hidden',
+  headerContainer: 'mb-3 pb-2 border-b border-dashed border-[color:var(--tpl-border)]/60',
   headerFlex: 'flex items-start justify-between',
   headerIconContainer: 'flex items-center gap-2',
-  headerIconBg: 'bg-amber-50 p-1.5 border border-amber-700/80 rounded-sm',
+  headerIconBg: 'bg-[color:var(--tpl-light)] p-1.5 border rounded-sm',
   headerIconSize: 14,
-  titleText: 'text-sm font-bold uppercase tracking-[0.18em] text-stone-900',
-  subtitleText: 'text-[9px] uppercase tracking-widest text-amber-900/70 mt-0.5',
-  dateText: 'text-[9px] text-stone-500 text-right font-mono',
+  titleText: 'text-sm font-bold uppercase tracking-[0.18em]',
+  subtitleText: 'text-[9px] uppercase tracking-widest text-[color:var(--tpl-muted)] mt-0.5',
+  dateText: 'text-[9px] text-[color:var(--tpl-muted)] text-right font-mono',
   dateLabel: today,
   mainLayout: 'flex gap-4 flex-1 min-h-0 overflow-hidden',
   sidebarWidth: 'w-[32%] flex-shrink-0',
   sidebarSpace: 'space-y-2',
-  sidebarShell: 'border-r border-dashed border-stone-400/60 pr-2',
+  sidebarShell: 'border-r border-dashed border-[color:var(--tpl-border)]/60 pr-2',
   mainWidth: 'flex-1 min-w-0',
   mainSpace: 'space-y-2',
-  footerContainer: 'mt-auto pt-2.5 border-t border-dashed border-stone-400 flex-shrink-0 pb-[4mm]',
-  footerText: 'text-[8px] text-slate-400 text-center mb-2',
-  footerSignContainer: 'w-40 border-t border-slate-300 pt-2 mt-5',
-  footerSignText: 'text-[8px] uppercase font-medium tracking-wider text-slate-500 text-center',
+  footerContainer:
+    'mt-auto pt-2.5 border-t border-dashed border-[color:var(--tpl-border)] flex-shrink-0 pb-[4mm]',
+  footerText: 'text-[8px] text-[color:var(--tpl-muted)] text-center mb-2',
+  footerSignContainer: 'w-40 border-t border-[color:var(--tpl-border)]/60 pt-2 mt-5',
+  footerSignText:
+    'text-[8px] uppercase font-medium tracking-wider text-[color:var(--tpl-muted)] text-center',
   badge: null,
 })

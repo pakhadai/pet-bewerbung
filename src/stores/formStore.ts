@@ -11,6 +11,7 @@ import { simpleStorage } from '../utils/simpleStorage'
 
 const SAVE_DEBOUNCE_MS = 500
 export const STORAGE_FAILED_EVENT = 'storage-failed'
+const EMERGENCY_PHOTO_MAX_CHARS = 1_500_000 // ~1.5MB of base64 chars to reduce quota risk
 
 interface FormState {
   data: PetData
@@ -31,6 +32,16 @@ const saveDraftSync = (data: PetData): void => {
   try {
     const { photo: _photo, ...rest } = data
     simpleStorage.saveDraft({ ...rest, updatedAt: Date.now() })
+
+    // Best-effort emergency backup for small photos only (sync). Avoids losing the photo
+    // if the tab is closed before IndexedDB writes complete.
+    if (typeof data.photo === 'string' && data.photo.length > 0) {
+      if (data.photo.length <= EMERGENCY_PHOTO_MAX_CHARS) {
+        simpleStorage.saveEmergencyPhoto(data.photo)
+      }
+    } else {
+      simpleStorage.saveEmergencyPhoto(null)
+    }
   } catch {
     /* ignore */
   }
@@ -56,9 +67,18 @@ export const useFormStore = create<FormState>((set, get) => ({
   prevPhoto: undefined,
 
   updateData: (field, value) => {
-    set((state) => ({
-      data: { ...state.data, [field]: value },
-    }))
+    set((state) => {
+      const next = { ...state.data, [field]: value }
+      return { data: next }
+    })
+
+    // Photo writes are the most fragile (IndexedDB is async). Save immediately to minimize
+    // the window where a tab-close loses the photo.
+    if (field === 'photo') {
+      flushAndSaveImmediately(get)
+      return
+    }
+
     scheduleSave(get)
   },
 
@@ -66,6 +86,10 @@ export const useFormStore = create<FormState>((set, get) => ({
     set((state) => ({
       data: { ...state.data, ...updates },
     }))
+    if (Object.prototype.hasOwnProperty.call(updates, 'photo')) {
+      flushAndSaveImmediately(get)
+      return
+    }
     scheduleSave(get)
   },
 
@@ -149,6 +173,28 @@ function scheduleSave(get: () => FormState) {
   }, SAVE_DEBOUNCE_MS)
 }
 
+function flushAndSaveImmediately(get: () => FormState) {
+  if (saveTimeoutId) {
+    clearTimeout(saveTimeoutId)
+    saveTimeoutId = null
+  }
+  const { data, prevPhoto } = get()
+  isSavingRef = true
+  void (async () => {
+    try {
+      await saveDraftAsync(data, prevPhoto)
+      useFormStore.setState({ prevPhoto: data.photo })
+    } catch (err) {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent(STORAGE_FAILED_EVENT))
+      }
+      console.error('Immediate save failed', err)
+    } finally {
+      isSavingRef = false
+    }
+  })()
+}
+
 /** Sync save for beforeunload / emergency-flush. Call from effects. */
 export const flushFormStoreSync = (): void => {
   const { data } = useFormStore.getState()
@@ -156,4 +202,11 @@ export const flushFormStoreSync = (): void => {
 }
 
 /** Check if save is in progress or pending (for beforeunload block) */
-export const isFormStoreSaving = (): boolean => isSavingRef || saveTimeoutId !== null
+export const hasUnsavedPhoto = (): boolean => {
+  const { data, prevPhoto } = useFormStore.getState()
+  return data.photo !== prevPhoto
+}
+
+/** Check if save is in progress, pending, or photo is not persisted yet */
+export const isFormStoreSaving = (): boolean =>
+  isSavingRef || saveTimeoutId !== null || hasUnsavedPhoto()

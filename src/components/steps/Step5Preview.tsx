@@ -2,13 +2,14 @@
  * Step5Preview - Document preview and download
  */
 
-import { Check, Maximize2, Minimize2 } from 'lucide-react'
+import { Check, FileArchive, Loader2, Maximize2, Minimize2 } from 'lucide-react'
 import React, { lazy, Suspense, useEffect, useState } from 'react'
 import { TEMPLATE_LABELS, TEMPLATE_OPTIONS } from '../../constants'
 import { useWizardContext } from '../../context/WizardContext'
 import { useFormStore } from '../../stores/formStore'
 import type { FormData, TemplateType } from '../../types/form'
 import ErrorBoundary from '../ErrorBoundary'
+import MaterialIcon from '../MaterialIcon'
 
 const SwissDocument = lazy(() => import('../SwissDocument'))
 
@@ -18,13 +19,15 @@ interface Step5PreviewProps {
 
 const Step5Preview: React.FC<Step5PreviewProps> = ({ selectedTemplate }) => {
   const data = useFormStore((s) => s.data) as FormData
-  const { t, animDir, darkMode } = useWizardContext()
+  const { t, animDir, darkMode, onDownloadPDF, onDownloadAllTemplates } = useWizardContext()
   const titleCl = darkMode ? 'text-white' : 'text-text-main'
   const mutedCl = darkMode ? 'text-gray-400' : 'text-text-secondary'
   const cardBg = darkMode ? 'bg-gray-800' : 'bg-white'
   const borderCl = darkMode ? 'border-gray-700' : 'border-gray-200'
 
   const [isEnlarged, setIsEnlarged] = useState(false)
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
+  const [isGeneratingZip, setIsGeneratingZip] = useState(false)
   const [viewportWidth, setViewportWidth] = useState<number>(
     typeof window !== 'undefined' ? window.innerWidth : 1024
   )
@@ -70,6 +73,51 @@ const Step5Preview: React.FC<Step5PreviewProps> = ({ selectedTemplate }) => {
             {TEMPLATE_LABELS[selectedTemplate] ?? templateOption?.label}
           </span>
         </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <button
+          type="button"
+          onClick={async () => {
+            if (isGeneratingPdf) return
+            setIsGeneratingPdf(true)
+            try {
+              await Promise.resolve(onDownloadPDF())
+            } finally {
+              setIsGeneratingPdf(false)
+            }
+          }}
+          disabled={isGeneratingPdf}
+          className={`theme-button-primary btn-press px-5 py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 ${
+            isGeneratingPdf ? 'opacity-80 cursor-not-allowed' : ''
+          }`}
+        >
+          {isGeneratingPdf ? <Loader2 size={18} className="animate-spin" /> : null}
+          <MaterialIcon name="download_for_offline" className="text-xl" />
+          <span>{t?.thankYou?.downloadPdf ?? t?.labels?.download ?? 'Download PDF'}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={async () => {
+            if (isGeneratingZip) return
+            setIsGeneratingZip(true)
+            try {
+              await Promise.resolve(onDownloadAllTemplates())
+            } finally {
+              setIsGeneratingZip(false)
+            }
+          }}
+          disabled={isGeneratingZip}
+          className={`btn-press px-5 py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 border ${
+            darkMode
+              ? 'text-gray-100 bg-gray-800 border-gray-700 hover:bg-gray-750'
+              : 'text-text-main bg-white border-gray-200 hover:bg-gray-50'
+          } ${isGeneratingZip ? 'opacity-80 cursor-not-allowed' : ''}`}
+        >
+          {isGeneratingZip ? <Loader2 size={18} className="animate-spin" /> : <FileArchive size={18} />}
+          <span>{t?.labels?.downloadAllZip ?? 'Download ZIP'}</span>
+        </button>
       </div>
 
       <div className="grid gap-6 grid-cols-1">

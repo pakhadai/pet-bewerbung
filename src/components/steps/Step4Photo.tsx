@@ -3,7 +3,7 @@
  */
 
 import { Camera, Crop, Upload } from 'lucide-react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useWizardContext } from '../../context/WizardContext'
 import { useFormStore } from '../../stores/formStore'
 import type { FormData } from '../../types/form'
@@ -31,6 +31,91 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({
   const [isWindowDragging, setIsWindowDragging] = useState(false)
   const [isCompressing, setIsCompressing] = useState(false)
   const dragDepthRef = useRef(0)
+
+  const MAX_FILE_SIZE = 10 * 1024 * 1024
+  const ACCEPT_ATTR = 'image/jpeg,image/png,image/webp,image/heic,image/heif'
+  const ALLOWED_MIME_TYPES = new Set([
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+    'image/heic',
+    'image/heif',
+  ])
+  const ALLOWED_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'])
+
+  const isSupportedImageFile = useCallback(
+    (file: File): boolean => {
+      const mime = (file.type || '').toLowerCase()
+      if (mime && ALLOWED_MIME_TYPES.has(mime)) return true
+      const ext = file.name.split('.').pop()?.toLowerCase() || ''
+      return ALLOWED_EXTENSIONS.has(ext)
+    },
+    [ALLOWED_EXTENSIONS, ALLOWED_MIME_TYPES]
+  )
+
+  const isHeicLikeFile = useCallback((file: File): boolean => {
+    const mime = (file.type || '').toLowerCase()
+    if (mime === 'image/heic' || mime === 'image/heif') return true
+    const ext = file.name.split('.').pop()?.toLowerCase() || ''
+    return ext === 'heic' || ext === 'heif'
+  }, [])
+
+  const processFile = useCallback(
+    async (file: File) => {
+      if (!file) return
+      const isHeicLike = isHeicLikeFile(file)
+      if (!isSupportedImageFile(file)) {
+        showToast?.(
+          t?.step4?.invalidImage ??
+            'Ungültiges Bildformat. Bitte JPG, PNG, WEBP oder HEIC/HEIF hochladen.',
+          'error'
+        )
+        return
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error')
+        return
+      }
+      if (isHeicLike) {
+        const isApplePlatform = /iPhone|iPad|iPod|Macintosh/i.test(navigator.userAgent)
+        if (!isApplePlatform) {
+          showToast?.(
+            t?.step4?.heicFallback ??
+              'HEIC/HEIF can be unstable on some browsers. If this file fails, please convert it to JPG and upload again.',
+            'info'
+          )
+        }
+      }
+      onNavigationVisibilityChange?.(false)
+      setIsCompressing(true)
+      try {
+        const blob = await compressImage(file, {
+          maxWidth: 800,
+          maxHeight: 800,
+          quality: 0.8,
+          maxSizeKB: 500,
+          returnBlob: true,
+        })
+        if (!(blob instanceof Blob)) throw new Error('Expected Blob from compressor')
+        const url = URL.createObjectURL(blob)
+        setTempImage(url)
+        setShowCropper(true)
+      } catch {
+        showToast?.(
+          isHeicLike
+            ? (t?.step4?.heicFallback ??
+                'HEIC/HEIF can be unstable on some browsers. If this file fails, please convert it to JPG and upload again.')
+            : (t?.step4?.invalidImage ??
+                'Bild konnte nicht verarbeitet werden. Bitte JPG, PNG, WEBP oder HEIC/HEIF verwenden.'),
+          'error'
+        )
+      } finally {
+        setIsCompressing(false)
+      }
+    },
+    [isHeicLikeFile, isSupportedImageFile, onNavigationVisibilityChange, showToast, t?.step4]
+  )
 
   useEffect(() => {
     onNavigationVisibilityChange?.(!showCropper)
@@ -89,86 +174,7 @@ const Step4Photo: React.FC<Step4PhotoProps> = ({
       window.removeEventListener('dragleave', handleWindowDragLeave)
       window.removeEventListener('drop', handleWindowDrop)
     }
-  }, [])
-
-  const MAX_FILE_SIZE = 10 * 1024 * 1024
-  const ACCEPT_ATTR = 'image/jpeg,image/png,image/webp,image/heic,image/heif'
-  const ALLOWED_MIME_TYPES = new Set([
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/webp',
-    'image/heic',
-    'image/heif',
-  ])
-  const ALLOWED_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'])
-
-  const isSupportedImageFile = (file: File): boolean => {
-    const mime = (file.type || '').toLowerCase()
-    if (mime && ALLOWED_MIME_TYPES.has(mime)) return true
-    const ext = file.name.split('.').pop()?.toLowerCase() || ''
-    return ALLOWED_EXTENSIONS.has(ext)
-  }
-
-  const isHeicLikeFile = (file: File): boolean => {
-    const mime = (file.type || '').toLowerCase()
-    if (mime === 'image/heic' || mime === 'image/heif') return true
-    const ext = file.name.split('.').pop()?.toLowerCase() || ''
-    return ext === 'heic' || ext === 'heif'
-  }
-
-  const processFile = async (file: File) => {
-    if (!file) return
-    const isHeicLike = isHeicLikeFile(file)
-    if (!isSupportedImageFile(file)) {
-      showToast?.(
-        t?.step4?.invalidImage ??
-          'Ungültiges Bildformat. Bitte JPG, PNG, WEBP oder HEIC/HEIF hochladen.',
-        'error'
-      )
-      return
-    }
-    if (file.size > MAX_FILE_SIZE) {
-      showToast?.(t?.step4?.fileTooLarge ?? 'Datei zu groß. Max. 10 MB.', 'error')
-      return
-    }
-    if (isHeicLike) {
-      const isApplePlatform = /iPhone|iPad|iPod|Macintosh/i.test(navigator.userAgent)
-      if (!isApplePlatform) {
-        showToast?.(
-          t?.step4?.heicFallback ??
-            'HEIC/HEIF can be unstable on some browsers. If this file fails, please convert it to JPG and upload again.',
-          'info'
-        )
-      }
-    }
-    onNavigationVisibilityChange?.(false)
-    setIsCompressing(true)
-    try {
-      const blob = await compressImage(file, {
-        maxWidth: 800,
-        maxHeight: 800,
-        quality: 0.8,
-        maxSizeKB: 500,
-        returnBlob: true,
-      })
-      if (!(blob instanceof Blob)) throw new Error('Expected Blob from compressor')
-      const url = URL.createObjectURL(blob)
-      setTempImage(url)
-      setShowCropper(true)
-    } catch {
-      showToast?.(
-        isHeicLike
-          ? (t?.step4?.heicFallback ??
-              'HEIC/HEIF can be unstable on some browsers. If this file fails, please convert it to JPG and upload again.')
-          : (t?.step4?.invalidImage ??
-              'Bild konnte nicht verarbeitet werden. Bitte JPG, PNG, WEBP oder HEIC/HEIF verwenden.'),
-        'error'
-      )
-    } finally {
-      setIsCompressing(false)
-    }
-  }
+  }, [processFile])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

@@ -9,7 +9,6 @@
 import React, { ReactNode } from 'react'
 import { WizardProviders } from '../context/WizardProviders'
 import ErrorBoundary from './ErrorBoundary'
-import GlobalStyles from './GlobalStyles'
 
 interface AppProvidersProps {
   children: ReactNode
@@ -23,7 +22,6 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
     <ErrorBoundary>
       <WizardProviders>
-        <GlobalStyles />
         {children}
       </WizardProviders>
     </ErrorBoundary>

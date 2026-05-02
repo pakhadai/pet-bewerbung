@@ -4,7 +4,9 @@
  */
 
 import React from 'react'
-import type { FormData } from '../../types/form'
+import { getTemplateTokens } from '../../templates/templateTokens'
+import type { FormData, TemplateType } from '../../types/form'
+import type { TranslationObject } from '../../types/template'
 import BehaviorSection from '../document/BehaviorSection'
 import DescriptionSection from '../document/DescriptionSection'
 import LegalSection from '../document/LegalSection'
@@ -16,7 +18,7 @@ import ReferenceSection from '../document/ReferenceSection'
 
 export interface TemplateSectionProps {
   data: FormData
-  t: Record<string, unknown>
+  t: TranslationObject
   variant: DocumentVariant
   customColors?: unknown
 }
@@ -115,14 +117,21 @@ export const Watermark: React.FC = () => (
 )
 
 export const getCustomStyle = (): Record<string, unknown> => ({})
-export const getStyleOverrides = (): {
+export const getStyleOverrides = (
+  templateType: TemplateType
+): {
   header: React.CSSProperties
   accent: React.CSSProperties
   border: React.CSSProperties
   footer: React.CSSProperties
-} => ({
-  header: {},
-  accent: {},
-  border: {},
-  footer: {},
-})
+} => {
+  const c = getTemplateTokens(templateType).pdf.colors
+  return {
+    header: {},
+    // Used by <p style={accent}> in templates (subtitle, etc.)
+    accent: { color: c.accent },
+    // Used by template header icon wrapper <div style={border}>
+    border: { borderColor: c.border },
+    footer: {},
+  }
+}

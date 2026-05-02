@@ -88,6 +88,7 @@ export default function BuilderRoute({ onGenerateText }: Props) {
         darkMode={darkMode}
         toggleDarkMode={toggleTheme}
         lang={lang}
+        showSaveStatus
         onLangChange={onLangChange}
         onLogoClick={() => navigate(`/${lang}/`, { replace: false })}
         t={t}

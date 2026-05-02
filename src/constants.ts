@@ -53,11 +53,11 @@ export const MAX_DESCRIPTION_LENGTH = 1090
 export const MAX_MEDICAL_CONDITIONS_LENGTH = 300
 
 export const TEMPLATE_OPTIONS = [
-  { id: 'classic', label: 'Classic' },
-  { id: 'modern', label: 'Modern' },
-  { id: 'compact', label: 'Compact' },
-  { id: 'buddy', label: 'Buddy' },
-  { id: 'buddyTest', label: 'Buddy (test)' },
+  { id: 'classic', label: 'Classic', previewImage: '/template-previews/classic.webp' },
+  { id: 'modern', label: 'Modern', previewImage: '/template-previews/modern.webp' },
+  { id: 'compact', label: 'Compact', previewImage: '/template-previews/compact.webp' },
+  { id: 'buddy', label: 'Buddy', previewImage: '/template-previews/buddy.webp' },
+  { id: 'buddyTest', label: 'Buddy (test)', previewImage: '/template-previews/buddyTest.webp' },
 ] as const
 
 export const TEMPLATE_LABELS: Record<TemplateType, string> = {

@@ -3,15 +3,12 @@
  */
 
 import { Palette } from 'lucide-react'
-import React, { lazy, Suspense } from 'react'
+import React from 'react'
 import { TEMPLATE_LABELS, TEMPLATE_OPTIONS } from '../../constants'
 import { useWizardContext } from '../../context/WizardContext'
-import { useFormStore } from '../../stores/formStore'
-import type { FormData, TemplateType } from '../../types/form'
+import type { TemplateType } from '../../types/form'
 import { trackUmamiEvent } from '../../utils/umami'
 import MaterialIcon from '../MaterialIcon'
-
-const SwissDocument = lazy(() => import('../SwissDocument'))
 
 const TemplateSkeleton: React.FC = () => (
   <div className="w-full h-full bg-neutral-800 animate-pulse flex items-center justify-center rounded-md">
@@ -30,7 +27,6 @@ const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({
   onSelectTemplate,
   embedded = false,
 }) => {
-  const data = useFormStore((s) => s.data) as FormData
   const { t, animDir, darkMode } = useWizardContext()
   const visibleTemplates = TEMPLATE_OPTIONS.map((x) => x.id)
 
@@ -74,22 +70,20 @@ const Step5TemplateSelect: React.FC<Step5TemplateSelectProps> = ({
             >
               <div className="aspect-[3/4] rounded-lg overflow-hidden relative border border-white/10 bg-neutral-800">
                 {visibleTemplates.includes(opt.id) ? (
-                  <div className="w-full h-full flex items-center justify-center bg-neutral-800 overflow-hidden">
-                    <Suspense fallback={<TemplateSkeleton />}>
-                      <div
-                        style={{
-                          width: '210mm',
-                          height: '297mm',
-                          transform: 'scale(0.32)',
-                          transformOrigin: 'center',
-                          flexShrink: 0,
-                        }}
-                        className="shadow-2xl"
-                      >
-                        <SwissDocument data={data} t={t} templateType={opt.id} />
-                      </div>
-                    </Suspense>
-                  </div>
+                  opt.previewImage ? (
+                    <img
+                      src={opt.previewImage}
+                      alt={TEMPLATE_LABELS[opt.id] ?? opt.label}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback to skeleton if preview is missing/misconfigured
+                        ;(e.currentTarget as HTMLImageElement).style.display = 'none'
+                      }}
+                    />
+                  ) : (
+                    <TemplateSkeleton />
+                  )
                 ) : (
                   <TemplateSkeleton />
                 )}

@@ -43,12 +43,7 @@ const PdfDocument: React.FC<PdfDocumentProps> = ({ data, t, logoUrl, qrUrl, temp
     fontFamily: 'Helvetica',
     position: 'relative' as const,
     backgroundColor: templateConfig.pageBackgroundColor,
-    color:
-      templateConfig.templateType === 'compact'
-        ? '#44403c'
-        : templateConfig.templateType === 'buddy' || templateConfig.templateType === 'buddyTest'
-          ? '#0b1c30'
-          : '#334155',
+    color: templateConfig.colors.bodyText,
     borderRadius: pdfBorderRadius(0),
   }
 

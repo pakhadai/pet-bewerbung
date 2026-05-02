@@ -85,6 +85,17 @@ export interface StyleOverrides {
 }
 
 export interface TranslationObject {
+  [key: string]: unknown
+
+  title?: string
+  landing?: Record<string, unknown>
+  steps?: string[]
+  stepTitles?: Record<string | number, string>
+  summary?: Record<string, unknown>
+  templateSelection?: Record<string, unknown>
+  preview?: Record<string, unknown>
+  finalMessage?: string
+
   header?: Record<string, string>
   ui?: Record<string, string>
   nav?: Record<string, string>
@@ -95,16 +106,17 @@ export interface TranslationObject {
   footer?: Record<string, string>
   thankYou?: Record<string, string>
   legal?: Record<string, string>
-  templates?: {
-    intro?: string
-    [key: string]: unknown
-  }
+
+  templates?: Record<string, unknown>
+
   /** Pack used by text generation; validated at runtime in AppContent. */
   generationText?: unknown
+
   premium?: {
     zipDownloaded?: string
     [key: string]: unknown
   }
+
   faq?: {
     title?: string
     searchPlaceholder?: string
@@ -117,31 +129,17 @@ export interface TranslationObject {
       q: string
       a: string
     }>
-    [key: string]: unknown
   }
-  stepsNew?: {
-    step1?: { short?: string; [key: string]: string | undefined }
-    step2?: { short?: string; [key: string]: string | undefined }
-    step3?: { short?: string; [key: string]: string | undefined }
-    step4?: { short?: string; [key: string]: string | undefined }
-    step5?: { short?: string; [key: string]: string | undefined }
-    step6?: { short?: string; [key: string]: string | undefined }
-    [key: string]: { short?: string; [key: string]: string | undefined } | undefined
-  }
-  doc?: {
-    title: string
-    subtitle: string
-    footer: string
-    sign: string
-    sectionOwner: string
-    sectionPet: string
-    sectionDescription: string
-    sectionLegal: string
-    sectionReference: string
-    [key: string]: string
-  }
+
+  stepsNew?: Record<string, Record<string, string | undefined> | undefined>
+
+  doc?: Record<string, string>
   labels?: Record<string, string>
-  [key: string]: any
+
+  placeholders?: Record<string, string>
+  step1Details?: Record<string, string>
+  affiliate?: Record<string, string>
+  builder?: Record<string, string>
 }
 
 export type TemplateConfigGetter = (today: string) => TemplateConfig

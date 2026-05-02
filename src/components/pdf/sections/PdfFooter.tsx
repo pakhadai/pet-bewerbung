@@ -21,7 +21,7 @@ export const PdfFooter: React.FC<PdfFooterProps> = ({ t, templateConfig }) => {
         : isBuddyLike
           ? {
               borderTopWidth: 0,
-              backgroundColor: '#004541',
+              backgroundColor: colors.primary,
               paddingTop: 10,
               paddingBottom: 8,
               borderRadius: pdfBorderRadius(0),
@@ -35,8 +35,9 @@ export const PdfFooter: React.FC<PdfFooterProps> = ({ t, templateConfig }) => {
 
   const footerStyle = [commonStyles.footer, footerRule]
 
+  const softAccent = colors.accentSoft ?? colors.accent
   const footerSignStyle = isBuddyLike
-    ? [commonStyles.footerSign, { borderTopColor: '#abefe8', borderTopWidth: 1 }]
+    ? [commonStyles.footerSign, { borderTopColor: softAccent, borderTopWidth: 1 }]
     : commonStyles.footerSign
   const footerBranding = (t.doc.footer ?? 'Dokument generiert via Pet-Bewerbung.ch').toUpperCase()
 
@@ -55,14 +56,14 @@ export const PdfFooter: React.FC<PdfFooterProps> = ({ t, templateConfig }) => {
             ...commonStyles.footerBrandingAlt,
             ...(templateType === 'modern' ? { color: colors.accent } : {}),
             ...(templateType === 'compact' ? { color: colors.muted } : {}),
-            ...(isBuddyLike ? { color: '#abefe8' } : {}),
+            ...(isBuddyLike ? { color: softAccent } : {}),
           }}
         >
           pet-bewerbung.ch
         </Link>
       )}
       <View style={footerSignStyle}>
-        <Text style={isBuddyLike ? { color: '#f8f9ff' } : undefined}>
+        <Text style={isBuddyLike ? { color: templateConfig.pageBackgroundColor } : undefined}>
           {t.doc.sign ?? 'Signature'}
         </Text>
       </View>
